@@ -45,6 +45,11 @@ header{
   height: 120px;
 }
 
+.logoSvg{
+  width: 100px;
+  height: 100px;
+}
+
 header .searchNFilter{
   /* display: flex;
   flex-direction: column;
