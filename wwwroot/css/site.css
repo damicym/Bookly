@@ -1,23 +1,33 @@
-html {
-  font-size: 14px;
-  min-height: 100%;
+*, *::after, *::before{
+  box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+html{
+  --main: #4059AD;
+  --secondary: #97D8C4;
+  --secondary2: #0091ea;
+  --light: #EFF2F1;
+  --accent: #F4B942;
+  --dark: #061A40;
 }
 
-body {
-  margin: 10px;
-  padding: 10px;
+html, body{
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
 }
 
+header{
+  background-color: var(--main);
+  display: flex;
+  gap: 5%;
+  padding: 1%;
+  align-items: center;
+}
 
-footer {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
+header .searchNFilter{
+  display: flex;
+  flex-direction: column;
+  gap: 20%;
 }
