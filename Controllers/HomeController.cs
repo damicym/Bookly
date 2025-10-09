@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Bookly.Models;
-
 namespace Bookly.Controllers;
 
 public class HomeController : Controller
@@ -17,4 +16,13 @@ public class HomeController : Controller
     {
         return View();
     }
+    public ActionResult Perfil()
+    {
+        return View();
+    }
+    public ActionResult Mensajes()
+    {
+        return View();
+    }
 }
+
