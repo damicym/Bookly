@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookly", "Bookly.csproj", "{59A05068-CCC7-4354-2E37-09147982FFBB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59A05068-CCC7-4354-2E37-09147982FFBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59A05068-CCC7-4354-2E37-09147982FFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59A05068-CCC7-4354-2E37-09147982FFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59A05068-CCC7-4354-2E37-09147982FFBB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FDD23A60-DACA-4F72-B78F-E94635361192}
+	EndGlobalSection
+EndGlobal

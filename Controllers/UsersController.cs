@@ -3,34 +3,45 @@ using Bookly.Models;
 
 namespace Bookly.Controllers
 {
-    // public class UsersController : Controller
-    // {
-    //     public IActionResult Login()
-    //     {
-    //         return View();
-    //     }
+    public class UsuariosController : Controller
+    {
+        // LOGIN GET
+        public IActionResult Login()
+        {
+            return View();
+        }
 
-    //     [HttpPost]
-    //     public IActionResult LoginGuardar(string username, string password)
-    //     {
-    //         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-    //         {
-    //             ViewBag.Error = "Complete todos los campos";
-    //             return View("Login");
-    //         }
+        // LOGIN POST
+        [HttpPost]
+        public IActionResult Login(string DNI, string password)
+        {
+            var usuario = BD.login(DNI, password);
+            if (usuario != null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            ViewBag.Error = "DNI o contraseña incorrectos";
+            return View();
+        }
 
-    //         Usuarios usuario = BD.login(username, password);
+        // REGISTER GET
+        public IActionResult Register()
+        {
+            return View();
+        }
 
-    //         if (usuario != null)
-    //         {
-    //             BD.actLogin(usuario.mail);
-    //             return RedirectToAction("VerTareas", "Home");
-    //         }
-    //         else
-    //         {
-    //             ViewBag.Error = "Usuario o contraseña incorrectos";
-    //             return View("Login");
-    //         }
-    //     }
-    // }
+        // REGISTER POST
+        [HttpPost]
+        public IActionResult Register(Usuarios usuario)
+        {
+            if (BD.ExisteUsuario(usuario.DNI))
+            {
+                ViewBag.Error = $"No se puede registrar: el usuario con DNI {usuario.DNI} ya tiene una cuenta en bookly.";
+                return View(usuario);
+            }
+
+            BD.registrarse(usuario);
+            return RedirectToAction("Login");
+        }
+    }
 }
