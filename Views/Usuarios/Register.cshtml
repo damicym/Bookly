@@ -6,43 +6,43 @@
 
 <h2>Registrarse</h2>
 
-<form asp-action="Register" method="post">
-    <label for="DNI">DNI:</label>
-    <input asp-for="DNI" id="DNI" required /><br/>
+    <form asp-action="Register" method="post" autocomplete="off">
+    <label for="DNI">Ingresá tu DNI</label>
+    <input asp-for="DNI" id="DNI" required autocomplete="off" /><br/>
 
-    <label for="nombreComp">Nombre completo:</label>
-    <input asp-for="nombreComp" id="nombreComp" required /><br/>
+    <label for="nombreComp">Ingresá tu nombre y apellido</label>
+    <input asp-for="nombreComp" id="nombreComp" required autocomplete="off" /><br/>
 
-    <label for="ano">Año:</label>
-    <input asp-for="ano" list="anos" id="ano" required /><br/>
-    <datalist id="anos">
-        <option value="1"></option>
-        <option value="2"></option>
-        <option value="3"></option>
-        <option value="4"></option>
-        <option value="5"></option>
-    </datalist>
+    <label for="password">Crea tu contraseña</label>
+    <input asp-for="password" type="password" id="password" required autocomplete="off" />
+
+    <label for="ano">Ingresá tu año de ciclo</label>
+    <select id="ano" name="ano" required>
+    <option value="">-- Seleccioná el año --</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    </select>
 
     <label for="especialidad">Especialidad:</label>
-        <input asp-for="especialidad" id="especialidad" list="especialidades" required /><br>
-    <datalist id="especialidades">
-        <option value="">-- Seleccioná una especialidad --</option>
-        <option value="Informatica"></option>
-        <option value="Gestion"></option>
-        <option value="Produccion Artistica"></option>
-        <option value="Quimica"></option>
-        <option value="Mecatronica"></option>
-        <option value="Construcciones"></option>
-    </datalist>
+    <select id="especialidad" name="especialidad" required>
+    <option value="">-- Seleccioná una especialidad --</option>
+    <option value="Informatica">Informática</option>
+    <option value="Gestión">Gestión</option>
+    <option value="Producción Artística">Producción Artística</option>
+    <option value="Química">Química</option>
+    <option value="Mecatrónica">Mecatrónica</option>
+    <option value="Construcciones">Construcciones</option>
+    </select>
 
     <label for="curso">Curso:</label>
-    <input asp-for="curso" id="curso" maxlength="1" required /><br/>
+    <input asp-for="curso" id="curso" maxlength="1" required autocomplete="off" pattern="[A-Za-z]" style="text-transform: uppercase;" />
 
-    <label for="password">Contraseña:</label>
-    <input asp-for="password" type="password" id="password" required /><br/>
 
-    <button type="submit">Registrarse</button>
-</form>
+        <button type="submit">Registrarse</button>
+    </form>
 
 @if (ViewBag.Error != null)
 {

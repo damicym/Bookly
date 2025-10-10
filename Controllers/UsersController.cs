@@ -5,32 +5,23 @@ namespace Bookly.Controllers
 {
     public class UsuariosController : Controller
     {
-        // LOGIN GET
         public IActionResult Login()
         {
             return View();
         }
-
-        // LOGIN POST
         [HttpPost]
         public IActionResult Login(string DNI, string password)
         {
             var usuario = BD.login(DNI, password);
-            if (usuario != null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            if (usuario != null) return RedirectToAction("Index", "Home");
             ViewBag.Error = "DNI o contraseña incorrectos";
             return View();
         }
 
-        // REGISTER GET
         public IActionResult Register()
         {
             return View();
         }
-
-        // REGISTER POST
         [HttpPost]
         public IActionResult Register(Usuarios usuario)
         {

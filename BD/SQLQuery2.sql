@@ -9,3 +9,7 @@ INSERT INTO libros (nombre, materia, ano, editorial) VALUES
 ('Introducción a la Programación', 'Informática', '2ndo', 'Sigmar'),
 ('Educación Cívica Hoy', 'Ciudadanía', '4to', 'Longseller'),
 ('Inglés Step by Step', 'Inglés', 'First', 'Oxford');
+INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, foto, curso, password)
+VALUES ('49091985', 'Facundo Lukacher', 3, 'Ingeniería', 'default.png', 'A', '1234');
+SELECT * FROM Usuarios 
+WHERE DNI = '49091985' AND password = '1234';

@@ -7,8 +7,6 @@ namespace Bookly.Models
     public static class BD
     {
         private static string _connectionString = @"Server=localhost;DataBase=Bookly;Integrated Security=True;TrustServerCertificate=True;";
-
-        // LOGIN
         public static Usuarios login(string dni, string password)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -20,27 +18,10 @@ namespace Bookly.Models
                 );
             }
         }
-
-        // VERIFICAR SI EL USUARIO YA EXISTE
-        public static bool ExisteUsuario(string dni)
-        {
-            dni = dni ?? "";
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = "SELECT COUNT(1) FROM Usuarios WHERE DNI = @DNI";
-                int count = connection.QueryFirst<int>(query, new { DNI = dni });
-                return count > 0;
-            }
-        }
-
-        // REGISTRARSE
         public static void registrarse(Usuarios usuario)
         {
-            // Valor por defecto
-            usuario.foto ??= "default.jpg";
-
-            // Verificar si el DNI ya existe
+            // Foto default
+            usuario.foto ??= "img/default.jpg";
 
             string query = @"INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, foto, curso, password)
                              VALUES (@DNI, @nombreComp, @ano, @especialidad, @foto, @curso, @password)";
@@ -61,6 +42,18 @@ namespace Bookly.Models
                 });
 
                 Console.WriteLine($"Usuario registrado correctamente. Filas afectadas: {filas}");
+            }
+
+        }
+        public static bool ExisteUsuario(string dni)
+        {
+            dni = dni ?? "";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT COUNT(1) FROM Usuarios WHERE DNI = @DNI";
+                int count = connection.QueryFirst<int>(query, new { DNI = dni });
+                return count > 0;
             }
         }
     }
