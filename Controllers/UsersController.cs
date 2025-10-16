@@ -7,17 +7,24 @@ namespace Bookly.Controllers
     {
         public IActionResult Login()
         {
+            if (BD.UsuarioLogueado != null)
+            {
+                ViewBag.UsuarioNombre = BD.UsuarioLogueado.nombreComp;
+            }
             return View();
         }
         [HttpPost]
         public IActionResult Login(string DNI, string password)
         {
             var usuario = BD.login(DNI, password);
-            if (usuario != null) return RedirectToAction("Index", "Home");
+            if (usuario != null)
+            {
+                ViewBag.UsuarioNombre = usuario.nombreComp;
+                return RedirectToAction("Index", "Home");
+            }
             ViewBag.Error = "DNI o contraseña incorrectos";
             return View();
         }
-
         public IActionResult Register()
         {
             return View();
@@ -30,9 +37,19 @@ namespace Bookly.Controllers
                 ViewBag.Error = $"No se puede registrar: el usuario con DNI {usuario.DNI} ya tiene una cuenta en bookly.";
                 return View(usuario);
             }
-
             BD.registrarse(usuario);
             return RedirectToAction("Login");
         }
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            if (BD.UsuarioLogueado == null)
+            {
+                return RedirectToAction("Login");
+            }
+            ViewBag.UsuarioNombre = BD.UsuarioLogueado.nombreComp;
+            return View(BD.UsuarioLogueado);
+        }
+
     }
 }

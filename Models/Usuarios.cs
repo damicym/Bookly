@@ -10,4 +10,5 @@ namespace Bookly.Models
         public char curso { get; set; }
         public string password { get; set; }
     }
+    
 }
