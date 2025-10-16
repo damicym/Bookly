@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap');
 
+
 *, *::after, *::before{
   box-sizing: border-box;
 }
+
 
 html{
   --main: #4059AD;
@@ -13,12 +15,14 @@ html{
   --dark: #061A40;
 }
 
+
 html, body{
   margin: 0;
   padding: 0;
   height: 100vh;
   width: 100vw;
 }
+
 
 body{
   font-family: "Kumbh Sans", sans-serif;
@@ -28,13 +32,17 @@ body{
     "YOPQ" 300;
 }
 
-button{  
+
+header button{  
   font-family: "Kumbh Sans", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
   font-variation-settings:
     "YOPQ" 300;
+  font-size: 1rem !important;
+ 
 }
+
 
 header{
   background-color: var(--secondary);
@@ -42,13 +50,15 @@ header{
   gap: 5%;
   padding: 1%;
   align-items: center;
-  height: 120px;
+  height: 135px;
 }
+
 
 .logoSvg{
   width: 100px;
   height: 100px;
 }
+
 
 header .searchNFilter{
   /* display: flex;
@@ -63,6 +73,7 @@ header .searchNFilter{
   gap: 10px;
 }
 
+
 .searchNFilter .search{
   align-items: center;
   position: relative;
@@ -71,18 +82,23 @@ header .searchNFilter{
   grid-row: 2;
 }
 
+
 .search input[type = text]{
   width: 100%;
+  height: 40px;
   padding: 10px;
   border-radius: 4px;
   border: none;
   outline: none;
+  font-size: 1rem !important;
 }
+
 
 .searchNFilter .filter{
   position: absolute;
   grid-row: 3;
 }
+
 
 .search svg{
   position: absolute;
@@ -90,6 +106,7 @@ header .searchNFilter{
   align-self: center;
   color: var(--dark);
 }
+
 
 .navSections{
   display: flex;
@@ -101,13 +118,58 @@ header .searchNFilter{
   color: var(--light);
 }
 
+
 .navSections .profileBtn{
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
+
 .navSections svg{
   width: 40px;
   height: 40px;
 }
+.navSections p{
+  margin: 0;
+}
+.header svg{
+  user-select: none;
+}
+
+
+
+
+.librosContainer{
+  display: flex;
+  gap: 2%;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.libro{
+  background-color: var(--main);
+  border: none;
+  border-radius: 9px;
+  padding: 12px;
+  color: var(--light);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+
+.libro h1{
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+
+.libro h2{
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+

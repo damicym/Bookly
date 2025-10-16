@@ -1,12 +1,15 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
 
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Bookly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
+
 
 <body>
     <header>
@@ -17,9 +20,11 @@
                     fill: #eff2f1;
                 }
 
+
                 .cls-3 {
                     letter-spacing: -.01em;
                 }
+
 
                 .cls-2 {
                     font-family: KumbhSans-Light, 'Kumbh Sans';
@@ -33,17 +38,20 @@
             <text class="cls-2" transform="translate(37 595.77) scale(.96 1)"><tspan x="0" y="0">Book</tspan><tspan class="cls-3" x="369.84" y="0">l</tspan><tspan x="402.62" y="0">y</tspan></text>
         </svg>
 
+
         <section class="searchNFilter">
             <div class="search">
                 <input type="text" placeholder="Buscar (nombre de un libro o editorial)">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-search"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
             </div>
 
+
             <div class="filter">
                 <button>Categorías</button> @* dropdown *@
                 <button>Lista de deseados</button>
             </div>
         </section>
+
 
         <section class="navSections">
             <div class="profileBtn">
@@ -55,17 +63,25 @@
         </section>
     </header>
 
+
     <main role="main">
         @RenderBody()
     </main>
 
+
     <footer>
-        
+       
     </footer>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
+
 </html>
+
+
+
