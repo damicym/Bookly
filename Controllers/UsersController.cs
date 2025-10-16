@@ -41,14 +41,11 @@ namespace Bookly.Controllers
             return RedirectToAction("Login");
         }
         [HttpGet]
-        public IActionResult Profile()
+
+        public IActionResult Logout()
         {
-            if (BD.UsuarioLogueado == null)
-            {
-                return RedirectToAction("Login");
-            }
-            ViewBag.UsuarioNombre = BD.UsuarioLogueado.nombreComp;
-            return View(BD.UsuarioLogueado);
+            BD.logout();
+            return RedirectToAction("Login");
         }
 
     }

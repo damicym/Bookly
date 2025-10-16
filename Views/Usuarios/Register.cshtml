@@ -4,51 +4,66 @@
     ViewBag.Title = "Registro";
 }
 
-<h2>Registrarse</h2>
+<section class="register">
+    <img src="img/register_deco" alt="register_deco">
+    <section class="formContainer">
+        <h2>Registrarse</h2>
+        <form asp-action="Register" method="post" autocomplete="off">
+            <div class="campo">
+                <label for="DNI">Ingresá tu DNI</label>
+                <input asp-for="DNI" id="DNI" required autocomplete="off" /><br/>
+            </div>
 
-    <form asp-action="Register" method="post" autocomplete="off">
-    <label for="DNI">Ingresá tu DNI</label>
-    <input asp-for="DNI" id="DNI" required autocomplete="off" /><br/>
+            <div class="campo">
+                <label for="nombreComp">Ingresá tu nombre y apellido</label>
+                <input asp-for="nombreComp" id="nombreComp" required autocomplete="off" /><br/>
+            </div>
 
-    <label for="nombreComp">Ingresá tu nombre y apellido</label>
-    <input asp-for="nombreComp" id="nombreComp" required autocomplete="off" /><br/>
+            <div class="campo">
+                <label for="password">Crea tu contraseña</label>
+                <input asp-for="password" type="password" id="password" required autocomplete="off" />
+            </div>
 
-    <label for="password">Crea tu contraseña</label>
-    <input asp-for="password" type="password" id="password" required autocomplete="off" />
+            <div class="campo">
+                <label for="ano">Ingresá tu año de ciclo</label>
+                <select id="ano" name="ano" required>
+                    <option value="">-- Seleccioná el año --</option>
+                    <option value="7mo grado">7mo grado</option>
+                    <option value="1er año">1er año</option>
+                    <option value="2do año">2do año</option>
+                    <option value="3er año">3er año</option>
+                    <option value="4to año">4to año</option>
+                    <option value="5to año">5to año</option>
+                </select>
+            </div>
 
-    <label for="ano">Ingresá tu año de ciclo</label>
-    <select id="ano" name="ano" required>
-    <option value="">-- Seleccioná el año --</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    </select>
+            <div class="campo">
+                <label for="especialidad">Especialidad:</label>
+                <select id="especialidad" name="especialidad" required>
+                    <option value="">-- Seleccioná una especialidad --</option>
+                    <option value="Informatica">Informática</option>
+                    <option value="Gestión">Gestión</option>
+                    <option value="Producción Artística">Producción Artística</option>
+                    <option value="Química">Química</option>
+                    <option value="Mecatrónica">Mecatrónica</option>
+                    <option value="Construcciones">Construcciones</option>
+                </select>
+            </div>
 
-    <label for="especialidad">Especialidad:</label>
-    <select id="especialidad" name="especialidad" required>
-    <option value="">-- Seleccioná una especialidad --</option>
-    <option value="Informatica">Informática</option>
-    <option value="Gestión">Gestión</option>
-    <option value="Producción Artística">Producción Artística</option>
-    <option value="Química">Química</option>
-    <option value="Mecatrónica">Mecatrónica</option>
-    <option value="Construcciones">Construcciones</option>
-    </select>
+            <div class="campo">
+                <label for="curso">Curso:</label>
+                <input asp-for="curso" id="curso" maxlength="1" required autocomplete="off" pattern="[A-Za-z]" style="text-transform: uppercase;" />
+            </div>
+            <button type="submit">Registrarse</button>
+        </form>
 
-    <label for="curso">Curso:</label>
-    <input asp-for="curso" id="curso" maxlength="1" required autocomplete="off" pattern="[A-Za-z]" style="text-transform: uppercase;" />
+        @if (ViewBag.Error != null)
+        {
+            <p style="color:red">@ViewBag.Error</p>
+        }
 
-
-        <button type="submit">Registrarse</button>
-    </form>
-
-@if (ViewBag.Error != null)
-{
-    <p style="color:red">@ViewBag.Error</p>
-}
-
-<p>
-    ¿Ya tienes cuenta? <a href="@Url.Action("Login", "Usuarios")">Inicia sesión aquí</a>
-</p>
+        <p>
+            ¿Ya tienes cuenta? <a href="@Url.Action("Login", "Usuarios")">Inicia sesión aquí</a>
+        </p>
+    </section>
+</section>

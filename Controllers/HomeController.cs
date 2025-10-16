@@ -16,9 +16,14 @@ public class HomeController : Controller
     {
         return View();
     }
-    public ActionResult Perfil()
+    public IActionResult Profile()
     {
-        return View();
+        if (BD.UsuarioLogueado == null)
+        {
+            return RedirectToAction("Login", "Usuarios");
+        }
+        ViewBag.UsuarioNombre = BD.UsuarioLogueado.nombreComp;
+        return View(BD.UsuarioLogueado);
     }
     public ActionResult Mensajes()
     {

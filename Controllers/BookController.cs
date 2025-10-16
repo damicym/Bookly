@@ -6,20 +6,11 @@ namespace Bookly.Controllers;
 
 public class BookController : Controller
 {
-    public ActionResult Index() 
-    {
-        return View();
-    }
     public ActionResult Details(int id) 
     {
         return View();
     }
-    public ActionResult Create() 
-    {
-        return View();
-    }
-    [HttpPost]
-    public ActionResult Create(Libro libro) 
+    public ActionResult Publicar() 
     {
         return View();
     }

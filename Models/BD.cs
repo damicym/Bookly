@@ -41,6 +41,16 @@ namespace Bookly.Models
                 });
             }
         }
+        public static void logout()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "DELETE FROM Usuarios WHERE DNI = @DNI";
+                connection.Execute(query, new { DNI = UsuarioLogueado.DNI });
+            }
+            UsuarioLogueado = null;
+        }
         public static bool ExisteUsuario(string dni)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))

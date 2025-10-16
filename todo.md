@@ -1,1 +1,1 @@
-- cambiar fuente del logo y agregarlo a la pagina
+- revisar disableds, requireds, errores de login, colores cuando aparece error

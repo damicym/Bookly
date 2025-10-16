@@ -2,22 +2,27 @@
     ViewBag.Title = "Login";
 }
 
-<h2>Login</h2>
+<section class="formSection">
+    <h2>Login</h2>
 
-@if (ViewBag.Error != null)
-{
-    <div style="color:red;">@ViewBag.Error</div>
-}
+    @if (ViewBag.Error != null)
+    {
+        <div style="color:red;">@ViewBag.Error</div>
+    }
 
-<form method="post" action="@Url.Action("Login", "Usuarios")">
-    <label>DNI:</label>
-    <input type="text" name="DNI" id="DNI" required autocomplete="off"/>
+    <form method="post" action="@Url.Action("Login", "Usuarios")">
 
-    <label>Contraseña:</label>
-    <input type="password" name="password" id="password" required /><br/>
-
-    <button type="submit">Iniciar sesión</button>
-</form>
-<p>
-    ¿No tienes cuenta? <a href="@Url.Action("Register", "Usuarios")">Registrate aquí</a>
-</p>
+        <div class="campo">
+            <label>DNI:</label>
+            <input type="text" name="DNI" id="DNI" required autocomplete="off"/>
+        </div>
+        <div class="campo">
+            <label>Contraseña:</label>
+            <input type="password" name="password" id="password" required /><br/>
+        </div>
+        <button type="submit">Iniciar sesión</button>
+    </form>
+    <p>
+        ¿No tienes cuenta? <a href="@Url.Action("Register", "Usuarios")">Registrate aquí</a>
+    </p>
+</section>
