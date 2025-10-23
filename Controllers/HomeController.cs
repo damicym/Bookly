@@ -22,8 +22,16 @@ public class HomeController : Controller
         {
             return RedirectToAction("Login", "Usuarios");
         }
+
         ViewBag.UsuarioNombre = BD.UsuarioLogueado.nombreComp;
-        return View(BD.UsuarioLogueado);
+        var librosUsuario = BD.ObtenerLibrosPorUsuario(BD.UsuarioLogueado.DNI);
+
+        if (librosUsuario == null || librosUsuario.Count == 0)
+        {
+            ViewBag.Mensaje = "No publicaste ningún libro todavía.";
+        }
+
+        return View(librosUsuario);
     }
     public ActionResult Mensajes()
     {

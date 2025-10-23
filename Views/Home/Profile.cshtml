@@ -1,153 +1,54 @@
+@model List<Bookly.Models.Libros>
+
+@{
+    ViewData["Title"] = "Perfil de usuario";
+}
+
 <h1>@ViewBag.UsuarioNombre</h1>
- <a href="@Url.Action("Logout", "Usuarios")">Logout</a>
+<a href="@Url.Action("Publicar", "Book")">Publicar</a>
+<a href="@Url.Action("Logout", "Usuarios")">Cerrar sesión</a>
 
 <section class="personalInfo">
     <div class="userContainer">
-        <img src="" alt="pfp">
-        <h1>Jonatan Naifeld</h1>
-    </div>
-    <div class="specificInfo">
-        <p>4to info C</p>
-        <p>12 compras</p>
-        <p>8 ventas</p>
-        <div class="rating">
-            @*svg's*@
-        </div>
+        <img src="@Bookly.Models.BD.UsuarioLogueado?.foto" alt="foto perfil" />
+        <h2>@Bookly.Models.BD.UsuarioLogueado?.nombreComp</h2>
+        <p>@Bookly.Models.BD.UsuarioLogueado?.curso</p>
+        <p>@Bookly.Models.BD.UsuarioLogueado?.especialidad</p>
     </div>
 
-    <section class="reviewsPreview">
-        <h1>Últimas reseñas</h1>
-        <button class="seeMoreBtn">Ver todas</button>
-        <section calss="reviewsContainer">
-            <div class="review">
-                <span>22/7/2025</span>
-                <div class="rating">
-                    @*svg's*@
-                </div>
-                <h1>Excelente libro</h1>
-                <p>Bueno el libro me gustó aprobé historia judía y el vendedor un crack gracias dami por todo perdón por tan poco.</p>
+    <section class="recommendationsContainer mt-5">
+        <h2>Mis publicaciones</h2>
+
+        @if (ViewBag.Mensaje != null)
+        {
+            <p class="text-muted">@ViewBag.Mensaje</p>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var libro in Model)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <img src="~/img/toldot.jpg" class="card-img-top" alt="@libro.nombre">
+                            <div class="card-body">
+                                <h5 class="card-title">@libro.nombre</h5>
+                                <p class="card-text">
+                                    <strong>Materia:</strong> @libro.materia <br />
+                                    <strong>Año:</strong> @libro.ano <br />
+                                    <strong>Editorial:</strong> @libro.editorial
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a asp-controller="Book" asp-action="Edit" asp-route-id="@libro.id" class="btn btn-warning btn-sm">Editar</a>
+                                    <form asp-controller="Book" asp-action="Eliminar" asp-route-id="@libro.id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-            <div class="review">
-                <span>22/7/2025</span>
-                <div class="rating">
-                    @*svg's*@
-                </div>
-                <h1>Excelente libro</h1>
-                <p>Bueno el libro me gustó aprobé historia judía y el vendedor un crack gracias dami por todo perdón por tan poco.</p>
-            </div>
-            <div class="review">
-                <span>22/7/2025</span>
-                <div class="rating">
-                    @*svg's*@
-                </div>
-                <h1>Excelente libro</h1>
-                <p>Bueno el libro me gustó aprobé historia judía y el vendedor un crack gracias dami por todo perdón por tan poco.</p>
-            </div>
-            <div class="review">
-                <span>22/7/2025</span>
-                <div class="rating">
-                    @*svg's*@
-                </div>
-                <h1>Excelente libro</h1>
-                <p>Bueno el libro me gustó aprobé historia judía y el vendedor un crack gracias dami por todo perdón por tan poco.</p>
-            </div>
-        </section>
-    </section>
-    @* cambiar lo de abajo *@
-    <section class="recommendationsContainer">
-        <h2>Publicaciones vigentes</h2>
-        <section class="librosContainer">
-            <div class="libro">
-                <div class="libroImgContainer">
-                    <img src="img/toldot.jpg" alt="toldot">
-                    <button class="desearBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                    </button>
-                </div>
-                <h1>Toldot Israel 3</h1>
-                <h2>$18500</h2>
-                <div class="pillContainer">
-                    <span class="pill">Sin uso</span>
-                    <span class="pill">Historia judía</span>
-                    <span class="pill">3er año</span>
-                </div>
-            </div>
-            <div class="libro">
-                <div class="libroImgContainer">
-                    <img src="img/toldot.jpg" alt="toldot">
-                    <button class="desearBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                    </button>
-                </div>
-                <h1>Toldot Israel 3</h1>
-                <h2>$18500</h2>
-                <div class="pillContainer">
-                    <span class="pill">Sin uso</span>
-                    <span class="pill">Historia judía</span>
-                    <span class="pill">3er año</span>
-                </div>
-            </div>
-            <div class="libro">
-                <div class="libroImgContainer">
-                    <img src="img/toldot.jpg" alt="toldot">
-                    <button class="desearBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                    </button>
-                </div>
-                <h1>Toldot Israel 3</h1>
-                <h2>$18500</h2>
-                <div class="pillContainer">
-                    <span class="pill">Sin uso</span>
-                    <span class="pill">Historia judía</span>
-                    <span class="pill">3er año</span>
-                </div>
-            </div>
-            <div class="libro">
-                <div class="libroImgContainer">
-                    <img src="img/toldot.jpg" alt="toldot">
-                    <button class="desearBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                    </button>
-                </div>
-                <h1>Toldot Israel 3</h1>
-                <h2>$18500</h2>
-                <div class="pillContainer">
-                    <span class="pill">Sin uso</span>
-                    <span class="pill">Historia judía</span>
-                    <span class="pill">3er año</span>
-                </div>
-            </div>
-            <div class="libro">
-                <div class="libroImgContainer">
-                    <img src="img/toldot.jpg" alt="toldot">
-                    <button class="desearBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                    </button>
-                </div>
-                <h1>Toldot Israel 3</h1>
-                <h2>$18500</h2>
-                <div class="pillContainer">
-                    <span class="pill">Sin uso</span>
-                    <span class="pill">Historia judía</span>
-                    <span class="pill">3er año</span>
-                </div>
-            </div>
-            <div class="libro">
-                <div class="libroImgContainer">
-                    <img src="img/toldot.jpg" alt="toldot">
-                    <button class="desearBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                    </button>
-                </div>
-                <h1>Toldot Israel 3</h1>
-                <h2>$18500</h2>
-                <div class="pillContainer">
-                    <span class="pill">Sin uso</span>
-                    <span class="pill">Historia judía</span>
-                    <span class="pill">3er año</span>
-                </div>
-            </div>
-        </section>
+        }
     </section>
 </section>
-
