@@ -5,8 +5,7 @@ namespace Bookly.Controllers
 {
     public class BookController : Controller
     {
-        public IActionResult Index()
-        {
+        public IActionResult Index(){
             if (BD.UsuarioLogueado == null)
             {
                 return RedirectToAction("Login", "Usuarios");
@@ -17,8 +16,7 @@ namespace Bookly.Controllers
             return View(libros);
         }
 
-        public IActionResult Publicar()
-        {
+        public IActionResult Publicar(){
             if (BD.UsuarioLogueado == null)
             {
                 return RedirectToAction("Login", "Usuarios");
@@ -27,8 +25,7 @@ namespace Bookly.Controllers
         }
 
         [HttpPost]
-        public IActionResult Publicar(Libros libro)
-        {
+        public IActionResult Publicar(Libros libro){
             if (BD.UsuarioLogueado == null)
             {
                 return RedirectToAction("Login", "Usuarios");
@@ -40,7 +37,7 @@ namespace Bookly.Controllers
                 string.IsNullOrWhiteSpace(libro.editorial))
             {
                 ViewBag.Error = "Todos los campos son obligatorios.";
-                return View(libro);
+                return View("libro");
             }
 
             BD.PublicarLibro(libro);
@@ -48,13 +45,7 @@ namespace Bookly.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int id)
-        {
-            if (BD.UsuarioLogueado == null)
-            {
-                return RedirectToAction("Login", "Usuarios");
-            }
-
+        public IActionResult Detalle(int id){
             var libro = BD.ObtenerLibroPorId(id);
             if (libro == null)
             {
@@ -64,23 +55,11 @@ namespace Bookly.Controllers
         }
 
         [HttpPost]
-        public IActionResult Eliminar(int id)
-        {
-            if (BD.UsuarioLogueado == null)
-            {
-                return RedirectToAction("Login", "Usuarios");
-            }
-
+        public IActionResult Eliminar(int id){
             BD.EliminarLibro(id);
             return RedirectToAction("Index", "Home");
         }
-        public IActionResult Edit(int id)
-        {
-            if (BD.UsuarioLogueado == null)
-            {
-                return RedirectToAction("Login", "Usuarios");
-            }
-
+        public IActionResult Edit(int id){
             var libro = BD.ObtenerLibroPorId(id);
             if (libro == null)
             {
@@ -92,13 +71,7 @@ namespace Bookly.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Libros libro)
-        {
-            if (BD.UsuarioLogueado == null)
-            {
-                return RedirectToAction("Login", "Usuarios");
-            }
-
+        public IActionResult Edit(Libros libro){
             if (string.IsNullOrWhiteSpace(libro.nombre) ||
                 string.IsNullOrWhiteSpace(libro.materia) ||
                 string.IsNullOrWhiteSpace(libro.ano) ||
@@ -109,7 +82,7 @@ namespace Bookly.Controllers
             }
 
             BD.EditarLibro(libro);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Profile", "Home");
         }
     }
 }

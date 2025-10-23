@@ -93,6 +93,9 @@ header .searchNFilter{
   font-size: 1rem !important;
 }
 
+input{
+  outline: none;
+}
 
 .searchNFilter .filter{
   position: absolute;

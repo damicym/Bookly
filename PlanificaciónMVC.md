@@ -1,18 +1,15 @@
 - Controllers:
     + BookController
+
     + HomeController
     + UsersController
 
 - Models:
     + Intercambios
         id
-        idLibro
-        fechaPublicacion
-        precio
+        idPublicacion
+        precioFinal
         idComprador
-        idVendedor
-        estado
-        descripcion
         fechaRealizacion
     + Libros
         id
@@ -20,7 +17,6 @@
         materia
         ano
         editorial
-        imagen
     + Resenas
         id
         idRedactor
@@ -33,9 +29,16 @@
         nombreComp
         ano
         especialidad
-        foto
         curso
         password
+    + Publicacion
+        id
+        idVendedor
+        precio
+        estado
+        descripcion
+        fechaPublicacion
+        status
     + También está el model “BD” pero no tiene ninguna propiedad
 
 - Views
