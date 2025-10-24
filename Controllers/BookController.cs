@@ -25,24 +25,30 @@ namespace Bookly.Controllers
         }
 
         [HttpPost]
-        public IActionResult Publicar(Libros libro){
-            if (BD.UsuarioLogueado == null)
-            {
-                return RedirectToAction("Login", "Usuarios");
-            }
+        [HttpPost]
+    public IActionResult Publicar(Libros libro, decimal precio, string estadoLibro, string descripcion)
+    {
+        Usuarios usuario = obj.StringToObject<Usuarios>( HttpContext.Session.GetString("usuarioLogueado"));
 
-            if (string.IsNullOrWhiteSpace(libro.nombre) ||
-                string.IsNullOrWhiteSpace(libro.materia) ||
-                string.IsNullOrWhiteSpace(libro.ano) ||
-                string.IsNullOrWhiteSpace(libro.editorial))
-            {
-                ViewBag.Error = "Todos los campos son obligatorios.";
-                return View("libro");
-            }
-
-            BD.PublicarLibro(libro);
-            return RedirectToAction("Index", "Home");
+        if (usuario == null)
+        {
+            return RedirectToAction("Login", "Usuarios");
         }
+
+        if (string.IsNullOrWhiteSpace(libro.nombre) ||
+            string.IsNullOrWhiteSpace(libro.materia) ||
+            string.IsNullOrWhiteSpace(libro.ano) ||
+            string.IsNullOrWhiteSpace(libro.editorial) ||
+            string.IsNullOrWhiteSpace(estadoLibro) ||
+            string.IsNullOrWhiteSpace(descripcion))
+        {
+            ViewBag.Error = "Todos los campos son obligatorios.";
+            return View(libro);
+        }
+
+        BD.PublicarLibro(libro, usuario.DNI, precio, estadoLibro, descripcion);
+        return RedirectToAction("Profile", "Home");
+    }
 
         [HttpGet]
         public IActionResult Detalle(int id){

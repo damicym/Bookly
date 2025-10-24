@@ -6,20 +6,21 @@ namespace Bookly.Controllers
     public class UsuariosController : Controller
     {
         public IActionResult Login()
-        {
-            if (BD.UsuarioLogueado != null)
+        { 
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user != null)
             {
-                ViewBag.UsuarioNombre = BD.UsuarioLogueado.nombreComp;
+                ViewBag.UsuarioNombre = user.nombreComp;
             }
             return View();
         }
         [HttpPost]
         public IActionResult Login(string DNI, string password)
         {
-            var usuario = BD.login(DNI, password);
+            Usuarios usuario = BD.login(DNI, password);
             if (usuario != null)
             {
-                ViewBag.UsuarioNombre = usuario.nombreComp;
+                HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(usuario));
                 return RedirectToAction("Index", "Home");
             }
             ViewBag.Error = "DNI o contraseña incorrectos";
@@ -41,9 +42,9 @@ namespace Bookly.Controllers
             return RedirectToAction("Login");
         }
         [HttpGet]
-
         public IActionResult Logout()
         {
+            HttpContext.Session.Remove("usuarioLogueado");
             BD.logout();
             return RedirectToAction("Login");
         }

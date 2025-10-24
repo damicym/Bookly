@@ -1,19 +1,18 @@
-@model List<Bookly.Models.Libros>
+@model List<Bookly.Models.Publicacion>
 
 @{
     ViewData["Title"] = "Perfil de usuario";
 }
 
-<h1>@ViewBag.UsuarioNombre</h1>
+<h1>@ViewBag.usuario.nombreComp</h1>
 <a href="@Url.Action("Publicar", "Book")">Publicar</a>
 <a href="@Url.Action("Logout", "Usuarios")">Cerrar sesión</a>
 
 <section class="personalInfo">
     <div class="userContainer">
-        <img src="@Bookly.Models.BD.UsuarioLogueado?.foto" alt="foto perfil" />
-        <h2>@Bookly.Models.BD.UsuarioLogueado?.nombreComp</h2>
-        <p>@Bookly.Models.BD.UsuarioLogueado?.curso</p>
-        <p>@Bookly.Models.BD.UsuarioLogueado?.especialidad</p>
+        <h2>@ViewBag.usuario.nombreComp</h2>
+        <p>@ViewBag.usuario.curso</p>
+        <p>@ViewBag.usuario.especialidad</p>
     </div>
 
     <section class="recommendationsContainer mt-5">
@@ -26,21 +25,21 @@
         else
         {
             <div class="row">
-                @foreach (var libro in Model)
+                @foreach (Publicacion pub in Model)
                 {
                     <div class="col-md-4 mb-4">
                         <div class="card shadow-sm h-100">
-                            <img src="~/img/toldot.jpg" class="card-img-top" alt="@libro.nombre">
+                            <img src="~/img/toldot.jpg" class="card-img-top" alt="@pub.descripcion">
                             <div class="card-body">
-                                <h5 class="card-title">@libro.nombre</h5>
+                                <h5 class="card-title">@pub.descripcion</h5>
                                 <p class="card-text">
-                                    <strong>Materia:</strong> @libro.materia <br />
-                                    <strong>Año:</strong> @libro.ano <br />
-                                    <strong>Editorial:</strong> @libro.editorial
+                                    <strong>Estado:</strong> @pub.estadoLibro <br />
+                                    <strong>Precio:</strong> $@pub.precio <br />
+                                    <strong>Fecha:</strong> @pub.fecha.ToShortDateString()
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <a asp-controller="Book" asp-action="Edit" asp-route-id="@libro.id" class="btn btn-warning btn-sm">Editar</a>
-                                    <form asp-controller="Book" asp-action="Eliminar" asp-route-id="@libro.id" method="post" style="display:inline;">
+                                    <a asp-controller="Book" asp-action="Edit" asp-route-id="@pub.id" class="btn btn-warning btn-sm">Editar</a>
+                                    <form asp-controller="Book" asp-action="Eliminar" asp-route-id="@pub.id" method="post" style="display:inline;">
                                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                                     </form>
                                 </div>
