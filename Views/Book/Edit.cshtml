@@ -1,25 +1,29 @@
+@model Bookly.Models.Libros
+
 @{
-    ViewData["Title"] = "Publicar";
+    ViewData["Title"] = "Editar libro";
 }
 
 <section class="formSection">
-    <h2>Publicar nuevo libro</h2>
+    <h2>Editar libro</h2>
 
-    <form action="@Url.Action("Publicar", "Book")" method="post">
+    <form action="@Url.Action("Edit", "Book")" method="post">
+        <input type="hidden" name="id" value="@Model.id" />
+
         <div class="campo">
-            <label for="nombre">Nombre del libro</label>
-            <input type="text" id="nombre" name="libro.nombre" placeholder="Toldot Israel 3" required />
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
         </div>
 
         <div class="campo">
             <label for="materia">Materia</label>
-            <input type="text" id="materia" name="libro.materia" placeholder="Historia judía" required />
+            <input type="text" id="materia" name="materia" value="@Model.materia" required />
         </div>
 
         <div class="campo">
             <label for="ano">Nivel escolar</label>
-            <select id="ano" name="libro.ano" required>
-                <option value="">-- Selecciona un año escolar --</option>
+            <select id="ano" name="ano" required>
+                <option value="@Model.ano">@Model.ano</option>
                 <option value="7mo grado">7mo grado</option>
                 <option value="1er año">1er año</option>
                 <option value="2do año">2do año</option>
@@ -31,7 +35,7 @@
 
         <div class="campo">
             <label for="editorial">Editorial</label>
-            <input type="text" id="editorial" name="libro.editorial" placeholder="Editorial ORT" required />
+            <input type="text" id="editorial" name="editorial" value="@Model.editorial" required />
         </div>
 
         <div class="campo">
@@ -47,7 +51,7 @@
 
         <div class="campo">
             <label for="precio">Precio</label>
-            <input type="number" id="precio" name="precio" placeholder="0.00" step="0.01" required />
+            <input type="number" id="precio" name="precio" step="0.01" placeholder="0.00" required />
         </div>
 
         <div class="campo">
@@ -55,6 +59,6 @@
             <textarea id="descripcion" name="descripcion" placeholder="Agregar una descripción del libro..." rows="4"></textarea>
         </div>
 
-        <button type="submit">Publicar</button>
+        <button type="submit">Guardar cambios</button>
     </form>
 </section>
