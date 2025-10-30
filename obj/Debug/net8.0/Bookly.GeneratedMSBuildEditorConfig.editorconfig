@@ -9,59 +9,59 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Bookly
 build_property.RootNamespace = Bookly
-build_property.ProjectDir = C:\Users\49094257\Bookly\
+build_property.ProjectDir = C:\Users\49549062\Downloads\Bookly\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\49094257\Bookly
+build_property.MSBuildProjectDirectory = C:\Users\49549062\Downloads\Bookly
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/49094257/Bookly/Views/Book/Details.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Book/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va1xEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Book/Edit.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Book/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va1xFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Book/Publicar.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Book/Publicar.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va1xQdWJsaWNhci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Home/Index.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Home/Profile.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Home/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcm9maWxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Home/Settings.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Home/Settings.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZXR0aW5ncy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Shared/_Layout.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Usuarios/Login.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Usuarios/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/Usuarios/Register.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/Usuarios/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcUmVnaXN0ZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/_ViewImports.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/49094257/Bookly/Views/_ViewStart.cshtml]
+[C:/Users/49549062/Downloads/Bookly/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

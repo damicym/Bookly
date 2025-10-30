@@ -671,3 +671,4 @@ C:\Users\49094257\Bookly\obj\Debug\net8.0\refint\Bookly.dll
 C:\Users\49094257\Bookly\obj\Debug\net8.0\Bookly.pdb
 C:\Users\49094257\Bookly\obj\Debug\net8.0\Bookly.genruntimeconfig.cache
 C:\Users\49094257\Bookly\obj\Debug\net8.0\ref\Bookly.dll
+C:\Users\49549062\Downloads\Bookly\bin\Debug\net8.0\Newtonsoft.Json.dll

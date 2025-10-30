@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "/MLCMnwBVgDV/cMpmtVQohFcjJLl9v5k6TA2kCncoow=",
+  "Hash": "nVyzMG0NFVxqSOzLaCqVGGBT/sZpyI89OvKFRkOgC70=",
   "Source": "Bookly",
   "BasePath": "_content/Bookly",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "Bookly\\wwwroot",
       "Source": "Bookly",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\css\\site.css",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\css\\site.css",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "css/site.css",
       "AssetKind": "All",
@@ -36,10 +36,10 @@
       "OriginalItemSpec": "wwwroot\\css\\site.css"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\favicon.png",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\favicon.png",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "favicon.png",
       "AssetKind": "All",
@@ -55,10 +55,10 @@
       "OriginalItemSpec": "wwwroot\\favicon.png"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\default.jpg",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\default.jpg",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "img/default.jpg",
       "AssetKind": "All",
@@ -74,29 +74,10 @@
       "OriginalItemSpec": "wwwroot\\img\\default.jpg"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\imagenRegistro.png",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\libroDefault.jpg",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
-      "BasePath": "_content/Bookly",
-      "RelativePath": "img/imagenRegistro.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\img\\imagenRegistro.png"
-    },
-    {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\libroDefault.jpg",
-      "SourceId": "Bookly",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "img/libroDefault.jpg",
       "AssetKind": "All",
@@ -112,10 +93,29 @@
       "OriginalItemSpec": "wwwroot\\img\\libroDefault.jpg"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\toldot.jpg",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\register_deco.png",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
+      "BasePath": "_content/Bookly",
+      "RelativePath": "img/register_deco.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\img\\register_deco.png"
+    },
+    {
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\toldot.jpg",
+      "SourceId": "Bookly",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "img/toldot.jpg",
       "AssetKind": "All",
@@ -131,10 +131,10 @@
       "OriginalItemSpec": "wwwroot\\img\\toldot.jpg"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\js\\site.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\js\\site.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "js/site.js",
       "AssetKind": "All",
@@ -150,10 +150,10 @@
       "OriginalItemSpec": "wwwroot\\js\\site.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js",
       "AssetKind": "All",
@@ -169,10 +169,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
       "AssetKind": "All",
@@ -188,10 +188,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation-unobtrusive/LICENSE.txt",
       "AssetKind": "All",
@@ -207,10 +207,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation/dist/additional-methods.js",
       "AssetKind": "All",
@@ -226,10 +226,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation/dist/additional-methods.min.js",
       "AssetKind": "All",
@@ -245,10 +245,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation/dist/jquery.validate.js",
       "AssetKind": "All",
@@ -264,10 +264,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation/dist/jquery.validate.min.js",
       "AssetKind": "All",
@@ -283,10 +283,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery-validation/LICENSE.md",
       "AssetKind": "All",
@@ -302,10 +302,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation\\LICENSE.md"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery/dist/jquery.js",
       "AssetKind": "All",
@@ -321,10 +321,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery\\dist\\jquery.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery/dist/jquery.min.js",
       "AssetKind": "All",
@@ -340,10 +340,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery\\dist\\jquery.min.js"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery/dist/jquery.min.map",
       "AssetKind": "All",
@@ -359,10 +359,10 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "Identity": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\LICENSE.txt",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
       "RelativePath": "lib/jquery/LICENSE.txt",
       "AssetKind": "All",

@@ -40,7 +40,19 @@ header button{
   font-variation-settings:
     "YOPQ" 300;
   font-size: 1rem !important;
- 
+  color: white;                /* Texto blanco */
+  background-color: transparent; /* Fondo transparente */
+  border: 2px solid white;     /* Borde blanco */
+  border-radius: 16px;         /* Bordes redondeados */
+  padding: 10px 20px;          /* Espaciado interno */
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+header button:hover {
+  background-color: white;     /* Fondo blanco */
+  color: black;                /* Texto negro */
 }
 
 
@@ -50,15 +62,10 @@ header{
   gap: 5%;
   padding: 1%;
   align-items: center;
-  height: 135px;
+  height: 125px;
+  padding: 8px 24px;
 }
 
-header {
-  height: 100px; /* O el valor que prefieras, por ejemplo 50px */
-  padding: 8px 24px; /* Menos padding arriba y abajo */
-  display: flex;
-  align-items: center;
-}
 
 header img, header .logo {
   height: 40px; /* Si tienes un logo, achícalo */
@@ -144,16 +151,13 @@ input{
 }
 
 
-.navSections svg{
-  width: 40px;
-  height: 40px;
-}
 .navSections p{
   margin: 0;
 }
 .header svg{
   user-select: none;
 }
+
 
 header, .navbar, .navSections {
   position: sticky;

@@ -26,6 +26,12 @@ namespace Bookly.Controllers
             ViewBag.Error = "DNI o contraseña incorrectos";
             return View();
         }
+
+        public IActionResult isLogged() {
+            ViewBag.UsuarioRegistrado = HttpContext.Session.GetString("usuarioLogueado") != null;
+            return View();
+        }
+
         public IActionResult Register()
         {
             return View();
