@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Data.SqlClient;
 using Dapper;
 
@@ -9,45 +11,48 @@ namespace Bookly.Models
         private static string _connectionString = @"Server=localhost;DataBase=Bookly;Integrated Security=True;TrustServerCertificate=True;";
         public static Usuarios UsuarioLogueado;
         public static List<Libros> libros = new List<Libros>();
+
+        // -------------------- USUARIOS --------------------
+
         public static Usuarios login(string dni, string password)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT DNI, nombreComp, ano, especialidad, curso, password FROM Usuarios WHERE DNI = @pDNI AND password = @pPassword";
+                string query = @"SELECT DNI, nombreComp, ano, especialidad, curso, password 
+                                 FROM Usuarios 
+                                 WHERE DNI = @pDNI AND password = @pPassword";
                 Usuarios usuario = connection.QueryFirstOrDefault<Usuarios>(query, new { pDNI = dni, pPassword = password });
                 UsuarioLogueado = usuario;
                 return usuario;
             }
         }
+
         public static void registrarse(Usuarios usuario)
         {
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, curso, password) VALUES (@DNI, @nombreComp, @ano, @especialidad, @curso, @password)";
+                string query = @"INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, curso, password) 
+                                 VALUES (@DNI, @nombreComp, @ano, @especialidad, @curso, @password)";
                 connection.Execute(query, new
                 {
                     DNI = usuario.DNI,
                     nombreComp = usuario.nombreComp,
                     ano = usuario.ano,
                     especialidad = usuario.especialidad,
-                    curso = usuario.curso == '\0' ? (string)null : usuario.curso.ToString(),
+                    curso = usuario.curso,
                     password = usuario.password
                 });
             }
         }
+
+        // ✅ No borra al usuario de la DB
         public static void logout()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "DELETE FROM Usuarios WHERE DNI = @DNI";
-                connection.Execute(query, new { DNI = UsuarioLogueado.DNI });
-            }
             UsuarioLogueado = null;
         }
+
         public static bool ExisteUsuario(string dni)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -59,23 +64,23 @@ namespace Bookly.Models
             }
         }
 
-
-
-        //Libros
         public static Usuarios ObtenerUsuarioPorDNI(string dni)
         {
             if (string.IsNullOrWhiteSpace(dni))
-            {
                 return null;
-            }
+
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT DNI, nombreComp, ano, especialidad, foto, curso, password FROM Usuarios WHERE DNI = @DNI";
-                Usuarios usuario = connection.QueryFirstOrDefault<Usuarios>(query, new { Dni = dni });
+                string query = @"SELECT DNI, nombreComp, ano, especialidad, curso, password 
+                                 FROM Usuarios WHERE DNI = @DNI";
+                Usuarios usuario = connection.QueryFirstOrDefault<Usuarios>(query, new { DNI = dni });
                 return usuario;
             }
         }
+
+        // -------------------- LIBROS --------------------
+
         public static List<Libros> ObtenerLibros()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -91,22 +96,31 @@ namespace Bookly.Models
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT id, nombre, materia, ano, editorial FROM Libros WHERE id = @pId";
+                string query = @"SELECT id, nombre, materia, ano, editorial 
+                                 FROM Libros WHERE id = @pId";
                 return connection.QueryFirstOrDefault<Libros>(query, new { pId = id });
             }
         }
 
+        // -------------------- PUBLICACIONES --------------------
+
         public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion)
         {
+            if (string.IsNullOrEmpty(dniVendedor))
+                throw new Exception("Error: el usuario no está logueado o su DNI es nulo.");
+
+            // Confirmar que el usuario exista en la DB
+            if (!ExisteUsuario(dniVendedor))
+                throw new Exception($"No existe el usuario con DNI {dniVendedor}. Regístrese antes de publicar.");
+
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                estadoLibro = string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro;
-
+                // 1️⃣ Insertar libro
                 string insertLibro = @"INSERT INTO Libros (nombre, materia, ano, editorial)
-                                    VALUES (@nombre, @materia, @ano, @editorial);
-                                    SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                                       VALUES (@nombre, @materia, @ano, @editorial);
+                                       SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 int idLibro = connection.ExecuteScalar<int>(insertLibro, new
                 {
@@ -116,23 +130,59 @@ namespace Bookly.Models
                     editorial = libro.editorial
                 });
 
+                // 2️⃣ Insertar publicación (id = mismo que libro solo si se desea)
                 string insertPublicacion = @"INSERT INTO Publicacion (id, idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion)
-                                            VALUES (@id, @idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion)";
+                                             VALUES (@id, @idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion)";
 
                 connection.Execute(insertPublicacion, new
                 {
-                    id = idLibro,
+                    id = idLibro, // usa mismo id del libro como PK (coherente con tu script)
                     idVendedor = dniVendedor,
                     precio = precio,
                     idLibro = idLibro,
-                    status = 1, 
-                    estadoLibro = estadoLibro,
+                    status = 1,
+                    estadoLibro = string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro,
                     fecha = DateTime.Now,
                     descripcion = descripcion
                 });
             }
         }
 
+        public static void EditarLibro(Libros libro)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"UPDATE Libros 
+                                 SET nombre = @nombre, 
+                                     materia = @materia, 
+                                     ano = @ano, 
+                                     editorial = @editorial
+                                 WHERE id = @id";
+                connection.Execute(query, new
+                {
+                    id = libro.id,
+                    nombre = libro.nombre,
+                    materia = libro.materia,
+                    ano = libro.ano,
+                    editorial = libro.editorial
+                });
+            }
+        }
+
+        public static void EditarPublicacion(int idLibro, decimal precio, string estadoLibro, string descripcion)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"UPDATE Publicacion
+                                 SET precio = @precio,
+                                     estadoLibro = @estadoLibro,
+                                     descripcion = @descripcion
+                                 WHERE idLibro = @idLibro";
+                connection.Execute(query, new { idLibro, precio, estadoLibro, descripcion });
+            }
+        }
 
         public static void EliminarLibro(int id)
         {
@@ -147,53 +197,20 @@ namespace Bookly.Models
                 connection.Execute(deleteLibro, new { pId = id });
             }
         }
-        public static void EditarLibro(Libros libro)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"UPDATE Libros 
-                                SET nombre = @nombre, 
-                                    materia = @materia, 
-                                    ano = @ano, 
-                                    editorial = @editorial
-                                WHERE id = @id";
-                connection.Execute(query, new
-                {
-                    id = libro.id,
-                    nombre = libro.nombre,
-                    materia = libro.materia,
-                    ano = libro.ano,
-                    editorial = libro.editorial
-                });
-            }
-        }
-        public static void EditarPublicacion(int idLibro, decimal precio, string estadoLibro, string descripcion)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"UPDATE Publicacion
-                                SET precio = @precio,
-                                    estadoLibro = @estadoLibro,
-                                    descripcion = @descripcion
-                                WHERE idLibro = @idLibro";
-                connection.Execute(query, new { idLibro, precio, estadoLibro, descripcion });
-            }
-        }
+
         public static List<Libros> ObtenerLibrosPorUsuario(string dni)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 string query = @"SELECT l.id, l.nombre, l.materia, l.ano, l.editorial
-                                FROM Libros l
-                                JOIN Publicacion p ON l.id = p.idLibro
-                                WHERE p.idVendedor = @dni";
-                List<Libros> libros = connection.Query<Libros>(query, new { dni }).ToList();
-                return libros;
+                                 FROM Libros l
+                                 JOIN Publicacion p ON l.id = p.idLibro
+                                 WHERE p.idVendedor = @dni";
+                return connection.Query<Libros>(query, new { dni }).ToList();
             }
         }
+
         public static List<Publicacion> ObtenerPublicacionesPorUsuario(string dni)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -215,7 +232,6 @@ namespace Bookly.Models
 
                 return connection.Query<Publicacion>(query, new { dni }).ToList();
             }
-}
-
+        }
     }
 }
