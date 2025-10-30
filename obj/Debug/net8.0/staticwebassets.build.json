@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "pL5whVDoODJtD+rmY6M3HeCm3ayfzISiokyanNpEZwo=",
+  "Hash": "/MLCMnwBVgDV/cMpmtVQohFcjJLl9v5k6TA2kCncoow=",
   "Source": "Bookly",
   "BasePath": "_content/Bookly",
   "Mode": "Default",
@@ -36,12 +36,12 @@
       "OriginalItemSpec": "wwwroot\\css\\site.css"
     },
     {
-      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\favicon.ico",
+      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\favicon.png",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
-      "RelativePath": "favicon.ico",
+      "RelativePath": "favicon.png",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -52,7 +52,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\favicon.ico"
+      "OriginalItemSpec": "wwwroot\\favicon.png"
     },
     {
       "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\default.jpg",
@@ -72,6 +72,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\img\\default.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\imagenRegistro.png",
+      "SourceId": "Bookly",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\49094257\\Bookly\\wwwroot\\",
+      "BasePath": "_content/Bookly",
+      "RelativePath": "img/imagenRegistro.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\img\\imagenRegistro.png"
     },
     {
       "Identity": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\libroDefault.jpg",

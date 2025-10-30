@@ -74,12 +74,8 @@ namespace Bookly.Controllers
         [HttpPost]
         public IActionResult Edit(Libros libro, decimal precio, string estadoLibro, string descripcion)
         {
-            // 🔹 Actualiza datos del libro
             BD.EditarLibro(libro);
-
-            // 🔹 (Opcional) si querés actualizar también los datos de la publicación
             BD.EditarPublicacion(libro.id, precio, estadoLibro, descripcion);
-
             return RedirectToAction("Profile", "Home");
         }
     }

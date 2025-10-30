@@ -4,30 +4,32 @@
     ViewBag.Title = "Registro";
 }
 
-<section class="register">
-    <img src="img/register_deco" alt="register_deco">
-    <section class="formContainer">
-        <h2>Registrarse</h2>
-        <form asp-action="Register" method="post" autocomplete="off">
+<div class="registerPage">
+    <section class="registerLeft">
+        <div class="registerLogo">
+        </div>
+        <h2 class="registerTitle">Creá tu cuenta gratis</h2>
+        <p class="registerSubtitle">Empezá a intercambiar</p>
+        <img src="/img/register_deco.png" alt="Libros decorativos" class="registerDecoImg">
+    </section>
+    <section class="registerRight">
+        <form asp-action="Register" method="post" autocomplete="off" class="registerForm">
             <div class="campo">
                 <label for="DNI">Ingresá tu DNI</label>
-                <input asp-for="DNI" id="DNI" required autocomplete="off" /><br/>
+                <input asp-for="DNI" id="DNI" placeholder="DNI" required autocomplete="off" />
             </div>
-
             <div class="campo">
                 <label for="nombreComp">Ingresá tu nombre y apellido</label>
-                <input asp-for="nombreComp" id="nombreComp" required autocomplete="off" /><br/>
+                <input asp-for="nombreComp" id="nombreComp" placeholder="Nombre Completo" required autocomplete="off" />
             </div>
-
             <div class="campo">
                 <label for="password">Crea tu contraseña</label>
-                <input asp-for="password" type="password" id="password" required autocomplete="off" />
+                <input asp-for="password" type="password" id="password" placeholder="Contraseña" required autocomplete="off" />
             </div>
-
             <div class="campo">
                 <label for="ano">Ingresá tu año de ciclo</label>
                 <select id="ano" name="ano" required>
-                    <option value="">-- Seleccioná el año --</option>
+                    <option value="">Año</option>
                     <option value="7mo grado">7mo grado</option>
                     <option value="1er año">1er año</option>
                     <option value="2do año">2do año</option>
@@ -36,11 +38,10 @@
                     <option value="5to año">5to año</option>
                 </select>
             </div>
-
             <div class="campo">
-                <label for="especialidad">Especialidad:</label>
+                <label for="especialidad">Ingresá tu especialidad</label>
                 <select id="especialidad" name="especialidad">
-                    <option value="">-- Seleccioná una especialidad --</option>
+                    <option value="">Especialidad</option>
                     <option value="Informatica">Informática</option>
                     <option value="Gestión">Gestión</option>
                     <option value="Producción Artística">Producción Artística</option>
@@ -49,21 +50,18 @@
                     <option value="Construcciones">Construcciones</option>
                 </select>
             </div>
-
             <div class="campo">
-                <label for="curso">Curso:</label>
-                <input asp-for="curso" id="curso" maxlength="1" required autocomplete="off" pattern="[A-Za-z]" style="text-transform: uppercase;" />
+                <label for="curso">Ingresá tu división</label>
+                <input asp-for="curso" id="curso" placeholder="Curso" maxlength="1" required autocomplete="off" pattern="[A-Za-z]" style="text-transform: uppercase;" />
             </div>
-            <button type="submit">Registrarse</button>
+            <button type="submit" class="registerBtn">Registrarse</button>
+            @if (ViewBag.Error != null)
+            {
+                <p style="color:red">@ViewBag.Error</p>
+            }
+            <p class="registerLogin">
+                ¿Ya tenés una cuenta? <a href="@Url.Action("Login", "Usuarios")">Inicia sesión</a>
+            </p>
         </form>
-
-        @if (ViewBag.Error != null)
-        {
-            <p style="color:red">@ViewBag.Error</p>
-        }
-
-        <p>
-            ¿Ya tienes cuenta? <a href="@Url.Action("Login", "Usuarios")">Inicia sesión aquí</a>
-        </p>
     </section>
-</section>
+</div>

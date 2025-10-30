@@ -5,12 +5,16 @@
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
-      "Id": "C:\\Users\\49094257\\Bookly\\wwwroot\\favicon.ico",
-      "PackagePath": "staticwebassets\\favicon.ico"
+      "Id": "C:\\Users\\49094257\\Bookly\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
     },
     {
       "Id": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\default.jpg",
       "PackagePath": "staticwebassets\\img\\default.jpg"
+    },
+    {
+      "Id": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\imagenRegistro.png",
+      "PackagePath": "staticwebassets\\img\\imagenRegistro.png"
     },
     {
       "Id": "C:\\Users\\49094257\\Bookly\\wwwroot\\img\\libroDefault.jpg",

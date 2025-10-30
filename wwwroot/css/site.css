@@ -53,7 +53,22 @@ header{
   height: 135px;
 }
 
+header {
+  height: 100px; /* O el valor que prefieras, por ejemplo 50px */
+  padding: 8px 24px; /* Menos padding arriba y abajo */
+  display: flex;
+  align-items: center;
+}
 
+header img, header .logo {
+  height: 40px; /* Si tienes un logo, achícalo */
+  max-height: 40px;
+}
+
+header h1, header h2, header p {
+  font-size: 1.2rem; /* Si hay textos grandes, achícalos también */
+  margin: 0;
+}
 .logoSvg{
   width: 100px;
   height: 100px;
@@ -85,7 +100,7 @@ header .searchNFilter{
 
 .search input[type = text]{
   width: 100%;
-  height: 40px;
+  height: 35px;
   padding: 10px;
   border-radius: 4px;
   border: none;
@@ -140,8 +155,11 @@ input{
   user-select: none;
 }
 
-
-
+header, .navbar, .navSections {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
 
 .librosContainer{
   display: flex;
@@ -286,4 +304,113 @@ input{
   padding: 10px;
   width: 100%;
 
+}
+
+/* registro chat */
+
+.registerPage {
+  display: flex;
+  min-height: 100vh;
+  background: #f7f9f8;
+}
+.registerLeft {
+  width: 50%;
+  background: #a3e4da;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+}
+.registerLogo {
+  margin-bottom: 40px;
+}
+.registerTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+.registerSubtitle {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 40px;
+}
+.registerDecoImg {
+  width: 70%;
+  /* max-width: 600px; */
+  margin-top: 40px;
+}
+.registerRight {
+  width: 50%;
+  background: #404fa6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* links blancos */
+a, a:visited {
+  color: #fff;
+}
+
+.registerForm {
+  width: 100%;
+  max-width: 400px;
+  background: none;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 40px 20px;
+}
+
+.navbar-registro {
+  background: #fff;
+} 
+.campo label {
+  color: #fff;
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+.campo input, .campo select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 0;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+.campo select {
+  background: #6d7ae7;
+  color: #fff;
+}
+.campo input {
+  background: #fff;
+  color: #404fa6;
+}
+.registerBtn {
+  background: #a3e4da;
+  color: #404fa6;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  padding: 14px 0;
+  margin-top: 10px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: 600;
+}
+.registerLogin {
+  color: #fff;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.registerLogin a {
+  color: #a3e4da;
+  text-decoration: underline;
+  font-weight: bold;
 }
