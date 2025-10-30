@@ -394,7 +394,7 @@ a, a:visited {
   margin-bottom: 2px;
 }
 .campo select {
-  background: var(--secondary2);
+  background: var(--secondary);
   color: var(--light);
 }
 .campo input {

@@ -52,7 +52,7 @@
             </div>
             <div class="campo">
                 <label for="curso">Ingresá tu división</label>
-                <input asp-for="curso" id="curso" placeholder="Curso" maxlength="1" required autocomplete="off" pattern="[A-Za-z]" style="text-transform: uppercase;" />
+                <input asp-for="curso" id="curso" placeholder="Curso" maxlength="1" required autocomplete="off" />
             </div>
             <button type="submit" class="registerBtn">Registrarse</button>
             @if (ViewBag.Error != null)
