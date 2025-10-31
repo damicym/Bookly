@@ -2,11 +2,12 @@
   ViewData["Title"] = "Home";
 }
 
+<h2 class="tituloPublicaciones">Últimas publicaciones</h2>
 <div id="carouselExample" class="carousel slide">
   <div class="carousel-inner">
+    
     <div class="carousel-item active">
         <section class="recommendationsContainer">
-            <h2>Últimas publicaciones</h2>
             <section class="librosContainer">
                 <div class="libro">
                     <div class="libroImgContainer">
@@ -16,11 +17,16 @@
                         </button>
                     </div>
                     <h1>Toldot Israel 3</h1>
+                    <!-- <h1>@ViewBag.NomLibro</h1> -->
                     <h2>$18500</h2>
+                    <!-- <h2>$@ViewBag.Precio</h2> -->
                     <div class="pillContainer">
                         <span class="pill">Sin uso</span>
+                        <!-- <span class="pill">@ViewBag.Estado</span> -->
                         <span class="pill">Historia judía</span>
+                        <!-- <span class="pill">@ViewBag.Materia</span> -->
                         <span class="pill">3er año</span>
+                        <!-- <span class="pill">@ViewBag.AnoLibro</span> -->
                     </div>
                 </div>
                 <div class="libro">

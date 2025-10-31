@@ -155,6 +155,14 @@ header, .navbar, .navSections {
   z-index: 1000;
 }
 
+.tituloPublicaciones{
+  margin: 10px;
+}
+
+.tituloPublicaciones{
+  margin-bottom: 10px;
+}
+
 .librosContainer{
   display: flex;
   gap: 2%;
@@ -388,8 +396,7 @@ button[type="submit"]:active {
   box-shadow: 0 0 8px var(--dark);
 }
 
-
-.mainBtn{
+ .mainBtn{
   background-color: var(--secondary2);
   border: 0;
   border-radius: 8px;
@@ -533,4 +540,9 @@ a, a:visited {
   color: var(--light);
   cursor: pointer;
   margin-left: 1;
+}
+
+.error{
+  color: red;
+  font-size: 1rem;
 }
