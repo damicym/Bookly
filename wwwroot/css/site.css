@@ -1,10 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap');
 
-
 *, *::after, *::before{
   box-sizing: border-box;
 }
-
 
 html{
   --main: #4059AD;
@@ -15,14 +13,12 @@ html{
   --dark: #061A40;
 }
 
-
 html, body{
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
 }
-
 
 body{
   font-family: "Kumbh Sans", sans-serif;
@@ -31,7 +27,6 @@ body{
   font-variation-settings:
     "YOPQ" 300;
 }
-
 
 header button{  
   font-family: "Kumbh Sans", sans-serif;
@@ -50,10 +45,11 @@ header button{
 }
 
 header button:hover {
-  background-color: var(--light);
+  background-color: var(--secondary2);
   color: var(--dark);
+  border-color: var(--secondary2);
+  filter: drop-shadow(0px 0px 10px var(--dark));
 }
-
 
 header{
   background-color: var(--secondary);
@@ -65,7 +61,6 @@ header{
   padding: 8px 24px;
 }
 
-
 header img, header .logo {
   height: 40px;
   max-height: 40px;
@@ -75,25 +70,19 @@ header h1, header h2, header p {
   font-size: 1.2rem;
   margin: 0;
 }
+
 .logoSvg{
   width: 100px;
   height: 100px;
 }
 
-
 header .searchNFilter{
-  /* display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 40%;
-  position: relative; */
   display: grid;
   grid-template-rows: 1fr auto 1fr;
   position: relative;
   width: 40%;
   gap: 10px;
 }
-
 
 .searchNFilter .search{
   align-items: center;
@@ -102,8 +91,6 @@ header .searchNFilter{
   width: 100%;
   grid-row: 2;
 }
-
-
 
 .search input[type = text]{
   width: 100%;
@@ -131,14 +118,12 @@ input{
   align-items: center;
 }
 
-
 .search svg{
   position: absolute;
   right: 10px;
   align-self: center;
   color: var(--dark);
 }
-
 
 .navSections{
   display: flex;
@@ -150,21 +135,19 @@ input{
   color: var(--light);
 }
 
-
 .navSections .profileBtn{
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-
 .navSections p{
   margin: 0;
 }
+
 .header svg{
   user-select: none;
 }
-
 
 header, .navbar, .navSections {
   position: sticky;
@@ -179,7 +162,6 @@ header, .navbar, .navSections {
   align-items: center;
 }
 
-
 .libro{
   background-color: var(--main);
   border: none;
@@ -187,7 +169,6 @@ header, .navbar, .navSections {
   padding: 12px;
   color: var(--light);
   justify-content: center;
-  /* align-items: center; */
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -226,7 +207,6 @@ header, .navbar, .navSections {
   margin: 0;
 }
 
-
 .libro h2{
   font-size: 1.5rem;
   font-weight: 400;
@@ -257,11 +237,13 @@ header, .navbar, .navSections {
   min-width: 100%;
 }
 
+/* FORM SECTION ANTERIOR 
 .formSection{
   background-color: var(--main);
   border-radius: 8px;
   padding: 4%;
   width: 40%;
+  margin-top: 2%;
   justify-self: center;
   display: flex;
   flex-direction: column;
@@ -305,7 +287,107 @@ header, .navbar, .navSections {
 
 .formSection a:hover{
   text-decoration: none;
+} */
+
+.formSection{
+  background-color: var(--main);
+  border-radius: 8px;
+  padding: 4%;
+  width: 40%;
+  margin-top: 2%;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  color: var(--light);
 }
+
+.formSection h2{
+  font-size: 2rem;
+  margin: 0;
+}
+
+.formSection form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.formSection form .campo{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.formSection form .campo input,
+.formSection form .campo select,
+.formSection form .campo textarea {
+  height: 40px;
+  border-radius: 8px;
+  border: 0;
+  padding: 10px;
+  outline: none;
+  font-size: 1rem;
+  background: var(--light);
+  color: var(--dark);
+  transition: all 0.3s ease;
+}
+
+.formSection form .campo textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.formSection form .campo select {
+  background-color: var(--secondary);
+  color: var(--light);
+}
+
+.formSection form .campo input:focus,
+.formSection form .campo select:focus,
+.formSection form .campo textarea:focus {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.formSection a{
+  color: var(--secondary2);
+}
+
+.formSection a:hover{
+  text-decoration: none;
+}
+
+button[type="submit"] {
+  background-color: var(--accent);
+  color: var(--dark);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  padding: 12px 20px;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: var(--secondary2);
+  color: var(--light);
+  filter: drop-shadow(0px 0px 10px var(--dark));
+}
+
+button[type="submit"]:active {
+  background-color: var(--light);
+  color: var(--dark);
+  box-shadow: 0 0 8px var(--dark);
+}
+
 
 .mainBtn{
   background-color: var(--secondary2);
@@ -314,16 +396,21 @@ header, .navbar, .navSections {
   color: var(--dark);
   padding: 10px;
   width: 100%;
-
+  transition: all 0.3s ease;
 }
 
-/* registro chat */
+.mainBtn:hover {
+  background-color: var(--secondary);
+  color: var(--light);
+  filter: drop-shadow(0px 0px 10px var(--dark));
+}
 
 .registerPage {
   display: flex;
   min-height: 100vh;
   background: var(--light);
 }
+
 .registerLeft {
   width: 50%;
   background: var(--secondary2);
@@ -334,9 +421,11 @@ header, .navbar, .navSections {
   padding: 40px;
   position: relative;
 }
+
 .registerLogo {
   margin-bottom: 40px;
 }
+
 .registerTitle {
   font-size: 2rem;
   font-weight: bold;
@@ -344,15 +433,18 @@ header, .navbar, .navSections {
   margin-bottom: 10px;
   margin-top: 0;
 }
+
 .registerSubtitle {
   font-size: 1.2rem;
   text-align: center;
   margin-bottom: 40px;
 }
+
 .registerDecoImg {
   width: 70%;
   margin-top: 40px;
 }
+
 .registerRight {
   width: 50%;
   background: #404fa6;
@@ -361,7 +453,6 @@ header, .navbar, .navSections {
   justify-content: center;
 }
 
-/* links blancos */
 a, a:visited {
   color: var(--light);
 }
@@ -380,11 +471,13 @@ a, a:visited {
 .navbar-registro {
   background: var(--light);
 } 
+
 .campo label {
   color: var(--light);
   margin-bottom: 6px;
   font-size: 1rem;
 }
+
 .campo input, .campo select {
   width: 100%;
   padding: 10px;
@@ -393,14 +486,17 @@ a, a:visited {
   font-size: 1rem;
   margin-bottom: 2px;
 }
+
 .campo select {
   background: var(--secondary);
   color: var(--light);
 }
+
 .campo input {
   background: var(--light);
   color: var(--main);
 }
+
 .registerBtn {
   background: var(--secondary2);
   color: var(--main);
@@ -412,7 +508,15 @@ a, a:visited {
   cursor: pointer;
   width: 100%;
   font-weight: 600;
+  transition: all 0.3s ease;
 }
+
+.registerBtn:hover {
+  background-color: var(--secondary);
+  color: var(--light);
+  filter: drop-shadow(0px 0px 10px var(--dark));
+}
+
 .registerLogin {
   color: var(--light);
   text-align: center;

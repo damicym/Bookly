@@ -3,20 +3,20 @@
 }
 
 <section class="formSection">
-    <h2>Publicar nuevo libro</h2>
+    <h2>Publicar nueva venta</h2>
 
     <form action="@Url.Action("Publicar", "Book")" method="post">
         <div class="campo">
-            <label for="nombre">Nombre del libro</label>
-            <input type="text" id="nombre" name="libro.nombre" placeholder="Toldot Israel 3" required />
+            <label for="nombre">Libro</label>
+            <input type="text" id="nombre" name="libro.nombre" placeholder="Nombre del libro" required />
         </div>
 
-        <div class="campo">
+        <!-- <div class="campo">
             <label for="materia">Materia</label>
             <input type="text" id="materia" name="libro.materia" placeholder="Historia judía" required />
-        </div>
+        </div> -->
 
-        <div class="campo">
+        <!-- <div class="campo">
             <label for="ano">Nivel escolar</label>
             <select id="ano" name="libro.ano" required>
                 <option value="">-- Selecciona un año escolar --</option>
@@ -27,12 +27,12 @@
                 <option value="4to año">4to año</option>
                 <option value="5to año">5to año</option>
             </select>
-        </div>
+        </div> -->
 
-        <div class="campo">
+        <!-- <div class="campo">
             <label for="editorial">Editorial</label>
             <input type="text" id="editorial" name="libro.editorial" placeholder="Editorial ORT" required />
-        </div>
+        </div> -->
 
         <div class="campo">
             <label for="estadoLibro">Estado</label>

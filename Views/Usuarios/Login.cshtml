@@ -7,7 +7,7 @@
 
         @if (ViewBag.Error != null)
         {
-            <div style="color:red;">@ViewBag.Error</div>
+            <p class ="error"> @ViewBag.Error </p>
         }
 
         <form method="post" action="@Url.Action("Login", "Usuarios")">

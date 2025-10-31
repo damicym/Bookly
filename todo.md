@@ -1,5 +1,6 @@
 # Frontend
 - revisar disableds, requireds, errores de login, colores cuando aparece error, outlines
+- en publicar diseñar el boton y separar el form del header y de abajo
 
 # Controllers
 - Al menos una validación de ingreso de datos en el cliente usando JavaScript

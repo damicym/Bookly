@@ -1,4 +1,4 @@
-INSERT INTO libros (nombre, materia, ano, editorial) VALUES
+INSERT INTO Libros (nombre, materia, ano, editorial) VALUES
 ('Toldot 1', 'Historia Judia', '1ero', 'ORT'),
 ('Toldot 2', 'Historia Judia', '2ndo', 'ORT'),
 ('Toldot 3', 'Historia Judia', '3ero', 'ORT'),
