@@ -47,7 +47,6 @@ namespace Bookly.Models
             }
         }
 
-        // ✅ No borra al usuario de la DB
         public static void logout()
         {
             UsuarioLogueado = null;
@@ -106,18 +105,16 @@ namespace Bookly.Models
 
         public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion)
         {
-            if (string.IsNullOrEmpty(dniVendedor))
-                throw new Exception("Error: el usuario no está logueado o su DNI es nulo.");
+            // if (string.IsNullOrEmpty(dniVendedor))
+            //     throw new Exception("Error: el usuario no está logueado o su DNI es nulo.");
 
-            // Confirmar que el usuario exista en la DB
-            if (!ExisteUsuario(dniVendedor))
-                throw new Exception($"No existe el usuario con DNI {dniVendedor}. Regístrese antes de publicar.");
+            // if (!ExisteUsuario(dniVendedor))
+            //     throw new Exception($"No existe el usuario con DNI {dniVendedor}. Regístrese antes de publicar.");
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                // 1️⃣ Insertar libro
                 string insertLibro = @"INSERT INTO Libros (nombre, materia, ano, editorial)
                                        VALUES (@nombre, @materia, @ano, @editorial);
                                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
@@ -130,13 +127,12 @@ namespace Bookly.Models
                     editorial = libro.editorial
                 });
 
-                // 2️⃣ Insertar publicación (id = mismo que libro solo si se desea)
                 string insertPublicacion = @"INSERT INTO Publicacion (id, idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion)
                                              VALUES (@id, @idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion)";
 
                 connection.Execute(insertPublicacion, new
                 {
-                    id = idLibro, // usa mismo id del libro como PK (coherente con tu script)
+                    id = idLibro, 
                     idVendedor = dniVendedor,
                     precio = precio,
                     idLibro = idLibro,

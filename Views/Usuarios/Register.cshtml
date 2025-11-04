@@ -29,7 +29,7 @@
             <div class="campo">
                 <label for="ano">Ingresá tu año de ciclo</label>
                 <select id="ano" name="ano" required>
-                    <option value="">Año</option>
+                    <option value="">Selecciona un año</option>
                     <option value="7mo grado">7mo grado</option>
                     <option value="1er año">1er año</option>
                     <option value="2do año">2do año</option>
@@ -41,7 +41,7 @@
             <div class="campo">
                 <label for="especialidad">Ingresá tu especialidad</label>
                 <select id="especialidad" name="especialidad">
-                    <option value="">Especialidad</option>
+                    <option value="">Selecciona un especialidad</option>
                     <option value="Informatica">Informática</option>
                     <option value="Gestión">Gestión</option>
                     <option value="Producción Artística">Producción Artística</option>
@@ -54,7 +54,7 @@
                 <label for="curso">Ingresá tu división</label>
                 <input asp-for="curso" id="curso" placeholder="Curso" maxlength="1" required autocomplete="off" />
             </div>
-            <button type="submit" class="registerBtn">Registrarse</button>
+            <button type="submit" class="mainBtn">Registrarse</button>
             @if (ViewBag.Error != null)
             {
                 <p style="color:red">@ViewBag.Error</p>

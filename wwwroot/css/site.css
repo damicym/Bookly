@@ -325,16 +325,16 @@ header, .navbar, .navSections {
   height: 100%;
 }
 
-.formSection form .campo{
+.formSection .campo{
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
 
-.formSection form .campo input,
-.formSection form .campo select,
-.formSection form .campo textarea {
+.campo input,
+.campo select,
+.campo textarea {
   height: 40px;
   border-radius: 8px;
   border: 0;
@@ -346,25 +346,20 @@ header, .navbar, .navSections {
   transition: all 0.3s ease;
 }
 
-.formSection form .campo textarea {
+.campo textarea {
   resize: vertical;
   min-height: 100px;
 }
 
-.formSection form .campo select {
-  background-color: var(--secondary);
-  color: var(--light);
-}
-
-.formSection form .campo input:focus,
-.formSection form .campo select:focus,
-.formSection form .campo textarea:focus {
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  /* outline: 2px solid var(--accent); */
+  box-shadow: 0 0 10px var(--secondary2);
 }
 
 .formSection a{
-  color: var(--secondary2);
+  color: var(--secondary2) !important;
 }
 
 .formSection a:hover{
@@ -372,7 +367,7 @@ header, .navbar, .navSections {
 }
 
 button[type="submit"] {
-  background-color: var(--accent);
+  background-color: var(--secondary2);
   color: var(--dark);
   border: none;
   border-radius: 8px;
@@ -385,15 +380,20 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: var(--secondary2);
+  /* background-color: var(--accent);
   color: var(--light);
-  filter: drop-shadow(0px 0px 10px var(--dark));
+  filter: drop-shadow(0px 0px 10px var(--dark)); */
+  background-color: var(--secondary2);
+  filter: brightness(1.03);
+  box-shadow: 0 0 10px var(--secondary2);
 }
 
 button[type="submit"]:active {
-  background-color: var(--light);
+  /* background-color: var(--light);
   color: var(--dark);
-  box-shadow: 0 0 8px var(--dark);
+  box-shadow: 0 0 8px var(--dark); */
+  background-color: var(--secondary2);
+  transform: scale(1.05);
 }
 
  .mainBtn{
@@ -407,14 +407,14 @@ button[type="submit"]:active {
 }
 
 .mainBtn:hover {
-  background-color: var(--secondary);
-  color: var(--light);
-  filter: drop-shadow(0px 0px 10px var(--dark));
+  /* background-color: var(--secondary); */
+  /* color: var(--light); */
+  /* filter: drop-shadow(0px 0px 10px var(--dark)); */
 }
 
 .registerPage {
   display: flex;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   background: var(--light);
 }
 
@@ -427,6 +427,7 @@ button[type="submit"]:active {
   justify-content: center;
   padding: 40px;
   position: relative;
+  height: calc(100vh - 105px); /* 105 siendo px de navbar */
 }
 
 .registerLogo {
@@ -447,17 +448,13 @@ button[type="submit"]:active {
   margin-bottom: 40px;
 }
 
-.registerDecoImg {
-  width: 70%;
-  margin-top: 40px;
-}
-
 .registerRight {
   width: 50%;
   background: #404fa6;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: calc(100vh - 105px); /* 105 siendo px de navbar */
 }
 
 a, a:visited {
@@ -493,35 +490,9 @@ a, a:visited {
   font-size: 1rem;
   margin-bottom: 2px;
 }
-
-.campo select {
-  background: var(--secondary);
-  color: var(--light);
-}
-
 .campo input {
   background: var(--light);
   color: var(--main);
-}
-
-.registerBtn {
-  background: var(--secondary2);
-  color: var(--main);
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  padding: 14px 0;
-  margin-top: 10px;
-  cursor: pointer;
-  width: 100%;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.registerBtn:hover {
-  background-color: var(--secondary);
-  color: var(--light);
-  filter: drop-shadow(0px 0px 10px var(--dark));
 }
 
 .registerLogin {
