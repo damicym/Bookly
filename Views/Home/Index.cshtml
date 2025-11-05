@@ -1,286 +1,32 @@
 ﻿@{
-  ViewData["Title"] = "Home";
+    ViewData["Title"] = "Home";
 }
-
-<div id="carouselExample" class="carousel slide">
-  <div class="carousel-inner">
-    
-    <div class="carousel-item active">
-        <section class="recommendationsContainer">
-        <h2 class="tituloPublicaciones">Últimas publicaciones</h2>
-            <section class="librosContainer">
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <!-- <h1>@ViewBag.NomLibro</h1> -->
-                    <h2>$18500</h2>
-                    <!-- <h2>$@ViewBag.Precio</h2> -->
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <!-- <span class="pill">@ViewBag.Estado</span> -->
-                        <span class="pill">Historia judía</span>
-                        <!-- <span class="pill">@ViewBag.Materia</span> -->
-                        <span class="pill">3er año</span>
-                        <!-- <span class="pill">@ViewBag.AnoLibro</span> -->
-                    </div>
+<h2 class="tituloPublicaciones">Últimas publicaciones</h2>
+<section class="librosContainer">
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var libro in Model)
+        {
+            <div class="libro" style="background:#3a57a6;border-radius:10px;padding:12px 12px 10px 12px;min-width:200px;max-width:230px;display:flex;flex-direction:column;gap:8px;align-items:center;">
+                <div class="libroImgContainer"style="min-height:160px;width:100%;display:flex;justify-content:center;">
+                    <img src="img/sin-foto.jpg" alt="@libro.nombre" style="width:100%;max-width:155px;" />
+                    <div style="height:155px"></div>
                 </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
+                <h1 style="font-size:1.1rem;font-weight:700;text-align:center;color:white;margin:2px 0 0 0;">@libro.nombre</h1>
+                <h2 style="font-size:1rem;color:#caf0fa;text-align:center;margin:0 0 6px 0;">$18500</h2>
+                <div class="pillContainer" style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <span class="pill" style="background:#ade9c0;color:#226242;font-size:.9em;border-radius:6px;padding:4px 12px;">Sin uso</span>
+                    <span class="pill" style="background:#bbedf6;color:#205278;font-size:.9em;border-radius:6px;padding:4px 12px;">@libro.materia</span>
+                    <span class="pill" style="background:#f1f6be;color:#797a36;font-size:.9em;border-radius:6px;padding:4px 12px;">@libro.ano</span>
                 </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-            </section>
-        </section>
-    </div>
-    <div class="carousel-item">
-        <section class="recommendationsContainer">
-            <h2>Últimas publicaciones</h2>
-            <section class="librosContainer">
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-            </section>
-        </section>
-    </div>
-    <div class="carousel-item">
-        <section class="recommendationsContainer">
-            <h2>Últimas publicaciones</h2>
-            <section class="librosContainer">
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-                <div class="libro">
-                    <div class="libroImgContainer">
-                        <img src="img/toldot.jpg" alt="toldot">
-                        <button class="desearBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </div>
-                    <h1>Toldot Israel 3</h1>
-                    <h2>$18500</h2>
-                    <div class="pillContainer">
-                        <span class="pill">Sin uso</span>
-                        <span class="pill">Historia judía</span>
-                        <span class="pill">3er año</span>
-                    </div>
-                </div>
-            </section>
-        </section>
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
-
-
-
+                <button class="desearBtn" style="position:absolute;right:16px;bottom:16px;background:white;border-radius:50%;border:none;padding:7px 7px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="#3a57a6" stroke-width="2" viewBox="0 0 24 24"><path d="M18 7v14l-6-4-6 4V7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4z"/></svg>
+                </button>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No se encontraron libros recomendados para tu especialidad y año.</p>
+    }
+</section>

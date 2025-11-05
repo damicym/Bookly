@@ -229,5 +229,18 @@ namespace Bookly.Models
                 return connection.Query<Publicacion>(query, new { dni }).ToList();
             }
         }
+        public static List<Libros> ObtenerLibrosPorFiltro(int ano, string materia)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT id, nombre, materia, ano, editorial FROM Libros WHERE 1=1";
+                if (ano == null)
+                    query += " AND ano = @ano";
+                if (!string.IsNullOrEmpty(materia))
+                    query += " AND materia = @materia";
+                return connection.Query<Libros>(query, new { ano, materia }).ToList();
+            }
+        }
     }
 }

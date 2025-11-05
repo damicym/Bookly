@@ -4,20 +4,31 @@
     ViewData["Title"] = "Perfil de usuario";
 }
 
-<h1>@ViewBag.usuario.nombreComp</h1>
-<a href="@Url.Action("Publicar", "Book")">Publicar</a>
-<a href="@Url.Action("Logout", "Usuarios")">Cerrar sesión</a>
-
-<section class="personalInfo">
-    <div class="userContainer">
-        <h2>@ViewBag.usuario.nombreComp</h2>
-        <p>@ViewBag.usuario.curso</p>
-        <p>@ViewBag.usuario.especialidad</p>
-    </div>
-
-    <section class="recommendationsContainer mt-5">
-        <h2>Mis publicaciones</h2>
-
+<section class="profileInfo">
+    <section class="profileId">
+        <img src="" alt="pfp">
+        <div>
+            <h1>@ViewBag.usuario.nombreComp</h1>
+            <h2>ViewBag.usuario.aboutMe</h2>
+        </div>
+    </section>
+    <section class="profileStats">
+        <div class="statsPill">
+            <p>@ViewBag.usuario.curso @ViewBag.usuario.especialidad</p>
+            <p>ViewBag.usuario.cantVentasCerradas</p>
+            <p>ViewBag.usuario.cantPublicaciones</p>
+        </div>
+    </section>
+    <button onclick="window.location.href='@Url.Action("Logout", "Usuarios")'">
+Cerrar Sesión</button>
+</section>
+<section class="publicaciones">
+    <h1>Publicaciones</h1>
+    <button onclick="window.location.href='@Url.Action("Publicar", "Book")'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12h6" /><path d="M12 9v6" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" /></svg>
+        Publicar un libro
+    </button>
+    <section class="cardsPublicadas">
         @if (ViewBag.Mensaje != null)
         {
             <p class="text-muted">@ViewBag.Mensaje</p>

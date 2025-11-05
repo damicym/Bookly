@@ -41,7 +41,7 @@ namespace Bookly.Controllers
         {
             if (BD.ExisteUsuario(usuario.DNI))
             {
-                ViewBag.Error = $"No se puede registrar: el usuario con DNI {usuario.DNI} ya tiene una cuenta en bookly.";
+                ViewBag.Error = $"No se puede registrar: el usuario con DNI {usuario.DNI} ya tiene una cuenta en Bookly.";
                 return View(usuario);
             }
             BD.registrarse(usuario);
