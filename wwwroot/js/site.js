@@ -6,7 +6,7 @@ anoSelect.addEventListener('change', () => {
   const valor = parseInt(anoSelect.value);
 
   // Deshabilita si el año es menor a 3 o no es un número
-  const deshabilitado = isNaN(valor) || valor < 3;
+  const deshabilitado = isNaN(valor) || valor < 4;
   especialidadSelect.disabled = deshabilitado;
 
   // Si está habilitado, que sea requerido; si no, quita el atributo

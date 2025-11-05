@@ -48,7 +48,7 @@ header button:hover {
   background-color: var(--secondary2);
   color: var(--dark);
   border-color: var(--secondary2);
-  filter: drop-shadow(0px 0px 10px var(--dark));
+  filter: drop-shadow(0px 0px 5px var(--dark));
 }
 
 header{
@@ -72,8 +72,8 @@ header h1, header h2, header p {
 }
 
 .logoSvg{
-  width: 100px;
-  height: 100px;
+  width: 85px;
+  height: 85px;
 }
 
 header .searchNFilter{
@@ -299,14 +299,14 @@ header, .navbar, .navSections {
 
 .formSection{
   background-color: var(--main);
-  border-radius: 8px;
-  padding: 4%;
+  border-radius: 16px;
+  padding: 40px;
   width: 40%;
   margin-top: 2%;
   justify-self: center;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   align-items: center;
   color: var(--light);
 }
@@ -355,7 +355,7 @@ header, .navbar, .navSections {
 .campo select:focus,
 .campo textarea:focus {
   /* outline: 2px solid var(--accent); */
-  box-shadow: 0 0 10px var(--secondary2);
+  box-shadow: 0 0 5px var(--secondary2);
 }
 
 .formSection a{
@@ -376,7 +376,7 @@ button[type="submit"] {
   width: 100%;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-out;
 }
 
 button[type="submit"]:hover {
@@ -385,7 +385,7 @@ button[type="submit"]:hover {
   filter: drop-shadow(0px 0px 10px var(--dark)); */
   background-color: var(--secondary2);
   filter: brightness(1.03);
-  box-shadow: 0 0 10px var(--secondary2);
+  box-shadow: 0 0 5px var(--secondary2);
 }
 
 button[type="submit"]:active {
@@ -516,4 +516,8 @@ a, a:visited {
 .error{
   color: red;
   font-size: 1rem;
+}
+
+select:disabled{
+  opacity: 0.6;
 }
