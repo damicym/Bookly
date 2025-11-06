@@ -40,16 +40,14 @@ namespace Bookly.Controllers
             List<Libros> resultados;
             if (!string.IsNullOrWhiteSpace(query))
             {
-                resultados = BD.ObtenerLibros()
-                               .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()))
-                               .ToList();
+                resultados = BD.ObtenerLibros().Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower())).ToList();
             }
             else
             {
                 resultados = BD.ObtenerLibros();
             }
             ViewData["Title"] = "Resultados de búsqueda";
-            return View(resultados); // Mapea a Views/Home/Buscar.cshtml
+            return View(resultados); 
         }
     }
 }

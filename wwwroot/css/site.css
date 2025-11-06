@@ -160,6 +160,10 @@ header, .navbar, .navSections {
   z-index: 1000;
 }
 
+.publicarPage{
+  padding: 15px;
+}
+
 .tituloPublicaciones{
   margin: 10px;
 }

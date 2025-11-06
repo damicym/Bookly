@@ -90,6 +90,16 @@ namespace Bookly.Models
             }
         }
 
+        public static List<PublicacionCompleta> ObtenerLibrosMostrablesConTope(int tope = -1)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string queryCompleta = $"SELECT Publicaciones.id, Libros.nombre, Libros.materia, Libros.ano, Libros.editorial, Publicaciones.estadoLibro, Publicaciones.precio, Publicaciones.descripcion FROM Publicaciones INNER JOIN Libros ON Publicaciones.idLibro = Libros.id {(tope != -1 ? $"LIMIT {tope}" : "")}";
+                return connection.Query<PublicacionCompleta>(queryCompleta).ToList();
+            }
+        }
+
         public static Libros ObtenerLibroPorId(int id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
