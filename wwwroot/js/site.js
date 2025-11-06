@@ -23,3 +23,5 @@ anoSelect.addEventListener('change', () => {
     cursoInput.addEventListener('input', () => {
     cursoInput.value = cursoInput.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
     });
+
+

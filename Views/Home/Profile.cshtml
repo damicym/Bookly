@@ -6,21 +6,20 @@
 
 <section class="profileInfo">
     <section class="profileId">
-        <img src="" alt="pfp">
+        <img src="~/images.jfif" alt="pfp">
         <div>
-            <h1>@ViewBag.usuario.nombreComp</h1>
-            <h2>ViewBag.usuario.aboutMe</h2>
+            <h1 class="nombreCompleto">ViewBag.usuario.nombreComp</h1>
+            <h2 class="aboutMe">ViewBag.usuario.aboutMe</h2>
         </div>
     </section>
     <section class="profileStats">
-        <div class="statsPill">
-            <p>@ViewBag.usuario.curso @ViewBag.usuario.especialidad</p>
-            <p>ViewBag.usuario.cantVentasCerradas</p>
-            <p>ViewBag.usuario.cantPublicaciones</p>
-        </div>
+            <p class="statsPill">ViewBag.usuario.ano ViewBag.usuario.curso ViewBag.usuario.especialidad</p>
+            <p class="statsPill">ViewBag.usuario.cantVentasCerradas</p>
+            <p class="statsPill">ViewBag.usuario.cantPublicaciones</p>
     </section>
-    <button onclick="window.location.href='@Url.Action("Logout", "Usuarios")'">
-Cerrar Sesión</button>
+    <button class="logoutBtn" onclick="window.location.href='@Url.Action("Logout", "Usuarios")'">
+        Cerrar Sesión
+    </button>
 </section>
 <section class="publicaciones">
     <h1>Publicaciones</h1>
@@ -38,27 +37,25 @@ Cerrar Sesión</button>
             <div class="row">
                 @foreach (Publicacion pub in Model)
                 {
-                    <div class="col-md-4 mb-4">
-                        <div class="card shadow-sm h-100">
-                            <img src="~/img/libroDefault.jpg" class="card-img-top" alt="@pub.descripcion">
-                            <div class="card-body">
-                                <h5 class="card-title">@pub.descripcion</h5>
-                                <p class="card-text">
-                                    <strong>Estado:</strong> @pub.estadoLibro <br />
-                                    <strong>Precio:</strong> $@pub.precio <br />
-                                    <strong>Fecha:</strong> @pub.fecha.ToShortDateString()
-                                </p>
-                                <div class="d-flex justify-content-between">
-                                 <a asp-controller="Book" asp-action="Edit" asp-route-id="@pub.id" class="btn btn-warning btn-sm">Editar</a>
-                                <form asp-controller="Book" asp-action="Eliminar" asp-route-id="@pub.id" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                                </form>
-                                </div>
-                            </div>
+                    <div class="libro">
+                        <div class="libroImgContainer">
+                            <img src="img/libroDefPlaceholder.png" alt="toldot">
+                            <form class="desearBtn" asp-controller="Book" asp-action="Eliminar" asp-route-id="@pub.id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </div>
+                        <h1>pub.nombre</h1>
+                        <h2>$@pub.precio</h2>
+                        <div class="pillContainer">
+                            <span class="pill">@pub.estadoLibro</span>
+                            <span class="pill">pub.materia</span>
+                            <span class="pill">pub.ano</span>
                         </div>
                     </div>
                 }
             </div>
         }
+        <!-- pub.fecha.ToShortDateString() -->
+        <!-- <a asp-controller="Book" asp-action="Edit" asp-route-id="pub.id" class="btn btn-warning btn-sm">Editar</a> -->
     </section>
 </section>
