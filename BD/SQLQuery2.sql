@@ -1,11 +1,13 @@
+USE [Bookly];
+GO
 INSERT INTO Libros (nombre, materia, ano, editorial) VALUES
 ('Toldot 1', 'Historia Judia', '1ero', 'ORT'),
 ('Toldot 2', 'Historia Judia', '2ndo', 'ORT'),
 ('Toldot 3', 'Historia Judia', '3ero', 'ORT'),
 ('Toldot 4', 'Historia Judia', '4to', 'ORT'),
-('C1 Student�s Book', 'Ingl�s', 'CAE', 'Cambridge'),
-('Biolog�a y Ambiente', 'Biolog�a', '1ero', 'AZ Editora'),
-('Geograf�a Global', 'Geograf�a', '3ero', 'Puerto de Palos'),
-('Introducci�n a la Programaci�n', 'Inform�tica', '2ndo', 'Sigmar'),
-('Educaci�n C�vica Hoy', 'Ciudadan�a', '4to', 'Longseller'),
-('Ingl�s Step by Step', 'Ingl�s', 'First', 'Oxford');
+('C1 Students Book', 'Ingles', 'CAE', 'Cambridge'),
+('Biologia y Ambiente', 'Biologia', '1ero', 'AZ Editora'),
+('Geografia Global', 'Geografia', '3ero', 'Puerto de Palos'),
+('Introduccion a la Programacion', 'Informatica', '2ndo', 'Sigmar'),
+('Educacion Civica Hoy', 'Etica', '4to', 'Longseller'),
+('Ingles Step by Step', 'Ingles', 'First', 'Oxford');

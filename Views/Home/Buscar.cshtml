@@ -1,0 +1,43 @@
+@model List<Bookly.Models.Libros>
+@{
+    ViewData["Title"] = "Resultados de búsqueda";
+}
+
+
+<h2 class="busqueda-titulo">Resultados de búsqueda</h2>
+
+
+
+
+<div class="busqueda-grid-container">
+    <div class="busqueda-grid">
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="no-result">
+                <p>No se encontraron resultados.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var libro in Model)
+            {
+                <div class="libro">
+                    <div class="libroImgContainer">
+                        <img src="/img/libroDefault.jpg" alt="@libro.nombre">
+                        <!-- Si quieres botón Eliminar, puedes mostrar aquí si corresponde -->
+                    </div>
+                    <h1>@libro.nombre</h1>
+                    <h2>@libro.editorial</h2>
+                    <div class="pillContainer">
+                        <span class="pill">@libro.materia</span>
+                        <span class="pill">@libro.ano</span>
+                    </div>
+                    <a href='@Url.Action("Detalle", "Book", new { id = libro.id })' class="busqueda-card-link">Ver detalles</a>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+
