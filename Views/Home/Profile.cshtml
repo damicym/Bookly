@@ -22,11 +22,13 @@
     </button>
 </section>
 <section class="publicaciones">
-    <h1>Publicaciones</h1>
-    <button onclick="window.location.href='@Url.Action("Publicar", "Book")'">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12h6" /><path d="M12 9v6" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" /></svg>
-        Publicar un libro
-    </button>
+    <div class="publicacionesEnProfileTitulo">
+        <h1>Publicaciones</h1>
+        <button class="mainBtn" onclick="window.location.href='@Url.Action("Publicar", "Book")'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12h6" /><path d="M12 9v6" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" /></svg>
+            Publicar un libro
+        </button>
+    </div>
     <section class="cardsPublicadas">
         @if (ViewBag.Mensaje != null)
         {
@@ -39,9 +41,11 @@
                 {
                     <div class="libro">
                         <div class="libroImgContainer">
-                            <img src="img/libroDefPlaceholder.png" alt="toldot">
-                            <form class="desearBtn" asp-controller="Book" asp-action="Eliminar" asp-route-id="@pub.id" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            <img src="~/img/toldot.jpg" alt="toldot">
+                            <form class="desearBtnForm" asp-controller="Book" asp-action="Eliminar" asp-route-id="@pub.id" method="post" style="display:inline;">
+                                <button type="submit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                </button>
                             </form>
                         </div>
                         <h1>pub.nombre</h1>
@@ -57,5 +61,22 @@
         }
         <!-- pub.fecha.ToShortDateString() -->
         <!-- <a asp-controller="Book" asp-action="Edit" asp-route-id="pub.id" class="btn btn-warning btn-sm">Editar</a> -->
+        <div class="libro">
+            <div class="libroImgContainer">
+                <img src="~/img/toldot.jpg" alt="toldot">
+                <form class="desearBtnForm" asp-controller="Book" asp-action="Eliminar" asp-route-id="pub.id" method="post" style="display:inline;">
+                    <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                    </button>
+                </form>
+            </div>
+            <h1>Toldot</h1>
+            <h2>$18599</h2>
+            <div class="pillContainer">
+                <span class="pill">Como nuevo</span>
+                <span class="pill">Historia Judía</span>
+                <span class="pill">4to año</span>
+            </div>
+        </div>
     </section>
 </section>

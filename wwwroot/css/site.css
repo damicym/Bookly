@@ -11,6 +11,7 @@ html{
   --light: #EFF2F1;
   --accent: #F4B942;
   --dark: #061A40;
+  --red: #D7263D;
 }
 
 html, body{
@@ -195,22 +196,43 @@ header, .navbar, .navSections {
   width: 100%;
 }
 
-.libro .libroImgContainer button{
+.desearBtnForm{
   position: absolute;
   right: 5px;
   bottom: 5px;
-  border: 0;
   border-radius: 50%;
-  background-color: var(--light);
-  width: 40px;
-  height: 40px;
+  width: 40px !important;
+  height: 40px !important;
+  transition: all 0.3s;
   filter: drop-shadow(0px 0px 4px var(--dark));
 }
 
-.libro .libroImgContainer button svg{
+.desearBtnForm button{
+  border: 0;
+  background-color: var(--light);
+  width: 40px !important;
+  height: 40px !important;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.desearBtnForm button:hover{
+  background-color: var(--red);
+}
+.desearBtnForm button:hover svg{
+  color: var(--light);
+}
+
+.desearBtnForm button svg{
   width: 100%;
   height: 100%;
   color: var(--dark);
+  fill: none;
+  transition: all 0.3s;
+  stroke-width: 2px;
 }
 
 .libro h1{
@@ -370,7 +392,7 @@ header, .navbar, .navSections {
   text-decoration: none;
 }
 
-button[type="submit"] {
+.mainBtn {
   background-color: var(--secondary2);
   color: var(--dark);
   border: none;
@@ -383,7 +405,7 @@ button[type="submit"] {
   transition: all 0.3s ease-out;
 }
 
-button[type="submit"]:hover {
+.mainBtn:hover {
   /* background-color: var(--accent);
   color: var(--light);
   filter: drop-shadow(0px 0px 10px var(--dark)); */
@@ -392,7 +414,7 @@ button[type="submit"]:hover {
   box-shadow: 0 0 5px var(--secondary2);
 }
 
-button[type="submit"]:active {
+.mainBtn:active {
   /* background-color: var(--light);
   color: var(--dark);
   box-shadow: 0 0 8px var(--dark); */
@@ -669,7 +691,7 @@ select:disabled{
 .profileInfo{
   position: relative;
   /* gap: 10px; */
-  width: 100vw;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -724,5 +746,35 @@ select:disabled{
   border-radius: 13px;
   padding: 8px;
   font-size: 1.2rem;
+}
+
+.publicaciones{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: max-content;
+  gap: 15px;
+}
+.publicacionesEnProfileTitulo{
+  display: flex;
+  gap: 15px;
+}
+.publicacionesEnProfileTitulo h1{
+  font-size: 2.1rem;
+}
+.publicacionesEnProfileTitulo button{
+  font-size: 1.1rem;
+}
+.cardsPublicadas{
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  /* justify-content: center; */
+}
+
+.publicaciones .mainBtn{
+  width: auto;
 }
 /* #endregion profile */
