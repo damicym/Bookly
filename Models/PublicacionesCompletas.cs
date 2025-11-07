@@ -1,5 +1,5 @@
 namespace Bookly.Models;
-public class PublicacionCompleta
+public class PublicacionesCompletas
 {
     public int id { get; set; }
     public string nombre { get; set; }

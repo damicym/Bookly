@@ -182,13 +182,15 @@ header, .navbar, .navSections {
 .libro{
   background-color: var(--main);
   border: none;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 14px;
+  padding: 10px;
   color: var(--light);
-  justify-content: center;
+  /* justify-content: center; */
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
+  width: 300px;
+  height: 500px;
 }
 
 .libroImgContainer{
@@ -196,7 +198,7 @@ header, .navbar, .navSections {
 }
 
 .libro .libroImgContainer img{
-  border-radius: 2px;
+  border-radius: 4px;
   width: 100%;
 }
 
@@ -254,6 +256,7 @@ header, .navbar, .navSections {
 .pillContainer{
   display: flex;
   gap: 5px;
+  margin-top: auto;
 }
 
 .pill{
@@ -264,6 +267,9 @@ header, .navbar, .navSections {
   border-radius: 4px;
   font-size: 0.8rem;
   color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .loginPage{
@@ -617,12 +623,12 @@ select:disabled{
 }
 
 .busqueda-grid-container {
-    max-height: 600px;
-    overflow-y: auto;
-    margin: 20px auto 60px auto;
-    width: 90%;
-    background: transparent;
-    padding: 6px;
+  max-height: 600px;
+  overflow-y: auto;
+  margin: 20px auto 60px auto;
+  width: 90%;
+  background: transparent;
+  padding: 6px;
 }
 
 .busqueda-grid {
@@ -758,6 +764,7 @@ select:disabled{
   width: 100%;
   height: max-content;
   gap: 15px;
+  flex-wrap: wrap;
 }
 .publicacionesEnProfileTitulo{
   display: flex;

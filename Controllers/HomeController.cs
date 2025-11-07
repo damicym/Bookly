@@ -37,14 +37,14 @@ namespace Bookly.Controllers
         [HttpGet]
         public IActionResult Buscar(string query)
         {
-            List<Libros> resultados;
+            List<PublicacionesCompletas> resultados;
             if (!string.IsNullOrWhiteSpace(query))
             {
-                resultados = BD.ObtenerLibros().Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower())).ToList();
+                resultados = BD.ObtenerLibrosMostrablesConTope().Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower())).ToList();
             }
             else
             {
-                resultados = BD.ObtenerLibros();
+                resultados = BD.ObtenerLibrosMostrablesConTope();
             }
             ViewData["Title"] = "Resultados de búsqueda";
             return View(resultados); 
