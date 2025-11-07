@@ -90,15 +90,6 @@ namespace Bookly.Models
             }
         }
 
-        public static List<PublicacionesCompletas> ObtenerLibrosMostrablesConTope(int tope = -1)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string queryCompleta = $"SELECT Publicacion.id, Libros.nombre, Libros.materia, Libros.ano, Libros.editorial, Publicacion.estadoLibro, Publicacion.precio, Publicacion.descripcion FROM Publicacion INNER JOIN Libros ON Publicacion.idLibro = Libros.id {(tope != -1 ? $"LIMIT {tope}" : "")}";
-                return connection.Query<PublicacionesCompletas>(queryCompleta).ToList();
-            }
-        }
 
         public static Libros ObtenerLibroPorId(int id)
         {
@@ -252,5 +243,80 @@ namespace Bookly.Models
                 return connection.Query<Libros>(query, new { ano, materia }).ToList();
             }
         }
+        public static List<PublicacionesCompletas> ObtenerLibrosMostrablesConTope(int tope = -1)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = $@"
+                    SELECT {(tope != -1 ? $"TOP {tope}" : "")}
+                        p.id,
+                        l.nombre,
+                        l.materia,
+                        l.ano,
+                        l.editorial,
+                        p.estadoLibro,
+                        p.precio,
+                        p.descripcion
+                    FROM Publicacion p
+                    INNER JOIN Libros l ON p.idLibro = l.id
+                    WHERE p.status = 1
+                    ORDER BY p.fecha DESC";
+
+                return connection.Query<PublicacionesCompletas>(query).ToList();
+            }
+        }
+        public static List<PublicacionesCompletas> ObtenerRecomendaciones(int ano, string especialidad)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    SELECT 
+                        p.id,
+                        l.nombre,
+                        l.materia,
+                        l.ano,
+                        l.editorial,
+                        p.estadoLibro,
+                        p.precio,
+                        p.descripcion
+                    FROM Publicacion p
+                    INNER JOIN Libros l ON p.idLibro = l.id
+                    WHERE p.status = 1
+                    AND l.ano = @ano
+                    AND (@especialidad IS NULL OR l.materia LIKE '%' + @especialidad + '%')
+                    ORDER BY p.fecha DESC";
+
+                return connection.Query<PublicacionesCompletas>(query, new { ano, especialidad }).ToList();
+            }
+        }
+        public static List<PublicacionesCompletas> ObtenerRecomendacionesPorAno(int ano)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    SELECT 
+                        p.id,
+                        l.nombre,
+                        l.materia,
+                        l.ano,
+                        l.editorial,
+                        p.estadoLibro,
+                        p.precio,
+                        p.descripcion
+                    FROM Publicacion p
+                    INNER JOIN Libros l ON p.idLibro = l.id
+                    WHERE l.ano = @ano
+                    ORDER BY p.fecha DESC";
+
+                return connection.Query<PublicacionesCompletas>(query, new { ano }).ToList();
+            }
+        }
+
     }
 }

@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap');
 
+
 *, *::after, *::before{
   box-sizing: border-box;
 }
+
 
 html{
   --main: #4059AD;
@@ -14,12 +16,14 @@ html{
   --red: #D7263D;
 }
 
+
 html, body{
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
 }
+
 
 body{
   font-family: "Kumbh Sans", sans-serif;
@@ -28,6 +32,7 @@ body{
   font-variation-settings:
     "YOPQ" 300;
 }
+
 
 header button{  
   font-family: "Kumbh Sans", sans-serif;
@@ -45,12 +50,14 @@ header button{
   transition: all 0.3s ease;
 }
 
+
 header button:hover {
   background-color: var(--secondary2);
   color: var(--dark);
   border-color: var(--secondary2);
   filter: drop-shadow(0px 0px 5px var(--dark));
 }
+
 
 header{
   background-color: var(--secondary);
@@ -62,20 +69,24 @@ header{
   padding: 8px 24px;
 }
 
+
 header img, header .logo {
   height: 40px;
   max-height: 40px;
 }
+
 
 header h1, header h2, header p {
   font-size: 1.2rem;
   margin: 0;
 }
 
+
 .logoSvg{
   width: 85px;
   height: 85px;
 }
+
 
 header .searchNFilter{
   display: grid;
@@ -85,6 +96,7 @@ header .searchNFilter{
   gap: 10px;
 }
 
+
 .searchNFilter .search{
   align-items: center;
   position: relative;
@@ -92,6 +104,7 @@ header .searchNFilter{
   width: 100%;
   grid-row: 2;
 }
+
 
 .search input[type = text]{
   width: 100%;
@@ -103,9 +116,11 @@ header .searchNFilter{
   font-size: 1rem !important;
 }
 
+
 input{
   outline: none;
 }
+
 
 .searchNFilter .filter {
   position: absolute;
@@ -119,9 +134,11 @@ input{
   align-items: center;
 }
 
+
 .searchNFilter .filter button{
   font-size: 0.6rem;
 }
+
 
 .search svg{
   position: absolute;
@@ -129,6 +146,7 @@ input{
   align-self: center;
   color: var(--dark);
 }
+
 
 .navSections{
   display: flex;
@@ -140,19 +158,23 @@ input{
   color: var(--light);
 }
 
+
 .navSections .profileBtn{
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
+
 .navSections p{
   margin: 0;
 }
 
+
 .header svg{
   user-select: none;
 }
+
 
 header, .navbar, .navSections {
   position: sticky;
@@ -160,17 +182,21 @@ header, .navbar, .navSections {
   z-index: 1000;
 }
 
+
 .publicarPage{
   padding: 15px;
 }
+
 
 .tituloPublicaciones{
   margin: 10px;
 }
 
+
 .tituloPublicaciones{
   margin-bottom: 10px;
 }
+
 
 .librosContainer{
   display: flex;
@@ -178,6 +204,7 @@ header, .navbar, .navSections {
   justify-content: center;
   align-items: center;
 }
+
 
 .libro{
   background-color: var(--main);
@@ -189,18 +216,22 @@ header, .navbar, .navSections {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 300px;
-  height: 500px;
+  width: 290px;
+  height: 530px;
+  cursor: pointer;
 }
+
 
 .libroImgContainer{
   position: relative;
 }
 
+
 .libro .libroImgContainer img{
   border-radius: 4px;
   width: 100%;
 }
+
 
 .desearBtnForm{
   position: absolute;
@@ -212,6 +243,7 @@ header, .navbar, .navSections {
   transition: all 0.3s;
   filter: drop-shadow(0px 0px 4px var(--dark));
 }
+
 
 .desearBtnForm button{
   border: 0;
@@ -225,12 +257,14 @@ header, .navbar, .navSections {
   border-radius: 50%;
 }
 
+
 .desearBtnForm button:hover{
   background-color: var(--red);
 }
 .desearBtnForm button:hover svg{
   color: var(--light);
 }
+
 
 .desearBtnForm button svg{
   width: 100%;
@@ -241,11 +275,13 @@ header, .navbar, .navSections {
   stroke-width: 2px;
 }
 
+
 .libro h1{
   font-size: 1.8rem;
   font-weight: 400;
   margin: 0;
 }
+
 
 .libro h2{
   font-size: 1.5rem;
@@ -253,11 +289,13 @@ header, .navbar, .navSections {
   margin: 0;
 }
 
+
 .pillContainer{
   display: flex;
   gap: 5px;
   margin-top: auto;
 }
+
 
 .pill{
   margin: 0;
@@ -265,12 +303,13 @@ header, .navbar, .navSections {
   text-align: center;
   background-color: var(--secondary2);
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--dark);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 
 .loginPage{
   display: flex;
@@ -281,7 +320,8 @@ header, .navbar, .navSections {
   min-width: 100%;
 }
 
-/* FORM SECTION ANTERIOR 
+
+/* FORM SECTION ANTERIOR
 .formSection{
   background-color: var(--main);
   border-radius: 8px;
@@ -296,10 +336,12 @@ header, .navbar, .navSections {
   color: var(--light);
 }
 
+
 .formSection h1{
   font-size: 2rem;
   margin: 0;
 }
+
 
 .formSection form{
   display: flex;
@@ -310,12 +352,14 @@ header, .navbar, .navSections {
   height: 100%;
 }
 
+
 .formSection form .campo{
   display: flex;
   flex-direction: column;
   gap: 0;
   width: 100%;
 }
+
 
 .formSection form .campo input{
   height: 40px;
@@ -325,13 +369,16 @@ header, .navbar, .navSections {
   outline: none;
 }
 
+
 .formSection a{
   color: var(--secondary2);
 }
 
+
 .formSection a:hover{
   text-decoration: none;
 } */
+
 
 .formSection{
   background-color: var(--main);
@@ -347,10 +394,12 @@ header, .navbar, .navSections {
   color: var(--light);
 }
 
+
 .formSection h2{
   font-size: 2rem;
   margin: 0;
 }
+
 
 .formSection form{
   display: flex;
@@ -361,12 +410,14 @@ header, .navbar, .navSections {
   height: 100%;
 }
 
+
 .formSection .campo{
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
+
 
 .campo input,
 .campo select,
@@ -382,10 +433,12 @@ header, .navbar, .navSections {
   transition: all 0.3s ease;
 }
 
+
 .campo textarea {
   resize: vertical;
   min-height: 100px;
 }
+
 
 .campo input:focus,
 .campo select:focus,
@@ -394,13 +447,16 @@ header, .navbar, .navSections {
   box-shadow: 0 0 5px var(--secondary2);
 }
 
+
 .formSection a{
   color: var(--secondary2) !important;
 }
 
+
 .formSection a:hover{
   text-decoration: none;
 }
+
 
 .mainBtn {
   background-color: var(--secondary2);
@@ -415,6 +471,7 @@ header, .navbar, .navSections {
   transition: all 0.3s ease-out;
 }
 
+
 .mainBtn:hover {
   /* background-color: var(--accent);
   color: var(--light);
@@ -424,6 +481,7 @@ header, .navbar, .navSections {
   box-shadow: 0 0 5px var(--secondary2);
 }
 
+
 .mainBtn:active {
   /* background-color: var(--light);
   color: var(--dark);
@@ -431,6 +489,7 @@ header, .navbar, .navSections {
   background-color: var(--secondary2);
   transform: scale(1.05);
 }
+
 
  .mainBtn{
   background-color: var(--secondary2);
@@ -442,17 +501,20 @@ header, .navbar, .navSections {
   transition: all 0.3s ease;
 }
 
+
 .mainBtn:hover {
   /* background-color: var(--secondary); */
   /* color: var(--light); */
   /* filter: drop-shadow(0px 0px 10px var(--dark)); */
 }
 
+
 .registerPage {
   display: flex;
   /* min-height: 100vh; */
   background: var(--light);
 }
+
 
 .registerLeft {
   width: 50%;
@@ -466,9 +528,11 @@ header, .navbar, .navSections {
   height: calc(100vh - 105px); /* 105 siendo px de navbar */
 }
 
+
 .registerLogo {
   margin-bottom: 40px;
 }
+
 
 .registerTitle {
   font-size: 2rem;
@@ -478,11 +542,13 @@ header, .navbar, .navSections {
   margin-top: 0;
 }
 
+
 .registerSubtitle {
   font-size: 1.2rem;
   text-align: center;
   margin-bottom: 40px;
 }
+
 
 .registerRight {
   width: 50%;
@@ -493,9 +559,11 @@ header, .navbar, .navSections {
   height: calc(100vh - 105px); /* 105 siendo px de navbar */
 }
 
+
 a, a:visited {
   color: var(--light);
 }
+
 
 .registerForm {
   width: 100%;
@@ -508,15 +576,18 @@ a, a:visited {
   padding: 40px 20px;
 }
 
+
 .navbar-registro {
   background: var(--light);
-} 
+}
+
 
 .campo label {
   color: var(--light);
   margin-bottom: 6px;
   font-size: 1rem;
 }
+
 
 .campo input, .campo select {
   width: 100%;
@@ -531,11 +602,13 @@ a, a:visited {
   color: var(--main);
 }
 
+
 .registerLogin {
   color: var(--light);
   text-align: center;
   margin-top: 16px;
 }
+
 
 .registerLogin a {
   color: var(--secondary2);
@@ -543,35 +616,43 @@ a, a:visited {
   font-weight: bold;
 }
 
+
 .icon-tabler-message{
   color: var(--light);
   cursor: pointer;
   margin-left: 1;
 }
 
+
 .error{
   color: red;
   font-size: 1rem;
 }
 
+
 select:disabled{
   opacity: 0.6;
 }
+
 
 .cls-1, .cls-2 {
   fill: var(--light);
 }
 
+
 .cls-3 {
   letter-spacing: -.01em;
 }
+
 
 .cls-2 {
   font-size: 156.53px;
   font-weight: 300;
 }
 
+
 /* #region buscar */
+
 
 .busqueda-titulo {
     text-align: center;
@@ -581,6 +662,7 @@ select:disabled{
     background: transparent;
 }
 
+
 .busqueda-form {
     display: flex;
     justify-content: center;
@@ -588,6 +670,7 @@ select:disabled{
     gap: 10px;
     align-items: center;
 }
+
 
 .busqueda-input {
     padding: 10px 14px;
@@ -600,11 +683,13 @@ select:disabled{
     transition: box-shadow .18s ease, border-color .18s ease;
 }
 
+
 .busqueda-input:focus {
     outline: none;
     box-shadow: 0 0 6px var(--secondary2);
     border-color: var(--secondary2);
 }
+
 
 .busqueda-boton {
     padding: 9px 22px;
@@ -617,10 +702,12 @@ select:disabled{
     transition: filter .12s ease, box-shadow .12s ease;
 }
 
+
 .busqueda-boton:hover {
     filter: brightness(1.06);
     box-shadow: 0 0 6px var(--secondary2);
 }
+
 
 .busqueda-grid-container {
   max-height: 600px;
@@ -631,15 +718,18 @@ select:disabled{
   padding: 6px;
 }
 
+
 .busqueda-grid {
     display: grid;
     gap: 20px;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+
 .busqueda-item {
     display: flex;
 }
+
 
 .busqueda-card {
     background: var(--main);
@@ -652,10 +742,13 @@ select:disabled{
     box-shadow: 0 2px 8px var(--dark);
 }
 
+
 .busqueda-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 20px var(--secondary2);
 }
+
+
 
 
 .busqueda-card-body {
@@ -666,6 +759,7 @@ select:disabled{
     color: var(--dark);
 }
 
+
 /* Título y texto */
 .busqueda-card-title {
     font-size: 1.1rem;
@@ -673,11 +767,13 @@ select:disabled{
     color: var(--dark);
 }
 
+
 .busqueda-card-text {
     color: var(--secondary2);
     font-size: 0.95rem;
     margin: 0;
 }
+
 
 .busqueda-card-link {
     margin-top: 8px;
@@ -686,6 +782,7 @@ select:disabled{
     font-weight: 600;
 }
 
+
 .no-result {
     grid-column: 1 / -1;
     text-align: center;
@@ -693,6 +790,7 @@ select:disabled{
     color: var(--secondary2);
     font-size: 1.05rem;
 }
+
 
 /* #region profile */
 .publicaciones, .profileInfo{
@@ -709,15 +807,18 @@ select:disabled{
   margin: 0;
 }
 
+
 .profileId, .profileStats{
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
+
 .profileId{
   gap: 25px;
 }
+
 
 .profileId div{
   display: flex;
@@ -738,17 +839,20 @@ select:disabled{
   gap: 35px;
 }
 
+
 .profileInfo img{
   width: 300px;
   height: 300px;
   border-radius: 100%;
 }
 
+
 .logoutBtn{
   position: absolute;
   top: 10px;
   right: 10px;
 }
+
 
 .profileStats .statsPill{
   background-color: var(--main);
@@ -758,13 +862,13 @@ select:disabled{
   font-size: 1.2rem;
 }
 
+
 .publicaciones{
   display: flex;
   flex-direction: column;
   width: 100%;
   height: max-content;
   gap: 15px;
-  flex-wrap: wrap;
 }
 .publicacionesEnProfileTitulo{
   display: flex;
@@ -778,14 +882,17 @@ select:disabled{
 }
 .cardsPublicadas{
   display: flex;
-  gap: 10px;
+  gap: 15px;
   width: 100%;
   height: 100%;
   align-items: center;
+  flex-wrap: wrap;
   /* justify-content: center; */
 }
+
 
 .publicaciones .mainBtn{
   width: auto;
 }
 /* #endregion profile */
+

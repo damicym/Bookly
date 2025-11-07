@@ -16,8 +16,35 @@ namespace Bookly.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            List<PublicacionesCompletas> publicaciones;
+
+            if (BD.UsuarioLogueado != null)
+            {
+                int anoUsuario = BD.UsuarioLogueado.ano;
+                publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario);
+
+                string textoAno = "";
+                switch (anoUsuario)
+                {
+                    case 1: textoAno = "7mo grado"; break;
+                    case 2: textoAno = "1er año"; break;
+                    case 3: textoAno = "2do año"; break;
+                    case 4: textoAno = "3er año"; break;
+                    case 5: textoAno = "4to año"; break;
+                    case 6: textoAno = "5to año"; break;
+                }
+
+                ViewBag.Titulo = $"Recomendaciones para {textoAno}";
+            }
+            else
+            {
+                publicaciones = BD.ObtenerLibrosMostrablesConTope(10);
+                ViewBag.Titulo = "Últimas publicaciones";
+            }
+
+            return View(publicaciones);
         }
+
 
         public IActionResult Profile()
         {
@@ -40,14 +67,16 @@ namespace Bookly.Controllers
             List<PublicacionesCompletas> resultados;
             if (!string.IsNullOrWhiteSpace(query))
             {
-                resultados = BD.ObtenerLibrosMostrablesConTope().Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower())).ToList();
+                resultados = BD.ObtenerLibrosMostrablesConTope()
+                    .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()))
+                    .ToList();
             }
             else
             {
                 resultados = BD.ObtenerLibrosMostrablesConTope();
             }
             ViewData["Title"] = "Resultados de búsqueda";
-            return View(resultados); 
+            return View(resultados);
         }
     }
 }
