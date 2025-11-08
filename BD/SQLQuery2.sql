@@ -13,5 +13,3 @@ INSERT INTO Libros (nombre, materia, ano, editorial) VALUES
 ('Educacion Civica Hoy', 'Etica', '5', 'Longseller'),
 ('Ingles Step by Step', 'Ingles', '2', 'Oxford');
 
-SELECT DISTINCT ano FROM Libros;
-DELETE FROM Libros;

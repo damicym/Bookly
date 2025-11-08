@@ -106,19 +106,14 @@ namespace Bookly.Models
 
         public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion)
         {
-            // if (string.IsNullOrEmpty(dniVendedor))
-            //     throw new Exception("Error: el usuario no está logueado o su DNI es nulo.");
-
-            // if (!ExisteUsuario(dniVendedor))
-            //     throw new Exception($"No existe el usuario con DNI {dniVendedor}. Regístrese antes de publicar.");
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string insertLibro = @"INSERT INTO Libros (nombre, materia, ano, editorial)
-                                       VALUES (@nombre, @materia, @ano, @editorial);
-                                       SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                string insertLibro = @"
+                    INSERT INTO Libros (nombre, materia, ano, editorial)
+                    VALUES (@nombre, @materia, @ano, @editorial);
+                    SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 int idLibro = connection.ExecuteScalar<int>(insertLibro, new
                 {
@@ -128,22 +123,24 @@ namespace Bookly.Models
                     editorial = libro.editorial
                 });
 
-                string insertPublicacion = @"INSERT INTO Publicacion (id, idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion)
-                                             VALUES (@id, @idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion)";
+                string insertPublicacion = @"
+                    INSERT INTO Publicacion 
+                    (idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion)
+                    VALUES (@idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion);";
 
                 connection.Execute(insertPublicacion, new
                 {
-                    id = idLibro, 
                     idVendedor = dniVendedor,
                     precio = precio,
                     idLibro = idLibro,
-                    status = 1,
+                    status = 1, // Por ejemplo, 1 = activo
                     estadoLibro = string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro,
                     fecha = DateTime.Now,
                     descripcion = descripcion
                 });
             }
         }
+
 
         public static void EditarLibro(Libros libro)
         {
@@ -315,6 +312,30 @@ namespace Bookly.Models
                     ORDER BY p.fecha DESC";
 
                 return connection.Query<PublicacionesCompletas>(query, new { ano }).ToList();
+            }
+        }
+        public static List<PublicacionesCompletas> ObtenerPublicacionesCompletasPorUsuario(string dni)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    SELECT 
+                        p.id,
+                        l.nombre,
+                        l.materia,
+                        l.ano,
+                        l.editorial,
+                        p.estadoLibro,
+                        p.precio,
+                        p.descripcion
+                    FROM Publicacion p
+                    INNER JOIN Libros l ON p.idLibro = l.id
+                    WHERE p.idVendedor = @dni
+                    ORDER BY p.fecha DESC";
+
+                return connection.Query<PublicacionesCompletas>(query, new { dni }).ToList();
             }
         }
 

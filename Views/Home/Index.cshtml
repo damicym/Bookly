@@ -8,9 +8,10 @@
 <h2 class="tituloPublicaciones">@ViewBag.Titulo</h2>
 
 <section class="librosContainer">
+<section class="cardsPublicadas">
     @if (Model != null || Model.Count > 0)
     {
-        foreach (var libro in Model)
+        foreach (PublicacionesCompletas libro in Model)
         {
             <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
                 <div class="libroImgContainer">
@@ -35,6 +36,7 @@
     {
         <p>No se encontraron libros recomendados para tu especialidad y año.</p>
     }
+</section>
 </section>
 
 

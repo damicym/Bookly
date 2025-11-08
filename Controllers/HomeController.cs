@@ -3,6 +3,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Bookly.Models;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Bookly.Helpers;
 
 namespace Bookly.Controllers
 {
@@ -23,18 +25,7 @@ namespace Bookly.Controllers
                 int anoUsuario = BD.UsuarioLogueado.ano;
                 publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario);
 
-                string textoAno = "";
-                switch (anoUsuario)
-                {
-                    case 1: textoAno = "7mo grado"; break;
-                    case 2: textoAno = "1er año"; break;
-                    case 3: textoAno = "2do año"; break;
-                    case 4: textoAno = "3er año"; break;
-                    case 5: textoAno = "4to año"; break;
-                    case 6: textoAno = "5to año"; break;
-                }
-
-                ViewBag.Titulo = $"Recomendaciones para {textoAno}";
+                ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATexto(anoUsuario)} año";
             }
             else
             {
@@ -52,7 +43,7 @@ namespace Bookly.Controllers
             if (usuario == null)
                 return RedirectToAction("Login", "Usuarios");
             ViewBag.usuario = usuario;
-            List<Publicacion> publicaciones = BD.ObtenerPublicacionesPorUsuario(usuario.DNI);
+            List<PublicacionesCompletas> publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(usuario.DNI);
             return View(publicaciones);
         }
 

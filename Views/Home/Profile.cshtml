@@ -1,4 +1,5 @@
-@model List<Bookly.Models.Publicacion>
+@model List<Bookly.Models.PublicacionesCompletas>
+@using Bookly.Helpers
 
 @{
     ViewData["Title"] = "Perfil de usuario";
@@ -8,12 +9,12 @@
     <section class="profileId">
         <img src="~/images.jfif" alt="pfp">
         <div>
-            <h1 class="nombreCompleto">ViewBag.usuario.nombreComp</h1>
-            <h2 class="aboutMe">ViewBag.usuario.aboutMe</h2>
+            <h1 class="nombreCompleto">@ViewBag.usuario.nombreComp</h1>
+            <h2 class="aboutMe">@ViewBag.usuario.aboutMe</h2>
         </div>
     </section>
     <section class="profileStats">
-            <p class="statsPill">ViewBag.usuario.ano ViewBag.usuario.curso ViewBag.usuario.especialidad</p>
+            <p class="statsPill">@ViewBag.usuario.ano @ViewBag.usuario.curso @ViewBag.usuario.especialidad</p>
             <p class="statsPill">ViewBag.usuario.cantVentasCerradas</p>
             <p class="statsPill">ViewBag.usuario.cantPublicaciones</p>
     </section>
@@ -30,33 +31,43 @@
         </button>
     </div>
     <section class="cardsPublicadas">
-        @if (ViewBag.Mensaje != null)
+        @if (Model == null || Model.Count == 0)
         {
-            <p class="text-muted">@ViewBag.Mensaje</p>
+            <div class="no-result">
+                <p>Este usuario aún no tiene publicaciones.</p>
+            </div>
         }
         else
         {
-                @foreach (Publicacion pub in Model)
-                {
-                    <div class="libro">
-                        <div class="libroImgContainer">
-                            <img src="~/img/toldot.jpg" alt="toldot">
-                            <form class="desearBtnForm" asp-controller="Book" asp-action="Eliminar" asp-route-id="@pub.id" method="post" style="display:inline;">
-                                <button type="submit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                                </button>
-                            </form>
-                        </div>
-                        <h1>pub.nombre</h1>
-                        <h2>$@pub.precio</h2>
-                        <div class="pillContainer">
-                            <span class="pill">@pub.estadoLibro</span>
-                            <span class="pill">pub.materia</span>
-                            <span class="pill">pub.ano</span>
-                        </div>
+            foreach (PublicacionesCompletas libro in Model)
+            {
+                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
+                    <div class="libroImgContainer">
+                        <img src="~/img/book-placeholder.webp" alt="imagen del libro">
+                        <form class="desearBtnForm" asp-controller="Book" asp-action="Eliminar" asp-route-id="@libro.id" method="post" style="display:inline;">
+                            <button type="submit" title="Eliminar publicación">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M4 7l16 0" />
+                                    <path d="M10 11l0 6" />
+                                    <path d="M14 11l0 6" />
+                                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                </svg>
+                            </button>
+                        </form>
                     </div>
-                }
+                    <h1>@libro.nombre</h1>
+                    <h2>$@libro.precio</h2>
+                    <div class="pillContainer">
+                        <span class="pill">@libro.estadoLibro</span>
+                        <span class="pill">@libro.materia</span>
+                        <span class="pill">@HtmlHelpers.PasarAñoATexto(int.Parse(libro.ano))</span>
+                    </div>
+                </div>
+            }
         }
+    @* </section>
         <!-- pub.fecha.ToShortDateString() -->
         <!-- <a asp-controller="Book" asp-action="Edit" asp-route-id="pub.id" class="btn btn-warning btn-sm">Editar</a> -->
         <div class="libro">
@@ -76,5 +87,5 @@
                 <span class="pill">4to año</span>
             </div>
         </div>
-    </section>
+    </section> *@
 </section>
