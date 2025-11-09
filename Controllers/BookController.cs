@@ -43,7 +43,7 @@ namespace Bookly.Controllers
         [HttpGet]
         public IActionResult Detalle(int id)
         {
-            Libros libro = BD.ObtenerLibroPorId(id);
+            PublicacionesCompletas libro = BD.ObtenerPublicacionCompletaPorId(id);
             if (libro == null)
             {
                 return RedirectToAction("Index", "Home");

@@ -1,4 +1,5 @@
 @model List<Bookly.Models.PublicacionesCompletas>
+@using Bookly.Helpers
 @{
     ViewData["Title"] = "Resultados de búsqueda";
 }
@@ -33,7 +34,7 @@
                         <div class="pillContainer">
                             <span class="pill">@libro.estadoLibro</span>
                             <span class="pill">@libro.materia</span>
-                            <span class="pill">@libro.ano</span>
+                            <span class="pill">@HtmlHelpers.PasarAñoATexto(int.Parse(libro.ano))</span>
                         </div>
                 </div>
             }

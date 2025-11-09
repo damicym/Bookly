@@ -22,6 +22,13 @@ anoSelect.addEventListener('change', () => {
 
 
 //Solo letras en curso
+const inputCurso = document.getElementById("curso");
+
+inputCurso.addEventListener("input", function () {
+    this.value = this.value.replace(/[^a-zA-Z]/g, '');
+    this.value = this.value.toUpperCase();
+});
+
 (function () {
   const searchUrl = '@Url.Action("Buscar", "Home")'; // <-- Cambiado a Home
 

@@ -338,6 +338,28 @@ namespace Bookly.Models
                 return connection.Query<PublicacionesCompletas>(query, new { dni }).ToList();
             }
         }
+        public static PublicacionesCompletas ObtenerPublicacionCompletaPorId(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+                    SELECT 
+                        p.id,
+                        l.nombre,
+                        l.materia,
+                        l.ano,
+                        l.editorial,
+                        p.estadoLibro,
+                        p.precio,
+                        p.descripcion
+                    FROM Publicacion p
+                    INNER JOIN Libros l ON p.idLibro = l.id
+                    WHERE p.id = @pId";
+
+                return connection.QueryFirstOrDefault<PublicacionesCompletas>(query, new { pId = id });
+            }
+        }
 
     }
 }

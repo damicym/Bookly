@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "aAiGUDnideJUxVLLEkeViywOXZNEdgKuaTbYdnk9BL8=",
+  "Hash": "dlMhPeW3LKl220GyoBVC1GGDse+2DOoOKvuOd9hNusM=",
   "Source": "Bookly",
   "BasePath": "_content/Bookly",
   "Mode": "Default",
@@ -199,8 +199,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "jsrqu3d6l1",
-      "Integrity": "Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k=",
+      "Fingerprint": "i7p9ednwux",
+      "Integrity": "Iobz+aA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\site.js"
@@ -1116,6 +1116,51 @@
       ]
     },
     {
+      "Route": "js/site.i7p9ednwux.js",
+      "AssetFile": "C:\\Users\\Usuario\\Bookly\\wwwroot\\js\\site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1857"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Iobz+aA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 09 Nov 2025 22:20:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "i7p9ednwux"
+        },
+        {
+          "Name": "label",
+          "Value": "js/site.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Iobz+aA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI="
+        }
+      ]
+    },
+    {
       "Route": "js/site.js",
       "AssetFile": "C:\\Users\\Usuario\\Bookly\\wwwroot\\js\\site.js",
       "Selectors": [],
@@ -1126,7 +1171,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1642"
+          "Value": "1857"
         },
         {
           "Name": "Content-Type",
@@ -1134,11 +1179,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k=\""
+          "Value": "\"Iobz+aA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 08 Nov 2025 15:51:46 GMT"
+          "Value": "Sun, 09 Nov 2025 22:20:49 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1148,52 +1193,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k="
-        }
-      ]
-    },
-    {
-      "Route": "js/site.jsrqu3d6l1.js",
-      "AssetFile": "C:\\Users\\Usuario\\Bookly\\wwwroot\\js\\site.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1642"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 08 Nov 2025 15:51:46 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "jsrqu3d6l1"
-        },
-        {
-          "Name": "label",
-          "Value": "js/site.js"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k="
+          "Value": "sha256-Iobz+aA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI="
         }
       ]
     },

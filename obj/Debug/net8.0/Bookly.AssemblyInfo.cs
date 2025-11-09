@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Bookly")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+64b8a965cdb3ade566769ca08d03987ab6c0a02f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f4fc2db859c321a22b0a1f70a8a5ba1d1ebd73f2")]
 [assembly: System.Reflection.AssemblyProductAttribute("Bookly")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Bookly")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

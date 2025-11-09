@@ -96,17 +96,17 @@
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"ow7rifqxnx"},{"Name":"integrity","Value":"sha256-yC7ZVoj477IG03JboTgA9lzibMpJL8nn048h\u002BuJJYmc="},{"Name":"label","Value":"_content/Bookly/img/toldot.jpg"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"10816"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022yC7ZVoj477IG03JboTgA9lzibMpJL8nn048h\u002BuJJYmc=\u0022"},{"Name":"Last-Modified","Value":"Sat, 08 Nov 2025 15:51:46 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/Bookly/js/site.i7p9ednwux.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"i7p9ednwux"},{"Name":"integrity","Value":"sha256-Iobz\u002BaA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI="},{"Name":"label","Value":"_content/Bookly/js/site.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1857"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022Iobz\u002BaA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 09 Nov 2025 22:20:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/Bookly/js/site.js">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k="}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1642"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k=\u0022"},{"Name":"Last-Modified","Value":"Sat, 08 Nov 2025 15:51:46 GMT"}]]]></ResponseHeaders>
-    </StaticWebAssetEndpoint>
-    <StaticWebAssetEndpoint Include="_content/Bookly/js/site.jsrqu3d6l1.js">
-      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>
-      <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"jsrqu3d6l1"},{"Name":"integrity","Value":"sha256-Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k="},{"Name":"label","Value":"_content/Bookly/js/site.js"}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1642"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022Mymm5ZpDVkVWxZxP3AVI7tHOYL9DZKpYKQz5g3qEK9k=\u0022"},{"Name":"Last-Modified","Value":"Sat, 08 Nov 2025 15:51:46 GMT"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Iobz\u002BaA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1857"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022Iobz\u002BaA9HDjs1Zf837tQ8PepZrQ6ObpdZcjI4NtQpuI=\u0022"},{"Name":"Last-Modified","Value":"Sun, 09 Nov 2025 22:20:49 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/Bookly/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.03hjc8e09r.js">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js'))</AssetFile>
