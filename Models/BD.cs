@@ -181,12 +181,13 @@ namespace Bookly.Models
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
+                string deleteLibro = "DELETE FROM Libros WHERE id = @pId";
+                connection.Execute(deleteLibro, new { pId = id });
 
                 string deletePublicacion = "DELETE FROM Publicacion WHERE idLibro = @pId";
                 connection.Execute(deletePublicacion, new { pId = id });
 
-                string deleteLibro = "DELETE FROM Libros WHERE id = @pId";
-                connection.Execute(deleteLibro, new { pId = id });
+          
             }
         }
 
@@ -330,6 +331,7 @@ namespace Bookly.Models
                 string query = @"
                     SELECT 
                         p.id,
+                        p.idLibro,
                         l.nombre,
                         l.materia,
                         l.ano,
@@ -356,6 +358,7 @@ namespace Bookly.Models
                 string query = @"
                     SELECT 
                         p.id,
+                        p.idLibro,
                         l.nombre,
                         l.materia,
                         l.ano,
@@ -371,6 +374,23 @@ namespace Bookly.Models
                     WHERE p.id = @pId";
 
                 return connection.QueryFirstOrDefault<PublicacionesCompletas>(query, new { pId = id });
+            }
+        }
+        public static void EliminarPublicacion(int idPublicacion)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                
+                int idLibro = connection.ExecuteScalar<int>("SELECT idLibro FROM Publicacion WHERE id = @id", new { id = idPublicacion });
+
+                connection.Execute("DELETE FROM Publicacion WHERE id = @id", new { id = idPublicacion });
+
+                int count = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Publicacion WHERE idLibro = @idLibro", new { idLibro });
+                if (count == 0)
+                {
+                    connection.Execute("DELETE FROM Libros WHERE id = @idLibro", new { idLibro });
+                }
             }
         }
 

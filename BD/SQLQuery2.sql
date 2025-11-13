@@ -24,19 +24,22 @@ GO
 EXEC sp_MSforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL";
 GO
 
+-- 📚 Insertar libros (asumiendo que el campo 'ano' es INT)
 INSERT INTO Libros (nombre, materia, ano, editorial) VALUES
-('Ciencias Naturales 7', 'Ciencias Naturales', '1', 'Kapelusz'),
-('Toldot 1', 'Historia Judia', '2', 'ORT'),
-('Toldot 2', 'Historia Judia', '3', 'ORT'),
-('Toldot 3', 'Historia Judia', '4', 'ORT'),
-('Toldot 4', 'Historia Judia', '5', 'ORT'),
-('C1 Students Book', 'Ingles', '6', 'Cambridge'),
-('Biologia y Ambiente', 'Biologia', '2', 'AZ Editora'),
-('Geografia Global', 'Geografia', '4', 'Puerto de Palos'),
-('Introduccion a la Programacion', 'Informatica', '3', 'Sigmar'),
-('Educacion Civica Hoy', 'Etica', '5', 'Longseller'),
-('Ingles Step by Step', 'Ingles', '2', 'Oxford');
+('Ciencias Naturales 7', 'Ciencias Naturales', 1, 'Kapelusz'),
+('Toldot 1', 'Historia Judia', 2, 'ORT'),
+('Toldot 2', 'Historia Judia', 3, 'ORT'),
+('Toldot 3', 'Historia Judia', 4, 'ORT'),
+('Toldot 4', 'Historia Judia', 5, 'ORT'),
+('C1 Students Book', 'Ingles', 6, 'Cambridge'),
+('Biologia y Ambiente', 'Biologia', 2, 'AZ Editora'),
+('Geografia Global', 'Geografia', 4, 'Puerto de Palos'),
+('Introduccion a la Programacion', 'Informatica', 3, 'Sigmar'),
+('Educacion Civica Hoy', 'Etica', 5, 'Longseller'),
+('Ingles Step by Step', 'Ingles', 2, 'Oxford');
+GO
 
+-- 👤 Insertar usuarios (asumiendo que el campo 'ano' es INT y 'aboutMe' permite NULL, si no, completa todas las columnas NOT NULL)
 INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, curso, password, aboutMe) VALUES
 ('45000111', 'Ana Pérez', 1, 'Ciencias Naturales', 'A', 'ana123', 'Estudiante de primer año, amante de la biología.'),
 ('45000222', 'Bruno Gómez', 2, 'Inglés', 'B', 'bruno123', 'Apasionado por los idiomas y la lectura.'),
@@ -48,7 +51,9 @@ INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, curso, password, about
 ('45000888', 'Hernán Castro', 4, 'Historia Judía', 'C', 'hernan123', 'Apasionado por la historia y las tradiciones.'),
 ('45000999', 'Ivana Martínez', 5, 'Inglés', 'D', 'ivana123', 'Me encantan los libros en inglés y la traducción.'),
 ('45001010', 'Julián Rodríguez', 6, 'Informática', 'E', 'julian123', 'Desarrollador junior y fan del aprendizaje.');
+GO
 
+-- 📝 Insertar publicaciones (revisado: fechas al formato datetime estándar)
 INSERT INTO Publicacion (idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion) VALUES
 ('45000111', 4800, 1, 1, 'Pocas anotaciones', '2025-10-01', 'Libro de Ciencias Naturales con pocas marcas.'),
 ('45000111', 5200, 7, 1, 'Como nuevo', '2025-09-25', 'Perfecto estado, casi sin uso.'),
@@ -80,3 +85,4 @@ INSERT INTO Publicacion (idVendedor, precio, idLibro, status, estadoLibro, fecha
 ('45000555', 2700, 3, 1, 'Muy usado', '2025-06-25', 'Cubierta deteriorada, páginas completas.'),
 ('45000666', 4500, 10, 1, 'Como nuevo', '2025-05-10', 'Edición reciente, sin marcas.'),
 ('45000777', 3300, 8, 1, 'Pocas anotaciones', '2025-04-30', 'Buen estado general, con mapas.');
+GO

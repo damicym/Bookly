@@ -2,6 +2,7 @@ namespace Bookly.Models;
 public class PublicacionesCompletas
 {
     public int id { get; set; }
+    public int idLibro { get; set; }
     public string nombre { get; set; }
     public string materia { get; set; }
     public string ano { get; set; }

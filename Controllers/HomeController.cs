@@ -37,17 +37,18 @@ namespace Bookly.Controllers
             return View(publicaciones);
         }
 
-
         public IActionResult Profile()
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
+            {
                 return RedirectToAction("Login", "Usuarios");
+            }
             ViewBag.usuario = user;
-            List<PublicacionesCompletas> publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI);
+
+            var publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI);
             return View(publicaciones);
         }
-
         public IActionResult Mensajes()
         {
             return View();

@@ -55,7 +55,7 @@ namespace Bookly.Controllers
         [HttpPost]
         public IActionResult Eliminar(int id)
         {
-            BD.EliminarLibro(id);
+            BD.EliminarPublicacion(id);
             return RedirectToAction("Profile", "Home");
         }
 
