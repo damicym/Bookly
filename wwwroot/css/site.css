@@ -5,6 +5,7 @@
   box-sizing: border-box;
 }
 
+
 html {
   --main: #4059AD;
   --secondary: #6B9AC4;
@@ -15,6 +16,7 @@ html {
   --red: #D7263D;
 }
 
+
 html,
 body {
   margin: 0;
@@ -23,6 +25,7 @@ body {
   width: 100%;
 }
 
+
 body {
   font-family: "Kumbh Sans", sans-serif;
   font-optical-sizing: auto;
@@ -30,6 +33,7 @@ body {
   font-variation-settings:
     "YOPQ" 300;
 }
+
 
 header button {
   font-family: "Kumbh Sans", sans-serif;
@@ -47,6 +51,7 @@ header button {
   transition: all 0.3s ease;
 }
 
+
 header {
   background-color: var(--secondary);
   display: flex;
@@ -60,11 +65,17 @@ header {
 
 
 
+
+
+
+
 header img,
 header .logo {
   height: 40px;
   max-height: 40px;
 }
+
+
 
 
 header h1,
@@ -77,10 +88,18 @@ header p {
 
 
 
+
+
+
+
 .logoSvg {
   width: 85px;
   height: 85px;
 }
+
+
+
+
 
 
 
@@ -97,6 +116,10 @@ header .searchNFilter {
 
 
 
+
+
+
+
 .searchNFilter .search {
   align-items: center;
   position: relative;
@@ -105,6 +128,8 @@ header .searchNFilter {
   height: 25px;
   grid-row: 2;
 }
+
+
 
 
 .search-icon {
@@ -116,6 +141,8 @@ header .searchNFilter {
   top: 5px;
   position: absolute;
 }
+
+
 
 
 .search input[type=text] {
@@ -130,6 +157,11 @@ header .searchNFilter {
 }
 
 
+input[type=text]{
+  color: var(--dark);
+}
+
+
 .busqueda-input:focus {
   outline: none;
   box-shadow: 0 0 6px var(--secondary2);
@@ -137,9 +169,12 @@ header .searchNFilter {
 }
 
 
+
+
 input {
   outline: none;
 }
+
 
 .searchNFilter .filter {
   gap: 4px;
@@ -156,9 +191,13 @@ input {
 }
 
 
+
+
 .searchNFilter .filter button {
   font-size: 0.6rem;
 }
+
+
 
 
 .navSections {
@@ -171,6 +210,7 @@ input {
   color: var(--light);
 }
 
+
 .navSections .profileBtn {
   display: flex;
   gap: 10px;
@@ -181,13 +221,16 @@ input {
   background-color: var(--main);
 }
 
+
 .navSections p {
   margin: 0;
 }
 
+
 .header svg {
   user-select: none;
 }
+
 
 header,
 .navbar,
@@ -204,27 +247,40 @@ header,
   width: 105px !important;
 }
 
+
+.filter select:last-child{
+  gap: 0;
+}
+
+
 .header-dropdown option {
   background: var(--light);
   color: var(--dark);
 }
 
+
 .filter button {
   border: none;
 }
 
+
 .publicarPage {
   padding: 15px;
 }
+
 
 .tituloPublicaciones {
   margin: 10px;
 }
 
 
+
+
 .tituloPublicaciones {
   margin-bottom: 10px;
 }
+
+
 
 
 .librosContainer {
@@ -235,19 +291,23 @@ header,
   padding: 20px;
 }
 
+
 .organizacion-disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
+
 .org-info {
   color: var(--secondary2);
 }
+
 
 select:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 
 .libro {
   background-color: var(--main);
@@ -264,25 +324,34 @@ select:disabled {
   cursor: pointer;
 }
 
+
 .libroImgContainer {
   position: relative;
 }
+
 
 .libro .libroImgContainer img {
   border-radius: 4px;
   width: 100%;
 }
 
-.desearBtnForm {
+
+.libroActionsContainer{
+  display: flex;
+  gap: 5px;
   position: absolute;
   right: 5px;
   bottom: 5px;
+}
+
+.desearBtnForm {
   border-radius: 50%;
   width: 40px !important;
   height: 40px !important;
   transition: all 0.3s;
   filter: drop-shadow(0px 0px 4px var(--dark));
 }
+
 
 .desearBtnForm button {
   border: 0;
@@ -297,13 +366,17 @@ select:disabled {
 }
 
 
+
+
 .desearBtnForm button:hover {
   background-color: var(--red);
 }
 
+
 .desearBtnForm button:hover svg {
   color: var(--light);
 }
+
 
 .desearBtnForm button svg {
   width: 100%;
@@ -313,6 +386,7 @@ select:disabled {
   transition: all 0.3s;
   stroke-width: 2px;
 }
+
 
 .libro h1 {
   font-size: 1.8rem;
@@ -325,11 +399,13 @@ select:disabled {
   margin: 0;
 }
 
+
 .pillContainer {
   display: flex;
   gap: 5px;
   margin-top: auto;
 }
+
 
 .pill {
   margin: 0;
@@ -344,6 +420,7 @@ select:disabled {
   justify-content: center;
 }
 
+
 .loginPage {
   display: flex;
   justify-content: center;
@@ -352,6 +429,7 @@ select:disabled {
   margin: 0;
   min-width: 100%;
 }
+
 
 .formSection {
   background-color: var(--main);
@@ -367,6 +445,7 @@ select:disabled {
   color: var(--light);
 }
 
+
 .formSection h2 {
   font-size: 2rem;
   margin: 0;
@@ -380,12 +459,14 @@ select:disabled {
   height: 100%;
 }
 
+
 .formSection .campo {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
+
 
 .campo input,
 .campo select,
@@ -401,25 +482,29 @@ select:disabled {
   transition: all 0.3s ease;
 }
 
+
 .campo textarea {
   resize: vertical;
   min-height: 100px;
 }
 
+
 .campo input:focus,
 .campo select:focus,
 .campo textarea:focus {
-  /* outline: 2px solid var(--accent); */
   box-shadow: 0 0 5px var(--secondary2);
 }
+
 
 .formSection a {
   color: var(--secondary2) !important;
 }
 
+
 .formSection a:hover {
   text-decoration: none;
 }
+
 
 .mainBtn {
   background-color: var(--secondary2);
@@ -434,6 +519,7 @@ select:disabled {
   transition: all 0.3s ease-out;
 }
 
+
 .mainBtn:hover {
   /* background-color: var(--accent);
   color: var(--light);
@@ -443,6 +529,7 @@ select:disabled {
   box-shadow: 0 0 5px var(--secondary2);
 }
 
+
 .mainBtn:active {
   /* background-color: var(--light);
   color: var(--dark);
@@ -450,6 +537,7 @@ select:disabled {
   background-color: var(--secondary2);
   transform: scale(1.05);
 }
+
 
 .mainBtn {
   background-color: var(--secondary2);
@@ -461,17 +549,20 @@ select:disabled {
   transition: all 0.3s ease;
 }
 
+
 .mainBtn:hover {
   /* background-color: var(--secondary); */
   /* color: var(--light); */
   /* filter: drop-shadow(0px 0px 10px var(--dark)); */
 }
 
+
 .registerPage {
   display: flex;
   /* min-height: 100vh; */
   background: var(--light);
 }
+
 
 .registerLeft {
   width: 50%;
@@ -487,9 +578,12 @@ select:disabled {
 }
 
 
+
+
 .registerLogo {
   margin-bottom: 40px;
 }
+
 
 .registerTitle {
   font-size: 2rem;
@@ -499,11 +593,13 @@ select:disabled {
   margin-top: 0;
 }
 
+
 .registerSubtitle {
   font-size: 1.2rem;
   text-align: center;
   margin-bottom: 40px;
 }
+
 
 .registerRight {
   width: 50%;
@@ -515,10 +611,12 @@ select:disabled {
   /* 105 siendo px de navbar */
 }
 
+
 a,
 a:visited {
   color: var(--light);
 }
+
 
 .registerForm {
   width: 100%;
@@ -528,18 +626,20 @@ a:visited {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  padding: 40px 20px;
 }
+
 
 .navbar-registro {
   background: var(--light);
 }
+
 
 .campo label {
   color: var(--light);
   margin-bottom: 6px;
   font-size: 1rem;
 }
+
 
 .campo input,
 .campo select {
@@ -551,16 +651,13 @@ a:visited {
   margin-bottom: 2px;
 }
 
-.campo input {
-  background: var(--light);
-  color: var(--main);
-}
 
 .registerLogin {
   color: var(--light);
   text-align: center;
   margin-top: 16px;
 }
+
 
 .registerLogin a {
   color: var(--secondary2);
@@ -569,11 +666,14 @@ a:visited {
 }
 
 
+
+
 .icon-tabler-message {
   color: var(--light);
   cursor: pointer;
   margin-left: 1;
 }
+
 
 .error {
   color: red;
@@ -581,21 +681,27 @@ a:visited {
 }
 
 
+
+
 .cls-1,
 .cls-2 {
   fill: var(--light);
 }
 
+
 .cls-3 {
   letter-spacing: -.01em;
 }
+
 
 .cls-2 {
   font-size: 156.53px;
   font-weight: 300;
 }
 
+
 /* #region buscar */
+
 
 .busqueda-titulo {
   text-align: center;
@@ -604,6 +710,7 @@ a:visited {
   color: var(--dark);
   background: transparent;
 }
+
 
 .busqueda-boton {
   padding: 9px 22px;
@@ -617,10 +724,13 @@ a:visited {
 }
 
 
+
+
 .busqueda-boton:hover {
   filter: brightness(1.06);
   box-shadow: 0 0 6px var(--secondary2);
 }
+
 
 .busqueda-grid-container {
   max-height: 600px;
@@ -633,6 +743,9 @@ a:visited {
 
 
 
+
+
+
 .busqueda-grid {
   display: grid;
   gap: 20px;
@@ -640,9 +753,13 @@ a:visited {
 }
 
 
+
+
 .busqueda-item {
   display: flex;
 }
+
+
 
 
 .busqueda-card {
@@ -656,10 +773,13 @@ a:visited {
   box-shadow: 0 2px 8px var(--dark);
 }
 
+
 .busqueda-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px var(--secondary2);
 }
+
+
 
 
 .busqueda-card-body {
@@ -670,12 +790,14 @@ a:visited {
   color: var(--dark);
 }
 
+
 /* Título y texto */
 .busqueda-card-title {
   font-size: 1.1rem;
   margin: 0;
   color: var(--dark);
 }
+
 
 .busqueda-card-text {
   color: var(--secondary2);
@@ -684,12 +806,15 @@ a:visited {
 }
 
 
+
+
 .busqueda-card-link {
   margin-top: 8px;
   text-decoration: none;
   color: var(--secondary2);
   font-weight: 600;
 }
+
 
 .no-result {
   grid-column: 1 / -1;
@@ -700,11 +825,14 @@ a:visited {
 }
 
 
+
+
 /* #region profile */
 .publicaciones,
 .profileInfo {
   padding: 20px;
 }
+
 
 .profileInfo {
   position: relative;
@@ -714,11 +842,13 @@ a:visited {
   grid-template-columns: 1fr 1fr;
 }
 
+
 .profileInfo p,
 .profileInfo h1,
 .profileInfo h2 {
   margin: 0;
 }
+
 
 .profileId,
 .profileStats {
@@ -727,9 +857,13 @@ a:visited {
   align-items: center;
 }
 
+
 .profileId {
   gap: 25px;
 }
+
+
+
 
 
 
@@ -740,16 +874,19 @@ a:visited {
   gap: 20px;
 }
 
+
 .aboutMe {
   font-size: 1.5rem;
   color: rgba(6, 26, 64, 0.75);
   /* --dark en rgb */
 }
 
+
 .nombreCompleto {
   font-size: 2.3rem;
   color: var(--dark);
 }
+
 
 .profileStats {
   /* justify-content: center; */
@@ -757,11 +894,15 @@ a:visited {
 }
 
 
+
+
 .profileInfo img {
   width: 300px;
   height: 300px;
   border-radius: 100%;
 }
+
+
 
 
 .logoutBtn {
@@ -776,10 +917,14 @@ a:visited {
 }
 
 
+
+
 .logoutBtn svg {
   color: var(--dark);
   transition: 0.3s;
 }
+
+
 
 
 .logoutBtn:hover {
@@ -788,9 +933,13 @@ a:visited {
 }
 
 
+
+
 .logoutBtn:hover svg {
   color: var(--light);
 }
+
+
 
 
 .profileStats .statsPill {
@@ -802,6 +951,8 @@ a:visited {
 }
 
 
+
+
 .publicaciones {
   display: flex;
   flex-direction: column;
@@ -810,18 +961,22 @@ a:visited {
   gap: 15px;
 }
 
+
 .publicacionesEnProfileTitulo {
   display: flex;
   gap: 15px;
 }
 
+
 .publicacionesEnProfileTitulo h1 {
   font-size: 2.1rem;
 }
 
+
 .publicacionesEnProfileTitulo button {
   font-size: 1.1rem;
 }
+
 
 .cardsPublicadas {
   display: flex;
@@ -835,11 +990,17 @@ a:visited {
 
 
 
+
+
+
 .publicaciones .mainBtn {
   width: auto;
 }
 
+
 /* #endregion profile */
+
+
 
 
 .simpleBtn {
@@ -847,14 +1008,20 @@ a:visited {
   transition: all 0.3s;
 }
 
+
 .simpleBtn:hover {
   filter: brightness(1.1);
 }
+
 
 .hoverVerde button:hover {
   background-color: var(--secondary2) !important;
 }
 
+
 .hoverVerde button:hover svg {
   color: var(--dark) !important;
 }
+
+
+

@@ -16,11 +16,13 @@
             <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
                 <div class="libroImgContainer">
                     <img src="~/img/book-placeholder.webp" alt="imagen del libro">
-                    <form class="desearBtnForm hoverVerde" asp-controller="Book" asp-action="Desear" asp-route-id="@libro.id" method="post" style="display:inline;">
-                        <button type="submit" onclick="event.stopPropagation();">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                        </button>
-                    </form>
+                    <section class="libroActionsContainer">
+                        <form class="desearBtnForm hoverVerde" asp-controller="Book" asp-action="Desear" asp-route-id="@libro.id" method="post" style="display:inline;">
+                            <button type="submit" onclick="event.stopPropagation();">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
+                            </button>
+                        </form>
+                    </section>
                 </div>
                 <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
                 <h2>$@libro.precio</h2>

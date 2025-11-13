@@ -5,10 +5,6 @@
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
-      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\favicon.png",
-      "PackagePath": "staticwebassets\\favicon.png"
-    },
-    {
       "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\images.jfif",
       "PackagePath": "staticwebassets\\images.jfif"
     },
@@ -19,6 +15,10 @@
     {
       "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\default.jpg",
       "PackagePath": "staticwebassets\\img\\default.jpg"
+    },
+    {
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\favicon.ico",
+      "PackagePath": "staticwebassets\\img\\favicon.ico"
     },
     {
       "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\libroDefault.jpg",
