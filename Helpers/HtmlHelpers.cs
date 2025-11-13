@@ -15,5 +15,21 @@ namespace Bookly.Helpers
                 _ => "Desconocido"
             };
         }
+        public static string ToUpperPrimeraLetra(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto))
+                    return texto;
+
+
+            var palabras = texto.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < palabras.Length; i++)
+            {
+                string palabra = palabras[i];
+                palabras[i] = char.ToUpper(palabra[0]) + palabra.Substring(1).ToLower();
+            }
+
+
+            return string.Join(' ', palabras);
+        }
     }
 }

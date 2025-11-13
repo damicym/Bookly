@@ -9,7 +9,6 @@ namespace Bookly.Models
     public static class BD
     {
         private static string _connectionString = @"Server=localhost;DataBase=Bookly;Integrated Security=True;TrustServerCertificate=True;";
-        public static Usuarios UsuarioLogueado;
         public static List<Libros> libros = new List<Libros>();
 
         // -------------------- USUARIOS --------------------
@@ -23,7 +22,6 @@ namespace Bookly.Models
                                  FROM Usuarios 
                                  WHERE DNI = @pDNI AND password = @pPassword";
                 Usuarios usuario = connection.QueryFirstOrDefault<Usuarios>(query, new { pDNI = dni, pPassword = password });
-                UsuarioLogueado = usuario;
                 return usuario;
             }
         }
@@ -47,10 +45,10 @@ namespace Bookly.Models
             }
         }
 
-        public static void logout()
-        {
-            UsuarioLogueado = null;
-        }
+        // public static void logout()
+        // {
+        //     UsuarioLogueado = null;
+        // }
 
         public static bool ExisteUsuario(string dni)
         {
@@ -255,7 +253,10 @@ namespace Bookly.Models
                         l.editorial,
                         p.estadoLibro,
                         p.precio,
-                        p.descripcion
+                        p.descripcion,
+                        p.idVendedor,
+                        p.fecha,
+                        p.status
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.status = 1
@@ -279,7 +280,10 @@ namespace Bookly.Models
                         l.editorial,
                         p.estadoLibro,
                         p.precio,
-                        p.descripcion
+                        p.descripcion,
+                        p.idVendedor,
+                        p.fecha,
+                        p.status
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.status = 1
@@ -305,7 +309,10 @@ namespace Bookly.Models
                         l.editorial,
                         p.estadoLibro,
                         p.precio,
-                        p.descripcion
+                        p.descripcion,
+                        p.idVendedor,
+                        p.fecha,
+                        p.status
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE l.ano = @ano
@@ -329,7 +336,10 @@ namespace Bookly.Models
                         l.editorial,
                         p.estadoLibro,
                         p.precio,
-                        p.descripcion
+                        p.descripcion,
+                        p.idVendedor,
+                        p.fecha,
+                        p.status
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.idVendedor = @dni
@@ -352,7 +362,10 @@ namespace Bookly.Models
                         l.editorial,
                         p.estadoLibro,
                         p.precio,
-                        p.descripcion
+                        p.descripcion,
+                        p.idVendedor,
+                        p.fecha,
+                        p.status
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.id = @pId";

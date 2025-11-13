@@ -1,7 +1,7 @@
 ﻿@model Bookly.Models.Usuarios
 
 @{
-    ViewBag.Title = "Registro";
+    ViewBag.Title = "Registrarse";
 }
 
 <div class="registerPage">
@@ -20,7 +20,7 @@
             </div>
             <div class="campo">
                 <label for="nombreComp">Ingresá tu nombre y apellido</label>
-                <input asp-for="nombreComp" id="nombreComp" placeholder="Nombre Completo" required autocomplete="off" />
+                <input asp-for="nombreComp" id="nombreComp" placeholder="Nombre Completo" required autocomplete="off" autofocus/>
             </div>
             <div class="campo">
                 <label for="password">Crea tu contraseña</label>
@@ -54,6 +54,13 @@
                 <label for="curso">Ingresá tu división</label>
                 <input asp-for="curso" id="curso" placeholder="Curso" maxlength="1" required autocomplete="off" />
             </div>
+            <div class="campo">
+                <label for="organizacion">Organización</label>
+                <select id="organizacion" name="organizacion" disabled class="organizacion-disabled">
+                <option value="ORT">ORT</option>
+            </select>
+                <small class="form-text org-info">Próximamente trabajaremos con más organizaciones</small>
+             </div>
             <button type="submit" class="mainBtn">Registrarse</button>
             @if (ViewBag.Error != null)
             {

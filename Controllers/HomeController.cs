@@ -16,14 +16,16 @@ namespace Bookly.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
-        {
-            List<PublicacionesCompletas> publicaciones;
 
-            if (BD.UsuarioLogueado != null)
+        public IActionResult Index()
+        {   
+            List<PublicacionesCompletas> publicaciones;
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user != null)
             {
-                int anoUsuario = BD.UsuarioLogueado.ano;
-                publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario);
+                int anoUsuario = user.ano;
+                publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario)
+                    .Where(p => p.idVendedor != user.DNI).ToList();
 
                 ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATexto(anoUsuario)} año";
             }
@@ -32,18 +34,17 @@ namespace Bookly.Controllers
                 publicaciones = BD.ObtenerLibrosMostrablesConTope(10);
                 ViewBag.Titulo = "Últimas publicaciones";
             }
-
             return View(publicaciones);
         }
 
 
         public IActionResult Profile()
         {
-            Usuarios usuario = BD.UsuarioLogueado;
-            if (usuario == null)
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
                 return RedirectToAction("Login", "Usuarios");
-            ViewBag.usuario = usuario;
-            List<PublicacionesCompletas> publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(usuario.DNI);
+            ViewBag.usuario = user;
+            List<PublicacionesCompletas> publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI);
             return View(publicaciones);
         }
 
@@ -55,12 +56,19 @@ namespace Bookly.Controllers
         [HttpGet]
         public IActionResult Buscar(string query)
         {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             List<PublicacionesCompletas> resultados;
             if (!string.IsNullOrWhiteSpace(query))
             {
+                if (user == null){
                 resultados = BD.ObtenerLibrosMostrablesConTope()
                     .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()))
                     .ToList();
+                } else{
+                   resultados = BD.ObtenerLibrosMostrablesConTope()
+                        .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()) && l.idVendedor != user.DNI)
+                        .ToList(); 
+                }
             }
             else
             {

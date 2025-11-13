@@ -203,6 +203,20 @@ header, .navbar, .navSections {
   gap: 2%;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+}
+
+
+.organizacion-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.org-info {
+  color: var(--secondary2);
+}
+select:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 
@@ -627,11 +641,6 @@ a, a:visited {
 .error{
   color: red;
   font-size: 1rem;
-}
-
-
-select:disabled{
-  opacity: 0.6;
 }
 
 

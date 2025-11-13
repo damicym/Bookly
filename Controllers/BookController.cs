@@ -7,19 +7,21 @@ namespace Bookly.Controllers
     {
         public IActionResult Index()
         {
-            if (BD.UsuarioLogueado == null)
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
             {
                 return RedirectToAction("Login", "Usuarios");
             }
 
-            ViewBag.UsuarioNombre = BD.UsuarioLogueado.nombreComp;
+            ViewBag.UsuarioNombre = user.nombreComp;
             var libros = BD.ObtenerLibros();
             return View(libros);
         }
 
         public IActionResult Publicar()
         {
-            if (BD.UsuarioLogueado == null)
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
             {
                 return RedirectToAction("Login", "Usuarios");
             }
@@ -29,14 +31,13 @@ namespace Bookly.Controllers
         [HttpPost]
         public IActionResult Publicar(Libros libro, decimal precio, string estadoLibro, string descripcion)
         {
-            Usuarios usuario = BD.UsuarioLogueado;
-
-            if (usuario == null)
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
             {
                 return RedirectToAction("Login", "Usuarios");
             }
 
-            BD.PublicarLibro(libro, usuario.DNI, precio, estadoLibro, descripcion);
+            BD.PublicarLibro(libro, user.DNI, precio, estadoLibro, descripcion);
             return RedirectToAction("Profile", "Home");
         }
 

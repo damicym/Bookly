@@ -51,7 +51,6 @@ namespace Bookly.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Remove("usuarioLogueado");
-            BD.logout();
             return RedirectToAction("Login");
         }
 

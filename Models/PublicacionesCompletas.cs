@@ -9,4 +9,7 @@ public class PublicacionesCompletas
     public string estadoLibro { get; set; }
     public double precio { get; set; }
     public string descripcion { get; set; }
-}       
+    public string idVendedor { get; set; }
+    public DateTime fecha { get; set; }
+    public int status { get; set; }
+}

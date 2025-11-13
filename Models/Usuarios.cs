@@ -8,7 +8,7 @@ namespace Bookly.Models
         public string especialidad { get; set; }
         public char curso { get; set; }
         public string password { get; set; }
-        public string aboutMe {get; set; }
+        public string aboutMe { get; set; }
     }
     
 }

@@ -25,11 +25,11 @@
         </svg></a>
 
 
-        @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Register"){
+        @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
         <section class="searchNFilter">
         <div class="search">
             <form method="get" action="@Url.Action("Buscar", "Home")" class="busqueda-form">
-                <input id="siteSearch" name="query" type="text" placeholder="Buscar (nombre de un libro o editorial)" class="busqueda-input" />
+                <input id="siteSearch" name="query" type="text" placeholder="Buscar nombre de un libro" class="busqueda-input" />
             </form>
         </div>
         <div class="search-icon">
