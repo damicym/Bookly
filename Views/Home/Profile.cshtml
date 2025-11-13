@@ -2,7 +2,7 @@
 @using Bookly.Helpers
 
 @{
-    ViewData["Title"] = "Perfil de usuario";
+    ViewData["Title"] = "Perfil";
 }
 
 <section class="profileInfo">
@@ -14,18 +14,20 @@
         </div>
     </section>
     <section class="profileStats">
-            @($"{HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano)} {ViewBag.usuario.especialidad} {ViewBag.usuario.curso} ")
+        <p class="statsPill">@($"{HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano)} {ViewBag.usuario.especialidad} {ViewBag.usuario.curso} ")</p>
             <p class="statsPill">Sin ventas cerradas</p>
             @if (Model.Count == 1)
             {
-                <p class="statsPill">@Model.Count Publicacion</p>
+                <p class="statsPill">@Model.Count Publicación</p>
             } else{
                 <p class="statsPill">@Model.Count Publicaciones</p>
             }
     </section>
     <button class="logoutBtn" onclick="window.location.href='@Url.Action("Logout", "Usuarios")'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
         Cerrar Sesión
     </button>
+
 </section>
 <section class="publicaciones">
     <div class="publicacionesEnProfileTitulo">
@@ -50,16 +52,20 @@
                     <div class="libroImgContainer">
                         <img src="~/img/book-placeholder.webp" alt="imagen del libro">
                         <form class="desearBtnForm" asp-controller="Book" asp-action="Eliminar" asp-route-id="@libro.id" method="post" style="display:inline;">
-                            <button type="submit" title="Eliminar publicación">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                    <path d="M4 7l16 0" />
-                                    <path d="M10 11l0 6" />
-                                    <path d="M14 11l0 6" />
-                                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
-                                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                                </svg>
-                            </button>
+                        <button type="button" title="Eliminar publicación"
+                            onclick="window.location.href='@Url.Action("Eliminar", "Home", new { id = libro.id })'">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M4 7l16 0" />
+                            <path d="M10 11l0 6" />
+                            <path d="M14 11l0 6" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                    </button>
                         </form>
                     </div>
                     <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
