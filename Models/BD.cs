@@ -102,12 +102,13 @@ namespace Bookly.Models
 
         // -------------------- PUBLICACIONES --------------------
 
-        public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion)
+        public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
+                // Insertar el libro y recuperar su ID
                 string insertLibro = @"
                     INSERT INTO Libros (nombre, materia, ano, editorial)
                     VALUES (@nombre, @materia, @ano, @editorial);
@@ -121,44 +122,55 @@ namespace Bookly.Models
                     editorial = libro.editorial
                 });
 
+                // Insertar la publicación, incluyendo la imagen si está presente
                 string insertPublicacion = @"
                     INSERT INTO Publicacion 
-                    (idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion)
-                    VALUES (@idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion);";
+                    (idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion, imagen)
+                    VALUES (@idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion, @imagen);";
 
                 connection.Execute(insertPublicacion, new
                 {
                     idVendedor = dniVendedor,
                     precio = precio,
                     idLibro = idLibro,
-                    status = 1, // Por ejemplo, 1 = activo
+                    status = 1,
                     estadoLibro = string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro,
                     fecha = DateTime.Now,
-                    descripcion = descripcion
+                    descripcion = descripcion,
+                    imagen = imagen // puede ser null
                 });
             }
         }
 
 
-        public static void EditarLibro(Libros libro)
+        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano,string editorial, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = @"UPDATE Libros 
-                                 SET nombre = @nombre, 
-                                     materia = @materia, 
-                                     ano = @ano, 
-                                     editorial = @editorial
-                                 WHERE id = @id";
-                connection.Execute(query, new
-                {
-                    id = libro.id,
-                    nombre = libro.nombre,
-                    materia = libro.materia,
-                    ano = libro.ano,
-                    editorial = libro.editorial
-                });
+
+                // Obtener el idLibro asociado
+                int idLibro = connection.ExecuteScalar<int>(
+                    "SELECT idLibro FROM Publicacion WHERE id = @id", new { id = idPublicacion });
+
+                // Actualizar tabla Libros
+                string updateLibro = @"
+                    UPDATE Libros
+                    SET nombre = @nombre,
+                        materia = @materia,
+                        ano = @ano,
+                        editorial = @editorial
+                    WHERE id = @idLibro";
+                connection.Execute(updateLibro, new { nombre, materia, ano, editorial, idLibro });
+                
+                string updatePublicacion = @"
+                    UPDATE Publicacion
+                    SET precio = @precio,
+                        estadoLibro = @estadoLibro,
+                        descripcion = @descripcion,
+                        imagen = @imagen
+                    WHERE id = @id";
+                connection.Execute(updatePublicacion, new { id = idPublicacion, precio, estadoLibro, descripcion, imagen });
             }
         }
 
@@ -257,7 +269,8 @@ namespace Bookly.Models
                         p.descripcion,
                         p.idVendedor,
                         p.fecha,
-                        p.status
+                        p.status,
+                        p.imagen 
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.status = 1
@@ -284,7 +297,8 @@ namespace Bookly.Models
                         p.descripcion,
                         p.idVendedor,
                         p.fecha,
-                        p.status
+                        p.status,
+                        p.imagen 
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.status = 1
@@ -313,7 +327,8 @@ namespace Bookly.Models
                         p.descripcion,
                         p.idVendedor,
                         p.fecha,
-                        p.status
+                        p.status,
+                        p.imagen 
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE l.ano = @ano
@@ -341,7 +356,8 @@ namespace Bookly.Models
                         p.descripcion,
                         p.idVendedor,
                         p.fecha,
-                        p.status
+                        p.status,
+                        p.imagen
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.idVendedor = @dni
@@ -368,7 +384,8 @@ namespace Bookly.Models
                         p.descripcion,
                         p.idVendedor,
                         p.fecha,
-                        p.status
+                        p.status,
+                        p.imagen 
                     FROM Publicacion p
                     INNER JOIN Libros l ON p.idLibro = l.id
                     WHERE p.id = @pId";

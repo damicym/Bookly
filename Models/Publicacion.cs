@@ -7,5 +7,6 @@ public class Publicacion
     public int status { get; set; }
     public string estadoLibro { get; set; }
     public string descripcion { get; set; }
+    public byte[] imagen { get; set; }
     public DateTime fecha { get; set; }
 }

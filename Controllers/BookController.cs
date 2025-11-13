@@ -29,16 +29,26 @@ namespace Bookly.Controllers
         }
 
         [HttpPost]
-        public IActionResult Publicar(Libros libro, decimal precio, string estadoLibro, string descripcion)
+        public IActionResult Publicar(Libros libro, decimal precio, string estadoLibro, string descripcion,  IFormFile imagen)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
+                return RedirectToAction("Login", "Usuario");
+
+            byte[] imagenBytes = null;
+
+            if (imagen != null && imagen.Length > 0)
             {
-                return RedirectToAction("Login", "Usuarios");
+                using (var ms = new MemoryStream())
+                {
+                    imagen.CopyTo(ms);
+                    imagenBytes = ms.ToArray();
+                }
             }
 
-            BD.PublicarLibro(libro, user.DNI, precio, estadoLibro, descripcion);
-            return RedirectToAction("Profile", "Home");
+            BD.PublicarLibro(libro, user.DNI, precio, estadoLibro, descripcion, imagenBytes);
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -60,23 +70,43 @@ namespace Bookly.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        [HttpGet]
+        public IActionResult Editar(int id)
         {
-            Libros libro = BD.ObtenerLibroPorId(id);
-            if (libro == null)
+            // Obtener la publicación completa por su ID
+            PublicacionesCompletas publicacion = BD.ObtenerPublicacionCompletaPorId(id);
+
+            if (publicacion == null)
             {
-                ViewBag.Error = "El libro no existe o fue eliminado.";
+                ViewBag.Error = "La publicación no existe o fue eliminada.";
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(libro);
+            // Enviar la publicación a la vista para editar
+            return View(publicacion);
         }
 
         [HttpPost]
-        public IActionResult Edit(Libros libro, decimal precio, string estadoLibro, string descripcion)
+        public IActionResult Editar(int id,string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen)
         {
-            BD.EditarLibro(libro);
-            BD.EditarPublicacion(libro.id, precio, estadoLibro, descripcion);
+            PublicacionesCompletas publicacion = BD.ObtenerPublicacionCompletaPorId(id);
+            if (publicacion == null)
+                return NotFound();
+
+            byte[] imagenBytes = publicacion.imagen;
+
+            if (imagen != null && imagen.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    imagen.CopyTo(ms);
+                    imagenBytes = ms.ToArray();
+                }
+            }
+
+            // Actualizar en base de datos
+            BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenBytes);
+
             return RedirectToAction("Profile", "Home");
         }
     }

@@ -4,7 +4,7 @@
 
 <section class="publicarPage">
 <h2>Publicar nueva venta</h2>
-    <form action="@Url.Action("Publicar", "Book")" method="post">
+    <form action="@Url.Action("Publicar", "Book")" method="post" enctype="multipart/form-data">
         <section class="publicarLeft">
             <section class="formSection">
                 <h2>Información global del libro</h2>
@@ -57,6 +57,13 @@
                     <div class="campo">
                         <label for="descripcion">Descripción</label>
                         <textarea id="descripcion" name="descripcion" placeholder="Agregar una descripción del libro..." rows="4"></textarea>
+                    </div>
+                    <div class="campo">
+                        <label for="imagen">Imagen del libro</label>
+
+                        <div id="dropzone" class="dropzone">
+                            <input type="file" id="imagen" name="imagen" accept="image/*" />
+                        </div>
                     </div>
                     <button type="submit" class="mainBtn">Publicar</button>
             </section>

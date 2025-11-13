@@ -1,4 +1,4 @@
-@model Bookly.Models.Libros
+@model Bookly.Models.PublicacionesCompletas
 
 @{
     ViewData["Title"] = "Editar libro";
@@ -7,8 +7,8 @@
 <section class="formSection">
     <h2>Editar libro</h2>
 
-    <form action="@Url.Action("Edit", "Book")" method="post">
-        <input type="hidden" name="id" value="@Model.id" />
+<form action="@Url.Action("Editar", "Book")" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="@Model.id" />
 
         <div class="campo">
             <label for="nombre">Nombre</label>
@@ -58,7 +58,13 @@
             <label for="descripcion">Descripción</label>
             <textarea id="descripcion" name="descripcion" placeholder="Agregar una descripción del libro..." rows="4"></textarea>
         </div>
+        <div class="campo">
+            <label for="imagen">Imagen del libro</label>
 
+            <div id="dropzone" class="dropzone">
+                <input type="file" id="imagen" name="imagen" accept="image/*" />
+            </div>
+        </div>
         <button type="submit">Guardar cambios</button>
     </form>
 </section>

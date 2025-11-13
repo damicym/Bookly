@@ -15,7 +15,14 @@
         {
             <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
                 <div class="libroImgContainer">
-                    <img src="~/img/book-placeholder.webp" alt="imagen del libro">
+                @if (libro.imagen != null)
+                {
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                }
+                else
+                {
+                    <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                }
                     <section class="libroActionsContainer">
                         <form class="desearBtnForm hoverVerde" asp-controller="Book" asp-action="Desear" asp-route-id="@libro.id" method="post" style="display:inline;">
                             <button type="submit" onclick="event.stopPropagation();">

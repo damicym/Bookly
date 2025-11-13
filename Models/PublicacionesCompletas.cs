@@ -13,4 +13,6 @@ public class PublicacionesCompletas
     public string idVendedor { get; set; }
     public DateTime fecha { get; set; }
     public int status { get; set; }
+    public byte[] imagen { get; set; }
+
 }
