@@ -5,7 +5,7 @@ public class PublicacionesCompletas
     public int idLibro { get; set; }
     public string nombre { get; set; }
     public string materia { get; set; }
-    public string ano { get; set; }
+    public int ano { get; set; }
     public string editorial { get; set; }
     public string estadoLibro { get; set; }
     public double precio { get; set; }
@@ -14,5 +14,6 @@ public class PublicacionesCompletas
     public DateTime fecha { get; set; }
     public int status { get; set; }
     public byte[] imagen { get; set; }
+
 
 }

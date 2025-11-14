@@ -1,47 +1,58 @@
+
+
 @model Bookly.Models.PublicacionesCompletas
+@using Bookly.Helpers
+
 
 @{
     ViewData["Title"] = "Editar libro";
 }
 
+
 <section class="formSection">
     <h2>Editar libro</h2>
 
+
 <form action="@Url.Action("Editar", "Book")" method="post" enctype="multipart/form-data">
     <input type="hidden" name="id" value="@Model.id" />
+
 
         <div class="campo">
             <label for="nombre">Nombre</label>
             <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
         </div>
 
+
         <div class="campo">
             <label for="materia">Materia</label>
             <input type="text" id="materia" name="materia" value="@Model.materia" required />
         </div>
 
+
         <div class="campo">
             <label for="ano">Nivel escolar</label>
             <select id="ano" name="ano" required>
-                <option value="@Model.ano">@Model.ano</option>
-                <option value="7mo grado">7mo grado</option>
-                <option value="1er año">1er año</option>
-                <option value="2do año">2do año</option>
-                <option value="3er año">3er año</option>
-                <option value="4to año">4to año</option>
-                <option value="5to año">5to año</option>
+                <option value="@Model.ano">@HtmlHelpers.PasarAñoATexto(Model.ano)</option>
+                <option value="1">7mo grado</option>
+                <option value="2">1er año</option>
+                <option value="3">2do año</option>
+                <option value="4">3er año</option>
+                <option value="5">4to año</option>
+                <option value="6">5to año</option>
             </select>
         </div>
+
 
         <div class="campo">
             <label for="editorial">Editorial</label>
             <input type="text" id="editorial" name="editorial" value="@Model.editorial" required />
         </div>
 
+
         <div class="campo">
             <label for="estadoLibro">Estado</label>
             <select id="estadoLibro" name="estadoLibro" required>
-                <option value="">-- Selecciona un estado --</option>
+                <option value="@Model.estadoLibro">@Model.estadoLibro</option>
                 <option value="Como nuevo">Como nuevo</option>
                 <option value="Con algunas anotaciones">Con algunas anotaciones</option>
                 <option value="Con muchas anotaciones">Con muchas anotaciones</option>
@@ -49,22 +60,25 @@
             </select>
         </div>
 
+
         <div class="campo">
             <label for="precio">Precio</label>
-            <input type="number" id="precio" name="precio" step="0.01" placeholder="0.00" required />
+            <input type="number" id="precio" name="precio" step="0.01"  value="@Model.precio" required />
         </div>
+
 
         <div class="campo">
             <label for="descripcion">Descripción</label>
-            <textarea id="descripcion" name="descripcion" placeholder="Agregar una descripción del libro..." rows="4"></textarea>
+            <textarea id="descripcion" name="descripcion" rows="4">@Model.descripcion</textarea>
         </div>
         <div class="campo">
             <label for="imagen">Imagen del libro</label>
+
 
             <div id="dropzone" class="dropzone">
                 <input type="file" id="imagen" name="imagen" accept="image/*" />
             </div>
         </div>
-        <button type="submit">Guardar cambios</button>
+        <button type="submit" class="mainBtn">Guardar cambios</button>
     </form>
 </section>

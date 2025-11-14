@@ -52,7 +52,7 @@
                     <div class="libroImgContainer">
                         @if (libro.imagen != null)
                         {
-                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
                         }
                         else
                         {
