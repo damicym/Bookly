@@ -5,19 +5,29 @@
     ViewData["Title"] = "Home";
 }
 
+@{
+    string mainBienvenidaBtnAction = ViewBag.userLogged
+        ? "location.href='" + Url.Action("Publicar", "Book") + "'"
+        : "location.href='" + Url.Action("Login", "Usuarios") + "'";
+}
+@{
+    string secondaryBienvenidaBtnAction = ViewBag.userLogged
+        ? "location.href='" + Url.Action("Buscar", "Home", new { query = "" }) + "'"
+        : "location.href='" + Url.Action("Login", "Usuarios") + "'";
+}
+
+
 <section class="bienvenida">
     <div class="bienvenidaInfo">
         <h1><span>La forma más cómoda de comprar</span> <span>y vender libros escolares</span></h1>
         <p class="bienvenidaP">Contactá con un estudiante, acordá un precio justo y una ubicación en cuestión de minutos</p>
         <div class="bienvenidaBtnContainer">
-            <button class="mainBtn" style="width: 200px;">
-                @* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12h6" /><path d="M12 9v6" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" /></svg> *@
+            <button class="mainBtn" style="width: 200px;" onclick="@mainBienvenidaBtnAction">
                 Publicar un libro
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
             </button>
-            <button class="secondaryBtn">
-                @* style="background-color: var(--main); color: var(--light); width: auto;" *@
-                <span>Iniciar sesión</span>
+            <button class="secondaryBtn" onclick="@secondaryBienvenidaBtnAction">
+                <span>@(ViewBag.userLogged ? "Explorar catálogo" : "Iniciar sesión")</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
             </button>
         </div>

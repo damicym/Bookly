@@ -920,6 +920,7 @@ a:visited {
   width: 300px;
   height: 300px;
   border-radius: 100%;
+  filter: drop-shadow(0px 0px 1px var(--dark));
 }
 
 
@@ -1120,28 +1121,31 @@ a:visited {
   align-items: center;
   text-align: center;
   width: 550px;
-  background-color: #E8ECEC;
   padding: 15px;
   border-radius: 14px;
   height: 220px;
+  /* background-color: #E8ECEC; */
+  background-color: var(--secondary);
   /* filter: drop-shadow(0px 5px 10px var(--dark)); */
-  border: 2px solid var(--secondary);
+  /* border: 2px solid var(--secondary); */
 }
 
 .step h1{
-  color: var(--dark);
+  color: var(--light);
   font-size: 1.9rem;
   margin: 0;
 }
 
 .step p{
   font-size: 1rem;
-  color: rgba(6, 26, 64, 0.75); /* dark en rgb */
+  /* color: rgba(6, 26, 64, 0.75); dark en rgb */
+  color: var(--light);
+  opacity: 0.95;
   margin: 0;
 }
 
 .stepSvgContainer{
-  background-color: rgba(151, 216, 196, 0.6);
+  background-color: rgba(151, 216, 196, 0.7); /* secondary2 en rgb */
   width: 50px;
   height: 55px;
   border-radius: 15px;

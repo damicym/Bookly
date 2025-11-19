@@ -4,13 +4,7 @@
     ViewData["Title"] = "Resultados de búsqueda";
 }
 
-
-
-
-<h2 class="busqueda-titulo">Resultados de búsqueda</h2>
-
-
-
+<h2 class="busqueda-titulo">@(ViewBag.isQueryNull ? "Catálogo" : "Resultados de búsqueda")</h2>
 
 <section class="publicaciones">
     <section class="cardsPublicadas">
@@ -54,16 +48,3 @@
         }
     </section>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-

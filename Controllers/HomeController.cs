@@ -34,6 +34,7 @@ namespace Bookly.Controllers
                 publicaciones = BD.ObtenerLibrosMostrablesConTope(10);
                 ViewBag.Titulo = "Últimas publicaciones";
             }
+            ViewBag.userLogged = user != null;
             return View(publicaciones);
         }
 
@@ -70,10 +71,12 @@ namespace Bookly.Controllers
                         .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()) && l.idVendedor != user.DNI)
                         .ToList(); 
                 }
+                ViewBag.isQueryNull = false;
             }
             else
             {
                 resultados = BD.ObtenerLibrosMostrablesConTope();
+                ViewBag.isQueryNull = true;
             }
             ViewData["Title"] = "Resultados de búsqueda";
             return View(resultados);
