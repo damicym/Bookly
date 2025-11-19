@@ -62,7 +62,39 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+<footer class="footer">
+    <div class="footer-container">
+        <p class="footer-text">© @DateTime.Now.Year Bookly - Todos los derechos reservados</p>
+          <div class="footer-links">
+            <a href="/" class="footer-link">Ayuda</a>
+            <a href="/" class="footer-link">Términos y condiciones</a>
+            <a href="/" class="footer-link">Privacidad</a>
+            <a href="/" class="footer-link">Trabajá con nosotros</a>
+        </div>
+        <div class="social-icons">
+            <a href="https://www.instagram.com" target="_blank" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                    <path d="M8 0C5.8 0 5.5 0 4.7.1c-.8.1-1.4.2-2 .4-.6.2-1.1.5-1.6 1-.5.5-.8 1-1 1.6-.2.6-.3 1.2-.4 2C-.1 5.5 0 5.8 0 8s0 2.5.1 3.3c.1.8.2 1.4.4 2 .2.6.5 1.1 1 1.6.5.5 1 .8 1.6 1 .6.2 1.2.3 2 .4.8.1 1.1.1 3.3.1s2.5 0 3.3-.1c.8-.1 1.4-.2 2-.4.6-.2 1.1-.5 1.6-1 .5-.5.8-1 1-1.6.2-.6.3-1.2.4-2 .1-.8.1-1.1.1-3.3s0-2.5-.1-3.3c-.1-.8-.2-1.4-.4-2-.2-.6-.5-1.1-1-1.6-.5-.5-1-.8-1.6-1-.6-.2-1.2-.3-2-.4C10.5-.1 10.2 0 8 0zm0 1.5c2.2 0 2.5 0 3.3.1.7.1 1.1.2 1.4.3.4.1.7.3 1 .6.3.3.5.6.6 1 .1.3.2.7.3 1.4.1.8.1 1.1.1 3.3s0 2.5-.1 3.3c-.1.7-.2 1.1-.3 1.4-.1.4-.3.7-.6 1-.3.3-.6.5-1 .6-.3.1-.7.2-1.4.3-.8.1-1.1.1-3.3.1s-2.5 0-3.3-.1c-.7-.1-1.1-.2-1.4-.3-.4-.1-.7-.3-1-.6-.3-.3-.5-.6-.6-1-.1-.3-.2-.7-.3-1.4-.1-.8-.1-1.1-.1-3.3s0-2.5.1-3.3c.1-.7.2-1.1.3-1.4.1-.4.3-.7.6-1 .3-.3.6-.5 1-.6.3-.1.7-.2 1.4-.3.8-.1 1.1-.1 3.3-.1z"/>
+                    <path d="M8 3.9a4.1 4.1 0 1 0 0 8.2 4.1 4.1 0 0 0 0-8.2zm0 6.7a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2z"/>
+                    <circle cx="12.3" cy="3.7" r=".9"/>
+                </svg>
+            </a>
+            <a href="https://www.tiktok.com" target="_blank" class="social-link tiktok">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 256 256" fill="currentColor">
+                    <path d="M180.3 32a48 48 0 0 1-48-48h-32v160a32 32 0 1 1-32-32v-32a64 64 0 1 0 64 64V64a80 80 0 0 0 48 16z"/>
+                </svg>
+            </a>
+
+            <a href="https://www.twitter.com" target="_blank" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
+                    <path d="M5 15c6 0 9.3-5 9.3-9.3v-.4A6.7 6.7 0 0 0 15 3.5a6.6 6.6 0 0 1-1.9.5 3.3 3.3 0 0 0 1.4-1.8 6.6 6.6 0 0 1-2.1.8A3.3 3.3 0 0 0 7.9 6a9.3 9.3 0 0 1-6.7-3.4 3.3 3.3 0 0 0 1 4.4A3.3 3.3 0 0 1 1 6.5v.1a3.3 3.3 0 0 0 2.6 3.2 3.3 3.3 0 0 1-.9.1c-.2 0-.4 0-.6-.1a3.3 3.3 0 0 0 3.1 2.3A6.6 6.6 0 0 1 1 13.5a9.3 9.3 0 0 0 5 1.5"/>
+                </svg>
+            </a>
+        </div>
+    </div>
 </html>
+
+</footer>
 
 
 <!--

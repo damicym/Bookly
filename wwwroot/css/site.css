@@ -349,6 +349,9 @@ select:disabled {
   display: block;
   transition: transform 0.3s ease;
 }
+.libro:hover .libroImgContainer img {
+  transform: scale(1.05);
+}
 
 
 .libroActionsContainer{
@@ -379,7 +382,9 @@ select:disabled {
   align-items: center;
   border-radius: 50%;
 }
-
+.detallesDatos .mainBtn{
+  font-size: 1.5rem;
+}
 
 
 
@@ -1235,13 +1240,18 @@ a:visited {
   transition: all 0.3s;
   stroke-width: 2px;
 }
-
+.desearBtnDetalle:hover {
+  background: var(--secondary2);
+  color: var(--dark);
+  transform: scale(1.1);
+  filter: drop-shadow(0px 0px 6px var(--secondary2));
+}
 
 .comprar{
   font-size: 2.3rem;
   border: none;
   border-radius: 20px;
-  background-color: var(--accent);
+  background-color: var(--secondary2);
   width: 7  0%;
 }
 /* #region panel oculto */
@@ -1289,4 +1299,60 @@ a:visited {
 
 
 /* #endregion detalles */
+
+.footer {
+  background-color: var(--dark);
+  color: var(--light);
+  padding: 20px 0;
+  text-align: center;
+  margin-top: 40px;
+  z-index: 1000;
+  position: relative;
+}
+
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-text {
+  font-size: 14px;
+  margin: 0;
+  color: var(--light);
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-link {
+  color: var(--light);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--secondary2);
+}
+
+.social-icons {
+  display: flex;
+  gap: 20px;
+}
+
+.social-link {
+  font-size: 24px;
+  color: var(--light);
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.social-link:hover {
+  transform: scale(1.2);
+}
 
