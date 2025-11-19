@@ -1,4 +1,6 @@
-﻿// Especialidad deshabilitado
+﻿console.log("entra a js")
+
+// Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');
 const especialidadSelect = document.getElementById('especialidad');
 
@@ -68,3 +70,14 @@ inputCurso.addEventListener("input", function () {
       });
   }
 })();
+
+const fileInput = document.getElementById("fileInput");
+const fileName = document.getElementById("fileName");
+fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+        fileName.textContent = fileInput.files[0].name;
+    } else {
+        fileName.textContent = "Ningún archivo seleccionado";
+    }
+});
+

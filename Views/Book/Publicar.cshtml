@@ -2,8 +2,8 @@
     ViewData["Title"] = "Publicar";
 }
 
-<section class="publicarPage">
-<h2>Publicar nueva venta</h2>
+<section class="publicarPage primerElemento">
+<h2 style="justify-self: center;">Publicar nueva venta</h2>
     <form action="@Url.Action("Publicar", "Book")" method="post" enctype="multipart/form-data">
         <section class="publicarLeft">
             <section class="formSection">
@@ -60,9 +60,18 @@
                     </div>
                     <div class="campo">
                         <label for="imagen">Imagen del libro</label>
-
                         <div id="dropzone" class="dropzone">
-                            <input type="file" id="imagen" name="imagen" accept="image/*" />
+                            <!-- <input type="file" id="imagen" name="imagen" accept="image/*" /> -->
+                            <div class="file-upload">
+                                <label for="fileInput" class="file-label">
+                                    <span class="file-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-upload"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
+                                    </span>
+                                    Subir archivo
+                                </label>
+                                <input type="file" id="fileInput">
+                                <span class="file-name" id="fileName">Ningún archivo seleccionado</span>
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="mainBtn">Publicar</button>

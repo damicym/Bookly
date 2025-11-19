@@ -5,16 +5,12 @@
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\images.jfif",
-      "PackagePath": "staticwebassets\\images.jfif"
-    },
-    {
       "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\book-placeholder.webp",
       "PackagePath": "staticwebassets\\img\\book-placeholder.webp"
     },
     {
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\default.jpg",
-      "PackagePath": "staticwebassets\\img\\default.jpg"
+      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\default.webp",
+      "PackagePath": "staticwebassets\\img\\default.webp"
     },
     {
       "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\favicon.ico",
@@ -25,16 +21,8 @@
       "PackagePath": "staticwebassets\\img\\foto_bienvenida.webp"
     },
     {
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\libroDefault.jpg",
-      "PackagePath": "staticwebassets\\img\\libroDefault.jpg"
-    },
-    {
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\register_deco.png",
-      "PackagePath": "staticwebassets\\img\\register_deco.png"
-    },
-    {
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\toldot.jpg",
-      "PackagePath": "staticwebassets\\img\\toldot.jpg"
+      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\register_deco.webp",
+      "PackagePath": "staticwebassets\\img\\register_deco.webp"
     },
     {
       "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\js\\site.js",

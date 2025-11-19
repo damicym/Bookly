@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "NxGDxmSxSR9BcrldpCC9z4zfYFrBrYmzpajnJUczSwE=",
+  "Hash": "r5ICaZkxdgcjYBngYoSwh6D7t8DJ86D6n81aVEIZpZU=",
   "Source": "Bookly",
   "BasePath": "_content/Bookly",
   "Mode": "Default",
@@ -36,25 +36,6 @@
       "OriginalItemSpec": "wwwroot\\css\\site.css"
     },
     {
-      "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\images.jfif",
-      "SourceId": "Bookly",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\",
-      "BasePath": "_content/Bookly",
-      "RelativePath": "images.jfif",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\images.jfif"
-    },
-    {
       "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\book-placeholder.webp",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
@@ -74,12 +55,12 @@
       "OriginalItemSpec": "wwwroot\\img\\book-placeholder.webp"
     },
     {
-      "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\default.jpg",
+      "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\default.webp",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
-      "RelativePath": "img/default.jpg",
+      "RelativePath": "img/default.webp",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -90,7 +71,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\img\\default.jpg"
+      "OriginalItemSpec": "wwwroot\\img\\default.webp"
     },
     {
       "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\favicon.ico",
@@ -131,12 +112,12 @@
       "OriginalItemSpec": "wwwroot\\img\\foto_bienvenida.webp"
     },
     {
-      "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\libroDefault.jpg",
+      "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\register_deco.webp",
       "SourceId": "Bookly",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\",
       "BasePath": "_content/Bookly",
-      "RelativePath": "img/libroDefault.jpg",
+      "RelativePath": "img/register_deco.webp",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -147,45 +128,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\img\\libroDefault.jpg"
-    },
-    {
-      "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\register_deco.png",
-      "SourceId": "Bookly",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\",
-      "BasePath": "_content/Bookly",
-      "RelativePath": "img/register_deco.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\img\\register_deco.png"
-    },
-    {
-      "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\toldot.jpg",
-      "SourceId": "Bookly",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\",
-      "BasePath": "_content/Bookly",
-      "RelativePath": "img/toldot.jpg",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\img\\toldot.jpg"
+      "OriginalItemSpec": "wwwroot\\img\\register_deco.webp"
     },
     {
       "Identity": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\js\\site.js",
