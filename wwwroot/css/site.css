@@ -333,7 +333,7 @@ select:disabled {
   aspect-ratio: 3 / 4;
   overflow: hidden;
   border-radius: 8px;
-  background-color: #f4f4f4;
+  background-color: var(--light);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1185,8 +1185,36 @@ a:visited {
 
 .detallesFoto{
   margin-left: 10%;
-  position: relative;
   display: inline-block;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: 800px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.detallesFoto img{
+  margin-left: 10%;
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: 800px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
 }
 
 
@@ -1218,38 +1246,44 @@ a:visited {
 }
 /* #region panel oculto */
 /* Botón flotante arriba a la derecha */
-.toggle-panel-btn {
+.panel-wrapper {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #1f3c88;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 9999;
-}
-
-
-/* Panel lateral */
-.side-panel {
-  position: fixed;
-  top: 0;
-  right: -350px;   /* oculto fuera de pantalla */
-  width: 350px;
-  height: 100vh;
-  background: #4568c7;
-  color: white;
-  padding: 20px;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.2);
-  transition: right 0.3s ease;
-  z-index: 9998;
-}
-
-
-/* Cuando está abierto */
-.side-panel.open {
+  top: 100px;          /* poné acá la altura debajo del header */
   right: 0;
+  z-index: 999;
+}
+
+/* Panel cerrado */
+.side-panel {
+  position: absolute;
+  top: 0;
+  right: -250px;       /* panel fuera de pantalla */
+  width: 250px;
+  height: 900px;
+  background: var(--main);
+  transition: right .3s ease;
+}
+
+/* Botón que se mueve igual que el panel */
+.panel-btn {
+  position: absolute;
+  top: 0;
+  right: 0;            /* pega al borde del panel */
+  background: var(--main);
+  padding: 12px;
+  border: none;
+  border-bottom-left-radius: 8px;
+  cursor: pointer;
+  transition: right .3s ease;
+}
+
+/* CUANDO SE ABRE */
+.panel-wrapper.open .side-panel {
+  right: 0;            /* panel entra */
+}
+
+.panel-wrapper.open .panel-btn {
+  right: 250px;        /* botón se desplaza exactamente igual */
 }
 /* #endregion panel oculto */
 

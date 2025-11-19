@@ -68,5 +68,3 @@ inputCurso.addEventListener("input", function () {
       });
   }
 })();
-
-
