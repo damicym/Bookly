@@ -4,7 +4,6 @@
 
 @{
     ViewData["Title"] = "Ver producto";
-    var ano = ViewBag.Publicacion.ano;
 }
 
 
@@ -12,42 +11,45 @@
 
 <section class="detalles">
     <div class="detallesFoto">
-        <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+        @if (Model.imagen != null)
+                {
+                    <img src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
+                }
+                else
+                {
+                    <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                }
         <button class="desearBtnDetalle">
             <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="none" stroke="#3a57a6" stroke-width="2" viewBox="0 0 24 24"><path d="M18 7v14l-6-4-6 4V7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4z"/></svg>
         </button>
     </div>
     <div class="detallesDatos">
-        <h1>@ViewBag.Publicacion.nombre</h1>
-        <h2><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>@ViewBag.Publicacion.estadoLibro</h2>
-        <h1>$   @ViewBag.Publicacion.precio</h1>
-        <h3>Materia: @ViewBag.Publicacion.materia</h3>
-        <h3>Año de uso: @HtmlHelpers.PasarAñoATexto(int.Parse(ano))</h3>
+        <h1>@Model.nombre</h1>
+        <h2><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>@Model.estadoLibro</h2>
+        <h1>$   @Model.precio</h1>
+        <h3>Materia: @Model.materia</h3>
+        <h3>Año de uso: @HtmlHelpers.PasarAñoATexto(Model.ano)</h3>
         <button class="comprar">Comprar</button>
     </div>
 </section>
 
 
-<section class="panelOculto">
-<button id="togglePanelBtn" class="toggle-panel-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" stroke="#000" fill="none" stroke-width="2px" viewBox="0 0 24 24">
-        <path d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-</button>
+<div class="panel-wrapper">
+    <button id="toggleBtn" class="panel-btn">
+        ☰
+    </button>
 
-
-<div id="sidePanel" class="side-panel">
+    <div id="sidePanel" class="side-panel">
+    </div>
 </div>
-</section>
 
 
 <script>
-    const btn = document.getElementById("togglePanelBtn");
-    const panel = document.getElementById("sidePanel");
+    const wrapper = document.querySelector(".panel-wrapper");
+const btn = document.getElementById("toggleBtn");
 
-
-    btn.addEventListener("click", () => {
-        panel.classList.toggle("open");
-    });
+btn.addEventListener("click", () => {
+    wrapper.classList.toggle("open");
+});
 </script>
 
