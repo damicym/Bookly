@@ -24,7 +24,7 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
-  background-color: #EFF2F1;
+  background-color: var(--light);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 200 200'%3E%3Cpolygon fill='%23ECEFEF' points='100 0 0 100 100 100 100 200 200 100 200 0'/%3E%3C/svg%3E");
 }
 
@@ -36,6 +36,7 @@ body {
   font-style: normal;
   font-variation-settings:
     "YOPQ" 300;
+    overflow-x: hidden;
 }
 main {
   flex: 1;
@@ -1286,7 +1287,7 @@ a:visited {
 /* #region panel oculto */
 /* Botón flotante arriba a la derecha */
 .panel-wrapper {
-  position: fixed;
+  position: absolute;
   top: 105px;
   right: 0;
   z-index: 999;
@@ -1313,7 +1314,7 @@ a:visited {
   top: 0;
   right: 0;
   background: var(--main);
-  padding: 12px;
+  padding: 6px;
   border: none;
   border-bottom-left-radius: 8px;
   cursor: pointer;
@@ -1329,12 +1330,15 @@ a:visited {
   right: 400px;
 }
 
+.panel-wrapper.open .side-panel { right: 0; }
+.panel-wrapper.open .panel-btn   { right: 400px; }
 
 /* contenido panel*/
 .imgVenDetalle{
   height: 250px;
   width: 250px;
   margin-top: 10px;
+  filter: drop-shadow(0px 0px 1px var(--dark));
 }
 
 /* nombre del vendedor */
