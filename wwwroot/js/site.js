@@ -1,7 +1,20 @@
 ﻿console.log("entra a js")
 const input = document.getElementById("about");
 input.style.width = input.scrollWidth + "px";
-
+//Disabled en los botones q hacen llamada a bd
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", () => {
+            const buttons = form.querySelectorAll("button, input[type=submit]");
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = "0.6";
+                btn.style.cursor = "not-allowed";
+                btn.innerText = "Cargando...";
+            });
+        });
+    });
+});
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');
 const especialidadSelect = document.getElementById('especialidad');

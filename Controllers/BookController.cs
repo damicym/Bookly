@@ -52,7 +52,7 @@ namespace Bookly.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int id, int idVendedor)
+        public IActionResult Detalle(int id, string idVendedor)
         {
             PublicacionesCompletas libro = BD.ObtenerPublicacionCompletaPorId(id);
             Usuarios vendedor = BD.ObtenerUsuarioPorDNI(idVendedor);

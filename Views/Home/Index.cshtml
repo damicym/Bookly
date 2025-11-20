@@ -93,7 +93,7 @@
                 </div>
                 <h3>$@libro.precio</h3>
                 <div class="pillContainer">
-                    <span class="pill">@libro.estadoLibro</span>
+                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
                     <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
                 </div>
             </div>
