@@ -29,13 +29,17 @@ body {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   font-family: "Kumbh Sans", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
   font-variation-settings:
     "YOPQ" 300;
 }
-
+main {
+  flex: 1;
+}
 
 header button {
   font-family: "Kumbh Sans", sans-serif;
@@ -70,7 +74,7 @@ header {
 }
 
 .primerElemento{
-  margin-top: 105px;
+  margin-top: 105px !important;
 }
 
 
@@ -543,7 +547,7 @@ select:disabled {
 .mainBtn svg, .secondaryBtn svg {
   transition: transform 0.3s ease;
 }
-.mainBtn:hover svg, .secondaryBtn:hover svg {
+.mainBtn.wHover:hover svg, .secondaryBtn.wHover:hover svg {
   transform: translateX(5px);
 }
 
@@ -726,7 +730,8 @@ a:visited {
 
 .busqueda-titulo {
   text-align: center;
-  margin-top: 30px;
+  /* margin-top: 30px; */
+  padding-top: 30px;
   font-size: 2.2rem;
   color: var(--dark);
   background: transparent;
@@ -857,10 +862,11 @@ a:visited {
 
 .profileInfo {
   position: relative;
-  /* gap: 10px; */
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* display: grid;
+  grid-template-columns: 1fr auto 1fr; */
+  display: flex;
+  gap: 50px;
 }
 
 
@@ -871,35 +877,60 @@ a:visited {
 }
 
 
-.profileId,
+/* .profileId, */
 .profileStats {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-
-.profileId {
+.profileId{
+  display: flex;
+  flex-direction: column;
   gap: 25px;
+  justify-content: center;
+  grid-column: 2;
+  /* transform: translateX(-10%); */
+  width: 700px;
 }
 
-
-
-
-
-
-.profileId div {
+/* .profileId div {
   display: flex;
   flex-direction: column;
   height: 200px;
   gap: 20px;
+} */
+
+.aboutMeContainer{
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 10px;
 }
 
+.aboutMeContainer button{
+  border: 0;
+  background-color: transparent;
+  color: var(--dark);
+}
 
 .aboutMe {
   font-size: 1.5rem;
   color: rgba(6, 26, 64, 0.75);
   /* --dark en rgb */
+  font-weight: 450;
+}
+
+.infoInput{
+  font-size: 1.5rem;
+  color: rgba(6, 26, 64, 0.75); /* --dark en rgb */
+  font-weight: 450;
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+  caret-color: transparent;
+  width: fit-content;
 }
 
 
@@ -922,6 +953,7 @@ a:visited {
   height: 300px;
   border-radius: 100%;
   filter: drop-shadow(0px 0px 1px var(--dark));
+  grid-column: 1;
 }
 
 
@@ -969,7 +1001,8 @@ a:visited {
   color: var(--light);
   border-radius: 13px;
   padding: 8px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 400;
 }
 
 
@@ -980,7 +1013,7 @@ a:visited {
   flex-direction: column;
   width: 100%;
   height: max-content;
-  gap: 15px;
+  gap: 30px;
 }
 
 
