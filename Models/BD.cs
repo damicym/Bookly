@@ -18,7 +18,7 @@ namespace Bookly.Models
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = @"SELECT DNI, nombreComp, ano, especialidad, curso, password 
+                string query = @"SELECT DNI, nombreComp, ano, especialidad, curso, password, aboutMe 
                                  FROM Usuarios 
                                  WHERE DNI = @pDNI AND password = @pPassword";
                 Usuarios usuario = connection.QueryFirstOrDefault<Usuarios>(query, new { pDNI = dni, pPassword = password });

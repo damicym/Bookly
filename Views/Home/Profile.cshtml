@@ -6,23 +6,27 @@
 }
 
 <section class="profileInfo primerElemento">
-    <section class="profileId">
-        <img src="~/img/default.webp" alt="pfp">
-        <div>
-            <h1 class="nombreCompleto">@HtmlHelpers.ToUpperPrimeraLetra(ViewBag.usuario.nombreComp)</h1>
-            <h2 class="aboutMe">@ViewBag.usuario.aboutMe</h2>
+    <img src="~/img/default.webp" alt="pfp">
+    <div class="profileId">
+        <h1 class="nombreCompleto">@HtmlHelpers.ToUpperPrimeraLetra(ViewBag.usuario.nombreComp)</h1>
+        <div class="profileStats">
+            <p class="statsPill">@($"{HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano)} {ViewBag.usuario.especialidad} {ViewBag.usuario.curso} ")</p>
+                <p class="statsPill">Sin ventas cerradas</p>
+                @if (Model.Count == 1)
+                {
+                    <p class="statsPill">@Model.Count Publicación</p>
+                } else{
+                    <p class="statsPill">@Model.Count Publicaciones</p>
+                }
         </div>
-    </section>
-    <section class="profileStats">
-        <p class="statsPill">@($"{HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano)} {ViewBag.usuario.especialidad} {ViewBag.usuario.curso} ")</p>
-            <p class="statsPill">Sin ventas cerradas</p>
-            @if (Model.Count == 1)
-            {
-                <p class="statsPill">@Model.Count Publicación</p>
-            } else{
-                <p class="statsPill">@Model.Count Publicaciones</p>
-            }
-    </section>
+        <div class="aboutMeContainer">
+            @* <h2 class="aboutMe">@ViewBag.usuario.aboutMe</h2> *@
+            <input type="text" value="@ViewBag.usuario.aboutMe" class="infoInput" readonly id="about">
+            <button >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+            </button>
+        </div>
+    </div>
     <button class="logoutBtn" onclick="window.location.href='@Url.Action("Logout", "Usuarios")'">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
         Cerrar Sesión

@@ -1,26 +1,30 @@
 ﻿console.log("entra a js")
+const input = document.getElementById("about");
+input.style.width = input.scrollWidth + "px";
 
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');
 const especialidadSelect = document.getElementById('especialidad');
+if(anoSelect){
+    anoSelect.addEventListener('change', () => {
+      const valor = parseInt(anoSelect.value);
+    
+    
+      // Deshabilita si el año es menor a 3 o no es un número
+      const deshabilitado = isNaN(valor) || valor < 4;
+      especialidadSelect.disabled = deshabilitado;
+    
+    
+      // Si está habilitado, que sea requerido; si no, quita el atributo
+      if (deshabilitado) {
+        especialidadSelect.removeAttribute('required');
+      } else {
+        especialidadSelect.setAttribute('required', '');
+      }
+    });
+}
 
 
-anoSelect.addEventListener('change', () => {
-  const valor = parseInt(anoSelect.value);
-
-
-  // Deshabilita si el año es menor a 3 o no es un número
-  const deshabilitado = isNaN(valor) || valor < 4;
-  especialidadSelect.disabled = deshabilitado;
-
-
-  // Si está habilitado, que sea requerido; si no, quita el atributo
-  if (deshabilitado) {
-    especialidadSelect.removeAttribute('required');
-  } else {
-    especialidadSelect.setAttribute('required', '');
-  }
-});
 
 
 //Solo letras en curso
@@ -80,4 +84,3 @@ fileInput.addEventListener("change", () => {
         fileName.textContent = "Ningún archivo seleccionado";
     }
 });
-
