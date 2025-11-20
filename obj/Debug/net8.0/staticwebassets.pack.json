@@ -1,100 +1,79 @@
 {
   "Files": [
     {
-      "Id": "C:\\Bookly\\wwwroot\\css\\site.css",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
-<<<<<<< HEAD
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\book-placeholder.webp",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\book-placeholder.webp",
       "PackagePath": "staticwebassets\\img\\book-placeholder.webp"
     },
     {
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\default.webp",
-=======
-      "Id": "C:\\Bookly\\wwwroot\\images.jfif",
-      "PackagePath": "staticwebassets\\images.jfif"
-    },
-    {
-      "Id": "C:\\Bookly\\wwwroot\\img\\book-placeholder.webp",
-      "PackagePath": "staticwebassets\\img\\book-placeholder.webp"
-    },
-    {
-      "Id": "C:\\Bookly\\wwwroot\\img\\default.webp",
->>>>>>> 6d5e4a2dbd915a0daefa3a7cc5c852455afc58ab
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\default.webp",
       "PackagePath": "staticwebassets\\img\\default.webp"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\img\\favicon.ico",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\favicon.ico",
       "PackagePath": "staticwebassets\\img\\favicon.ico"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\img\\foto_bienvenida.webp",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\foto_bienvenida.webp",
       "PackagePath": "staticwebassets\\img\\foto_bienvenida.webp"
     },
     {
-<<<<<<< HEAD
-      "Id": "C:\\Users\\49190832\\Downloads\\Bookly\\wwwroot\\img\\register_deco.webp",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\img\\register_deco.webp",
       "PackagePath": "staticwebassets\\img\\register_deco.webp"
-=======
-      "Id": "C:\\Bookly\\wwwroot\\img\\register_deco.png",
-      "PackagePath": "staticwebassets\\img\\register_deco.png"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\img\\toldot.jpg",
-      "PackagePath": "staticwebassets\\img\\toldot.jpg"
->>>>>>> 6d5e4a2dbd915a0daefa3a7cc5c852455afc58ab
-    },
-    {
-      "Id": "C:\\Bookly\\wwwroot\\js\\site.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
       "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\LICENSE.txt",
       "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.js",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
     },
     {
-      "Id": "C:\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "Id": "C:\\Users\\49549062\\Downloads\\Bookly\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
