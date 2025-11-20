@@ -1,19 +1,6 @@
 ﻿console.log("entra a js")
 const input = document.getElementById("about");
-if(input) input.style.width = input.scrollWidth + "px";
-
-
-const fileInput = document.getElementById("fileInput");
-const fileName = document.getElementById("fileName");
-if(fileInput){
-    fileInput.addEventListener("change", () => {
-        if (fileInput.files.length > 0) {
-            fileName.textContent = fileInput.files[0].name;
-        } else {
-            fileName.textContent = "Ningún archivo seleccionado";
-        }
-    });
-}
+input.style.width = input.scrollWidth + "px";
 
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');

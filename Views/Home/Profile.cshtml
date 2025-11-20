@@ -56,7 +56,7 @@
         {
             foreach (PublicacionesCompletas libro in Model)
             {
-                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
+                <div class="libro inProfile">
                     <div class="libroImgContainer">
                         @if (libro.imagen != null)
                         {
@@ -96,7 +96,7 @@
                     </div>
                     <h3>$@libro.precio</h3>
                     <div class="pillContainer">
-                        <span class="pill">@libro.estadoLibro</span>
+                        <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);"> @libro.estadoLibro</span>
                         <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
                     </div>
                 </div>

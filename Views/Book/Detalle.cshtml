@@ -4,6 +4,8 @@
 
 @{
     ViewData["Title"] = "Ver producto";
+    var publicaciones = (List<PublicacionesCompletas>)ViewBag.Publicaciones;
+    var max = 4;
 }
 
 
@@ -20,16 +22,17 @@
                     <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
                 }
         <button class="desearBtnDetalle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="none" stroke="#3a57a6" stroke-width="2" viewBox="0 0 24 24"><path d="M18 7v14l-6-4-6 4V7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#3a57a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
         </button>
     </div>
     <div class="detallesDatos">
         <h1>@Model.nombre</h1>
-        <h2><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
-        @Model.estadoLibro</h2>
-        <h1>$   @Model.precio</h1>
         <h3>Materia: @Model.materia</h3>
+        <h2>@Model.estadoLibro</h2>
+        <h1>$   @Model.precio</h1>
         <h3>Año de uso: @HtmlHelpers.PasarAñoATexto(Model.ano)</h3>
+        <h3>Editorial: @Model.editorial</h3>
+        <h4>Descripición: @Model.descripcion</h4>
         <button class="mainBtn">Comprar</button>
     </div>
 </section>
@@ -42,18 +45,27 @@
 
     <div id="sidePanel" class="side-panel">
         <img src="~/img/default.webp" alt="pfp" class="imgVenDetalle">
-        <h3>Jonatan Naifeld</h3>
+        <h3>@ViewBag.Vendedor.nombreComp</h3>
         <div class="detallesVenInfo">
-            <h4>7mo Ciencias Naturales A</h4>
-            <h4 id="ventas">5 ventas cerradas</h4>
-            <h4>6 publicaciones</h4>
+            <h4>@($"{HtmlHelpers.PasarAñoATexto(ViewBag.Vendedor.ano)} {ViewBag.Vendedor.especialidad} {ViewBag.Vendedor.curso}")</h4>
+            <h4 id="ventas">hacer</h4>
+            <h4>hacer</h4>
         </div>
         <div class="detallesVenPublics">
             <h3>Publicaciones</h3>
-            <img src="~/img/book-placeholder.webp">
-            <img src="~/img/book-placeholder.webp">
-            <img src="~/img/book-placeholder.webp">
-            <img src="~/img/book-placeholder.webp">
+
+                @if(publicaciones.Count() < 4){
+                    max = publicaciones.Count();
+                }
+                @for (int i = 0; i < max; i++)
+                {
+                    if (publicaciones[i].imagen != null){
+                    <img src="data:image/webp;base64,@(Convert.ToBase64String(publicaciones[i].imagen))"/>
+                    }
+                    else{
+                        <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                    }
+                }
         </div>
     </div>
 </section>

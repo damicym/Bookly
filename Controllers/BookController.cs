@@ -60,6 +60,8 @@ namespace Bookly.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
+            ViewBag.Vendedor = vendedor;
             return View(libro);
         }
 

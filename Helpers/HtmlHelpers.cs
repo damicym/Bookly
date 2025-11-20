@@ -31,5 +31,17 @@ namespace Bookly.Helpers
 
             return string.Join(' ', palabras);
         }
+        public static string GetColor(string estado)
+        {
+            switch (estado)
+            {
+                case "Como nuevo": return "#97D8C4";           
+                case "Pocas anotaciones": return "#5AC495";     
+                case "Muy anotado": return "#F4B942";          
+                case "Muy usado": return "#D7263D";             
+                default: return "white";
+            }
+        }   
     }
+
 }
