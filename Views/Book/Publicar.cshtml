@@ -3,7 +3,7 @@
 }
 
 <section class="publicarPage primerElemento">
-<h2 style="justify-self: center;">Publicar nueva venta</h2>
+<h2 style="justify-self: center; color: var(--dark);">Publicar nueva venta</h2>
     <form action="@Url.Action("Publicar", "Book")" method="post" enctype="multipart/form-data">
         <section class="publicarLeft">
             <section class="formSection">
@@ -35,11 +35,11 @@
                         <label for="editorial">Editorial</label>
                         <input type="text" id="editorial" name="libro.editorial" placeholder="Ej.: Editorial ORT" />
                     </div> 
-            </section>
-        </section>
-        <section class="publicarRight">
-            <section class="formSection">
-                <h2>Últimos datos</h2>
+            <!-- </section> -->
+        <!-- </section> -->
+        <!-- <section class="publicarRight"> -->
+            <!-- <section class="formSection"> -->
+                <h2 style="margin-top: 15px;">Últimos datos</h2>
                     <div class="campo">
                         <label for="estadoLibro">Estado</label>
                         <select id="estadoLibro" name="estadoLibro" required>
