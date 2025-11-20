@@ -52,7 +52,7 @@ namespace Bookly.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int id, int idVendedor)
+        public IActionResult Detalle(int id, string idVendedor)
         {
             PublicacionesCompletas libro = BD.ObtenerPublicacionCompletaPorId(id);
             Usuarios vendedor = BD.ObtenerUsuarioPorDNI(idVendedor);
@@ -60,6 +60,8 @@ namespace Bookly.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
+            ViewBag.Vendedor = vendedor;
             return View(libro);
         }
 

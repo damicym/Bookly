@@ -1221,7 +1221,7 @@ a:visited {
 .detallesDatos{
   display: flex;
   flex-direction: column;
-  margin-right: 35%;
+  margin-right: 34%;
   margin-top: 1.5%;
   gap: 20px;
 }
@@ -1263,7 +1263,7 @@ a:visited {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+  filter: drop-shadow(0px 0px 1px var(--dark));
 }
 
 
@@ -1271,7 +1271,7 @@ a:visited {
 
 .desearBtnDetalle {
   position: absolute;
-  bottom: 10px;
+  top: 55px;
   right: 10px;
   background: var(--light);
   border: none;
@@ -1519,4 +1519,12 @@ a:visited {
   color: var(--light);
   opacity: 0.85;
   font-weight: 400;
+}
+
+.libro.inProfile{
+  cursor: auto !important;
+}
+
+.libro.inProfile:hover .libroImgContainer img {
+  transform: scale(1) !important;
 }

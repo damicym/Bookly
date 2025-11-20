@@ -52,7 +52,7 @@
         {
             foreach (PublicacionesCompletas libro in Model)
             {
-                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
+                <div class="libro inProfile">
                     <div class="libroImgContainer">
                         @if (libro.imagen != null)
                         {
