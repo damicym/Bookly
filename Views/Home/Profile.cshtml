@@ -86,11 +86,13 @@
                             </form>
                         </section>
                     </div>
-                    <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                    <h2>$@libro.precio</h2>
+                    <div class="nombreYMateriaContainer">
+                        <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
+                        <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                    </div>
+                    <h3>$@libro.precio</h3>
                     <div class="pillContainer">
                         <span class="pill">@libro.estadoLibro</span>
-                        <span class="pill">@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</span>
                         <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
                     </div>
                 </div>
