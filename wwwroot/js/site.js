@@ -1,6 +1,19 @@
 ﻿console.log("entra a js")
 const input = document.getElementById("about");
-input.style.width = input.scrollWidth + "px";
+if(input) input.style.width = input.scrollWidth + "px";
+
+
+const fileInput = document.getElementById("fileInput");
+const fileName = document.getElementById("fileName");
+if(fileInput){
+    fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+            fileName.textContent = fileInput.files[0].name;
+        } else {
+            fileName.textContent = "Ningún archivo seleccionado";
+        }
+    });
+}
 
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');
@@ -74,13 +87,3 @@ inputCurso.addEventListener("input", function () {
       });
   }
 })();
-
-const fileInput = document.getElementById("fileInput");
-const fileName = document.getElementById("fileName");
-fileInput.addEventListener("change", () => {
-    if (fileInput.files.length > 0) {
-        fileName.textContent = fileInput.files[0].name;
-    } else {
-        fileName.textContent = "Ningún archivo seleccionado";
-    }
-});

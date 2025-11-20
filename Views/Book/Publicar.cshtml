@@ -7,7 +7,7 @@
     <form action="@Url.Action("Publicar", "Book")" method="post" enctype="multipart/form-data">
         <section class="publicarLeft">
             <section class="formSection">
-                <h2>Información global del libro</h2>
+                <h2>Información del libro</h2>
                     <div class="campo">
                         <label for="nombre">Nombre</label>
                         <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus/>
@@ -39,7 +39,7 @@
         <!-- </section> -->
         <!-- <section class="publicarRight"> -->
             <!-- <section class="formSection"> -->
-                <h2 style="margin-top: 15px;">Últimos datos</h2>
+                <h2 style="margin-top: 40px;">Últimos datos</h2>
                     <div class="campo">
                         <label for="estadoLibro">Estado</label>
                         <select id="estadoLibro" name="estadoLibro" required>
@@ -69,7 +69,7 @@
                                     </span>
                                     Subir archivo
                                 </label>
-                                <input type="file" id="fileInput">
+                                <input name="imagen" accept="image/*" type="file" id="fileInput">
                                 <span class="file-name" id="fileName">Ningún archivo seleccionado</span>
                             </div>
                         </div>

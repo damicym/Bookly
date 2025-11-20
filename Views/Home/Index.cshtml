@@ -6,11 +6,6 @@
 }
 
 @{
-    string mainBienvenidaBtnAction = ViewBag.userLogged
-        ? "location.href='" + Url.Action("Publicar", "Book") + "'"
-        : "location.href='" + Url.Action("Login", "Usuarios") + "'";
-}
-@{
     string secondaryBienvenidaBtnAction = ViewBag.userLogged
         ? "location.href='" + Url.Action("Buscar", "Home", new { query = "" }) + "'"
         : "location.href='" + Url.Action("Login", "Usuarios") + "'";
@@ -22,7 +17,7 @@
         <h1><span>La forma más cómoda de comprar</span> <span>y vender libros escolares</span></h1>
         <p class="bienvenidaP">Contactá con un estudiante, acordá un precio justo y una ubicación en cuestión de minutos</p>
         <div class="bienvenidaBtnContainer">
-            <button class="mainBtn wHover" style="width: 200px;" onclick="@mainBienvenidaBtnAction">
+            <button class="mainBtn wHover" style="width: 200px;" onclick="location.href='@Url.Action("Publicar", "Book")'">
                 Publicar un libro
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
             </button>
@@ -64,44 +59,48 @@
 
 <h2 class="tituloPublicaciones">@ViewBag.Titulo</h2>
 <section class="librosContainer">
-<section class="cardsPublicadas" style="justify-content: center;">
-    @if (Model != null || Model.Count > 0)
-    {
-        foreach (PublicacionesCompletas libro in Model)
+    <section class="cardsPublicadas" style="justify-content: center;">
+        @if (Model != null || Model.Count > 0)
         {
-            <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
-                <div class="libroImgContainer">
-                @if (libro.imagen != null)
-                {
-                    <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
-                }
-                else
-                {
-                    <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-                }
-                    <section class="libroActionsContainer">
-                        <form class="desearBtnForm hoverVerde" asp-controller="Book" asp-action="Desear" asp-route-id="@libro.id" method="post" style="display:inline;">
-                            <button type="submit" onclick="event.stopPropagation();">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
-                            </button>
-                        </form>
-                    </section>
+            foreach (PublicacionesCompletas libro in Model)
+            {
+                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                    <div class="libroImgContainer">
+                    @if (libro.imagen != null)
+                    {
+                        <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                    }
+                    else
+                    {
+                        <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                    }
+                        <section class="libroActionsContainer">
+                            <form class="desearBtnForm hoverVerde" asp-controller="Book" asp-action="Desear" asp-route-id="@libro.id" method="post" style="display:inline;">
+                                <button type="submit" onclick="event.stopPropagation();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
+                                </button>
+                            </form>
+                        </section>
+                    </div>
+                    <div class="nombreYMateriaContainer">
+                        <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
+                        <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                    </div>
+                    <h3>$@libro.precio</h3>
+                    <div class="pillContainer">
+                        <span class="pill">@libro.estadoLibro</span>
+                        <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                    </div>
                 </div>
-                <div class="nombreYMateriaContainer">
-                    <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                    <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                </div>
-                <h3>$@libro.precio</h3>
-                <div class="pillContainer">
-                    <span class="pill">@libro.estadoLibro</span>
-                    <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
-                </div>
-            </div>
+            }
         }
-    }
-    else
-    {
-        <p>No se encontraron libros recomendados para tu especialidad y año.</p>
-    }
+        else
+        {
+            <p>No se encontraron libros recomendados para tu especialidad y año.</p>
+        }
+    </section>
 </section>
-</section>
+
+<button class="mainBtn" style="width: auto; justify-self: center;" onclick="@secondaryBienvenidaBtnAction">
+    @(ViewBag.userLogged ? "Explorar catálogo completo" : "Iniciá sesión para explorar el catálogo completo")
+</button>

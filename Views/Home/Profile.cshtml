@@ -10,14 +10,18 @@
     <div class="profileId">
         <h1 class="nombreCompleto">@HtmlHelpers.ToUpperPrimeraLetra(ViewBag.usuario.nombreComp)</h1>
         <div class="profileStats">
-            <p class="statsPill">@($"{HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano)} {ViewBag.usuario.especialidad} {ViewBag.usuario.curso} ")</p>
-                <p class="statsPill">Sin ventas cerradas</p>
-                @if (Model.Count == 1)
-                {
-                    <p class="statsPill">@Model.Count Publicación</p>
-                } else{
-                    <p class="statsPill">@Model.Count Publicaciones</p>
-                }
+            <div class="pieceOfInfo">
+                <span>@($"{HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano)}")</span>
+                <span>@($"{ViewBag.usuario.especialidad} {ViewBag.usuario.curso} ")</span>
+            </div>
+            <div class="pieceOfInfo">
+                <span>0</span>
+                <span>ventas cerradas</span>
+            </div>
+            <div class="pieceOfInfo">
+                <span>@Model.Count</span>
+                <span>Publicaciones</span>
+            </div>
         </div>
         <div class="aboutMeContainer">
             @* <h2 class="aboutMe">@ViewBag.usuario.aboutMe</h2> *@
@@ -37,7 +41,7 @@
     <div class="publicacionesEnProfileTitulo">
         <h1>Publicaciones</h1>
         <button class="mainBtn" onclick="window.location.href='@Url.Action("Publicar", "Book")'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12h6" /><path d="M12 9v6" /><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-square-rounded-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M15 12h-6" /><path d="M12 9v6" /></svg>
             Publicar un libro
         </button>
     </div>
@@ -64,7 +68,7 @@
                         }
                         <section class="libroActionsContainer">
                             <form 
-                            class="desearBtnForm" 
+                            class="desearBtnForm editar" 
                             action="@Url.Action("Editar", "Book")" 
                             method="get" 
                             style="display:inline;">

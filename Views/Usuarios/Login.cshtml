@@ -11,7 +11,7 @@
         }
 
         <form method="post" action="@Url.Action("Login", "Usuarios")">
-
+            <input type="hidden" name="returnView" value="@ViewBag.returnView" />
             <div class="campo">
                 <label>DNI</label>
                 <input placeholder="DNI" type="text" name="DNI" id="DNI" required autocomplete="off" autofocus/>
