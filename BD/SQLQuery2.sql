@@ -41,7 +41,8 @@ INSERT INTO Libros (nombre, materia, ano, editorial) VALUES
 ('Historia', 'Historia', 2, 'Kapelusz'),
 ('Libro de Hebreo 1', 'Hebreo', 2, 'ORT'),
 ('El extraño caso del Dr. Jekyll y el Sr. Hyde', 'Lengua', 2, 'La estación'),
-('Fuentes del Judaismo III', 'Educación Judía', 2, 'ORT');
+('Fuentes del Judaismo 3', 'Educación Judía', 2, 'ORT');
+
 
 GO
 
@@ -58,7 +59,7 @@ INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, curso, password, about
 ('45000999', 'Ivana Martínez', 5, 'Construcciones', 'D', 'ivana123', 'Me encantan los libros en inglés y la traducción.'),
 ('45001010', 'Julián Rodríguez', 6, 'Informática', 'E', 'julian123', 'Desarrollador junior y fan del aprendizaje.'),
 ('50542543', 'Mario Finker', 4, 'Mecatrónica', 'A', 'mario2222','Me gusta la robótica'),
-('51334453', 'Juan Binker', 3, null, 'J', 'juanBinker33','Soy de Boca Juniors');
+('51334453', 'Juan Binker', 3, NULL, 'J', 'juanBinker33', 'Soy de Boca Juniors.');
 GO
 
 -- 📝 Insertar publicaciones (revisado: fechas al formato datetime estándar)
@@ -67,7 +68,7 @@ INSERT INTO Publicacion (idVendedor, precio, idLibro, status, estadoLibro, fecha
 ('45000111', 5200, 7, 1, 'Como nuevo', '2025-09-25', 'Perfecto estado, casi sin uso.', null),
 ('45000222', 3000, 6, 1, 'Muy anotado', '2025-09-20', 'Subrayado en varias páginas, útil para repaso.', null),
 ('45000222', 5500, 11, 1, 'Como nuevo', '2025-09-30', 'Inglés Step by Step sin uso.', null),
-('45000333', 2700, 2, 1, 'Muy usado', '2025-08-10', 'Tapa gastada pero contenido completo.',null),
+('45000333', 2700, 2, 1, 'Muy usado', '2025-08-10', 'Tapa gastada pero contenido completo.', null),
 ('45000333', 3200, 3, 1, 'Pocas anotaciones', '2025-08-15', 'Toldot 2 en buen estado general.', null),
 ('45000444', 4000, 9, 1, 'Como nuevo', '2025-07-12', 'Introducción a la programación en excelente estado.', null),
 ('45000444', 2800, 4, 1, 'Muy anotado', '2025-07-20', 'Toldot 3 con apuntes útiles.', null),
@@ -82,7 +83,7 @@ INSERT INTO Publicacion (idVendedor, precio, idLibro, status, estadoLibro, fecha
 ('45000888', 3300, 4, 1, 'Como nuevo', '2025-03-15', 'Libro en excelente estado.', null),
 ('45000999', 3800, 6, 1, 'Muy usado', '2025-02-05', 'Inglés con notas y marcas antiguas.', null),
 ('45000999', 5400, 11, 1, 'Como nuevo', '2025-02-10', 'Perfecto para nivel inicial.', null),
-('45000999', 4200, 1, 1, 'Pocas anotaciones', '2025-02-15', 'Ciencias Naturales en buen estado.' ,null),
+('45000999', 4200, 1, 1, 'Pocas anotaciones', '2025-02-15', 'Ciencias Naturales en buen estado.', null),
 ('45001010', 5200, 9, 1, 'Como nuevo', '2025-01-20', 'Manual de informática sin uso.', null),
 ('45001010', 2800, 5, 1, 'Muy usado', '2025-01-25', 'Toldot 4 bastante gastado.', null),
 ('45001010', 3500, 8, 1, 'Pocas anotaciones', '2025-01-28', 'Con mapas y gráficos subrayados.', null),
@@ -93,14 +94,11 @@ INSERT INTO Publicacion (idVendedor, precio, idLibro, status, estadoLibro, fecha
 ('45000555', 2700, 3, 1, 'Muy usado', '2025-06-25', 'Cubierta deteriorada, páginas completas.', null),
 ('45000666', 4500, 10, 1, 'Como nuevo', '2025-05-10', 'Edición reciente, sin marcas.', null),
 ('45000777', 3300, 8, 1, 'Pocas anotaciones', '2025-04-30', 'Buen estado general, con mapas.', null),
-
-
-('50542543', 4300, 12, 1, 'Muy anotado', '2025-03-29', 'Anotaciones útiles, buen estado general...', null ),
-('50542543', 7300, 13, 1, 'Pocas anotaciones', '2025-03-27', 'Anotaciones leves en pocas páginas, perfecto estado', null),
-('50542543', 8300, 14, 1, 'Pocas anotaciones', '2025-03-29', 'Tiene algunas anotaciones, aún así está en muy buen estado', null),
-('50542543', 5300, 15, 1, 'Muy anotado', '2025-03-29', 'Anotaciones útiles, buen estado general...', null),
-('50542543',9500, 16, 1, 'Como nuevo', '2025-04-02', 'Ninguna anotación, perfecto estado.', null),
-('50542543', 5300, 17, 1, 'Muy anotado', '2025-03-29', 'Anotaciones útiles, buen estado general...', null ),
-('50542543', 4300, 18, 1, 'Muy usado', '2025-04-14', 'Bastante anotado y medianamente desgastado.', null);
-
+('50542543', 4300, 11, 1, 'Muy anotado', '2025-03-29', 'Anotaciones útiles, buen estado general...', null),
+('50542543', 7300, 12, 1, 'Pocas anotaciones', '2025-03-27', 'Anotaciones leves en pocas páginas, perfecto estado.', null),
+('50542543', 8300, 13, 1, 'Pocas anotaciones', '2025-03-29', 'Tiene algunas anotaciones, aún así está en muy buen estado.', null),
+('50542543', 5300, 14, 1, 'Muy anotado', '2025-03-29', 'Anotaciones útiles, buen estado general...', null),
+('50542543', 9500, 15, 1, 'Como nuevo', '2025-04-02', 'Ninguna anotación, perfecto estado.', null);
 GO
+
+

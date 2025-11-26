@@ -35,6 +35,7 @@ namespace Bookly.Controllers
                 ViewBag.Titulo = "Últimas publicaciones";
             }
             ViewBag.userLogged = user != null;
+            ViewBag.usuario = user;
             return View(publicaciones);
         }
 

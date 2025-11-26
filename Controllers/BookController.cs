@@ -73,7 +73,6 @@ namespace Bookly.Controllers
         }
 
         [HttpGet]
-        [HttpGet]
         public IActionResult Editar(int id)
         {
             // Obtener la publicación completa por su ID
