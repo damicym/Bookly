@@ -734,8 +734,10 @@ a:visited {
 
 
 .error {
-  color: red;
-  font-size: 1rem;
+  color: var(--red);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 550;
 }
 
 
@@ -876,11 +878,22 @@ a:visited {
 
 
 .no-result {
-  grid-column: 1 / -1;
+  /* grid-column: 1 / -1;
   text-align: center;
   padding: 60px 0;
   color: var(--secondary2);
-  font-size: 1.05rem;
+  font-size: 1.05rem; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.no-result p{
+  color: var(--accent);
+  font-size: 1.3rem;
+  font-weight: 550;
 }
 
 

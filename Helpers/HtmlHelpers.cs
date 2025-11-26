@@ -35,10 +35,10 @@ namespace Bookly.Helpers
         {
             switch (estado)
             {
-                case "Como nuevo": return "#97D8C4";           
-                case "Pocas anotaciones": return "#5AC495";     
-                case "Muy anotado": return "#F4B942";          
-                case "Muy usado": return "#D7263D";             
+                case "Como nuevo": return "var(--secondary2)";           
+                case "Pocas anotaciones": return "var(--accent)";
+                case "Muy anotado": return "var(--red)";          
+                case "Muy usado": return "var(--red)";        
                 default: return "white";
             }
         }   
