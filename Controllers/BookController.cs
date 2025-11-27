@@ -25,6 +25,7 @@ namespace Bookly.Controllers
             {
                 return RedirectToAction("Login", "Usuarios", new { returnView = "Publicar" });
             }
+            ViewBag.usuario = user;
             return View();
         }
 
@@ -54,6 +55,7 @@ namespace Bookly.Controllers
         [HttpGet]
         public IActionResult Detalle(int id, string idVendedor)
         {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             PublicacionesCompletas libro = BD.ObtenerPublicacionCompletaPorId(id);
             Usuarios vendedor = BD.ObtenerUsuarioPorDNI(idVendedor);
             if (libro == null)
@@ -62,6 +64,7 @@ namespace Bookly.Controllers
             }
             ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
             ViewBag.Vendedor = vendedor;
+            ViewBag.usuario = user;
             return View(libro);
         }
 

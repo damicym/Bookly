@@ -40,7 +40,8 @@
             </div>
             <div class="campo">
                 <label for="especialidad">Ingresá tu especialidad</label>
-                <select id="especialidad" name="especialidad" disabled>
+                <select id="especialidad" name="especialidad">
+                
                     <option value="">Selecciona un especialidad</option>
                     <option value="Informatica">Informática</option>
                     <option value="Gestión">Gestión</option>
@@ -72,3 +73,33 @@
         </form>
     </section>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const anoSelect = document.getElementById('ano');
+    const especialidadSelect = document.getElementById('especialidad');
+
+    function updateEspecialidadState() {
+        // Permitir elegir especialidad solo si el año es 3ero o superior (valor 4 o más)
+        const anoValue = parseInt(anoSelect.value, 10);
+        if (anoValue >= 4) {
+            especialidadSelect.disabled = false;
+            especialidadSelect.classList.remove('especialidad-disabled');
+        } else {
+            especialidadSelect.disabled = true;
+            especialidadSelect.classList.add('especialidad-disabled');
+            especialidadSelect.value = ""; // Limpiar selección si se deshabilita
+        }
+    }
+
+    anoSelect.addEventListener('change', updateEspecialidadState);
+    // Actualizar estado al cargar la página
+    updateEspecialidadState();
+});
+</script>
+<style>
+.especialidad-disabled {
+    cursor: not-allowed;
+    background: #eee;
+}
+</style>

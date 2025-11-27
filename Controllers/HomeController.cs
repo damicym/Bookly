@@ -80,6 +80,7 @@ namespace Bookly.Controllers
                 ViewBag.isQueryNull = true;
             }
             ViewData["Title"] = "Resultados de búsqueda";
+            ViewBag.usuario = user;
             return View(resultados);
         }
     }

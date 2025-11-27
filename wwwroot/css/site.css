@@ -230,6 +230,18 @@ input {
   gap: 10px;
   align-items: center;
   border-radius: 50%;
+  text-decoration: none;
+}
+.profileBtn a{
+  display: flex;
+  gap: 5px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileBtn *{
+  text-decoration: none;
 }
 
 .actualNavSection {
@@ -1471,7 +1483,6 @@ a:visited {
   color: var(--light);
   padding: 20px 0;
   text-align: center;
-  margin-top: 40px;
   z-index: 1000;
   position: relative;
 }
@@ -1579,7 +1590,9 @@ a:visited {
   transform: scale(1) !important;
 }
 
-
+.profileBtn p{
+  display: block;
+}
 @media (max-width: 450px) {
   .logoSvg{
     width: 70px;
@@ -1636,5 +1649,14 @@ a:visited {
   }
   .footer-link {
     font-size: 0.7rem;
+  }
+  .cardsPublicadas{
+    justify-content: center;
+  }
+  .profileBtn p{
+    display: none;
+  }
+  .formSection{
+    width: auto;
   }
 }
