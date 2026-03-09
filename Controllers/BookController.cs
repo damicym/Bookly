@@ -92,7 +92,7 @@ namespace Bookly.Controllers
         }
 
         [HttpPost]
-        public IActionResult Editar(int id,string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen)
+        public IActionResult Editar(int id, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen, string imagenEliminada)
         {
             PublicacionesCompletas publicacion = BD.ObtenerPublicacionCompletaPorId(id);
             if (publicacion == null)
@@ -100,7 +100,13 @@ namespace Bookly.Controllers
 
             byte[] imagenBytes = publicacion.imagen;
 
-            if (imagen != null && imagen.Length > 0)
+            // Si el usuario marcó la imagen para eliminar
+            if (imagenEliminada == "true")
+            {
+                imagenBytes = null;  // Establece la imagen como null para usar la predeterminada
+            }
+            // Si se subió una nueva imagen
+            else if (imagen != null && imagen.Length > 0)
             {
                 using (var ms = new MemoryStream())
                 {
@@ -108,6 +114,7 @@ namespace Bookly.Controllers
                     imagenBytes = ms.ToArray();
                 }
             }
+            // Si no se hizo nada, mantiene la imagen actual
 
             // Actualizar en base de datos
             BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenBytes);

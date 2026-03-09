@@ -1,6 +1,8 @@
 ﻿console.log("entra a js")
 const input = document.getElementById("about");
-input.style.width = input.scrollWidth + "px";
+if(input) {
+    input.style.width = input.scrollWidth + "px";
+}
 
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');
@@ -24,20 +26,17 @@ if(anoSelect){
     });
 }
 
-
-
-
 //Solo letras en curso
 const inputCurso = document.getElementById("curso");
-
-inputCurso.addEventListener("input", function () {
-    this.value = this.value.replace(/[^a-zA-Z]/g, '');
-    this.value = this.value.toUpperCase();
-});
+if(inputCurso) {
+    inputCurso.addEventListener("input", function () {
+        this.value = this.value.replace(/[^a-zA-Z]/g, '');
+        this.value = this.value.toUpperCase();
+    });
+}
 
 (function () {
   const searchUrl = '@Url.Action("Buscar", "Home")'; // <-- Cambiado a Home
-
 
   function doSearch(q) {
       q = (q || '').trim();
@@ -45,10 +44,8 @@ inputCurso.addEventListener("input", function () {
       window.location.href = searchUrl + '?query=' + encodeURIComponent(q);
   }
 
-
   const input = document.getElementById('siteSearch');
   const icon = document.getElementById('siteSearchIcon');
-
 
   if (input) {
       input.addEventListener('keydown', function (e) {
@@ -62,7 +59,6 @@ inputCurso.addEventListener("input", function () {
       });
   }
 
-
   if (icon) {
       icon.style.cursor = 'pointer';
       icon.addEventListener('click', function () {
@@ -74,3 +70,84 @@ inputCurso.addEventListener("input", function () {
       });
   }
 })();
+
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+    // Detectar cuando se carga una imagen y actualizar el preview y el texto
+    const fileInput = document.getElementById('fileInput');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', function(event) {
+            const file = this.files[0];
+            
+            if (file) {
+                // Actualizar el nombre del archivo
+                const fileNameElement = document.getElementById('fileName');
+                if (fileNameElement) {
+                    fileNameElement.textContent = file.name;
+                }
+                
+                // Crear un FileReader para mostrar la preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imagenPreview = document.getElementById('imagenPreview');
+                    const estadoImagen = document.getElementById('estadoImagen');
+                    const imagenEliminada = document.getElementById('imagenEliminada');
+                    
+                    if (imagenPreview) {
+                        imagenPreview.src = e.target.result;
+                    }
+                    if (estadoImagen) {
+                        estadoImagen.textContent = 'Nueva imagen seleccionada';
+                    }
+                    if (imagenEliminada) {
+                        imagenEliminada.value = 'false';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+// Eliminar la imagen actual
+function eliminarImagenActual(event) {
+    event.preventDefault();
+    if (confirm('¿Está seguro de que desea eliminar la imagen actual? Se usará la imagen predeterminada del libro.')) {
+        // Marcar que se eliminó la imagen
+        const imagenEliminada = document.getElementById('imagenEliminada');
+        if (imagenEliminada) {
+            imagenEliminada.value = 'true';
+        }
+        
+        // Cambiar la preview a la imagen predeterminada
+        const imagenPreview = document.getElementById('imagenPreview');
+        if (imagenPreview) {
+            imagenPreview.src = '/img/book-placeholder.webp';
+        }
+        
+        // Cambiar el estado
+        const estadoImagen = document.getElementById('estadoImagen');
+        if (estadoImagen) {
+            estadoImagen.textContent = 'Imagen predeterminada';
+        }
+        
+        // Ocultar el botón de eliminar
+        const desearBtnForm = document.querySelector('.desearBtnForm');
+        if (desearBtnForm) {
+            desearBtnForm.style.display = 'none';
+        }
+        
+        // Limpiar el input de archivo
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+        
+        // Actualizar el texto del archivo
+        const fileName = document.getElementById('fileName');
+        if (fileName) {
+            fileName.textContent = 'Archivo no cambiado';
+        }
+    }
+}
