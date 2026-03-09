@@ -1,8 +1,6 @@
 ﻿console.log("entra a js")
 const input = document.getElementById("about");
-if(input) {
-    input.style.width = input.scrollWidth + "px";
-}
+input.style.width = input.scrollWidth + "px";
 
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');
@@ -25,6 +23,9 @@ if(anoSelect){
       }
     });
 }
+
+
+
 
 //Solo letras en curso
 const inputCurso = document.getElementById("curso");

@@ -964,7 +964,7 @@ a:visited {
 
 .aboutMeContainer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
   gap: 10px;
 }
@@ -981,17 +981,27 @@ a:visited {
   font-weight: 450;
 } */
 
-.infoInput {
+.aboutMe {
   font-size: 1.5rem;
   color: var(--dark);
   opacity: 0.85;
   font-weight: 450;
-  background-color: transparent;
-  border: 0;
   padding: 0;
-  pointer-events: none;
-  caret-color: transparent;
-  width: fit-content;
+}
+
+.aboutMeInput{
+  width: 500px;
+  resize: none;
+  background-color: var(--light);
+  color: var(--dark);
+  border-radius: 4px;
+}
+
+.submitAboutMe{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
 }
 
 
