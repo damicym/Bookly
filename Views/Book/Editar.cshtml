@@ -125,8 +125,9 @@
                     </span>
                     Subir archivo
                 </label>
-                <input name="imagen" accept="image/*" type="file" id="fileInput">
-                <span class="file-name" id="fileName">Archivo no cambiado</span>
+                <!-- INPUT MOVIDO FUERA DEL LABEL -->
+                <input name="imagen" accept="image/*" type="file" id="fileInput" style="display: none;">
+                <span class="file-name" id="fileName">Archivo no encontrado</span>
             </div>
         </div>
     </div>
@@ -134,3 +135,55 @@
         <button type="submit" class="mainBtn">Guardar cambios</button>
     </form>
 </section>
+
+<!-- Script en línea para manejar el cambio de imagen -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fileInput');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', function(event) {
+            const file = this.files[0];
+            console.log('Archivo detectado:', file?.name);
+            
+            if (file) {
+                // 1. Actualizar nombre del archivo
+                const fileName = document.getElementById('fileName');
+                if (fileName) {
+                    fileName.textContent = file.name;
+                    console.log('Nombre actualizado:', file.name);
+                }
+                
+                // 2. Actualizar preview de imagen
+                const imagenPreview = document.getElementById('imagenPreview');
+                if (imagenPreview) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagenPreview.src = e.target.result;
+                        console.log('Preview actualizada');
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                // 3. Actualizar estado
+                const estadoImagen = document.getElementById('estadoImagen');
+                if (estadoImagen) {
+                    estadoImagen.textContent = 'Nueva imagen seleccionada';
+                }
+                
+                // 4. Limpiar flag de eliminación
+                const imagenEliminada = document.getElementById('imagenEliminada');
+                if (imagenEliminada) {
+                    imagenEliminada.value = 'false';
+                }
+                
+                // 5. Mostrar botón de eliminar
+                const deleteBtn = document.querySelector('.desearBtnForm');
+                if (deleteBtn) {
+                    deleteBtn.style.display = 'inline-block';
+                }
+            }
+        });
+    }
+});
+</script>
