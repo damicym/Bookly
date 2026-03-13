@@ -67,12 +67,12 @@ function editarAboutMe() {
 
 //Solo letras en curso
 const inputCurso = document.getElementById("curso");
-
-
-inputCurso.addEventListener("input", function () {
-    this.value = this.value.replace(/[^a-zA-Z]/g, '');
-    this.value = this.value.toUpperCase();
-});
+if(inputCurso){
+    inputCurso.addEventListener("input", function () {
+        this.value = this.value.replace(/[^a-zA-Z]/g, '');
+        this.value = this.value.toUpperCase();
+    });
+}
 
 
 (function () {
@@ -123,42 +123,63 @@ inputCurso.addEventListener("input", function () {
   }
 })();
 
-// Esperar a que el DOM esté completamente cargado
+// ========== MANEJO DE IMAGEN - VERSIÓN CORRECTA ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // Detectar cuando se carga una imagen y actualizar el preview y el texto
+    console.log('DOMContentLoaded - Inicializando manejo de imagen');
+    
     const fileInput = document.getElementById('fileInput');
     
     if (fileInput) {
+        console.log('✓ fileInput encontrado, adjuntando listener');
+        
         fileInput.addEventListener('change', function(event) {
+            console.log('✓ Change event disparado');
             const file = this.files[0];
             
             if (file) {
-                // Actualizar el nombre del archivo
-                const fileNameElement = document.getElementById('fileName');
-                if (fileNameElement) {
-                    fileNameElement.textContent = file.name;
+                console.log('✓ Archivo seleccionado:', file.name);
+                
+                // 1. Actualizar nombre del archivo
+                const fileName = document.getElementById('fileName');
+                if (fileName) {
+                    fileName.textContent = file.name;
+                    console.log('✓ Nombre actualizado a:', file.name);
                 }
                 
-                // Crear un FileReader para mostrar la preview
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imagenPreview = document.getElementById('imagenPreview');
-                    const estadoImagen = document.getElementById('estadoImagen');
-                    const imagenEliminada = document.getElementById('imagenEliminada');
-                    
-                    if (imagenPreview) {
+                // 2. Actualizar preview de imagen
+                const imagenPreview = document.getElementById('imagenPreview');
+                if (imagenPreview) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
                         imagenPreview.src = e.target.result;
-                    }
-                    if (estadoImagen) {
-                        estadoImagen.textContent = 'Nueva imagen seleccionada';
-                    }
-                    if (imagenEliminada) {
-                        imagenEliminada.value = 'false';
-                    }
-                };
-                reader.readAsDataURL(file);
+                        console.log('✓ Preview actualizada');
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                // 3. Actualizar estado
+                const estadoImagen = document.getElementById('estadoImagen');
+                if (estadoImagen) {
+                    estadoImagen.textContent = 'Nueva imagen seleccionada';
+                    console.log('✓ Estado actualizado');
+                }
+                
+                // 4. Limpiar flag de eliminación
+                const imagenEliminada = document.getElementById('imagenEliminada');
+                if (imagenEliminada) {
+                    imagenEliminada.value = 'false';
+                }
+                
+                // 5. Mostrar botón eliminar
+                const deleteBtn = document.querySelector('.desearBtnForm');
+                if (deleteBtn) {
+                    deleteBtn.style.display = 'inline-block';
+                    console.log('✓ Botón eliminar mostrado');
+                }
             }
         });
+    } else {
+        console.log('✗ fileInput NO encontrado');
     }
 });
 
@@ -199,7 +220,7 @@ function eliminarImagenActual(event) {
         // Actualizar el texto del archivo
         const fileName = document.getElementById('fileName');
         if (fileName) {
-            fileName.textContent = 'Archivo no cambiado';
+            fileName.textContent = 'Archivo no encontrado';
         }
     }
 }
