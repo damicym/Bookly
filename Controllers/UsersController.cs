@@ -57,5 +57,21 @@ namespace Bookly.Controllers
             return RedirectToAction("Login");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateAboutMe(string aboutMe)
+        {
+            Console.WriteLine("Received aboutMe: " + aboutMe);
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)            {
+                return RedirectToAction("Login");
+            } else {
+                BD.ActualizarAboutMe(user.DNI, aboutMe);
+                user.aboutMe = aboutMe;
+                HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
+                return RedirectToAction("Profile", "Home");
+            }
+        }
+
     }
 }

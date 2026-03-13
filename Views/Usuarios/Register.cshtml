@@ -16,11 +16,11 @@
         <form asp-action="Register" method="post" autocomplete="off" class="registerForm">
             <div class="campo">
                 <label for="DNI">Ingresá tu DNI</label>
-                <input asp-for="DNI" id="DNI" placeholder="DNI" required autocomplete="off" />
+                <input asp-for="DNI" id="DNI" placeholder="DNI" required autocomplete="off" pattern="\d+" title="Ingresá solo números" inputmode="numeric" />
             </div>
             <div class="campo">
                 <label for="nombreComp">Ingresá tu nombre y apellido</label>
-                <input asp-for="nombreComp" id="nombreComp" placeholder="Nombre Completo" required autocomplete="off" autofocus/>
+                <input asp-for="nombreComp" id="nombreComp" placeholder="Nombre Completo" required autocomplete="off" autofocus pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$" title="No ingrese números" />
             </div>
             <div class="campo">
                 <label for="password">Crea tu contraseña</label>
@@ -53,7 +53,7 @@
             </div>
             <div class="campo">
                 <label for="curso">Ingresá tu división</label>
-                <input asp-for="curso" id="curso" placeholder="Curso" maxlength="1" required autocomplete="off" />
+                <input asp-for="curso" id="curso" placeholder="Curso" maxlength="1" pattern="[A-Za-z]" title="Ingresá una letra (A-Z)" required autocomplete="off" />
             </div>
             <div class="campo">
                 <label for="organizacion">Organización</label>

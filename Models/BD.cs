@@ -26,6 +26,18 @@ namespace Bookly.Models
             }
         }
 
+        public static void ActualizarAboutMe(string dni, string aboutMe)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "UPDATE Usuarios SET aboutMe = @aboutMe WHERE DNI = @DNI";
+                connection.Execute(query, new { aboutMe, DNI = dni });
+            }
+        }
+
+
+
         public static void registrarse(Usuarios usuario)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
