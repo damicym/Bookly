@@ -7,7 +7,7 @@
 <h2 class="busqueda-titulo primerElemento">@(ViewBag.isQueryNull ? "Catálogo" : "Resultados de búsqueda")</h2>
 
 <section class="publicaciones">
-    <section class="cardsPublicadas">
+    <section class="cardsPublicadas" id="resultados">
         @if (Model == null || Model.Count == 0)
         {
             <div class="no-result">

@@ -15,60 +15,60 @@
     <input type="hidden" name="id" value="@Model.id" />
 
 
-        <div class="campo">
-            <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
-        </div>
+    <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
+    </div>
 
 
-        <div class="campo">
-            <label for="materia">Materia</label>
-            <input type="text" id="materia" name="materia" value="@Model.materia" required />
-        </div>
+    <div class="campo">
+        <label for="materia">Materia</label>
+        <input type="text" id="materia" name="materia" value="@Model.materia" required />
+    </div>
 
 
-        <div class="campo">
-            <label for="ano">Nivel escolar</label>
-            <select id="ano" name="ano" required>
-                <option value="@Model.ano">@HtmlHelpers.PasarAñoATexto(Model.ano)</option>
-                <option value="1">7mo grado</option>
-                <option value="2">1er año</option>
-                <option value="3">2do año</option>
-                <option value="4">3er año</option>
-                <option value="5">4to año</option>
-                <option value="6">5to año</option>
-            </select>
-        </div>
+    <div class="campo">
+        <label for="ano">Nivel escolar</label>
+        <select id="ano" name="ano" required>
+            <option value="@Model.ano">@HtmlHelpers.PasarAñoATexto(Model.ano)</option>
+            <option value="1">7mo grado</option>
+            <option value="2">1er año</option>
+            <option value="3">2do año</option>
+            <option value="4">3er año</option>
+            <option value="5">4to año</option>
+            <option value="6">5to año</option>
+        </select>
+    </div>
 
 
-        <div class="campo">
-            <label for="editorial">Editorial</label>
-            <input type="text" id="editorial" name="editorial" value="@Model.editorial" required />
-        </div>
+    <div class="campo">
+        <label for="editorial">Editorial</label>
+        <input type="text" id="editorial" name="editorial" value="@Model.editorial" required />
+    </div>
 
 
-        <div class="campo">
-            <label for="estadoLibro">Estado</label>
-            <select id="estadoLibro" name="estadoLibro" required>
-                <option value="@Model.estadoLibro">@Model.estadoLibro</option>
-                <option value="Como nuevo">Como nuevo</option>
-                <option value="Con algunas anotaciones">Con algunas anotaciones</option>
-                <option value="Con muchas anotaciones">Con muchas anotaciones</option>
-                <option value="Muy usado">Muy usado</option>
-            </select>
-        </div>
+    <div class="campo">
+        <label for="estadoLibro">Estado</label>
+        <select id="estadoLibro" name="estadoLibro" required>
+            <option value="@Model.estadoLibro">@Model.estadoLibro</option>
+            <option value="Como nuevo">Como nuevo</option>
+            <option value="Con algunas anotaciones">Con algunas anotaciones</option>
+            <option value="Con muchas anotaciones">Con muchas anotaciones</option>
+            <option value="Muy usado">Muy usado</option>
+        </select>
+    </div>
 
 
-        <div class="campo">
-            <label for="precio">Precio</label>
-            <input type="number" id="precio" name="precio" step="0.01"  value="@Model.precio" required />
-        </div>
+    <div class="campo">
+        <label for="precio">Precio</label>
+        <input type="number" id="precio" name="precio" step="0.01"  value="@Model.precio" required />
+    </div>
 
 
-        <div class="campo">
-            <label for="descripcion">Descripción</label>
-            <textarea id="descripcion" name="descripcion" rows="4">@Model.descripcion</textarea>
-        </div>
+    <div class="campo">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="4">@Model.descripcion</textarea>
+    </div>
         
     <div class="campo">
         <label for="imagen">Imagen del libro</label>

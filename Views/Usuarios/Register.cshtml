@@ -3,8 +3,8 @@
 @{
     ViewBag.Title = "Registrarse";
 }
-
-<div class="registerPage primerElemento">
+<div class="primerElemento" ></div>
+<div class="registerPage">
     <section class="registerLeft">
         <div class="registerLogo">
         </div>
@@ -16,11 +16,11 @@
         <form asp-action="Register" method="post" autocomplete="off" class="registerForm">
             <div class="campo">
                 <label for="DNI">Ingresá tu DNI</label>
-                <input asp-for="DNI" id="DNI" placeholder="DNI" required autocomplete="off" pattern="\d+" title="Ingresá solo números" inputmode="numeric" />
+                <input asp-for="DNI" id="DNI" placeholder="DNI" required autocomplete="off" pattern="\d+" autofocus title="Ingresá solo números" inputmode="numeric" />
             </div>
             <div class="campo">
                 <label for="nombreComp">Ingresá tu nombre y apellido</label>
-                <input asp-for="nombreComp" id="nombreComp" placeholder="Nombre Completo" required autocomplete="off" autofocus pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$" title="No ingrese números" />
+                <input asp-for="nombreComp" id="nombreComp" placeholder="Nombre Completo" required autocomplete="off" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$" title="No ingrese números" />
             </div>
             <div class="campo">
                 <label for="password">Crea tu contraseña</label>
@@ -63,13 +63,13 @@
                 <small class="form-text org-info">Próximamente trabajaremos con más organizaciones</small>
              </div>
             <button type="submit" class="mainBtn">Registrarse</button>
-            @if (ViewBag.Error != null)
-            {
-                <p style="color:red">@ViewBag.Error</p>
-            }
             <p class="registerLogin">
                 ¿Ya tenés una cuenta? <a href="@Url.Action("Login", "Usuarios")">Inicia sesión</a>
             </p>
+            @if (ViewBag.Error != null)
+            {
+                <p class="error">@ViewBag.Error</p>
+            }
         </form>
     </section>
 </div>

@@ -4,7 +4,45 @@
 const aboutMeContainer = document.getElementById("aboutMeContainer")
 const btnEditAboutMe = document.getElementById("btnEditAboutMe")
 const aboutMe = document.getElementById("aboutMe")
+const searchInput = document.getElementById("searchInput");
 
+// if(searchInput){
+//     searchInput.addEventListener("input", (e) => {
+//         const query = e.target.value.trim();
+//         if(query){
+//             window.location.href = `Home/Buscar?query=${encodeURIComponent(query)}`;
+//         }
+//     });
+// }
+
+let debounceTimer;
+
+if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+        
+        debounceTimer = setTimeout(async () => {
+            if (query) {
+                try{
+                    // ver si hacerle fetch a eso y cambiar backend, o a otra cosa
+                    const res = await fetch(`Home/Buscar?query=${encodeURIComponent(query)}`);
+                    const data = await res.json();
+                    const container = document.getElementById("resultados");
+                    if (container) {
+                        container.innerHTML = data.html;
+                    }
+                } catch (error) {
+                    console.error("Error al buscar:", error);
+                }
+            } else {
+                // Limpia resultados si query está vacío
+                const container = document.getElementById("resultados");
+                if (container) container.innerHTML = "";
+            }
+        }, 300);  // Espera 300ms
+    });
+}
 
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano');
@@ -74,54 +112,6 @@ if(inputCurso){
     });
 }
 
-
-(function () {
-  const searchUrl = '@Url.Action("Buscar", "Home")'; // <-- Cambiado a Home
-
-
-
-
-  function doSearch(q) {
-      q = (q || '').trim();
-      if (!q) return;
-      window.location.href = searchUrl + '?query=' + encodeURIComponent(q);
-  }
-
-
-
-
-  const input = document.getElementById('siteSearch');
-  const icon = document.getElementById('siteSearchIcon');
-
-
-
-
-  if (input) {
-      input.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter') {
-              const q = input.value;
-              if (q && q.trim().length > 0) {
-                  e.preventDefault();
-                  doSearch(q);
-              }
-          }
-      });
-  }
-
-
-
-
-  if (icon) {
-      icon.style.cursor = 'pointer';
-      icon.addEventListener('click', function () {
-          if (!input) return;
-          const q = input.value;
-          if (q && q.trim().length > 0) {
-              doSearch(q);
-          }
-      });
-  }
-})();
 
 // ========== MANEJO DE IMAGEN - VERSIÓN CORRECTA ==========
 document.addEventListener('DOMContentLoaded', function() {

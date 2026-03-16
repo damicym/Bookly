@@ -645,7 +645,7 @@ select:disabled {
   justify-content: center;
   padding: 40px;
   position: relative;
-  height: calc(100vh - 105px);
+  /* height: calc(100vh - 105px); */
   /* 105 siendo px de navbar */
 }
 
@@ -679,7 +679,7 @@ select:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - 105px);
+  /* height: calc(100vh - 105px);  */
   /* 105 siendo px de navbar */
 }
 
@@ -691,6 +691,7 @@ a:visited {
 
 
 .registerForm {
+  height: 100%;
   width: 100%;
   max-width: 400px;
   background: none;
@@ -698,6 +699,7 @@ a:visited {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  padding: 20px;
 }
 
 
@@ -727,7 +729,7 @@ a:visited {
 .registerLogin {
   color: var(--light);
   text-align: center;
-  margin-top: 16px;
+  margin: 0 !important;
 }
 
 
