@@ -6,40 +6,110 @@ const btnEditAboutMe = document.getElementById("btnEditAboutMe")
 const aboutMe = document.getElementById("aboutMe")
 const searchInput = document.getElementById("searchInput");
 
-// if(searchInput){
-//     searchInput.addEventListener("input", (e) => {
-//         const query = e.target.value.trim();
-//         if(query){
-//             window.location.href = `Home/Buscar?query=${encodeURIComponent(query)}`;
-//         }
-//     });
-// }
+// Funciones helper
+function pasarAnoATexto(ano) {
+    switch(ano) {
+        case 1: return "7mo";
+        case 2: return "1ero";
+        case 3: return "2ndo";
+        case 4: return "3ero";
+        case 5: return "4to";
+        case 6: return "5to";
+        default: return "Desconocido";
+    }
+}
+
+function toUpperPrimeraLetra(texto) {
+    if (!texto) return texto;
+    return texto.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase()).join(' ');
+}
+
+function getColor(estado) {
+    switch(estado) {
+        case "Como nuevo": return "var(--secondary2)";
+        case "Pocas anotaciones": return "var(--accent)";
+        case "Con algunas anotaciones": return "var(--accent)";
+        case "Muy anotado": return "var(--red)";
+        case "Muy usado": return "var(--red)";
+        default: return "white";
+    }
+}
+const container = document.getElementById("resultados");
+if (searchInput && container) {
+    realizarBusqueda(searchInput.value.trim())
+    searchInput.focus();
+    const len = searchInput.value ? searchInput.value.length : 0;
+    if (typeof searchInput.setSelectionRange === 'function') {
+        searchInput.setSelectionRange(len, len);
+    } else {
+        searchInput.selectionStart = searchInput.selectionEnd = len;
+    }
+}
+
+async function realizarBusqueda(query) {
+if (query) {
+    try{
+        // ver si hacerle fetch a eso y cambiar backend, o a otra cosa
+        const res = await fetch(`/Home/Buscar2?query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (container) {
+            let html = '';
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            const tokenInput = token ? `<input type="hidden" name="__RequestVerificationToken" value="${token.value}">` : '';
+            if (data.publicaciones && data.publicaciones.length > 0) {
+                data.publicaciones.forEach(libro => {
+                    const imgSrc = libro.imagen ? `data:image/webp;base64,${libro.imagen}` : '/img/book-placeholder.webp';
+                    html += `
+                        <div class="libro" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.idVendedor}'">
+                            <div class="libroImgContainer">
+                                <img src="${imgSrc}" alt="imagen del libro" />
+                                <section class="libroActionsContainer">
+                                    <form class="desearBtnForm hoverVerde" action="/Book/Desear" method="post" style="display:inline;">
+                                        ${tokenInput}
+                                        <input type="hidden" name="id" value="${libro.id}" />
+                                        <button type="submit" onclick="event.stopPropagation();">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
+                                        </button>
+                                    </form>
+                                </section>
+                            </div>
+                            <div class="nombreYMateriaContainer">
+                                <h1>${toUpperPrimeraLetra(libro.nombre)}</h1>
+                                <h2>${toUpperPrimeraLetra(libro.materia)}</h2>
+                            </div>
+                            <h3>$${libro.precio}</h3>
+                            <div class="pillContainer">
+                                <span class="pill" style="background-color:${getColor(libro.estadoLibro)};">${libro.estadoLibro}</span>
+                                <span class="pill">${pasarAnoATexto(libro.ano)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = '<div class="no-result"><p>No se encontraron resultados.</p></div>';
+            }
+            container.innerHTML = html;
+        }
+    } catch (error) {
+        console.error("Error al buscar:", error);
+    }
+} else {
+    // Limpia resultados si query está vacío
+    const container = document.getElementById("resultados");
+    if (container) container.innerHTML = '<div class="no-result"><p>No se encontraron resultados.</p></div>';
+}
+}
 
 let debounceTimer;
-
 if (searchInput) {
     searchInput.addEventListener("input", (e) => {
         clearTimeout(debounceTimer);
         const query = e.target.value.trim();
-        
+        if (query.length === 1) {
+            window.location.href = `/Home/Buscar?query=${encodeURIComponent(query)}`;
+        }
         debounceTimer = setTimeout(async () => {
-            if (query) {
-                try{
-                    // ver si hacerle fetch a eso y cambiar backend, o a otra cosa
-                    const res = await fetch(`Home/Buscar?query=${encodeURIComponent(query)}`);
-                    const data = await res.json();
-                    const container = document.getElementById("resultados");
-                    if (container) {
-                        container.innerHTML = data.html;
-                    }
-                } catch (error) {
-                    console.error("Error al buscar:", error);
-                }
-            } else {
-                // Limpia resultados si query está vacío
-                const container = document.getElementById("resultados");
-                if (container) container.innerHTML = "";
-            }
+            realizarBusqueda(query);
         }, 300);  // Espera 300ms
     });
 }

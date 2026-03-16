@@ -81,7 +81,33 @@ namespace Bookly.Controllers
             }
             ViewData["Title"] = "Resultados de búsqueda";
             ViewBag.usuario = user;
+            ViewBag.query = query;
             return View(resultados);
+        }
+        
+        [HttpGet]
+        public IActionResult Buscar2(string query)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            List<PublicacionesCompletas> resultados;
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                if (user == null){
+                resultados = BD.ObtenerLibrosMostrablesConTope()
+                    .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()))
+                    .ToList();
+                } else{
+                   resultados = BD.ObtenerLibrosMostrablesConTope()
+                        .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()) && l.idVendedor != user.DNI)
+                        .ToList(); 
+                }
+            }
+            else
+            {
+                resultados = new List<PublicacionesCompletas>(); // Para fetch, si query vacío, devolver vacío
+            }
+
+            return Json(new { publicaciones = resultados });
         }
     }
 }

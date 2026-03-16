@@ -26,8 +26,7 @@
         @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
         <section class="searchNFilter">
             <div class="search">
-                <input id="searchInput" name="query" type="text" placeholder="Buscar nombre de un libro" class="busqueda-input" />
-                
+                <input id="searchInput" name="query" type="text" placeholder="Buscar nombre de un libro" class="busqueda-input" value="@(ViewData["Title"]?.ToString() == "Resultados de búsqueda" ? ViewBag.query : "")" />
                 <div class="search-icon">
                     <svg id="searchInputIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor"

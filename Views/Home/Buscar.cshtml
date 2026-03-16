@@ -7,46 +7,5 @@
 <h2 class="busqueda-titulo primerElemento">@(ViewBag.isQueryNull ? "Catálogo" : "Resultados de búsqueda")</h2>
 
 <section class="publicaciones">
-    <section class="cardsPublicadas" id="resultados">
-        @if (Model == null || Model.Count == 0)
-        {
-            <div class="no-result">
-                <p>No se encontraron resultados.</p>
-            </div>
-        }
-        else
-        {
-            foreach (PublicacionesCompletas libro in Model)
-            {
-                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
-                        <div class="libroImgContainer">
-                        @if (libro.imagen != null)
-                        {
-                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
-                        }
-                        else
-                        {
-                            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-                        }
-                            <section class="libroActionsContainer">
-                                <form class="desearBtnForm hoverVerde" asp-controller="Book" asp-action="Desear" asp-route-id="@libro.id" method="post" style="display:inline;">
-                                    <button type="submit" onclick="event.stopPropagation();">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
-                                    </button>
-                                </form>
-                            </section>
-                        </div>
-                <div class="nombreYMateriaContainer">
-                    <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                    <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                </div>
-                <h3>$@libro.precio</h3>
-                <div class="pillContainer">
-                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                    <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
-                </div>
-                </div>
-            }
-        }
-    </section>
+    <section class="cardsPublicadas" id="resultados"></section>
 </section>
