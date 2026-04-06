@@ -37,7 +37,7 @@ namespace Bookly.Controllers
                 return RedirectToAction("Login", "Usuario");
 
             byte[] imagenBytes = null;
-
+            
             if (imagen != null && imagen.Length > 0)
             {
                 using (var ms = new MemoryStream())
