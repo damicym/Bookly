@@ -55,59 +55,64 @@ namespace Bookly.Controllers
         {
             return View();
         }
-
-        [HttpGet]
-        public IActionResult Buscar(string query)
-        {
-            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
-            List<PublicacionesCompletas> resultados;
-            if (!string.IsNullOrWhiteSpace(query))
-            {
-                if (user == null){
-                resultados = BD.ObtenerLibrosMostrablesConTope()
-                    .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()))
-                    .ToList();
-                } else{
-                   resultados = BD.ObtenerLibrosMostrablesConTope()
-                        .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()) && l.idVendedor != user.DNI)
-                        .ToList(); 
-                }
-                ViewBag.isQueryNull = false;
-            }
-            else
-            {
-                resultados = BD.ObtenerLibrosMostrablesConTope();
-                ViewBag.isQueryNull = true;
-            }
-            ViewData["Title"] = "Resultados de búsqueda";
-            ViewBag.usuario = user;
-            ViewBag.query = query;
-            return View(resultados);
-        }
         
-        [HttpGet]
-        public IActionResult Buscar2(string query)
+        public IActionResult Buscar(string query, string materia, string ano, string estado, string precioMin, string precioMax/* , string orden, string direccion */)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             List<PublicacionesCompletas> resultados;
-            if (!string.IsNullOrWhiteSpace(query))
+            try
             {
                 if (user == null){
                 resultados = BD.ObtenerLibrosMostrablesConTope()
-                    .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()))
+                    .Where(l => 
+                        l.nombre != null && 
+                        (!string.IsNullOrWhiteSpace(query) && RemoveTildes(l.nombre).ToLower().Contains(RemoveTildes(query).ToLower())) &&
+                        (!string.IsNullOrWhiteSpace(materia) && RemoveTildes(l.materia).ToLower().Equals(RemoveTildes(materia).ToLower())) &&
+                        (!string.IsNullOrWhiteSpace(ano) && l.ano.ToString().Equals(ano)) &&
+                        (!string.IsNullOrWhiteSpace(estado) && RemoveTildes(l.estadoLibro).ToLower().Equals((RemoveTildes(estado)).ToLower())) &&
+                        (!string.IsNullOrWhiteSpace(precioMin) && l.precio >= double.Parse(precioMin)) &&
+                        (!string.IsNullOrWhiteSpace(precioMax) && l.precio <= double.Parse(precioMax))
+                    )
                     .ToList();
+                    // order
                 } else{
-                   resultados = BD.ObtenerLibrosMostrablesConTope()
-                        .Where(l => l.nombre != null && l.nombre.ToLower().Contains(query.ToLower()) && l.idVendedor != user.DNI)
-                        .ToList(); 
+                    resultados = BD.ObtenerLibrosMostrablesConTope()
+                        .Where(l => l.nombre != null && RemoveTildes(l.nombre).ToLower().Contains(RemoveTildes(query).ToLower()) && l.idVendedor != user.DNI)
+                        .ToList();
+                        // order
                 }
-            }
-            else
-            {
-                resultados = new List<PublicacionesCompletas>(); // Para fetch, si query vacío, devolver vacío
+            } catch (System.Exception ex) {
+                _logger.LogError(ex, "Error al procesar los filtros de búsqueda");
+                resultados = new List<PublicacionesCompletas>();
             }
 
             return Json(new { publicaciones = resultados });
+        }
+
+        // public static string ObtenerMaterias()
+        // {
+            // var materias = BD.ObtenerMaterias();
+            // return JsonSerializerHelper.Serialize(materias);
+        // }
+
+        public static string RemoveTildes(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+            
+            string normalizedString = input.Normalize(System.Text.NormalizationForm.FormD);
+            var stringBuilder = new System.Text.StringBuilder();
+            
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+            
+            return stringBuilder.ToString();
         }
     }
 }
