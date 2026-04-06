@@ -7,7 +7,7 @@
 
 @{
     string secondaryBienvenidaBtnAction = ViewBag.userLogged
-        ? "location.href='" + Url.Action("Buscar", "Home", new { query = "" }) + "'"
+    ? "location.href='" + Url.Action("Catalogo", "Home") + "'"
         : "location.href='" + Url.Action("Login", "Usuarios") + "'";
 }
 

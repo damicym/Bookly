@@ -120,7 +120,7 @@ if (searchInput) {
         clearTimeout(debounceTimer);
         const query = e.target.value.trim();
         if (query.length === 1) {
-            window.location.href = `/Home/Buscar?query=${encodeURIComponent(query)}`;
+            window.location.href = `/Home/Catalogo?query=${encodeURIComponent(query)}`;
         }
         debounceTimer = setTimeout(async () => {
             realizarBusqueda(query);

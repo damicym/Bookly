@@ -1,11 +1,50 @@
-@model List<Bookly.Models.PublicacionesCompletas>
 @using Bookly.Helpers
+@using System.Collections.Generic
+@using System.Linq
 @{
     ViewData["Title"] = "Resultados de búsqueda";
+    var materias = ViewBag.materias as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var anos = ViewBag.anos as IEnumerable<int> ?? Enumerable.Empty<int>();
+    var editoriales = ViewBag.editoriales as IEnumerable<string> ?? Enumerable.Empty<string>();
 }
 
-
-<h2 class="busqueda-titulo primerElemento">@(ViewBag.isQueryNull ? "Catálogo" : "Resultados de búsqueda")</h2>
+<h2 class="busqueda-titulo primerElemento">Catálogo</h2>
+<div class="filtroContainer">
+    <h3>Filtros</h3>
+    <div class="filtros">
+        <select id="filtroMateria">
+            <option value="">Todas las materias</option>
+            @foreach (var materia in materias)
+            {
+                <option value="@materia" selected>@materia</option>
+            }
+        </select>
+        <select id="filtroAno">
+            <option value="">Todos los años</option>
+            @foreach (var ano in anos)
+            {
+                <option value="@ano" selected>@HtmlHelpers.PasarAñoATexto(@ano)</option>
+            }
+        </select>
+        <select id="filtroEstado">
+            <option value="" selected>Todos los estados</option>
+            <option value="a">Como nuevo</option>
+            <option value="b">Pocas anotaciones</option>
+            <option value="c">Con algunas anotaciones</option>
+            <option value="d">Muy anotado</option>
+        </select>
+        <select id="filtroEditoriales">
+            <option value="">Todas las editoriales</option>
+            @foreach (var editorial in editoriales)
+            {
+                <option value="@editorial" selected>@editorial</option>
+            }
+        </select>
+        <input type="number" id="filtroPrecioMin" placeholder="Precio mínimo" min="0" value="">
+        <input type="number" id="filtroPrecioMax" placeholder="Precio máximo" min="0" value="">
+        <!-- Orden y dirección podrían ser select con opciones predefinidas -->
+    </div>
+</div>
 
 <section class="publicaciones">
     <section class="cardsPublicadas" id="resultados"></section>

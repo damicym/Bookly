@@ -100,7 +100,6 @@ namespace Bookly.Models
             }
         }
 
-
         public static Libros ObtenerLibroPorId(int id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))

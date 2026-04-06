@@ -39,6 +39,17 @@ namespace Bookly.Controllers
             return View(publicaciones);
         }
 
+        public IActionResult Catalogo(string query)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            var libros = BD.ObtenerLibros() ?? new List<Libros>();
+            ViewBag.materias = libros.Select(l => l.materia).Distinct().ToList();
+            ViewBag.anos = libros.Select(l => l.ano).Distinct().ToList();
+            ViewBag.editoriales = libros.Select(l => l.editorial).Distinct().ToList();
+            ViewBag.query = query;
+            return View("Buscar");
+        }
+
         public IActionResult Profile()
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
@@ -89,12 +100,6 @@ namespace Bookly.Controllers
             return Json(new { publicaciones = resultados });
         }
 
-        // public static string ObtenerMaterias()
-        // {
-            // var materias = BD.ObtenerMaterias();
-            // return JsonSerializerHelper.Serialize(materias);
-        // }
-
         public static string RemoveTildes(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -115,4 +120,6 @@ namespace Bookly.Controllers
             return stringBuilder.ToString();
         }
     }
+
+    
 }
