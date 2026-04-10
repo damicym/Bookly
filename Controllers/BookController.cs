@@ -5,6 +5,7 @@ namespace Bookly.Controllers
 {
     public class BookController : Controller
     {
+
         public IActionResult Index()
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
@@ -73,6 +74,27 @@ namespace Bookly.Controllers
         {
             BD.EliminarPublicacion(id);
             return RedirectToAction("Profile", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Desear(int id)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Usuario no autenticado" });
+            }
+
+            try
+            {
+                BD.AgregarDeseado(user.DNI, id);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpGet]
