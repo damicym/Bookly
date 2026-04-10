@@ -16,14 +16,14 @@
             <option value="">Todas las materias</option>
             @foreach (var materia in materias)
             {
-                <option value="@materia" selected>@materia</option>
+                <option value="@materia">@materia</option>
             }
         </select>
         <select id="filtroAno">
             <option value="">Todos los años</option>
             @foreach (var ano in anos)
             {
-                <option value="@ano" selected>@HtmlHelpers.PasarAñoATexto(@ano)</option>
+                <option value="@ano">@HtmlHelpers.PasarAñoATexto(@ano)</option>
             }
         </select>
         <select id="filtroEstado">
@@ -37,11 +37,17 @@
             <option value="">Todas las editoriales</option>
             @foreach (var editorial in editoriales)
             {
-                <option value="@editorial" selected>@editorial</option>
+                <option value="@editorial">@editorial</option>
             }
         </select>
-        <input type="number" id="filtroPrecioMin" placeholder="Precio mínimo" min="0" value="">
-        <input type="number" id="filtroPrecioMax" placeholder="Precio máximo" min="0" value="">
+        <div style="position: relative; display: inline-block;">
+            <span> $ </span>
+            <input type="text" id="filtroPrecioMin" placeholder="Precio mínimo" inputmode="numeric" autocomplete="off" value="">
+        </div>
+        <div style="position: relative; display: inline-block;">
+            <span> $ </span>
+            <input type="text" id="filtroPrecioMax" placeholder="Precio máximo" inputmode="numeric" autocomplete="off" value="">
+        </div>
         <!-- Orden y dirección podrían ser select con opciones predefinidas -->
     </div>
 </div>

@@ -24,6 +24,16 @@ function toUpperPrimeraLetra(texto) {
     return texto.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase()).join(' ');
 }
 
+function limpiarPrecio(valor) {
+    return (valor ?? "").toString().replace(/\D/g, "");
+}
+
+function formatearMiles(valor) {
+    const soloDigitos = limpiarPrecio(valor);
+    if (!soloDigitos) return "";
+    return soloDigitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 function getColor(estado) {
     switch(estado) {
         case "Como nuevo": return "var(--secondary2)";
@@ -52,14 +62,16 @@ async function realizarBusqueda(query) {
             const materia = document.getElementById("filtroMateria")?.value?.trim() ?? "";
             const ano = document.getElementById("filtroAno")?.value?.trim() ?? "";
             const estado = document.getElementById("filtroEstado")?.value?.trim() ?? "";
-            const precioMin = document.getElementById("filtroPrecioMin")?.value?.trim() ?? "";
-            const precioMax = document.getElementById("filtroPrecioMax")?.value?.trim() ?? "";
+            const editorial = document.getElementById("filtroEditoriales")?.value?.trim() ?? "";
+            const precioMin = limpiarPrecio(document.getElementById("filtroPrecioMin")?.value?.trim() ?? "");
+            const precioMax = limpiarPrecio(document.getElementById("filtroPrecioMax")?.value?.trim() ?? "");
 
             const params = new URLSearchParams({
                 query: query ?? "",
                 materia,
                 ano,
                 estado,
+                editorial,
                 precioMin,
                 precioMax
             });
@@ -119,12 +131,48 @@ if (searchInput) {
     searchInput.addEventListener("input", (e) => {
         clearTimeout(debounceTimer);
         const query = e.target.value.trim();
-        if (query.length === 1) {
+        if (!window.location.href.includes("/Home/Catalogo")) {
             window.location.href = `/Home/Catalogo?query=${encodeURIComponent(query)}`;
         }
         debounceTimer = setTimeout(async () => {
             realizarBusqueda(query);
         }, 300);  // Espera 300ms
+    });
+}
+
+const filtrosBusqueda = [
+    document.getElementById("filtroMateria"),
+    document.getElementById("filtroAno"),
+    document.getElementById("filtroEstado"),
+    document.getElementById("filtroEditoriales"),
+    document.getElementById("filtroPrecioMin"),
+    document.getElementById("filtroPrecioMax")
+].filter(Boolean);
+
+const precioInputs = [
+    document.getElementById("filtroPrecioMin"),
+    document.getElementById("filtroPrecioMax")
+].filter(Boolean);
+
+precioInputs.forEach((inputPrecio) => {
+    inputPrecio.addEventListener("input", (e) => {
+        e.target.value = formatearMiles(e.target.value);
+    });
+    inputPrecio.value = formatearMiles(inputPrecio.value);
+});
+
+if (container && filtrosBusqueda.length > 0) {
+    filtrosBusqueda.forEach((filtro) => {
+        const ejecutar = () => {
+            clearTimeout(debounceTimer);
+            const queryActual = searchInput?.value?.trim() ?? "";
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(queryActual);
+            }, 300);
+        };
+
+        filtro.addEventListener("change", ejecutar);
+        filtro.addEventListener("input", ejecutar);
     });
 }
 
@@ -151,7 +199,7 @@ if(anoSelect){
 }
 
 
-let aboutMeInput = aboutMe.textContent
+let aboutMeInput = aboutMe ? aboutMe.textContent : ""
 
 
 function updateAboutMeInput(){
@@ -159,7 +207,9 @@ function updateAboutMeInput(){
 }
 
 
-btnEditAboutMe.addEventListener("click", editarAboutMe)
+if(btnEditAboutMe){
+    btnEditAboutMe.addEventListener("click", editarAboutMe)
+}
 
 
 function editarAboutMe() {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Bookly.Models;
@@ -67,31 +68,35 @@ namespace Bookly.Controllers
             return View();
         }
         
-        public IActionResult Buscar(string query, string materia, string ano, string estado, string precioMin, string precioMax/* , string orden, string direccion */)
+        public IActionResult Buscar(string query, string materia, string ano, string estado, string editorial, string precioMin, string precioMax/* , string orden, string direccion */)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             List<PublicacionesCompletas> resultados;
             try
             {
-                if (user == null){
-                resultados = BD.ObtenerLibrosMostrablesConTope()
-                    .Where(l => 
-                        l.nombre != null && 
-                        (!string.IsNullOrWhiteSpace(query) && RemoveTildes(l.nombre).ToLower().Contains(RemoveTildes(query).ToLower())) &&
-                        (!string.IsNullOrWhiteSpace(materia) && RemoveTildes(l.materia).ToLower().Equals(RemoveTildes(materia).ToLower())) &&
-                        (!string.IsNullOrWhiteSpace(ano) && l.ano.ToString().Equals(ano)) &&
-                        (!string.IsNullOrWhiteSpace(estado) && RemoveTildes(l.estadoLibro).ToLower().Equals((RemoveTildes(estado)).ToLower())) &&
-                        (!string.IsNullOrWhiteSpace(precioMin) && l.precio >= double.Parse(precioMin)) &&
-                        (!string.IsNullOrWhiteSpace(precioMax) && l.precio <= double.Parse(precioMax))
-                    )
-                    .ToList();
-                    // order
-                } else{
-                    resultados = BD.ObtenerLibrosMostrablesConTope()
-                        .Where(l => l.nombre != null && RemoveTildes(l.nombre).ToLower().Contains(RemoveTildes(query).ToLower()) && l.idVendedor != user.DNI)
-                        .ToList();
-                        // order
+                var precioMinValue = ParseNullableDouble(precioMin);
+                var precioMaxValue = ParseNullableDouble(precioMax);
+                var queryNormalizada = RemoveTildes(query).ToLower();
+                var materiaNormalizada = RemoveTildes(materia).ToLower();
+                var estadoNormalizado = RemoveTildes(NormalizarEstado(estado)).ToLower();
+                var editorialNormalizada = RemoveTildes(editorial).ToLower();
+
+                var consulta = BD.ObtenerLibrosMostrablesConTope()
+                    .Where(l => l.nombre != null)
+                    .Where(l => string.IsNullOrWhiteSpace(query) || RemoveTildes(l.nombre).ToLower().Contains(queryNormalizada))
+                    .Where(l => string.IsNullOrWhiteSpace(materia) || RemoveTildes(l.materia).ToLower().Equals(materiaNormalizada))
+                    .Where(l => string.IsNullOrWhiteSpace(ano) || l.ano.ToString().Equals(ano))
+                    .Where(l => string.IsNullOrWhiteSpace(estado) || RemoveTildes(l.estadoLibro).ToLower().Equals(estadoNormalizado))
+                    .Where(l => string.IsNullOrWhiteSpace(editorial) || RemoveTildes(l.editorial).ToLower().Equals(editorialNormalizada))
+                    .Where(l => !precioMinValue.HasValue || l.precio >= precioMinValue.Value)
+                    .Where(l => !precioMaxValue.HasValue || l.precio <= precioMaxValue.Value);
+
+                if (user != null)
+                {
+                    consulta = consulta.Where(l => l.idVendedor != user.DNI);
                 }
+
+                resultados = consulta.ToList();
             } catch (System.Exception ex) {
                 _logger.LogError(ex, "Error al procesar los filtros de búsqueda");
                 resultados = new List<PublicacionesCompletas>();
@@ -118,6 +123,43 @@ namespace Bookly.Controllers
             }
             
             return stringBuilder.ToString();
+        }
+
+        private static double? ParseNullableDouble(string valor)
+        {
+            if (string.IsNullOrWhiteSpace(valor))
+            {
+                return null;
+            }
+
+            if (double.TryParse(valor, NumberStyles.Any, CultureInfo.CurrentCulture, out var numero))
+            {
+                return numero;
+            }
+
+            if (double.TryParse(valor, NumberStyles.Any, CultureInfo.InvariantCulture, out numero))
+            {
+                return numero;
+            }
+
+            return null;
+        }
+
+        private static string NormalizarEstado(string estado)
+        {
+            if (string.IsNullOrWhiteSpace(estado))
+            {
+                return string.Empty;
+            }
+
+            return estado.ToLower() switch
+            {
+                "a" => "Como nuevo",
+                "b" => "Pocas anotaciones",
+                "c" => "Con algunas anotaciones",
+                "d" => "Muy anotado",
+                _ => estado
+            };
         }
     }
 

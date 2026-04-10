@@ -111,13 +111,6 @@ header p {
   height: 85px;
 }
 
-
-
-
-
-
-
-
 header .searchNFilter {
   display: grid;
   grid-template-rows: 1fr auto 1fr;
@@ -836,9 +829,6 @@ a:visited {
   display: flex;
 }
 
-
-
-
 .busqueda-card {
   background: var(--main);
   border-radius: 12px;
@@ -850,14 +840,10 @@ a:visited {
   box-shadow: 0 2px 8px var(--dark);
 }
 
-
 .busqueda-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px var(--secondary2);
 }
-
-
-
 
 .busqueda-card-body {
   padding: 16px;
@@ -882,16 +868,12 @@ a:visited {
   margin: 0;
 }
 
-
-
-
 .busqueda-card-link {
   margin-top: 8px;
   text-decoration: none;
   color: var(--secondary2);
   font-weight: 600;
 }
-
 
 .no-result {
   /* grid-column: 1 / -1;
@@ -912,8 +894,14 @@ a:visited {
   font-weight: 550;
 }
 
+.filtroContainer {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  margin-left: 20px;
+}
 
-
+/* #endregion buscar */
 
 /* #region profile */
 .publicaciones,
