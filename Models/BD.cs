@@ -422,5 +422,16 @@ namespace Bookly.Models
             }
         }
 
+        public static void AgregarDeseado(string dni, int idPublicacion)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"IF NOT EXISTS (SELECT 1 FROM Deseados WHERE DNI = @DNI AND idPublicacion = @idPublicacion)
+                                 INSERT INTO Deseados (DNI, idPublicacion) VALUES (@DNI, @idPublicacion);";
+                connection.Execute(query, new { DNI = dni, idPublicacion });
+            }
+        }
+
     }
 }

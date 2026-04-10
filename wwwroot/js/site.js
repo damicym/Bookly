@@ -307,6 +307,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Intercepta envíos de formularios con clase .desearBtnForm y los envía en segundo plano
+document.addEventListener('submit', async function(e) {
+    const form = e.target;
+    if (!form || !form.classList || !form.classList.contains('desearBtnForm')) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const action = '/Book/Desear';
+    const formData = new FormData(form);
+    const tokenEl = form.querySelector('input[name="__RequestVerificationToken"]');
+    const token = tokenEl ? tokenEl.value : null;
+
+    try {
+        const headers = token ? { 'RequestVerificationToken': token } : {};
+        const res = await fetch(action, {
+            method: 'POST',
+            body: formData,
+            headers
+        });
+        const data = await res.json().catch(() => null);
+        if (data && data.success) {
+            // feedback visual opcional
+            const btn = form.querySelector('button');
+            if (btn) btn.classList.add('deseado');
+        } else {
+            console.error('Error al marcar como deseado', data);
+        }
+    } catch (err) {
+        console.error('Error al enviar petición Desear:', err);
+    }
+});
+
 // Eliminar la imagen actual
 function eliminarImagenActual(event) {
     event.preventDefault();
