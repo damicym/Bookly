@@ -48,6 +48,9 @@ namespace Bookly.Controllers
             ViewBag.anos = libros.Select(l => l.ano).Distinct().ToList();
             ViewBag.editoriales = libros.Select(l => l.editorial).Distinct().ToList();
             ViewBag.query = query;
+            // Proveer al layout la info de usuario para mostrar el nombre cuando esté logueado. (esto arregla lo de que no se muestre el nombre de usuario si se está en catalogo)
+            ViewBag.userLogged = user != null;
+            ViewBag.usuario = user;
             return View("Buscar");
         }
 
