@@ -1376,13 +1376,13 @@ a:visited {
   top: 0;
   right: -400px;
   width: 400px;
-  height: 900px;
+  height: 800px;
   background: var(--main);
   transition: right .3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
 
 /* boton q se mueva con el panel */
@@ -1417,8 +1417,8 @@ a:visited {
 
 /* contenido panel*/
 .imgVenDetalle {
-  height: 250px;
-  width: 250px;
+  height: 220px;
+  width: 220px;
   margin-top: 10px;
   filter: drop-shadow(0px 0px 1px var(--dark));
 }
@@ -1449,7 +1449,8 @@ a:visited {
 
 .detallesVenPublics {
   width: fit-content;
-  margin-top: 15px;
+  height:fit-content;
+  margin-top: 10px;
   color: var(--light);
   text-align: left;
   display: grid;
