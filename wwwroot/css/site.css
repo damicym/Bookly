@@ -426,6 +426,13 @@ select:disabled {
   stroke-width: 2px;
 }
 
+/* Cuando el botón está marcado como deseado mostramos el icono relleno */
+.desearBtnForm button.deseado svg {
+  fill: currentColor;
+  stroke: none;
+  color: var(--dark);
+}
+
 
 .libro h1 {
   font-size: 1.8rem;

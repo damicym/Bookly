@@ -427,8 +427,8 @@ namespace Bookly.Models
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = @"IF NOT EXISTS (SELECT 1 FROM Deseados WHERE DNI = @DNI AND idPublicacion = @idPublicacion)
-                                 INSERT INTO Deseados (DNI, idPublicacion) VALUES (@DNI, @idPublicacion);";
+                string query = @"IF NOT EXISTS (SELECT 1 FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion)
+                                 INSERT INTO Deseados (dniUsuario, idPublicacion) VALUES (@dni, @idPublicacion);";
                 connection.Execute(query, new { DNI = dni, idPublicacion });
             }
         }
