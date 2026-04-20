@@ -64,12 +64,12 @@
                     <div class="campo">
                         <label for="ano">Nivel escolar</label>
                         <select id="ano" name="ano" required>
-                            <option value="1" @(Model.ano == 1 ? "selected" : "")>7mo grado</option>
-                            <option value="2" @(Model.ano == 2 ? "selected" : "")>1er año</option>
-                            <option value="3" @(Model.ano == 3 ? "selected" : "")>2do año</option>
-                            <option value="4" @(Model.ano == 4 ? "selected" : "")>3er año</option>
-                            <option value="5" @(Model.ano == 5 ? "selected" : "")>4to año</option>
-                            <option value="6" @(Model.ano == 6 ? "selected" : "")>5to año</option>
+                            @if (Model.ano == 1) { <option value="1" selected>7mo grado</option> } else { <option value="1">7mo grado</option> }
+                            @if (Model.ano == 2) { <option value="2" selected>1er año</option> } else { <option value="2">1er año</option> }
+                            @if (Model.ano == 3) { <option value="3" selected>2do año</option> } else { <option value="3">2do año</option> }
+                            @if (Model.ano == 4) { <option value="4" selected>3er año</option> } else { <option value="4">3er año</option> }
+                            @if (Model.ano == 5) { <option value="5" selected>4to año</option> } else { <option value="5">4to año</option> }
+                            @if (Model.ano == 6) { <option value="6" selected>5to año</option> } else { <option value="6">5to año</option> }
                         </select>
                     </div>
                     <div class="campo">
@@ -88,9 +88,9 @@
                     <div class="campo">
                         <label for="estadoLibro">Estado del libro</label>
                         <select id="estadoLibro" name="estadoLibro" required>
-                            <option value="Como nuevo" @(Model.estadoLibro == "Como nuevo" ? "selected" : "")>Como nuevo</option>
-                            <option value="Con algunas anotaciones" @(Model.estadoLibro == "Con algunas anotaciones" ? "selected" : "")>Pocas anotaciones</option>
-                            <option value="Con muchas anotaciones" @(Model.estadoLibro == "Con muchas anotaciones" ? "selected" : "")>Muy anotado</option>
+                            @if (Model.estadoLibro == "Como nuevo") { <option value="Como nuevo" selected>Como nuevo</option> } else { <option value="Como nuevo">Como nuevo</option> }
+                            @if (Model.estadoLibro == "Con algunas anotaciones") { <option value="Con algunas anotaciones" selected>Pocas anotaciones</option> } else { <option value="Con algunas anotaciones">Pocas anotaciones</option> }
+                            @if (Model.estadoLibro == "Con muchas anotaciones") { <option value="Con muchas anotaciones" selected>Muy anotado</option> } else { <option value="Con muchas anotaciones">Muy anotado</option> }
                         </select>
                     </div>
                     <div class="campo">
