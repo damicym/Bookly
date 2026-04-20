@@ -128,6 +128,31 @@ namespace Bookly.Controllers
             }
         }
 
+        // Devuelve los datos de un libro por nombre (para autocompletar campos)
+        [HttpGet]
+        public IActionResult ObtenerLibroPorNombre(string nombre)
+        {
+            try
+            {
+                var libro = BD.ObtenerLibroPorNombre(nombre ?? string.Empty);
+                if (libro == null)
+                    return Json(new { found = false });
+
+                return Json(new {
+                    found = true,
+                    id = libro.id,
+                    nombre = libro.nombre,
+                    materia = libro.materia,
+                    ano = libro.ano,
+                    editorial = libro.editorial
+                });
+            }
+            catch
+            {
+                return Json(new { found = false });
+            }
+        }
+
         [HttpPost]
         public IActionResult Editar(int id, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen, string imagenEliminada)
         {

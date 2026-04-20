@@ -9,8 +9,10 @@
             <section class="formSection">
                 <h2>Información del libro</h2>
                     <div class="campo">
+                        <small id="libroIndicator" style="display:block; margin-top:6px; color:var(--dark);"></small>
                         <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus/>
+                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus autocomplete="off"/>
+                        <input type="hidden" id="libroId" name="libro.id" value="" />
                     </div>
 
                     <div class="campo">
@@ -79,4 +81,4 @@
     </form>
 </section>
 
-<script src="/js/autocomplete.js"></script>
+<script src="/js/site.js"></script>

@@ -416,10 +416,14 @@ function eliminarImagenActual(event) {
         input.parentNode.appendChild(container);
 
         // Realiza la petición al servidor 
+        let lastSuggestions = [];
         async function fetchSuggestions(text) {
             if (!text || text.length < 1) {
                 container.style.display = 'none';
                 container.innerHTML = '';
+                // Indicar que se está añadiendo un libro nuevo si hay texto pero no sugerencias
+                const indicator = document.getElementById('libroIndicator');
+                if (indicator) indicator.textContent = '';
                 return;
             }
             try {
@@ -427,7 +431,20 @@ function eliminarImagenActual(event) {
                 const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
                 if (!resp.ok) throw new Error('Error en petición');
                 const data = await resp.json();
-                renderSuggestions(data || []);
+                lastSuggestions = data || [];
+                renderSuggestions(lastSuggestions);
+                // Si el texto actual no coincide exactamente con ninguna sugerencia,
+                // indicamos que se está agregando un libro nuevo
+                const current = input.value.trim();
+                const indicator = document.getElementById('libroIndicator');
+                const libroId = document.getElementById('libroId');
+                const match = lastSuggestions.some(s => (s || '').toLowerCase() === current.toLowerCase());
+                if (current.length > 0 && !match) {
+                    if (indicator) indicator.textContent = 'añadiendo libro nuevo';
+                    if (libroId) libroId.value = '';
+                } else {
+                    if (indicator) indicator.textContent = '';
+                }
             } catch (e) {
                 container.style.display = 'none';
                 container.innerHTML = '';
@@ -441,9 +458,35 @@ function eliminarImagenActual(event) {
                 const div = document.createElement('div');
                 div.className = 'autocomplete-item';
                 div.textContent = item;
-                div.addEventListener('click', () => {
+                div.addEventListener('click', async () => {
                     input.value = item; // al seleccionar, se completa el input
                     container.style.display = 'none';
+                    // Solicitar datos completos del libro y autocompletar campos
+                    try {
+                        const resp = await fetch(`/Book/ObtenerLibroPorNombre?nombre=${encodeURIComponent(item)}`);
+                        if (!resp.ok) throw new Error('err');
+                        const data = await resp.json();
+                        if (data && data.found) {
+                            const editorial = document.getElementById('editorial');
+                            const materia = document.getElementById('materia');
+                            const ano = document.getElementById('ano');
+                            const libroId = document.getElementById('libroId');
+                            const indicator = document.getElementById('libroIndicator');
+                            if (editorial) editorial.value = data.editorial || '';
+                            if (materia) materia.value = data.materia || '';
+                            if (ano) ano.value = data.ano !== undefined ? data.ano : ano.value;
+                            if (libroId) libroId.value = data.id || '';
+                            if (indicator) indicator.textContent = 'Libro existente seleccionado';
+                        } else {
+                            // No encontrado (raro si apareció en sugerencias)
+                            const libroId = document.getElementById('libroId');
+                            const indicator = document.getElementById('libroIndicator');
+                            if (libroId) libroId.value = '';
+                            if (indicator) indicator.textContent = 'Nuevo libro (rellenar campos)';
+                        }
+                    } catch (e) {
+                        // silencioso
+                    }
                 });
                 container.appendChild(div);
             });
@@ -456,6 +499,11 @@ function eliminarImagenActual(event) {
 
         // Petición directa en cada cambio (sin debounce)
         input.addEventListener('input', function(e) {
+            // Al escribir manualmente, indicamos que se trata de un nuevo libro hasta seleccionar una sugerencia
+            const libroId = document.getElementById('libroId');
+            const indicator = document.getElementById('libroIndicator');
+            if (libroId) libroId.value = '';
+            if (indicator) indicator.textContent = '';
             fetchSuggestions(e.target.value.trim());
         });
 
