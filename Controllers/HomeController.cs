@@ -22,6 +22,9 @@ namespace Bookly.Controllers
         {   
             List<PublicacionesCompletas> publicaciones;
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            var favoritos = user != null
+                ? BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet()
+                : new HashSet<int>();
             if (user != null)
             {
                 int anoUsuario = user.ano;
@@ -35,6 +38,12 @@ namespace Bookly.Controllers
                 publicaciones = BD.ObtenerLibrosMostrablesConTope(10);
                 ViewBag.Titulo = "Últimas publicaciones";
             }
+
+            foreach (var publicacion in publicaciones)
+            {
+                publicacion.esDeseado = favoritos.Contains(publicacion.id);
+            }
+
             ViewBag.userLogged = user != null;
             ViewBag.usuario = user;
             return View(publicaciones);
@@ -75,6 +84,9 @@ namespace Bookly.Controllers
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             List<PublicacionesCompletas> resultados;
+            var favoritos = user != null
+                ? BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet()
+                : new HashSet<int>();
             try
             {
                 var precioMinValue = ParseNullableDouble(precioMin);
@@ -100,6 +112,11 @@ namespace Bookly.Controllers
                 }
 
                 resultados = consulta.ToList();
+
+                foreach (var publicacion in resultados)
+                {
+                    publicacion.esDeseado = favoritos.Contains(publicacion.id);
+                }
             } catch (System.Exception ex) {
                 _logger.LogError(ex, "Error al procesar los filtros de búsqueda");
                 resultados = new List<PublicacionesCompletas>();

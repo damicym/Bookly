@@ -14,6 +14,7 @@ public class PublicacionesCompletas
     public DateTime fecha { get; set; }
     public int status { get; set; }
     public byte[] imagen { get; set; }
+    public bool esDeseado { get; set; }
 
 
 }

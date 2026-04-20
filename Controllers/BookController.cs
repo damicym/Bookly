@@ -78,7 +78,7 @@ namespace Bookly.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Desear(int id)
+        public IActionResult Desear(int id, bool esDeseado)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
@@ -88,7 +88,14 @@ namespace Bookly.Controllers
 
             try
             {
-                BD.AgregarDeseado(user.DNI, id);
+                if (!esDeseado)
+                {
+                    BD.AgregarDeseado(user.DNI, id);
+                }
+                else
+                {
+                    BD.EliminarDeseado(user.DNI, id);
+                }
                 return Json(new { success = true });
             }
             catch (Exception ex)

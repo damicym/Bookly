@@ -428,7 +428,7 @@ select:disabled {
 
 /* Cuando el botón está marcado como deseado mostramos el icono relleno */
 .desearBtnForm button.deseado svg {
-  fill: currentColor;
+  fill: var(--dark);
   stroke: none;
   color: var(--dark);
 }
