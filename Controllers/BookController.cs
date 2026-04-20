@@ -113,6 +113,21 @@ namespace Bookly.Controllers
             return View(publicacion);
         }
 
+        // Endpoint para autocomplete de nombres de libros
+        [HttpGet]
+        public IActionResult AutocompleteNombres(string q)
+        {
+            try
+            {
+                var resultados = BD.BuscarNombresLibros(q ?? string.Empty);
+                return Json(resultados);
+            }
+            catch (Exception ex)
+            {
+                return Json(new List<string>());
+            }
+        }
+
         [HttpPost]
         public IActionResult Editar(int id, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen, string imagenEliminada)
         {

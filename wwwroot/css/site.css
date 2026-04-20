@@ -399,6 +399,26 @@ select:disabled {
   font-size: 1.5rem;
 }
 
+/* Autocomplete dropdown para input #nombre */
+.autocomplete-dropdown {
+  position: absolute;
+  z-index: 1000;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  max-height: 180px;
+  overflow-y: auto;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.autocomplete-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--dark)
+}
+.autocomplete-item:hover {
+  background: #f0f0f0;
+}
+
 
 
 .desearBtnForm button:hover {
