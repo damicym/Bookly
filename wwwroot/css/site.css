@@ -326,13 +326,35 @@ select:disabled {
   border-radius: 14px;
   padding: 10px;
   color: var(--light);
-  /* justify-content: center; */
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 290px;
   height: 530px;
   cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.libro.secundario {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.libro.protagonista {
+  box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(0,0,0,0.35);
+  transform: scale(1.03);
+}
+
+.libro.protagonista:hover {
+  transform: scale(1.06);
+}
+
+.libro.secundario:hover {
+  opacity: 1;
+  filter: none;
+  transform: none;
 }
 
 
@@ -397,6 +419,26 @@ select:disabled {
 
 .detallesDatos .mainBtn {
   font-size: 1.5rem;
+}
+
+/* Autocomplete dropdown para input #nombre */
+.autocomplete-dropdown {
+  position: absolute;
+  z-index: 1000;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  max-height: 180px;
+  overflow-y: auto;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.autocomplete-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--dark)
+}
+.autocomplete-item:hover {
+  background: #f0f0f0;
 }
 
 
@@ -480,6 +522,41 @@ select:disabled {
   background-color: rgba(239, 242, 241, 0.95);
   /* light en rgb */
   box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.pill-masbarato {
+  background-color: var(--secondary2);
+  color: var(--dark);
+  font-weight: 600;
+}
+
+.tag-masbarato {
+  position: absolute;
+  top: 14px;
+  left: 8.3px;
+  z-index: 10;
+  background: linear-gradient(135deg, var(--main),var(--secondary2));
+  color: var(--light);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 18px 6px 12px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.4), 0 6px 20px rgba(0,0,0,0.35), 4px 4px 0px rgba(0,0,0,0.2);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  white-space: nowrap;
+  clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 0% 100%);
+  transform: skewX(-8deg);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tag-rayo {
+  color: var(--accent);
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
 }
 
 
@@ -1115,12 +1192,18 @@ a:visited {
 
 .cardsPublicadas {
   display: flex;
-  gap: 15px;
+  gap: 24px;
   width: 100%;
   height: 100%;
   align-items: center;
   flex-wrap: wrap;
-  /* justify-content: center; */
+}
+
+.separador-cards {
+  width: 100%;
+  border: none;
+  border-top: 2px dashed rgba(64, 89, 173, 0.25);
+  margin: 8px 0;
 }
 
 

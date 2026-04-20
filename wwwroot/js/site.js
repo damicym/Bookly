@@ -83,10 +83,20 @@ async function realizarBusqueda(query) {
                 const token = document.querySelector('input[name="__RequestVerificationToken"]')
                 const tokenInput = token ? `<input type="hidden" name="__RequestVerificationToken" value="${token.value}">` : ''
                 if (data.publicaciones && data.publicaciones.length > 0) {
+                    let anteriorFueProtagonista = data.publicaciones[0]?.esMasBarato ?? false
+                    let huboCambio = false
                     data.publicaciones.forEach(libro => {
                         const imgSrc = libro.imagen ? `data:image/webpbase64,${libro.imagen}` : '/img/book-placeholder.webp'
+                        const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Más barato</span>` : ''
+                        const claseCard = libro.esMasBarato ? 'libro protagonista' : 'libro secundario'
+                        if (huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
+                            html += `<hr class="separador-cards" />`
+                        }
+                        anteriorFueProtagonista = libro.esMasBarato
+                        huboCambio = true
                         html += `
-                            <div class="libro" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.idVendedor}'">
+                            <div class="${claseCard}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.idVendedor}'">
+                                ${tagMasBarato}
                                 <div class="libroImgContainer">
                                     <img src="${imgSrc}" alt="imagen del libro" />
                                     <section class="libroActionsContainer">
@@ -309,23 +319,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const svgDeseado = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" /></svg>'
 const svgNoDeseado = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>'
-function obtenerSvgDeseado(esDeseado) {
-    return esDeseado ? svgDeseado : svgNoDeseado
-}
-async function desearLibro(event, form) {
-    event.preventDefault()
-    event.stopPropagation()
+// Intercepta envíos de formularios con clase .desearBtnForm y los envía en segundo plano
+document.addEventListener('submit', async function(e) {
+    const form = e.target
+    e.preventDefault()
+    e.stopPropagation()
+    // if (!form || !form.classList || !form.classList.contains('desearBtnForm')) return
+    if (!form || form.id !== 'desearBtnForm') return
 
-    if (!form || !form.classList || !form.classList.contains('desearBtnForm')) return false
-
-    const action = form.getAttribute('action') || '/Book/Desear'
-    const btn = form.querySelector('button')
+    const action = '/Book/Desear'
     const formData = new FormData(form)
     const tokenEl = form.querySelector('input[name="__RequestVerificationToken"]')
     const token = tokenEl ? tokenEl.value : null
-
-    const estadoActualDeseado = btn ? btn.classList.contains('deseado') : false
-    formData.set('esDeseado', estadoActualDeseado ? 'true' : 'false')
 
     try {
         const headers = token ? { 'RequestVerificationToken': token } : {}
@@ -336,24 +341,20 @@ async function desearLibro(event, form) {
         })
         const data = await res.json().catch(() => null)
         if (data && data.success) {
+            // feedback visual opcional
+            const btn = form.querySelector('button')
             if (btn) {
-                if (!btn.classList.contains('deseado')) {
-                    btn.classList.add('deseado')
-                    btn.innerHTML = svgDeseado
-                } else {
-                    btn.classList.remove('deseado')
-                    btn.innerHTML = svgNoDeseado
-                }
-            }
+                btn.classList.add('deseado')
+                btn.innerHTML = svgDeseado
+            } 
+
         } else {
             console.error('Error al marcar como deseado', data)
         }
     } catch (err) {
         console.error('Error al enviar petición Desear:', err)
     }
-
-    return false
-}
+})
 
 // Eliminar la imagen actual
 function eliminarImagenActual(event) {
@@ -396,3 +397,87 @@ function eliminarImagenActual(event) {
         }
     }
 }
+
+// pone un dropdown con sugerencias de nombres mientras el usuario escribe
+// hace llamadas a /Book/AutocompleteNombres?q=... para fijarse coincidencias
+// - Inserta un contenedor con las sugerencias debajo del input #nombre
+
+(function(){
+    function initAutocomplete() {
+        const input = document.getElementById('nombre');
+        if (!input) return;
+
+        // Contenedor para las sugerencias
+        const container = document.createElement('div');
+        container.className = 'autocomplete-dropdown';
+        container.style.display = 'none';
+        // Posicionaremos el contenedor justo debajo del input
+        input.parentNode.style.position = 'relative';
+        input.parentNode.appendChild(container);
+
+        // Realiza la petición al servidor 
+        async function fetchSuggestions(text) {
+            if (!text || text.length < 1) {
+                container.style.display = 'none';
+                container.innerHTML = '';
+                return;
+            }
+            try {
+                const url = `/Book/AutocompleteNombres?q=${encodeURIComponent(text)}`;
+                const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+                if (!resp.ok) throw new Error('Error en petición');
+                const data = await resp.json();
+                renderSuggestions(data || []);
+            } catch (e) {
+                container.style.display = 'none';
+                container.innerHTML = '';
+            }
+        }
+
+        function renderSuggestions(list) {
+            container.innerHTML = '';
+            if (!list || list.length === 0) { container.style.display = 'none'; return; }
+            list.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.textContent = item;
+                div.addEventListener('click', () => {
+                    input.value = item; // al seleccionar, se completa el input
+                    container.style.display = 'none';
+                });
+                container.appendChild(div);
+            });
+            // Ajustar ancho y posicion con respecto al input
+            container.style.width = input.offsetWidth + 'px';
+            container.style.top = (input.offsetTop + input.offsetHeight) + 'px';
+            container.style.left = input.offsetLeft + 'px';
+            container.style.display = 'block';
+        }
+
+        // Petición directa en cada cambio (sin debounce)
+        input.addEventListener('input', function(e) {
+            fetchSuggestions(e.target.value.trim());
+        });
+
+        // Cerrar al hacer click afuera
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !container.contains(e.target)) {
+                container.style.display = 'none';
+            }
+        });
+
+        // Cerrar con tecla esc
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                container.style.display = 'none';
+            }
+        });
+    }
+
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAutocomplete);
+    } else {
+        initAutocomplete();
+    }
+})();

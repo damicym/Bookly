@@ -38,12 +38,6 @@ namespace Bookly.Controllers
                 publicaciones = BD.ObtenerLibrosMostrablesConTope(10);
                 ViewBag.Titulo = "Últimas publicaciones";
             }
-
-            foreach (var publicacion in publicaciones)
-            {
-                publicacion.esDeseado = favoritos.Contains(publicacion.id);
-            }
-
             ViewBag.userLogged = user != null;
             ViewBag.usuario = user;
             return View(publicaciones);
@@ -112,11 +106,6 @@ namespace Bookly.Controllers
                 }
 
                 resultados = consulta.ToList();
-
-                foreach (var publicacion in resultados)
-                {
-                    publicacion.esDeseado = favoritos.Contains(publicacion.id);
-                }
             } catch (System.Exception ex) {
                 _logger.LogError(ex, "Error al procesar los filtros de búsqueda");
                 resultados = new List<PublicacionesCompletas>();
@@ -180,6 +169,24 @@ namespace Bookly.Controllers
                 "d" => "Muy anotado",
                 _ => estado
             };
+        }
+
+        private static void MarcarMasBaratos(List<PublicacionesCompletas> publicaciones)
+        {
+            // Agrupar por nombre de libro (case-insensitive) y marcar el/los más baratos
+            var minimosPorNombre = publicaciones
+                .Where(p => p.nombre != null)
+                .GroupBy(p => p.nombre.Trim().ToLowerInvariant())
+                .ToDictionary(g => g.Key, g => g.Min(p => p.precio));
+
+            foreach (var pub in publicaciones)
+            {
+                if (pub.nombre == null) continue;
+                var key = pub.nombre.Trim().ToLowerInvariant();
+                // Solo mostrar el tag si hay más de una publicación con ese nombre
+                var count = publicaciones.Count(p => p.nombre != null && p.nombre.Trim().ToLowerInvariant() == key);
+                pub.esMasBarato = count > 1 && pub.precio == minimosPorNombre[key];
+            }
         }
     }
 

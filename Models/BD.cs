@@ -262,6 +262,20 @@ namespace Bookly.Models
                 return connection.Query<Libros>(query, new { ano, materia }).ToList();
             }
         }
+
+        // Devuelve los nombres de libros que coinciden con lo q se esta escribiendo (para autocomplete)
+        public static List<string> BuscarNombresLibros(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return new List<string>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"SELECT DISTINCT nombre FROM Libros WHERE nombre LIKE '%' + @text + '%' ORDER BY nombre";
+                return connection.Query<string>(query, new { text }).ToList();
+            }
+        }
         public static List<PublicacionesCompletas> ObtenerLibrosMostrablesConTope(int tope = -1)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))

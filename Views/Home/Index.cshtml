@@ -62,9 +62,28 @@
     <section class="cardsPublicadas" style="justify-content: center;">
         @if (Model != null || Model.Count > 0)
         {
+            bool huboCambio = false;
+            bool anteriorFueProtagonista = Model.FirstOrDefault()?.esMasBarato ?? false;
+
             foreach (PublicacionesCompletas libro in Model)
             {
-                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                // Insertar separador cuando cambia de protagonista a secundario
+                if (huboCambio && anteriorFueProtagonista && !libro.esMasBarato)
+                {
+                    <hr class="separador-cards" />
+                }
+                anteriorFueProtagonista = libro.esMasBarato;
+                huboCambio = true;
+
+                string claseCard = libro.esMasBarato ? "libro protagonista" : "libro secundario";
+                <div class="@claseCard" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                    @if (libro.esMasBarato)
+                    {
+                        <span class="tag-masbarato">
+                            <svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg>
+                            Más barato
+                        </span>
+                    }
                     <div class="libroImgContainer">
                     @if (libro.imagen != null)
                     {
