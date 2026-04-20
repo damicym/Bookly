@@ -119,19 +119,23 @@ namespace Bookly.Models
             {
                 connection.Open();
 
-                // Insertar el libro y recuperar su ID
-                string insertLibro = @"
+                // Verificar si ya existe un libro con ese nombre; si existe, usar su id, sino insertar
+                int idLibro = connection.ExecuteScalar<int?>("SELECT TOP 1 id FROM Libros WHERE nombre = @nombre", new { nombre = libro.nombre }) ?? 0;
+                if (idLibro == 0)
+                {
+                    string insertLibro = @"
                     INSERT INTO Libros (nombre, materia, ano, editorial)
                     VALUES (@nombre, @materia, @ano, @editorial);
                     SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-                int idLibro = connection.ExecuteScalar<int>(insertLibro, new
-                {
-                    nombre = libro.nombre,
-                    materia = libro.materia,
-                    ano = libro.ano,
-                    editorial = libro.editorial
-                });
+                    idLibro = connection.ExecuteScalar<int>(insertLibro, new
+                    {
+                        nombre = libro.nombre,
+                        materia = libro.materia,
+                        ano = libro.ano,
+                        editorial = libro.editorial
+                    });
+                }
 
                 // Insertar la publicación, incluyendo la imagen si está presente
                 string insertPublicacion = @"
@@ -274,6 +278,18 @@ namespace Bookly.Models
                 connection.Open();
                 string query = @"SELECT DISTINCT nombre FROM Libros WHERE nombre LIKE '%' + @text + '%' ORDER BY nombre";
                 return connection.Query<string>(query, new { text }).ToList();
+            }
+        }
+
+        // Obtener un libro por su nombre exacto (primera coincidencia)
+        public static Libros ObtenerLibroPorNombre(string nombre)
+        {
+            if (string.IsNullOrWhiteSpace(nombre)) return null;
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"SELECT TOP 1 id, nombre, materia, ano, editorial FROM Libros WHERE nombre = @nombre";
+                return connection.QueryFirstOrDefault<Libros>(query, new { nombre });
             }
         }
         public static List<PublicacionesCompletas> ObtenerLibrosMostrablesConTope(int tope = -1)
@@ -444,6 +460,29 @@ namespace Bookly.Models
                 string query = @"IF NOT EXISTS (SELECT 1 FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion)
                                  INSERT INTO Deseados (dniUsuario, idPublicacion) VALUES (@dni, @idPublicacion);";
                 connection.Execute(query, new { DNI = dni, idPublicacion });
+            }
+        }
+
+        public static void EliminarDeseado(string dni, int idPublicacion)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"DELETE FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion";
+                connection.Execute(query, new { DNI = dni, idPublicacion });
+            }
+        }
+
+        public static List<int> ObtenerDeseadosPorUsuario(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni))
+                return new List<int>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"SELECT idPublicacion FROM Deseados WHERE dniUsuario = @dni";
+                return connection.Query<int>(query, new { dni }).ToList();
             }
         }
 

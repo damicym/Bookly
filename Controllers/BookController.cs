@@ -78,7 +78,7 @@ namespace Bookly.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Desear(int id)
+        public IActionResult Desear(int id, bool esDeseado)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
@@ -88,7 +88,14 @@ namespace Bookly.Controllers
 
             try
             {
-                BD.AgregarDeseado(user.DNI, id);
+                if (!esDeseado)
+                {
+                    BD.AgregarDeseado(user.DNI, id);
+                }
+                else
+                {
+                    BD.EliminarDeseado(user.DNI, id);
+                }
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -125,6 +132,31 @@ namespace Bookly.Controllers
             catch (Exception ex)
             {
                 return Json(new List<string>());
+            }
+        }
+
+        // Devuelve los datos de un libro por nombre (para autocompletar campos)
+        [HttpGet]
+        public IActionResult ObtenerLibroPorNombre(string nombre)
+        {
+            try
+            {
+                var libro = BD.ObtenerLibroPorNombre(nombre ?? string.Empty);
+                if (libro == null)
+                    return Json(new { found = false });
+
+                return Json(new {
+                    found = true,
+                    id = libro.id,
+                    nombre = libro.nombre,
+                    materia = libro.materia,
+                    ano = libro.ano,
+                    editorial = libro.editorial
+                });
+            }
+            catch
+            {
+                return Json(new { found = false });
             }
         }
 

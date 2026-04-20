@@ -22,6 +22,9 @@ namespace Bookly.Controllers
         {   
             List<PublicacionesCompletas> publicaciones;
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            var favoritos = user != null
+                ? BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet()
+                : new HashSet<int>();
             if (user != null)
             {
                 int anoUsuario = user.ano;
@@ -80,6 +83,9 @@ namespace Bookly.Controllers
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             List<PublicacionesCompletas> resultados;
+            var favoritos = user != null
+                ? BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet()
+                : new HashSet<int>();
             try
             {
                 var precioMinValue = ParseNullableDouble(precioMin);

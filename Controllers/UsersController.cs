@@ -61,7 +61,6 @@ namespace Bookly.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UpdateAboutMe(string aboutMe)
         {
-            Console.WriteLine("Received aboutMe: " + aboutMe);
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)            {
                 return RedirectToAction("Login");
