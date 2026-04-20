@@ -100,11 +100,11 @@ async function realizarBusqueda(query) {
                                 <div class="libroImgContainer">
                                     <img src="${imgSrc}" alt="imagen del libro" />
                                     <section class="libroActionsContainer">
-                                        <form class="desearBtnForm hoverVerde" action="/Book/Desear" method="post" style="display:inline">
+                                        <form class="desearBtnForm hoverVerde" action="/Book/Desear" method="post" style="display:inline" onsubmit="return desearLibro(event, this)">
                                             ${tokenInput}
                                             <input type="hidden" name="id" value="${libro.id}" />
-                                            <button type="submit" onclick="event.stopPropagation()">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bookmark"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>
+                                            <button ${libro.esDeseado ? 'class="deseado"' : ''} type="submit" onclick="event.stopPropagation()">
+                                                ${obtenerSvgDeseado(libro.esDeseado)}
                                             </button>
                                         </form>
                                     </section>
@@ -319,42 +319,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const svgDeseado = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" /></svg>'
 const svgNoDeseado = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>'
-// Intercepta envíos de formularios con clase .desearBtnForm y los envía en segundo plano
-// document.addEventListener('submit', async function(e) {
-//     const form = e.target
-//     e.preventDefault()
-//     e.stopPropagation()
-//     // if (!form || !form.classList || !form.classList.contains('desearBtnForm')) return
-//     if (!form || form.id !== 'desearBtnForm') return
+function obtenerSvgDeseado(esDeseado) {
+    return esDeseado ? svgDeseado : svgNoDeseado
+}
+async function desearLibro(event, form) {
+    event.preventDefault()
+    event.stopPropagation()
 
-//     const action = '/Book/Desear'
-//     const formData = new FormData(form)
-//     const tokenEl = form.querySelector('input[name="__RequestVerificationToken"]')
-//     const token = tokenEl ? tokenEl.value : null
+    if (!form || !form.classList || !form.classList.contains('desearBtnForm')) return false
 
-//     try {
-//         const headers = token ? { 'RequestVerificationToken': token } : {}
-//         const res = await fetch(action, {
-//             method: 'POST',
-//             body: formData,
-//             headers
-//         })
-//         const data = await res.json().catch(() => null)
-//         if (data && data.success) {
-//             // feedback visual opcional
-//             const btn = form.querySelector('button')
-//             if (btn) {
-//                 btn.classList.add('deseado')
-//                 btn.innerHTML = svgDeseado
-//             } 
+    const action = form.getAttribute('action') || '/Book/Desear'
+    const btn = form.querySelector('button')
+    const formData = new FormData(form)
+    const tokenEl = form.querySelector('input[name="__RequestVerificationToken"]')
+    const token = tokenEl ? tokenEl.value : null
 
-//         } else {
-//             console.error('Error al marcar como deseado', data)
-//         }
-//     } catch (err) {
-//         console.error('Error al enviar petición Desear:', err)
-//     }
-// })
+    const estadoActualDeseado = btn ? btn.classList.contains('deseado') : false
+    formData.set('esDeseado', estadoActualDeseado ? 'true' : 'false')
+
+    try {
+        const headers = token ? { 'RequestVerificationToken': token } : {}
+        const res = await fetch(action, {
+            method: 'POST',
+            body: formData,
+            headers
+        })
+        const data = await res.json().catch(() => null)
+        if (data && data.success) {
+            if (btn) {
+                if (!btn.classList.contains('deseado')) {
+                    btn.classList.add('deseado')
+                    btn.innerHTML = svgDeseado
+                } else {
+                    btn.classList.remove('deseado')
+                    btn.innerHTML = svgNoDeseado
+                }
+            }
+        } else {
+            console.error('Error al marcar como deseado', data)
+        }
+    } catch (err) {
+        console.error('Error al enviar petición Desear:', err)
+    }
+
+    return false
+}
 
 // Eliminar la imagen actual
 function eliminarImagenActual(event) {
@@ -416,14 +425,10 @@ function eliminarImagenActual(event) {
         input.parentNode.appendChild(container);
 
         // Realiza la petición al servidor 
-        let lastSuggestions = [];
         async function fetchSuggestions(text) {
             if (!text || text.length < 1) {
                 container.style.display = 'none';
                 container.innerHTML = '';
-                // Indicar que se está añadiendo un libro nuevo si hay texto pero no sugerencias
-                const indicator = document.getElementById('libroIndicator');
-                if (indicator) indicator.textContent = '';
                 return;
             }
             try {
@@ -431,20 +436,7 @@ function eliminarImagenActual(event) {
                 const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
                 if (!resp.ok) throw new Error('Error en petición');
                 const data = await resp.json();
-                lastSuggestions = data || [];
-                renderSuggestions(lastSuggestions);
-                // Si el texto actual no coincide exactamente con ninguna sugerencia,
-                // indicamos que se está agregando un libro nuevo
-                const current = input.value.trim();
-                const indicator = document.getElementById('libroIndicator');
-                const libroId = document.getElementById('libroId');
-                const match = lastSuggestions.some(s => (s || '').toLowerCase() === current.toLowerCase());
-                if (current.length > 0 && !match) {
-                    if (indicator) indicator.textContent = 'añadiendo libro nuevo';
-                    if (libroId) libroId.value = '';
-                } else {
-                    if (indicator) indicator.textContent = '';
-                }
+                renderSuggestions(data || []);
             } catch (e) {
                 container.style.display = 'none';
                 container.innerHTML = '';
@@ -458,35 +450,9 @@ function eliminarImagenActual(event) {
                 const div = document.createElement('div');
                 div.className = 'autocomplete-item';
                 div.textContent = item;
-                div.addEventListener('click', async () => {
+                div.addEventListener('click', () => {
                     input.value = item; // al seleccionar, se completa el input
                     container.style.display = 'none';
-                    // Solicitar datos completos del libro y autocompletar campos
-                    try {
-                        const resp = await fetch(`/Book/ObtenerLibroPorNombre?nombre=${encodeURIComponent(item)}`);
-                        if (!resp.ok) throw new Error('err');
-                        const data = await resp.json();
-                        if (data && data.found) {
-                            const editorial = document.getElementById('editorial');
-                            const materia = document.getElementById('materia');
-                            const ano = document.getElementById('ano');
-                            const libroId = document.getElementById('libroId');
-                            const indicator = document.getElementById('libroIndicator');
-                            if (editorial) editorial.value = data.editorial || '';
-                            if (materia) materia.value = data.materia || '';
-                            if (ano) ano.value = data.ano !== undefined ? data.ano : ano.value;
-                            if (libroId) libroId.value = data.id || '';
-                            if (indicator) indicator.textContent = 'Libro existente seleccionado';
-                        } else {
-                            // No encontrado (raro si apareció en sugerencias)
-                            const libroId = document.getElementById('libroId');
-                            const indicator = document.getElementById('libroIndicator');
-                            if (libroId) libroId.value = '';
-                            if (indicator) indicator.textContent = 'Nuevo libro (rellenar campos)';
-                        }
-                    } catch (e) {
-                        // silencioso
-                    }
                 });
                 container.appendChild(div);
             });
@@ -499,11 +465,6 @@ function eliminarImagenActual(event) {
 
         // Petición directa en cada cambio (sin debounce)
         input.addEventListener('input', function(e) {
-            // Al escribir manualmente, indicamos que se trata de un nuevo libro hasta seleccionar una sugerencia
-            const libroId = document.getElementById('libroId');
-            const indicator = document.getElementById('libroIndicator');
-            if (libroId) libroId.value = '';
-            if (indicator) indicator.textContent = '';
             fetchSuggestions(e.target.value.trim());
         });
 

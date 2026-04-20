@@ -463,5 +463,28 @@ namespace Bookly.Models
             }
         }
 
+        public static void EliminarDeseado(string dni, int idPublicacion)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"DELETE FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion";
+                connection.Execute(query, new { DNI = dni, idPublicacion });
+            }
+        }
+
+        public static List<int> ObtenerDeseadosPorUsuario(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni))
+                return new List<int>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"SELECT idPublicacion FROM Deseados WHERE dniUsuario = @dni";
+                return connection.Query<int>(query, new { dni }).ToList();
+            }
+        }
+
     }
 }
