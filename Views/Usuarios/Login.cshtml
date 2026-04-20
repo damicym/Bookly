@@ -1,29 +1,51 @@
 @{
-    ViewBag.Title = "Login";
+    ViewData["Title"] = "Login";
 }
-<div class="loginPage primerElemento">
-    <section class="formSection">
-        <h1>Iniciar Sesión</h1>
+
+<div class="auth-wrapper primerElemento">
+    <div class="auth-card auth-card-login">
+
+        <div class="auth-header">
+            <div class="auth-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+            </div>
+            <h1>Bienvenido de vuelta</h1>
+            <p>Ingresá tus datos para continuar</p>
+        </div>
 
         @if (ViewBag.Error != null)
         {
-            <p class ="error"> @ViewBag.Error </p>
+            <p class="auth-error">@ViewBag.Error</p>
         }
 
-        <form method="post" action="@Url.Action("Login", "Usuarios")">
+        <form method="post" action="@Url.Action("Login", "Usuarios")" class="auth-form">
             <input type="hidden" name="returnView" value="@ViewBag.returnView" />
+
             <div class="campo">
-                <label>DNI</label>
-                <input placeholder="DNI" type="text" name="DNI" id="DNI" required autocomplete="off" autofocus pattern="\d+"/>
+                <label for="DNI">DNI</label>
+                <input type="text" id="DNI" name="DNI" placeholder="Ingresá tu DNI" required autocomplete="off" autofocus pattern="\d+" inputmode="numeric" />
             </div>
+
             <div class="campo">
-                <label>Contraseña</label>
-                <input placeholder="Contraseña" type="password" name="password" id="password" required /><br/>
+                <label for="password">Contraseña</label>
+                <div class="campo-password">
+                    <input type="password" id="password" name="password" placeholder="Ingresá tu contraseña" required />
+                    <button type="button" class="ojo-btn" onclick="togglePassword('password', this)">
+                        <svg class="ojo-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                        <svg class="ojo-on" style="display:none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 3l18 18" /><path d="M10.584 10.587a2 2 0 0 0 2.828 2.83" /><path d="M9.363 5.365a9 9 0 0 1 2.637 -.365c3.6 0 6.6 2 9 6c-.822 1.37 -1.722 2.519 -2.7 3.448m-2.168 1.816a9 9 0 0 1 -4.132 .736c-3.6 0 -6.6 -2 -9 -6c1.168 -1.948 2.494 -3.42 3.978 -4.418" /></svg>
+                    </button>
+                </div>
             </div>
-            <button type="submit" class="mainBtn">Iniciar sesión</button>
+
+            <button type="submit" class="mainBtn auth-submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M20 12h-13l3 -3m0 6l-3 -3" /></svg>
+                Iniciar sesión
+            </button>
         </form>
-        <p>
-            ¿No tienes cuenta? <a href="@Url.Action("Register", "Usuarios")">Registrate aquí</a>
+
+        <p class="auth-footer">
+            ¿No tenés cuenta? <a href="@Url.Action("Register", "Usuarios")">Registrate acá</a>
         </p>
-    </section>
+
+    </div>
 </div>

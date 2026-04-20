@@ -2,26 +2,51 @@
     ViewData["Title"] = "Publicar";
 }
 
-<section class="publicarPage primerElemento">
-<h2 style="justify-self: center; color: var(--dark);">Publicar nueva venta</h2>
-    <form action="@Url.Action("Publicar", "Book")" method="post" enctype="multipart/form-data">
-        <section class="publicarLeft">
-            <section class="formSection">
-                <h2>Información del libro</h2>
-                    <div class="campo">
-                        <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus/>
-                    </div>
+<div class="publicar-wrapper primerElemento">
+    <div class="publicar-header">
+        <h1>Nueva publicación</h1>
+        <p>Completá los datos de tu libro para que otros estudiantes puedan encontrarlo.</p>
+    </div>
 
+    <form action="@Url.Action("Publicar", "Book")" method="post" enctype="multipart/form-data" class="publicar-form">
+
+        <!-- Columna izquierda: imagen -->
+        <div class="publicar-col publicar-col-imagen">
+            <div class="publicar-imagen-preview" id="imagenPreviewContainer">
+                <img id="imagenPreview" src="/img/book-placeholder.webp" alt="Preview del libro" />
+                <div class="publicar-imagen-overlay">
+                    <label for="fileInput" class="publicar-imagen-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
+                        Subir imagen
+                    </label>
+                    <input name="imagen" accept="image/*" type="file" id="fileInput" style="display:none">
+                </div>
+            </div>
+            <p class="publicar-imagen-hint" id="fileName">Ningún archivo seleccionado</p>
+        </div>
+
+        <!-- Columna derecha: campos -->
+        <div class="publicar-col publicar-col-campos">
+
+            <div class="publicar-seccion">
+                <h3 class="publicar-seccion-titulo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
+                    Información del libro
+                </h3>
+                <div class="publicar-grid-2">
+                    <div class="campo">
+                        <label for="nombre">Nombre del libro</label>
+                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus autocomplete="off" />
+                        <div id="autocomplete-list" class="autocomplete-items"></div>
+                    </div>
                     <div class="campo">
                         <label for="materia">Materia</label>
                         <input type="text" id="materia" name="libro.materia" placeholder="Ej.: Historia Judía" required />
                     </div>
-
                     <div class="campo">
                         <label for="ano">Nivel escolar</label>
-                        <select id="ano" name="libro.ano">
-                            <option value="0">Selecciona un año escolar</option>
+                        <select id="ano" name="libro.ano" required>
+                            <option value="0">Seleccioná un año</option>
                             <option value="1">7mo grado</option>
                             <option value="2">1er año</option>
                             <option value="3">2do año</option>
@@ -30,53 +55,46 @@
                             <option value="6">5to año</option>
                         </select>
                     </div>
-
                     <div class="campo">
                         <label for="editorial">Editorial</label>
                         <input type="text" id="editorial" name="libro.editorial" placeholder="Ej.: Editorial ORT" />
-                    </div> 
-            <!-- </section> -->
-        <!-- </section> -->
-        <!-- <section class="publicarRight"> -->
-            <!-- <section class="formSection"> -->
-                <h2 style="margin-top: 40px;">Últimos datos</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="publicar-seccion">
+                <h3 class="publicar-seccion-titulo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M3 11l9 -9l9 9l-9 9z" /></svg>
+                    Detalles de la venta
+                </h3>
+                <div class="publicar-grid-2">
                     <div class="campo">
-                        <label for="estadoLibro">Estado</label>
+                        <label for="estadoLibro">Estado del libro</label>
                         <select id="estadoLibro" name="estadoLibro" required>
-                            <option value="">Selecciona un estado</option>
+                            <option value="">Seleccioná un estado</option>
                             <option value="Como nuevo">Como nuevo</option>
                             <option value="Con algunas anotaciones">Pocas anotaciones</option>
                             <option value="Con muchas anotaciones">Muy anotado</option>
                         </select>
                     </div>
                     <div class="campo">
-                        <label for="precio">Precio</label>
-                        <input type="number" id="precio" name="precio" placeholder="0.00" step="0.01"  min="0.01" required />
+                        <label for="precio">Precio ($)</label>
+                        <input type="number" id="precio" name="precio" placeholder="0.00" step="0.01" min="0.01" required />
                     </div>
-                    <div class="campo">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" placeholder="Agregar una descripción del libro..." rows="4"></textarea>
-                    </div>
-                    <div class="campo">
-                        <label for="imagen">Imagen del libro</label>
-                        <div id="dropzone" class="dropzone">
-                            <!-- <input type="file" id="imagen" name="imagen" accept="image/*" /> -->
-                            <div class="file-upload">
-                                <label for="fileInput" class="file-label">
-                                    <span class="file-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-upload"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
-                                    </span>
-                                    Subir archivo
-                                </label>
-                                <input name="imagen" accept="image/*" type="file" id="fileInput">
-                                <span class="file-name" id="fileName">Ningún archivo seleccionado</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit" class="mainBtn">Publicar</button>
-            </section>
-        </section>
+                </div>
+                <div class="campo publicar-desc-campo">
+                    <label for="descripcion">Descripción <span class="campo-opcional">(opcional)</span></label>
+                    <textarea id="descripcion" name="descripcion" placeholder="Contá el estado del libro, si tiene subrayados, si le faltan páginas..." class="publicar-desc-textarea"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="mainBtn publicar-submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                Publicar libro
+            </button>
+        </div>
+
     </form>
-</section>
+</div>
 
 <script src="/js/autocomplete.js"></script>

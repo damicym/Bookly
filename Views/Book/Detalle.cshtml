@@ -1,42 +1,60 @@
 @model Bookly.Models.PublicacionesCompletas
 @using Bookly.Helpers
 
-
 @{
-    ViewData["Title"] = "Ver producto";
+    ViewData["Title"] = "Ver libro";
     var publicaciones = (List<PublicacionesCompletas>)ViewBag.Publicaciones;
-    var max = 4;
+    var vendedor = (Usuarios)ViewBag.Vendedor;
+    var max = publicaciones.Count < 4 ? publicaciones.Count : 4;
 }
-
-
-
 
 <section class="detalles primerElemento">
     <div class="detallesFoto">
         @if (Model.imagen != null)
-                {
-                    <img src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
-                }
-                else
-                {
-                    <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-                }
-        <button class="desearBtnDetalle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#3a57a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
+        {
+            <img src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
+        }
+        else
+        {
+            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+        }
+    </div>
+
+    <div class="detallesDatos">
+        <div class="detalle-meta">
+            <span class="detalle-pill" style="background-color:@HtmlHelpers.GetColor(Model.estadoLibro)">@Model.estadoLibro</span>
+            <span class="detalle-pill">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
+        </div>
+
+        <h1 class="detalle-titulo">@Model.nombre</h1>
+        <p class="detalle-materia">@Model.materia</p>
+        <div class="detalle-precio">$@Model.precio</div>
+
+        <div class="detalle-info-grid">
+            <div class="detalle-info-item">
+                <span class="detalle-info-label">Editorial</span>
+                <span class="detalle-info-valor">@(string.IsNullOrWhiteSpace(Model.editorial) ? "—" : Model.editorial)</span>
+            </div>
+            <div class="detalle-info-item">
+                <span class="detalle-info-label">Año de uso</span>
+                <span class="detalle-info-valor">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.descripcion))
+        {
+            <div class="detalle-descripcion">
+                <p class="detalle-info-label">Descripción</p>
+                <p>@Model.descripcion</p>
+            </div>
+        }
+
+        <button class="mainBtn detalle-comprar-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>
+            Contactar vendedor
         </button>
     </div>
-    <div class="detallesDatos">
-        <h1>@Model.nombre</h1>
-        <h3>Materia: @Model.materia</h3>
-        <h2>@Model.estadoLibro</h2>
-        <h1>$   @Model.precio</h1>
-        <h3>Año de uso: @HtmlHelpers.PasarAñoATexto(Model.ano)</h3>
-        <h3>Editorial: @Model.editorial</h3>
-        <h4>Descripición: @Model.descripcion</h4>
-        <button class="mainBtn">Comprar</button>
-    </div>
 </section>
-
 
 <section class="panel-wrapper open">
     <button id="toggleBtn" class="panel-btn">
@@ -45,27 +63,23 @@
 
     <div id="sidePanel" class="side-panel">
         <img src="~/img/default.webp" alt="pfp" class="imgVenDetalle">
-        <h3>@ViewBag.Vendedor.nombreComp</h3>
+        <h3>@vendedor.nombreComp</h3>
         <div class="detallesVenInfo">
-            <h4>@($"{HtmlHelpers.PasarAñoATexto(ViewBag.Vendedor.ano)} {ViewBag.Vendedor.especialidad} {ViewBag.Vendedor.curso}")</h4>
-            <h4 id="ventas">hacer</h4>
-            <h4>hacer</h4>
+            <h4>@($"{HtmlHelpers.PasarAñoATexto(vendedor.ano)} {vendedor.especialidad} {vendedor.curso}")</h4>
         </div>
         <div class="detallesVenPublics">
             <h3>Publicaciones</h3>
-
-                @if(publicaciones.Count() < 4){
-                    max = publicaciones.Count();
-                }
-                @for (int i = 0; i < max; i++)
+            @for (int i = 0; i < max; i++)
+            {
+                if (publicaciones[i].imagen != null)
                 {
-                    if (publicaciones[i].imagen != null){
-                    <img src="data:image/webp;base64,@(Convert.ToBase64String(publicaciones[i].imagen))"/>
-                    }
-                    else{
-                        <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-                    }
+                    <img src="data:image/webp;base64,@(Convert.ToBase64String(publicaciones[i].imagen))" />
                 }
+                else
+                {
+                    <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                }
+            }
         </div>
     </div>
 </section>
@@ -75,20 +89,13 @@ const wrapper = document.querySelector(".panel-wrapper");
 const btn = document.getElementById("toggleBtn");
 const icon = document.getElementById("toggleIcon");
 
-const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EFF2F1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-sidebar-left-expand"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /><path d="M14 10l2 2l-2 2" /></svg>`;  // ejemplo: cuadrado
-
-const svgClosed = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EFF2F1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-sidebar-left-collapse"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /><path d="M15 10l-2 2l2 2" /></svg>`;
-
+const svgOpen = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EFF2F1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /><path d="M14 10l2 2l-2 2" /></svg>`;
+const svgClosed = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EFF2F1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /><path d="M15 10l-2 2l2 2" /></svg>`;
 
 icon.innerHTML = svgOpen;
 
 btn.addEventListener("click", () => {
     wrapper.classList.toggle("open");
-
-    if (wrapper.classList.contains("open")) {
-        icon.innerHTML = svgOpen;
-    } else {
-        icon.innerHTML = svgClosed;
-    }
+    icon.innerHTML = wrapper.classList.contains("open") ? svgOpen : svgClosed;
 });
 </script>

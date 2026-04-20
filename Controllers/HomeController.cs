@@ -36,6 +36,10 @@ namespace Bookly.Controllers
                 ViewBag.Titulo = "Últimas publicaciones";
             }
             MarcarMasBaratos(publicaciones);
+            publicaciones = publicaciones
+                .OrderByDescending(p => p.esMasBarato)
+                .ThenBy(p => p.precio)
+                .ToList();
             ViewBag.userLogged = user != null;
             ViewBag.usuario = user;
             return View(publicaciones);

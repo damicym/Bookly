@@ -1,187 +1,131 @@
 @model Bookly.Models.PublicacionesCompletas
 @using Bookly.Helpers
 
-
 @{
-    ViewData["Title"] = "Editar libro";
+    ViewData["Title"] = "Editar publicación";
 }
 
-
-<section class="formSection" style="margin-top: 140px !important;">
-    <h2>Editar libro</h2>
-
-
-<form action="@Url.Action("Editar", "Book")" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="id" value="@Model.id" />
-
-
-    <div class="campo">
-        <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
+<div class="publicar-wrapper primerElemento">
+    <div class="publicar-header">
+        <h1>Editar publicación</h1>
+        <p>Modificá los datos de tu libro.</p>
     </div>
 
+    <form action="@Url.Action("Editar", "Book")" method="post" enctype="multipart/form-data" class="publicar-form">
+        <input type="hidden" name="id" value="@Model.id" />
+        <input type="hidden" id="imagenEliminada" name="imagenEliminada" value="false" />
 
-    <div class="campo">
-        <label for="materia">Materia</label>
-        <input type="text" id="materia" name="materia" value="@Model.materia" required />
-    </div>
-
-
-    <div class="campo">
-        <label for="ano">Nivel escolar</label>
-        <select id="ano" name="ano" required>
-            <option value="@Model.ano">@HtmlHelpers.PasarAñoATexto(Model.ano)</option>
-            <option value="1">7mo grado</option>
-            <option value="2">1er año</option>
-            <option value="3">2do año</option>
-            <option value="4">3er año</option>
-            <option value="5">4to año</option>
-            <option value="6">5to año</option>
-        </select>
-    </div>
-
-
-    <div class="campo">
-        <label for="editorial">Editorial</label>
-        <input type="text" id="editorial" name="editorial" value="@Model.editorial" required />
-    </div>
-
-
-    <div class="campo">
-        <label for="estadoLibro">Estado</label>
-        <select id="estadoLibro" name="estadoLibro" required>
-            <option value="@Model.estadoLibro">@Model.estadoLibro</option>
-            <option value="Como nuevo">Como nuevo</option>
-            <option value="Con algunas anotaciones">Con algunas anotaciones</option>
-            <option value="Con muchas anotaciones">Con muchas anotaciones</option>
-            <option value="Muy usado">Muy usado</option>
-        </select>
-    </div>
-
-
-    <div class="campo">
-        <label for="precio">Precio</label>
-        <input type="number" id="precio" name="precio" step="0.01"  value="@Model.precio" required />
-    </div>
-
-
-    <div class="campo">
-        <label for="descripcion">Descripción</label>
-        <textarea id="descripcion" name="descripcion" rows="4">@Model.descripcion</textarea>
-    </div>
-        
-    <div class="campo">
-        <label for="imagen">Imagen del libro</label>
-        
-        <!-- Mostrar imagen actual o predeterminada -->
-        <div id="imagenPreviewContainer" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-            <div style="display: flex; gap: 15px; align-items: flex-start;">
-                <div style="flex: 0 0 120px;">
-                    @if (Model.imagen != null)
-                    {
-                        <img id="imagenPreview"
-                             src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" 
-                             alt="imagen del libro" 
-                             style="max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
-                    }
-                    else
-                    {
-                        <img id="imagenPreview"
-                             src="~/img/book-placeholder.webp" 
-                             alt="imagen del libro" 
-                             style="max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
-                    }
-                </div>
-                <div style="flex: 1;">
-                    <p id="estadoImagen" style="margin: 0 0 10px 0; font-weight: bold; color: #333;">
-                        @if (Model.imagen != null)
-                        {
-                            <text>Imagen actual del libro</text>
-                        }
-                        else
-                        {
-                            <text>Imagen predeterminada</text>
-                        }
-                    </p>
-                    
-                    @if (Model.imagen != null)
-                    {
-                        <div class="desearBtnForm" style="display:inline-block;">
-                            <button type="button" title="Eliminar imagen" onclick="eliminarImagenActual(event)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 7l16 0"></path><path d="M10 11l0 6"></path><path d="M14 11l0 6"></path><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
-                            </button>
-                        </div>
-                    }
-                    <input type="hidden" id="imagenEliminada" name="imagenEliminada" value="false" />
+        <!-- Columna izquierda: imagen -->
+        <div class="publicar-col publicar-col-imagen">
+            <div class="publicar-imagen-preview" id="imagenPreviewContainer">
+                @if (Model.imagen != null)
+                {
+                    <img id="imagenPreview" src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
+                }
+                else
+                {
+                    <img id="imagenPreview" src="/img/book-placeholder.webp" alt="imagen del libro" />
+                }
+                <div class="publicar-imagen-overlay">
+                    <label for="fileInput" class="publicar-imagen-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
+                        Cambiar imagen
+                    </label>
+                    <input name="imagen" accept="image/*" type="file" id="fileInput" style="display:none">
                 </div>
             </div>
+            @if (Model.imagen != null)
+            {
+                <button type="button" class="publicar-eliminar-img" onclick="eliminarImagenActual(event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                    Eliminar imagen
+                </button>
+            }
+            <p class="publicar-imagen-hint" id="fileName">@(Model.imagen != null ? "Imagen actual del libro" : "Sin imagen")</p>
         </div>
-        
-        <div id="dropzone" class="dropzone">
-            <div class="file-upload">
-                <label for="fileInput" class="file-label">
-                    <span class="file-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-upload"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
-                    </span>
-                    Subir archivo
-                </label>
-                <!-- INPUT MOVIDO FUERA DEL LABEL -->
-                <input name="imagen" accept="image/*" type="file" id="fileInput" style="display: none;">
-                <span class="file-name" id="fileName">Archivo no encontrado</span>
-            </div>
-        </div>
-    </div>
 
-        <button type="submit" class="mainBtn">Guardar cambios</button>
+        <!-- Columna derecha: campos -->
+        <div class="publicar-col publicar-col-campos">
+
+            <div class="publicar-seccion">
+                <h3 class="publicar-seccion-titulo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
+                    Información del libro
+                </h3>
+                <div class="publicar-grid-2">
+                    <div class="campo">
+                        <label for="nombre">Nombre del libro</label>
+                        <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
+                    </div>
+                    <div class="campo">
+                        <label for="materia">Materia</label>
+                        <input type="text" id="materia" name="materia" value="@Model.materia" required />
+                    </div>
+                    <div class="campo">
+                        <label for="ano">Nivel escolar</label>
+                        <select id="ano" name="ano" required>
+                            <option value="1" @(Model.ano == 1 ? "selected" : "")>7mo grado</option>
+                            <option value="2" @(Model.ano == 2 ? "selected" : "")>1er año</option>
+                            <option value="3" @(Model.ano == 3 ? "selected" : "")>2do año</option>
+                            <option value="4" @(Model.ano == 4 ? "selected" : "")>3er año</option>
+                            <option value="5" @(Model.ano == 5 ? "selected" : "")>4to año</option>
+                            <option value="6" @(Model.ano == 6 ? "selected" : "")>5to año</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="editorial">Editorial</label>
+                        <input type="text" id="editorial" name="editorial" value="@Model.editorial" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="publicar-seccion">
+                <h3 class="publicar-seccion-titulo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M3 11l9 -9l9 9l-9 9z" /></svg>
+                    Detalles de la venta
+                </h3>
+                <div class="publicar-grid-2">
+                    <div class="campo">
+                        <label for="estadoLibro">Estado del libro</label>
+                        <select id="estadoLibro" name="estadoLibro" required>
+                            <option value="Como nuevo" @(Model.estadoLibro == "Como nuevo" ? "selected" : "")>Como nuevo</option>
+                            <option value="Con algunas anotaciones" @(Model.estadoLibro == "Con algunas anotaciones" ? "selected" : "")>Pocas anotaciones</option>
+                            <option value="Con muchas anotaciones" @(Model.estadoLibro == "Con muchas anotaciones" ? "selected" : "")>Muy anotado</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="precio">Precio ($)</label>
+                        <input type="number" id="precio" name="precio" step="0.01" value="@Model.precio" required />
+                    </div>
+                </div>
+                <div class="campo publicar-desc-campo">
+                    <label for="descripcion">Descripción <span class="campo-opcional">(opcional)</span></label>
+                    <textarea id="descripcion" name="descripcion" class="publicar-desc-textarea">@Model.descripcion</textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="mainBtn publicar-submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                Guardar cambios
+            </button>
+        </div>
+
     </form>
-</section>
+</div>
 
-<!-- Script en línea para manejar el cambio de imagen -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
-    
     if (fileInput) {
-        fileInput.addEventListener('change', function(event) {
+        fileInput.addEventListener('change', function() {
             const file = this.files[0];
-            console.log('Archivo detectado:', file?.name);
-            
             if (file) {
-                // 1. Actualizar nombre del archivo
-                const fileName = document.getElementById('fileName');
-                if (fileName) {
-                    fileName.textContent = file.name;
-                    console.log('Nombre actualizado:', file.name);
-                }
-                
-                // 2. Actualizar preview de imagen
-                const imagenPreview = document.getElementById('imagenPreview');
-                if (imagenPreview) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imagenPreview.src = e.target.result;
-                        console.log('Preview actualizada');
-                    };
-                    reader.readAsDataURL(file);
-                }
-                
-                // 3. Actualizar estado
-                const estadoImagen = document.getElementById('estadoImagen');
-                if (estadoImagen) {
-                    estadoImagen.textContent = 'Nueva imagen seleccionada';
-                }
-                
-                // 4. Limpiar flag de eliminación
+                document.getElementById('fileName').textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('imagenPreview').src = e.target.result;
+                reader.readAsDataURL(file);
                 const imagenEliminada = document.getElementById('imagenEliminada');
-                if (imagenEliminada) {
-                    imagenEliminada.value = 'false';
-                }
-                
-                // 5. Mostrar botón de eliminar
-                const deleteBtn = document.querySelector('.desearBtnForm');
-                if (deleteBtn) {
-                    deleteBtn.style.display = 'inline-block';
-                }
+                if (imagenEliminada) imagenEliminada.value = 'false';
             }
         });
     }
