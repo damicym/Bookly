@@ -1342,84 +1342,138 @@ a:visited {
 
 /* #region detalles */
 .detalles {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 60px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 40px;
+  box-sizing: border-box;
 }
-
 
 .detallesDatos {
   display: flex;
   flex-direction: column;
-  margin-right: 34%;
-  margin-top: 1.5%;
   gap: 20px;
 }
-
 
 .detallesDatos svg {
   margin-right: 3%;
 }
 
-
 .detallesFoto {
-  margin-left: 10%;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Wrapper de imagen en detalle con overlay de acciones */
+.detalleImgWrapper {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  max-height: 800px;
   aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+/* Contenedor interno que centra la imagen */
+.detalleImgInner {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
   overflow: hidden;
-  border-radius: 8px;
-  background-color: var(--light);
+  background-color: var(--lightDarker);
   display: flex;
   justify-content: center;
   align-items: center;
-
-}
-
-.detallesFoto img {
-  margin-left: 10%;
-  display: inline-block;
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-  max-height: 800px;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-  border-radius: 8px;
-  background-color: var(--light);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-}
-
-
-
-
-.desearBtnDetalle {
   position: absolute;
-  top: 55px;
-  right: 10px;
-  background: var(--light);
-  border: none;
-  padding: 8px;
+  top: 0;
+  left: 0;
+}
+
+.detalleImgInner img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Tag más barato más grande en detalle */
+.tag-masbarato-detalle {
+  font-size: 1rem !important;
+  padding: 8px 24px 8px 16px !important;
+}
+
+.tag-masbarato-detalle .tag-rayo {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+/* Botón de favoritos en detalle */
+.detalleAcciones {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.desearBtnFormDetalle {
+  border-radius: 50%;
+  width: 62px;
+  height: 62px;
+  filter: drop-shadow(0px 1px 4px var(--dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.desearBtnFormDetalle button {
+  border: 0;
+  background-color: var(--light);
+  width: 62px;
+  height: 62px;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
   cursor: pointer;
-  filter: drop-shadow(0px 0px 4px var(--dark));
-  color: var(--light);
+  color: var(--dark);
+}
+
+.desearBtnFormDetalle button:hover {
+  background-color: var(--secondary2);
+  color: var(--dark);
+}
+
+.desearBtnFormDetalle button svg {
+  color: var(--dark);
   fill: none;
   transition: all 0.3s;
   stroke-width: 2px;
 }
 
-.desearBtnDetalle:hover {
-  background: var(--secondary2);
-  color: var(--dark);
-  transform: scale(1.1);
-  filter: drop-shadow(0px 0px 6px var(--secondary2));
+.desearBtnFormDetalle button.deseado svg {
+  fill: var(--dark);
+  stroke: none;
+}
+
+/* Botón contactar vendedor */
+.detalle-comprar-btn {
+  font-size: 1.3rem !important;
+  padding: 14px 24px !important;
+  width: fit-content !important;
+  white-space: nowrap;
+}
+
+.detalle-comprar-btn svg {
+  width: 28px !important;
+  height: 28px !important;
+  flex-shrink: 0;
 }
 
 .comprar {
@@ -2968,6 +3022,3 @@ a:visited {
 /* #endregion profile rediseño */
 
 /* quitar sticky de imagen en detalle */
-.detallesFoto {
-  position: static !important;
-}

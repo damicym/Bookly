@@ -5,19 +5,50 @@
     ViewData["Title"] = "Ver libro";
     var publicaciones = (List<PublicacionesCompletas>)ViewBag.Publicaciones;
     var vendedor = (Usuarios)ViewBag.Vendedor;
+    var usuarioActual = (Usuarios)ViewBag.usuario;
     var max = publicaciones.Count < 4 ? publicaciones.Count : 4;
 }
 
-<section class="detalles primerElemento">
+<section class="detalles primerElemento" style="padding-top: 40px; padding-bottom: 40px;">
     <div class="detallesFoto">
-        @if (Model.imagen != null)
-        {
-            <img src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
-        }
-        else
-        {
-            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-        }
+        <div class="detalleImgWrapper">
+            <div class="detalleImgInner">
+                @if (Model.imagen != null)
+                {
+                    <img src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
+                }
+                else
+                {
+                    <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                }
+            </div>
+
+            @if (Model.esMasBarato)
+            {
+                <span class="tag-masbarato tag-masbarato-detalle">
+                    <svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg>
+                    Más barato
+                </span>
+            }
+
+            <div class="detalleAcciones">
+                <form class="desearBtnForm desearBtnFormDetalle hoverVerde" action="@Url.Action("Desear", "Book")" method="post" onsubmit="return desearLibro(event, this);">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.id" />
+                    <input type="hidden" name="esDeseado" value="@Model.esDeseado" />
+                    <button class="@(Model.esDeseado ? "deseado" : "")" type="submit">
+                        @if (Model.esDeseado)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>
+                        }
+                        else
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>
+                        }
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <div class="detallesDatos">
@@ -49,8 +80,8 @@
             </div>
         }
 
-        <button class="mainBtn detalle-comprar-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>
+        <button class="mainBtn detalle-comprar-btn" style="white-space: nowrap; width: fit-content;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>
             Contactar vendedor
         </button>
     </div>

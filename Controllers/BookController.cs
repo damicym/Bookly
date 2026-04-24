@@ -63,6 +63,26 @@ namespace Bookly.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            // Marcar si está deseado por el usuario actual
+            if (user != null)
+            {
+                var favoritos = BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet();
+                libro.esDeseado = favoritos.Contains(libro.id);
+            }
+
+            // Marcar si es el más barato entre publicaciones del mismo libro
+            var todasPublicaciones = BD.ObtenerLibrosMostrablesConTope();
+            var mismoLibro = todasPublicaciones
+                .Where(p => p.nombre != null && libro.nombre != null &&
+                            p.nombre.Trim().ToLowerInvariant() == libro.nombre.Trim().ToLowerInvariant())
+                .ToList();
+            if (mismoLibro.Count > 1)
+            {
+                double minPrecio = mismoLibro.Min(p => p.precio);
+                libro.esMasBarato = libro.precio == minPrecio;
+            }
+
             ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
             ViewBag.Vendedor = vendedor;
             ViewBag.usuario = user;
