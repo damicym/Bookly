@@ -32,11 +32,13 @@
                 <h3 class="publicar-seccion-titulo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
                     Información del libro
+                    <small id="libroIndicator" class="libroExistenteIndicator"></small>
                 </h3>
                 <div class="publicar-grid-2">
                     <div class="campo">
                         <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus/>
+                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus autocomplete="off"/>
+                        <input type="hidden" id="libroId" name="libro.id" value="" />
                     </div>
                     <div class="campo">
                         <label for="materia">Materia</label>

@@ -1908,6 +1908,7 @@ a:visited {
   color: var(--light);
   margin: 0 0 4px;
   opacity: 0.9;
+  position: relative;
 }
 
 .publicar-seccion .campo label {
@@ -3022,3 +3023,14 @@ a:visited {
 /* #endregion profile rediseño */
 
 /* quitar sticky de imagen en detalle */
+
+.libroExistenteIndicator{
+  background-color: var(--secondary2);
+  padding: 4px;
+  color: var(--dark);
+  border-radius: 6px;
+  margin-left: 6px;
+  position: absolute;
+  right: 0;
+  display: none;
+}

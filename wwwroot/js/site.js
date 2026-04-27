@@ -425,10 +425,17 @@ function eliminarImagenActual(event) {
         input.parentNode.appendChild(container);
 
         // Realiza la petición al servidor 
+        let lastSuggestions = [];
         async function fetchSuggestions(text) {
             if (!text || text.length < 1) {
                 container.style.display = 'none';
                 container.innerHTML = '';
+                // Indicar que se está añadiendo un libro nuevo si hay texto pero no sugerencias
+                const indicator = document.getElementById('libroIndicator');
+                if (indicator) {
+                    indicator.display = 'none'
+                    indicator.innerHTML = '';
+                }
                 return;
             }
             try {
@@ -436,7 +443,28 @@ function eliminarImagenActual(event) {
                 const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
                 if (!resp.ok) throw new Error('Error en petición');
                 const data = await resp.json();
-                renderSuggestions(data || []);
+                lastSuggestions = data || [];
+                renderSuggestions(lastSuggestions);
+                // Si el texto actual no coincide exactamente con ninguna sugerencia,
+                // indicamos que se está agregando un libro nuevo
+                const current = input.value.trim();
+                const indicator = document.getElementById('libroIndicator');
+                const libroId = document.getElementById('libroId');
+                const match = lastSuggestions.some(s => (s || '').toLowerCase() === current.toLowerCase());
+                if (current.length > 0 && !match) {
+                    if (indicator) {
+                                indicator.style.display = 'block';  
+                                indicator.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-subtitles-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M11.5 19h-5.5a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v3" /><path d="M7 15h5" /><path d="M17 12h-3" /><path d="M11 12h-1" /><path d="M18.42 15.61a2.1 2.1 0 0 1 2.97 2.97l-3.39 3.42h-3v-3l3.42 -3.39" /></svg>
+                                Creando nuevo libro`;
+                            }
+                    if (libroId) libroId.value = '';
+                } else {
+                    if (indicator) {
+                        indicator.display = 'none'
+                        indicator.innerHTML = '';
+                    }
+                }
             } catch (e) {
                 container.style.display = 'none';
                 container.innerHTML = '';
@@ -450,9 +478,40 @@ function eliminarImagenActual(event) {
                 const div = document.createElement('div');
                 div.className = 'autocomplete-item';
                 div.textContent = item;
-                div.addEventListener('click', () => {
+                div.addEventListener('click', async () => {
                     input.value = item; // al seleccionar, se completa el input
                     container.style.display = 'none';
+                    // Solicitar datos completos del libro y autocompletar campos
+                    try {
+                        const resp = await fetch(`/Book/ObtenerLibroPorNombre?nombre=${encodeURIComponent(item)}`);
+                        if (!resp.ok) throw new Error('err');
+                        const data = await resp.json();
+                        if (data && data.found) {
+                            const editorial = document.getElementById('editorial');
+                            const materia = document.getElementById('materia');
+                            const ano = document.getElementById('ano');
+                            const libroId = document.getElementById('libroId');
+                            const indicator = document.getElementById('libroIndicator');
+                            if (editorial) editorial.value = data.editorial || '';
+                            if (materia) materia.value = data.materia || '';
+                            if (ano) ano.value = data.ano !== undefined ? data.ano : ano.value;
+                            if (libroId) libroId.value = data.id || '';
+                            if (indicator) {
+                                indicator.style.display = 'block';  
+                                indicator.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M20.707 6.293a1 1 0 0 1 0 1.414l-10 10a1 1 0 0 1 -1.414 0l-5 -5a1 1 0 0 1 1.414 -1.414l4.293 4.293l9.293 -9.293a1 1 0 0 1 1.414 0" /></svg>
+                                Libro existente seleccionado`;
+                            }
+                        } else {
+                            // No encontrado (raro si apareció en sugerencias)
+                            const libroId = document.getElementById('libroId');
+                            const indicator = document.getElementById('libroIndicator');
+                            if (libroId) libroId.value = '';
+                            if (indicator) indicator.textContent = 'Nuevo libro (rellenar campos)';
+                        }
+                    } catch (e) {
+                        // silencioso
+                    }
                 });
                 container.appendChild(div);
             });
@@ -465,6 +524,14 @@ function eliminarImagenActual(event) {
 
         // Petición directa en cada cambio (sin debounce)
         input.addEventListener('input', function(e) {
+            // Al escribir manualmente, indicamos que se trata de un nuevo libro hasta seleccionar una sugerencia
+            const libroId = document.getElementById('libroId');
+            const indicator = document.getElementById('libroIndicator');
+            if (libroId) libroId.value = '';
+            if (indicator) {
+                indicator.display = 'none'
+                indicator.innerHTML = '';
+            }
             fetchSuggestions(e.target.value.trim());
         });
 
