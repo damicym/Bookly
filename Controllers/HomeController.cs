@@ -43,6 +43,10 @@ namespace Bookly.Controllers
                 .OrderByDescending(p => p.esMasBarato)
                 .ThenBy(p => p.precio)
                 .ToList();
+
+            foreach (var publicacion in publicaciones) {
+                publicacion.esDeseado = favoritos.Contains(publicacion.id);
+            }
             ViewBag.userLogged = user != null;
             ViewBag.usuario = user;
             return View(publicaciones);
@@ -72,7 +76,32 @@ namespace Bookly.Controllers
             ViewBag.usuario = user;
 
             var publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI);
+            ViewBag.favoritos = BD.ObtenerPublicacionesFavoritasPorUsuario(user.DNI);
             return View(publicaciones);
+        }
+
+        public IActionResult MisPublicaciones()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Usuarios");
+            }
+            ViewBag.usuario = user;
+            var publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI);
+            return View(publicaciones);
+        }
+
+        public IActionResult MisFavoritos()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Usuarios");
+            }
+            ViewBag.usuario = user;
+            var favoritos = BD.ObtenerPublicacionesFavoritasPorUsuario(user.DNI);
+            return View(favoritos);
         }
         public IActionResult Mensajes()
         {

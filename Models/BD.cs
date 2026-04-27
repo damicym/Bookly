@@ -486,5 +486,38 @@ namespace Bookly.Models
             }
         }
 
+        public static List<PublicacionesCompletas> ObtenerPublicacionesFavoritasPorUsuario(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni))
+                return new List<PublicacionesCompletas>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+                    SELECT 
+                        p.id,
+                        p.idLibro,
+                        l.nombre,
+                        l.materia,
+                        l.ano,
+                        l.editorial,
+                        p.estadoLibro,
+                        p.precio,
+                        p.descripcion,
+                        p.idVendedor,
+                        p.fecha,
+                        p.status,
+                        p.imagen
+                    FROM Deseados d
+                    INNER JOIN Publicacion p ON d.idPublicacion = p.id
+                    INNER JOIN Libros l ON p.idLibro = l.id
+                    WHERE d.dniUsuario = @dni
+                    ORDER BY p.fecha DESC";
+
+                return connection.Query<PublicacionesCompletas>(query, new { dni }).ToList();
+            }
+        }
+
     }
 }

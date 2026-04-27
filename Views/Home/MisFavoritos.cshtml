@@ -1,0 +1,52 @@
+@model List<Bookly.Models.PublicacionesCompletas>
+@using Bookly.Helpers
+@using Bookly.Models
+
+@{
+    ViewData["Title"] = "Mis favoritos";
+}
+
+<section class="publicaciones primerElemento">
+    <button class="secondaryBtn" style="width:fit-content;" onclick="window.location.href='@Url.Action("Profile", "Home")'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+        Volver al perfil
+    </button>
+    <div class="publicacionesEnProfileTitulo">
+        <h1>Mis favoritos</h1>
+    </div>
+    <section class="cardsPublicadas">
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="no-result">
+                <p>Todavía no agregaste libros a favoritos.</p>
+            </div>
+        }
+        else
+        {
+            foreach (PublicacionesCompletas libro in Model)
+            {
+                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                    <div class="libroImgContainer">
+                        @if (libro.imagen != null)
+                        {
+                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                        }
+                        else
+                        {
+                            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                        }
+                    </div>
+                    <div class="nombreYMateriaContainer">
+                        <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
+                        <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                    </div>
+                    <h3>$@libro.precio</h3>
+                    <div class="pillContainer">
+                        <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                        <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+</section>

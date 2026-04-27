@@ -988,7 +988,6 @@ a:visited {
 /* #endregion buscar */
 
 /* #region profile */
-.publicaciones,
 .profileInfo {
   padding: 20px;
 }
@@ -1150,6 +1149,7 @@ a:visited {
   width: 100%;
   height: max-content;
   gap: 30px;
+  padding: 20px 20px 20px 20px;
 }
 
 
@@ -1174,7 +1174,7 @@ a:visited {
   gap: 24px;
   width: 100%;
   height: 100%;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
 }
 
@@ -3023,6 +3023,153 @@ a:visited {
 /* #endregion profile rediseño */
 
 /* quitar sticky de imagen en detalle */
+
+/* #region favoritos carrusel */
+.favoritosSection {
+    padding-bottom: 40px;
+}
+
+.favoritosCarruselWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.favoritosCarrusel {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 4px 16px;
+    flex: 1;
+    /* ocultar scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.favoritosCarrusel::-webkit-scrollbar {
+    display: none;
+}
+
+.carruselBtn {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--main);
+    color: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(6, 26, 64, 0.2);
+    z-index: 1;
+}
+
+.carruselBtn:hover {
+    background-color: var(--secondary);
+    transform: scale(1.08);
+}
+
+.favoritosCarrusel .libro {
+    flex-shrink: 0;
+}
+/* #endregion favoritos carrusel */
+
+/* #region publicar card y mas publicaciones */
+.publicarCard {
+  background: transparent !important;
+  border: 2px dashed var(--secondary2) !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.publicarCard:hover {
+  background: rgba(151, 216, 196, 0.08) !important;
+  border-color: var(--secondary2) !important;
+  border-style: solid !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 0 0 3px rgba(151, 216, 196, 0.2), 0 8px 24px rgba(151, 216, 196, 0.15) !important;
+}
+
+.publicarCard:hover .publicarCardInner svg {
+  transform: rotate(90deg) scale(1.1);
+}
+
+.publicarCardInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 100%;
+  color: var(--secondary2);
+}
+
+.publicarCardInner svg {
+  transition: transform 0.3s ease;
+  stroke: var(--secondary2);
+}
+
+.publicarCardInner span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--secondary2);
+  letter-spacing: 0.03em;
+}
+
+/* Card de "hay más publicaciones" */
+.masPublicacionesCard {
+  background: rgba(64, 89, 173, 0.06) !important;
+  border: 2px solid rgba(64, 89, 173, 0.2) !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important;
+}
+
+.masPublicacionesCard:hover {
+  background: rgba(64, 89, 173, 0.12) !important;
+  border-color: var(--main) !important;
+  transform: scale(1.02) !important;
+}
+
+.masPublicacionesInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  color: var(--main);
+}
+
+.masPublicacionesNum {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--main);
+  line-height: 1;
+}
+
+.masPublicacionesLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(64, 89, 173, 0.7);
+}
+
+.masPublicacionesInner svg {
+  color: var(--main);
+  opacity: 0.6;
+}
+/* #endregion publicar card y mas publicaciones */
 
 .libroExistenteIndicator{
   background-color: var(--secondary2);
