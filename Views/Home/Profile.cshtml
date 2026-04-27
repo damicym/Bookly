@@ -1,5 +1,6 @@
 @model List<Bookly.Models.PublicacionesCompletas>
 @using Bookly.Helpers
+@using Bookly.Models
 
 @{
     ViewData["Title"] = "Perfil";
@@ -41,21 +42,30 @@
 <section class="publicaciones">
     <div class="publicacionesEnProfileTitulo">
         <h1>Publicaciones</h1>
-        <button class="mainBtn" onclick="window.location.href='@Url.Action("Publicar", "Book")'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /><path d="M15 12h-6" /><path d="M12 9v6" /></svg>
-            Publicar un libro
-        </button>
-    </div>
-    <section class="cardsPublicadas">
-        @if (Model == null || Model.Count == 0)
+        @if (Model != null && Model.Count > 5)
         {
-            <div class="no-result">
-                <p>Este usuario aún no tiene publicaciones.</p>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <button class="secondaryBtn" onclick="window.location.href='@Url.Action("MisPublicaciones", "Home")'">
+                    Ver todo (+@(Model.Count - 5))
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+                </button>
             </div>
         }
-        else
+    </div>
+    <section class="cardsPublicadas">
+        @{
+            // Card de publicar siempre primero
+        }
+        <div class="libro publicarCard" onclick="window.location.href='@Url.Action("Publicar", "Book")'">
+            <div class="publicarCardInner">
+                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                <span>Publicar libro</span>
+            </div>
+        </div>
+        @if (Model != null && Model.Count > 0)
         {
-            foreach (PublicacionesCompletas libro in Model)
+            var preview = Model.Take(5).ToList();
+            foreach (PublicacionesCompletas libro in preview)
             {
                 <div class="libro inProfile">
                     <div class="libroImgContainer">
@@ -81,6 +91,63 @@
                                 </button>
                             </form>
                         </section>
+                    </div>
+                    <div class="nombreYMateriaContainer">
+                        <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
+                        <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                    </div>
+                    <h3>$@libro.precio</h3>
+                    <div class="pillContainer">
+                        <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                        <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                    </div>
+                </div>
+            }
+            @if (Model.Count > 5)
+            {
+                // el contador ya está en el botón "Ver todo" del header
+            }
+        }
+    </section>
+</section>
+
+@{
+    var favoritos = ViewBag.favoritos as List<PublicacionesCompletas> ?? new List<PublicacionesCompletas>();
+}
+
+<section class="publicaciones">
+    <div class="publicacionesEnProfileTitulo">
+        <h1>Favoritos</h1>
+        @if (favoritos.Count > 6)
+        {
+            <button class="secondaryBtn" onclick="window.location.href='@Url.Action("MisFavoritos", "Home")'">
+                Ver todo (+@(favoritos.Count - 6))
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+            </button>
+        }
+    </div>
+    <section class="cardsPublicadas">
+        @if (favoritos.Count == 0)
+        {
+            <div class="no-result">
+                <p>Todavía no agregaste libros a favoritos.</p>
+            </div>
+        }
+        else
+        {
+            var favoritosPreview = favoritos.Take(6).ToList();
+            foreach (PublicacionesCompletas libro in favoritosPreview)
+            {
+                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                    <div class="libroImgContainer">
+                        @if (libro.imagen != null)
+                        {
+                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                        }
+                        else
+                        {
+                            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                        }
                     </div>
                     <div class="nombreYMateriaContainer">
                         <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>

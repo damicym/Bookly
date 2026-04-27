@@ -1,0 +1,72 @@
+@model List<Bookly.Models.PublicacionesCompletas>
+@using Bookly.Helpers
+@using Bookly.Models
+
+@{
+    ViewData["Title"] = "Mis publicaciones";
+}
+
+<section class="publicaciones primerElemento">
+    <button class="secondaryBtn" style="width:fit-content;" onclick="window.location.href='@Url.Action("Profile", "Home")'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+        Volver al perfil
+    </button>
+    <div class="publicacionesEnProfileTitulo">
+        <h1>Mis publicaciones</h1>
+    </div>
+    <section class="cardsPublicadas">
+        <div class="libro publicarCard" onclick="window.location.href='@Url.Action("Publicar", "Book")'">
+            <div class="publicarCardInner">
+                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                <span>Publicar libro</span>
+            </div>
+        </div>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (PublicacionesCompletas libro in Model)
+            {
+                <div class="libro inProfile">
+                    <div class="libroImgContainer">
+                        @if (libro.imagen != null)
+                        {
+                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                        }
+                        else
+                        {
+                            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                        }
+                        <section class="libroActionsContainer">
+                            <form class="desearBtnForm editar" action="@Url.Action("Editar", "Book")" method="get" style="display:inline;">
+                                <input type="hidden" name="id" value="@libro.id" />
+                                <button type="submit" title="Editar" onclick="event.stopPropagation();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                                </button>
+                            </form>
+                            <form class="desearBtnForm" action="@Url.Action("Eliminar", "Book")" method="post" onsubmit="return confirm('¿Seguro que querés eliminar esta publicación?');" style="display:inline;">
+                                <input type="hidden" name="id" value="@libro.id" />
+                                <button type="submit" title="Eliminar" onclick="event.stopPropagation();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                </button>
+                            </form>
+                        </section>
+                    </div>
+                    <div class="nombreYMateriaContainer">
+                        <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
+                        <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                    </div>
+                    <h3>$@libro.precio</h3>
+                    <div class="pillContainer">
+                        <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                        <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-result" style="width:100%;">
+                <p>Todavía no tenés publicaciones.</p>
+            </div>
+        }
+    </section>
+</section>
