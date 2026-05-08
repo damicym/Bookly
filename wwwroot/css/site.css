@@ -296,10 +296,11 @@ input {
 
 .librosContainer {
   display: flex;
-  gap: 2%;
+  gap: 3.7rem;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  margin-inline: 40px;
 }
 
 
@@ -982,14 +983,15 @@ a:visited {
   display: flex;
   gap: 12px;
   margin-top: 20px;
-  margin-left: 20px;
+  margin-left: 6.4rem;
 }
 
 /* #endregion buscar */
 
 /* #region profile */
 .profileInfo {
-  padding: 20px;
+  padding: 40px;
+  margin-inline: 40px;
 }
 
 .profileInfo {
@@ -1073,7 +1075,7 @@ a:visited {
 .logoutBtn {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 40px;
   font-size: 1.2rem;
   border-radius: 8px;
   border-color: var(--dark);
@@ -1146,10 +1148,11 @@ a:visited {
 .publicaciones {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: auto;
   height: max-content;
   gap: 30px;
-  padding: 20px 20px 20px 20px;
+  padding: 20px;
+  margin-inline: 40px;
 }
 
 
@@ -1171,11 +1174,14 @@ a:visited {
 
 .cardsPublicadas {
   display: flex;
-  gap: 24px;
-  width: 100%;
+  gap: 3.7rem;
+  width: auto;
   height: 100%;
   align-items: flex-start;
   flex-wrap: wrap;
+  justify-content: center;
+  max-width: calc(5 * 18.125rem + 4 * 3.7rem);
+  margin-inline: auto;
 }
 
 .separador-cards {
@@ -1271,10 +1277,10 @@ a:visited {
   display: flex;
   flex-direction: column;
   gap: 40px;
-  width: 100%;
+  width: fit-content;
   justify-content: center;
   align-items: center;
-  padding: 40px;
+  margin: 40px auto;
   text-align: center;
 }
 
@@ -1282,6 +1288,7 @@ a:visited {
   color: var(--dark);
   font-size: 2.3rem;
   margin: 0;
+  font-size: 1.7rem;
 }
 
 .stepsContainer {
@@ -1742,9 +1749,6 @@ a:visited {
   .bienvenidaBtnContainer {
     flex-direction: column;
     align-items: flex-start;
-  }
-  .bienvenidaGuia h1{
-    font-size: 1.7rem;
   }
   .stepsContainer{
     grid-template-columns: 1fr;
