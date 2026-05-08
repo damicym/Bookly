@@ -6,160 +6,217 @@
     ViewData["Title"] = "Perfil";
 }
 
-<section class="profileInfo primerElemento">
-    <img src="~/img/default.webp" alt="pfp">
-    <div class="profileId">
-        <h1 class="nombreCompleto">@HtmlHelpers.ToUpperPrimeraLetra(ViewBag.usuario.nombreComp)</h1>
-        <div class="profileStats">
-            <div class="pieceOfInfo">
-                <span>@HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano)</span>
-                <span>@($"{ViewBag.usuario.especialidad} {ViewBag.usuario.curso}")</span>
-            </div>
-            <div class="pieceOfInfo">
-                <span>0</span>
-                <span>ventas cerradas</span>
-            </div>
-            <div class="pieceOfInfo">
-                <span>@Model.Count</span>
-                <span>publicaciones</span>
-            </div>
-        </div>
-        <form id="aboutMeContainer" method="post" action="@Url.Action("UpdateAboutMe", "Usuarios")" class="aboutMeContainer">
-            @Html.AntiForgeryToken()
-            <p class="aboutMe" id="aboutMe">@ViewBag.usuario.aboutMe</p>
-            <button id="btnEditAboutMe" style="display:flex; align-items:center; gap:4px; padding:0;" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
-                @(ViewBag.usuario.aboutMe == null || ViewBag.usuario.aboutMe == "" ? "Agregar descripción" : "Editar descripción")
-            </button>
-        </form>
-    </div>
-    <button class="logoutBtn" onclick="window.location.href='@Url.Action("Logout", "Usuarios")'">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
-        Cerrar sesión
-    </button>
-</section>
+<div class="profile-page primerElemento">
 
-<section class="publicaciones">
-    <div class="publicacionesEnProfileTitulo">
-        <h1>Publicaciones</h1>
-        @if (Model != null && Model.Count > 5)
-        {
-            <div style="display:flex; gap:10px; align-items:center;">
-                <button class="secondaryBtn" onclick="window.location.href='@Url.Action("MisPublicaciones", "Home")'">
-                    Ver todo (+@(Model.Count - 5))
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+    @* ===== HEADER DE PERFIL ===== *@
+    <section class="profile-header-section">
+        <div class="profile-avatar-wrap">
+            <img src="~/img/default.webp" alt="foto de perfil" class="profile-avatar" />
+        </div>
+
+        <div class="profile-meta">
+            <div class="profile-name-row">
+                <h1 class="profile-name">@HtmlHelpers.ToUpperPrimeraLetra(ViewBag.usuario.nombreComp)</h1>
+                <button class="profile-logout-btn" onclick="window.location.href='@Url.Action("Logout", "Usuarios")'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
+                    Cerrar sesión
                 </button>
             </div>
-        }
-    </div>
-    <section class="cardsPublicadas">
-        @{
-            // Card de publicar siempre primero
-        }
-        <div class="libro publicarCard" onclick="window.location.href='@Url.Action("Publicar", "Book")'">
-            <div class="publicarCardInner">
-                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                <span>Publicar libro</span>
+
+            <p class="profile-sub">@HtmlHelpers.PasarAñoATexto(ViewBag.usuario.ano) &middot; @($"{ViewBag.usuario.especialidad} {ViewBag.usuario.curso}")</p>
+
+            <div class="profile-stats-row">
+                <div class="profile-stat">
+                    <span class="profile-stat-num">@Model.Count</span>
+                    <span class="profile-stat-label">Publicaciones</span>
+                </div>
+                <div class="profile-stat-divider"></div>
+                <div class="profile-stat">
+                    <span class="profile-stat-num">0</span>
+                    <span class="profile-stat-label">Ventas cerradas</span>
+                </div>
+                @{
+                    var favCount = (ViewBag.favoritos as List<PublicacionesCompletas>)?.Count ?? 0;
+                }
+                <div class="profile-stat-divider"></div>
+                <div class="profile-stat">
+                    <span class="profile-stat-num">@favCount</span>
+                    <span class="profile-stat-label">Favoritos</span>
+                </div>
             </div>
+
+            <form id="aboutMeContainer" method="post" action="@Url.Action("UpdateAboutMe", "Usuarios")" class="profile-bio-form">
+                @Html.AntiForgeryToken()
+                <p class="aboutMe" id="aboutMe">@(string.IsNullOrEmpty(ViewBag.usuario.aboutMe?.ToString()) ? "" : ViewBag.usuario.aboutMe)</p>
+                <button id="btnEditAboutMe" type="button" class="profile-bio-edit-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                    @(string.IsNullOrEmpty(ViewBag.usuario.aboutMe?.ToString()) ? "Agregar descripción" : "Editar descripción")
+                </button>
+            </form>
         </div>
-        @if (Model != null && Model.Count > 0)
-        {
-            var preview = Model.Take(5).ToList();
-            foreach (PublicacionesCompletas libro in preview)
-            {
-                <div class="libro inProfile">
-                    <div class="libroImgContainer">
-                        @if (libro.imagen != null)
-                        {
-                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
-                        }
-                        else
-                        {
-                            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-                        }
-                        <section class="libroActionsContainer">
-                            <form class="desearBtnForm editar" action="@Url.Action("Editar", "Book")" method="get" style="display:inline;">
-                                <input type="hidden" name="id" value="@libro.id" />
-                                <button type="submit" title="Editar" onclick="event.stopPropagation();">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
-                                </button>
-                            </form>
-                            <form class="desearBtnForm" action="@Url.Action("Eliminar", "Book")" method="post" onsubmit="return confirm('¿Seguro que querés eliminar esta publicación?');" style="display:inline;">
-                                <input type="hidden" name="id" value="@libro.id" />
-                                <button type="submit" title="Eliminar" onclick="event.stopPropagation();">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                                </button>
-                            </form>
-                        </section>
-                    </div>
-                    <div class="nombreYMateriaContainer">
-                        <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                        <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                    </div>
-                    <h3>$@libro.precio</h3>
-                    <div class="pillContainer">
-                        <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                        <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
-                    </div>
-                </div>
-            }
-            @if (Model.Count > 5)
-            {
-                // el contador ya está en el botón "Ver todo" del header
-            }
-        }
     </section>
-</section>
 
-@{
-    var favoritos = ViewBag.favoritos as List<PublicacionesCompletas> ?? new List<PublicacionesCompletas>();
-}
-
-<section class="publicaciones">
-    <div class="publicacionesEnProfileTitulo">
-        <h1>Favoritos</h1>
-        @if (favoritos.Count > 6)
-        {
-            <button class="secondaryBtn" onclick="window.location.href='@Url.Action("MisFavoritos", "Home")'">
-                Ver todo (+@(favoritos.Count - 6))
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
-            </button>
-        }
+    @* ===== TABS ===== *@
+    @{
+        var favoritos = ViewBag.favoritos as List<PublicacionesCompletas> ?? new List<PublicacionesCompletas>();
+    }
+    <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="publicaciones">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
+            Publicaciones
+        </button>
+        <button class="profile-tab" data-tab="favoritos">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
+            Favoritos
+        </button>
     </div>
-    <section class="cardsPublicadas">
-        @if (favoritos.Count == 0)
-        {
-            <div class="no-result">
-                <p>Todavía no agregaste libros a favoritos.</p>
+
+    @* ===== PANEL PUBLICACIONES ===== *@
+    <section class="profile-tab-panel active" id="tab-publicaciones">
+        <section class="cardsPublicadas">
+            <div class="libro publicarCard" onclick="window.location.href='@Url.Action("Publicar", "Book")'">
+                <div class="publicarCardInner">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    <span>Publicar libro</span>
+                </div>
             </div>
-        }
-        else
-        {
-            var favoritosPreview = favoritos.Take(6).ToList();
-            foreach (PublicacionesCompletas libro in favoritosPreview)
+
+            @if (Model != null && Model.Count > 0)
             {
-                <div class="libro" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
-                    <div class="libroImgContainer">
-                        @if (libro.imagen != null)
-                        {
-                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
-                        }
-                        else
-                        {
-                            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-                        }
+                foreach (PublicacionesCompletas libro in Model)
+                {
+                    <div class="libro inProfile">
+                        <div class="libroImgContainer">
+                            @if (libro.imagen != null)
+                            {
+                                <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                            }
+                            else
+                            {
+                                <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                            }
+                            <section class="libroActionsContainer">
+                                <form class="desearBtnForm editar" action="@Url.Action("Editar", "Book")" method="get" style="display:inline;">
+                                    <input type="hidden" name="id" value="@libro.id" />
+                                    <button type="submit" title="Editar" onclick="event.stopPropagation();">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                                    </button>
+                                </form>
+                                <form class="desearBtnForm" action="@Url.Action("Eliminar", "Book")" method="post" onsubmit="return confirm('¿Seguro que querés eliminar esta publicación?');" style="display:inline;">
+                                    <input type="hidden" name="id" value="@libro.id" />
+                                    <button type="submit" title="Eliminar" onclick="event.stopPropagation();">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                    </button>
+                                </form>
+                            </section>
+                        </div>
+                        <div class="nombreYMateriaContainer">
+                            <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
+                            <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                        </div>
+                        <h3>$@libro.precio</h3>
+                        <div class="pillContainer">
+                            <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                            <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                        </div>
                     </div>
-                    <div class="nombreYMateriaContainer">
-                        <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                        <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                    </div>
-                    <h3>$@libro.precio</h3>
-                    <div class="pillContainer">
-                        <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                        <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
-                    </div>
+                }
+            }
+        </section>
+    </section>
+
+    @* ===== PANEL FAVORITOS ===== *@
+    <section class="profile-tab-panel" id="tab-favoritos">
+        <section class="cardsPublicadas">
+            @if (favoritos.Count == 0)
+            {
+                <div class="no-result">
+                    <p>Todavía no agregaste libros a favoritos.</p>
                 </div>
             }
-        }
+            else
+            {
+                foreach (PublicacionesCompletas libro in favoritos)
+                {
+                    <div class="libro" id="fav-card-@libro.id" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                        <div class="libroImgContainer">
+                            @if (libro.imagen != null)
+                            {
+                                <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                            }
+                            else
+                            {
+                                <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                            }
+                            <section class="libroActionsContainer">
+                                <form class="desearBtnForm hoverVerde" action="@Url.Action("Desear", "Book")" method="post" style="display:inline;" onsubmit="return quitarFavorito(event, this, 'fav-card-@libro.id');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@libro.id" />
+                                    <input type="hidden" name="esDeseado" value="true" />
+                                    <button class="deseado" type="submit" title="Quitar de favoritos" onclick="event.stopPropagation();">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" /></svg>
+                                    </button>
+                                </form>
+                            </section>
+                        </div>
+                        <div class="nombreYMateriaContainer">
+                            <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
+                            <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                        </div>
+                        <h3>$@libro.precio</h3>
+                        <div class="pillContainer">
+                            <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                            <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                        </div>
+                    </div>
+                }
+            }
+        </section>
     </section>
-</section>
+
+</div>
+
+@section Scripts {
+<script>
+    // Switch de tabs
+    document.querySelectorAll('.profile-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.profile-tab-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    // Quitar de favoritos desde el perfil (elimina la card del DOM al confirmar)
+    async function quitarFavorito(event, form, cardId) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const action = form.getAttribute('action') || '/Book/Desear';
+        const tokenEl = form.querySelector('input[name="__RequestVerificationToken"]');
+        const token = tokenEl ? tokenEl.value : null;
+        const formData = new FormData(form);
+        formData.set('esDeseado', 'true');
+
+        try {
+            const headers = token ? { 'RequestVerificationToken': token } : {};
+            const res = await fetch(action, { method: 'POST', body: formData, headers });
+            const data = await res.json().catch(() => null);
+            if (data && data.success) {
+                const card = document.getElementById(cardId);
+                if (card) {
+                    card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => card.remove(), 260);
+                }
+            }
+        } catch (err) {
+            console.error('Error al quitar favorito:', err);
+        }
+
+        return false;
+    }
+</script>
+}
