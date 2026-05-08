@@ -38,8 +38,8 @@ namespace Bookly.Helpers
                 case "Como nuevo": return "var(--secondary2)";           
                 case "Pocas anotaciones": return "var(--accent)";
                 case "Con algunas anotaciones": return "var(--accent)";
-                case "Muy anotado": return "var(--red)";          
-                case "Muy usado": return "var(--red)";        
+                case "Muy anotado": return "var(--red2)";          
+                case "Muy usado": return "var(--red2)";        
                 default: return "white";
             }
         }   
