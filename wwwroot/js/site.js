@@ -39,8 +39,8 @@ function getColor(estado) {
         case "Como nuevo": return "var(--secondary2)"
         case "Pocas anotaciones": return "var(--accent)"
         case "Con algunas anotaciones": return "var(--accent)"
-        case "Muy anotado": return "var(--red)"
-        case "Muy usado": return "var(--red)"
+        case "Muy anotado": return "var(--red2)"
+        case "Muy usado": return "var(--red2)"
         default: return "white"
     }
 }
@@ -97,27 +97,29 @@ async function realizarBusqueda(query) {
                         html += `
                             <div class="${claseCard}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.idVendedor}'">
                                 ${tagMasBarato}
-                                <div class="libroImgContainer">
-                                    <img src="${imgSrc}" alt="imagen del libro" />
-                                    <section class="libroActionsContainer">
-                                        <form class="desearBtnForm hoverVerde" action="/Book/Desear" method="post" style="display:inline" onsubmit="return desearLibro(event, this)">
-                                            ${tokenInput}
-                                            <input type="hidden" name="id" value="${libro.id}" />
-                                            <button ${libro.esDeseado ? 'class="deseado"' : ''} type="submit" onclick="event.stopPropagation()">
-                                                ${obtenerSvgDeseado(libro.esDeseado)}
-                                            </button>
-                                        </form>
-                                    </section>
+                                <div class="imgContainer">
+                                    <div class="libroImgContainer">
+                                        <img src="${imgSrc}" alt="imagen del libro" />
+                                        <section class="libroActionsContainer">
+                                            <form class="desearBtnForm hoverVerde" action="/Book/Desear" method="post" style="display:inline" onsubmit="return desearLibro(event, this)">
+                                                ${tokenInput}
+                                                <input type="hidden" name="id" value="${libro.id}" />
+                                                <button ${libro.esDeseado ? 'class="deseado"' : ''} type="submit" onclick="event.stopPropagation()">
+                                                    ${obtenerSvgDeseado(libro.esDeseado)}
+                                                </button>
+                                            </form>
+                                        </section>
+                                    </div>
+                                    <div class="pillContainer">
+                                        <span class="pill" style="background-color:${getColor(libro.estadoLibro)}">${libro.estadoLibro}</span>
+                                        <span class="pill">${pasarAnoATexto(libro.ano)}</span>
+                                    </div>
                                 </div>
                                 <div class="nombreYMateriaContainer">
                                     <h1>${toUpperPrimeraLetra(libro.nombre)}</h1>
                                     <h2>${toUpperPrimeraLetra(libro.materia)}</h2>
                                 </div>
                                 <h3>$${libro.precio}</h3>
-                                <div class="pillContainer">
-                                    <span class="pill" style="background-color:${getColor(libro.estadoLibro)}">${libro.estadoLibro}</span>
-                                    <span class="pill">${pasarAnoATexto(libro.ano)}</span>
-                                </div>
                             </div>
                         `
                     })
