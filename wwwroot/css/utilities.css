@@ -1,0 +1,27 @@
+/* Utilidades y helpers */
+.error {
+  color: var(--red);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 550;
+}
+
+.cls-1,
+.cls-2 {
+  fill: var(--light);
+}
+
+.cls-3 {
+  letter-spacing: -.01em;
+}
+
+.cls-2 {
+  font-size: 156.53px;
+  font-weight: 300;
+}
+
+.icon-tabler-message {
+  color: var(--light);
+  cursor: pointer;
+  margin-left: 1;
+}

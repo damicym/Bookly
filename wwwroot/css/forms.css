@@ -1,0 +1,180 @@
+/* Formularios y campos */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  height: 40px;
+  border-radius: 8px;
+  border: 0;
+  padding: 10px;
+  outline: none;
+  font-size: 1rem;
+  background: var(--light);
+  color: var(--dark);
+  transition: all 0.3s ease;
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  box-shadow: 0 0 5px var(--secondary2);
+}
+
+.campo label {
+  color: var(--light);
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 0;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.organizacion-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.org-info {
+  color: var(--secondary2);
+}
+
+/* Autocomplete dropdown para input #nombre */
+.autocomplete-dropdown {
+  position: absolute;
+  z-index: 1000;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  max-height: 180px;
+  overflow-y: auto;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.autocomplete-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--dark);
+}
+
+.autocomplete-item:hover {
+  background: #f0f0f0;
+}
+
+/* File upload */
+.file-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: inherit;
+  height: 40px;
+}
+
+.file-upload input[type="file"] {
+  display: none;
+}
+
+.file-label {
+  background: var(--light);
+  color: var(--dark) !important;
+  padding: 15px;
+  padding-left: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 550;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  user-select: none;
+  height: 40px;
+  transition: all 0.3s;
+}
+
+.file-icon svg {
+  height: 22px;
+  width: 22px;
+}
+
+.file-label:hover {
+  filter: brightness(0.95);
+}
+
+.file-label:focus-visible {
+  outline: 3px solid var(--secondary, #6B9AC4);
+}
+
+.file-name {
+  font-size: 1rem;
+  color: var(--light);
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+/* Campo password con ojo */
+.campo-password {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.campo-password input {
+  width: 100%;
+  padding-right: 44px !important;
+}
+
+.ojo-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: rgba(239, 242, 241, 0.45);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.ojo-btn:hover {
+  color: var(--secondary2);
+}
+
+.register-seccion .ojo-btn,
+.register-form-new .ojo-btn {
+  color: rgba(6, 26, 64, 0.35);
+}
+
+.register-seccion .ojo-btn:hover,
+.register-form-new .ojo-btn:hover {
+  color: var(--main);
+}
+
+.register-password-error {
+  color: #ff8a96;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: 4px;
+}

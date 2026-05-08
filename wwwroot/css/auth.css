@@ -1,0 +1,682 @@
+/* Autenticación - Login y Registro */
+.loginPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  min-width: 100%;
+}
+
+.formSection {
+  background-color: var(--main);
+  border-radius: 16px;
+  padding: 40px;
+  width: 40%;
+  margin-top: 2%;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  color: var(--light);
+}
+
+.formSection h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.formSection form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.formSection .campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.formSection a {
+  color: var(--secondary2) !important;
+}
+
+.formSection a:hover {
+  text-decoration: none;
+}
+
+/* Auth wrapper */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 105px - 80px);
+  padding: 24px;
+}
+
+.auth-card {
+  background: var(--main);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 8px 32px rgba(6, 26, 64, 0.18);
+}
+
+.auth-card-wide {
+  max-width: 720px;
+}
+
+.auth-card-login {
+  max-width: 520px;
+  padding: 52px 56px;
+}
+
+.auth-card-register {
+  max-width: 700px;
+  padding: 48px 52px;
+}
+
+.auth-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.auth-icon {
+  background: rgba(151, 216, 196, 0.15);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary2);
+  margin-bottom: 4px;
+}
+
+.auth-header h1 {
+  font-size: 1.7rem;
+  color: var(--light);
+  margin: 0;
+}
+
+.auth-header p {
+  color: rgba(239, 242, 241, 0.55);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.auth-error {
+  background: rgba(215, 38, 61, 0.15);
+  border: 1px solid rgba(215, 38, 61, 0.4);
+  color: #ff8a96;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form .campo label {
+  color: rgba(239, 242, 241, 0.75);
+}
+
+.auth-form .campo input,
+.auth-form .campo select {
+  background: rgba(239, 242, 241, 0.08);
+  border: 1.5px solid rgba(239, 242, 241, 0.18);
+  color: var(--light);
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form .campo input::placeholder {
+  color: rgba(239, 242, 241, 0.3);
+}
+
+.auth-form .campo input:focus,
+.auth-form .campo select:focus {
+  border-color: var(--secondary2);
+  box-shadow: 0 0 0 3px rgba(151, 216, 196, 0.2);
+  outline: none;
+}
+
+.auth-form .publicar-seccion {
+  margin: 0;
+}
+
+.auth-submit {
+  margin-top: 4px;
+  border-radius: 12px;
+  font-size: 1rem;
+  padding: 13px;
+  gap: 8px;
+}
+
+.auth-footer {
+  text-align: center;
+  color: rgba(239, 242, 241, 0.5);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.auth-footer a {
+  color: var(--secondary2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Login split */
+.login-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 105px);
+}
+
+.login-left {
+  background: var(--main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+}
+
+.login-left-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 380px;
+  color: var(--light);
+}
+
+.login-left-content h2 {
+  font-size: 2.4rem;
+  margin: 0;
+  color: var(--light);
+}
+
+.login-left-content p {
+  font-size: 1.05rem;
+  color: rgba(239, 242, 241, 0.65);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.login-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.login-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--secondary2);
+  font-weight: 500;
+}
+
+.login-feature svg {
+  flex-shrink: 0;
+  color: var(--secondary2);
+}
+
+.login-right {
+  background: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.login-form-header h1 {
+  font-size: 2rem;
+  color: var(--dark);
+  margin: 0 0 6px;
+}
+
+.login-form-header p {
+  color: rgba(6, 26, 64, 0.5);
+  font-size: 0.97rem;
+  margin: 0;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-campo label {
+  color: var(--dark) !important;
+  font-weight: 600;
+}
+
+.login-campo input {
+  background: white !important;
+  border: 1.5px solid rgba(6, 26, 64, 0.15) !important;
+  color: var(--dark) !important;
+  border-radius: 10px !important;
+  height: 48px !important;
+  font-size: 1rem !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.login-campo input::placeholder {
+  color: rgba(6, 26, 64, 0.3) !important;
+}
+
+.login-campo input:focus {
+  border-color: var(--main) !important;
+  box-shadow: 0 0 0 3px rgba(64, 89, 173, 0.12) !important;
+  outline: none !important;
+}
+
+.login-submit {
+  height: 50px;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  gap: 10px;
+  background-color: var(--main) !important;
+  color: var(--light) !important;
+}
+
+.login-submit:hover {
+  background-color: var(--main) !important;
+  filter: brightness(1.1);
+  box-shadow: 0 0 12px rgba(64, 89, 173, 0.35) !important;
+}
+
+.login-footer {
+  text-align: center;
+  color: rgba(6, 26, 64, 0.5);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.login-footer a {
+  color: var(--main);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Register page */
+.registerPage {
+  display: flex;
+  background: var(--light);
+}
+
+.registerLeft {
+  width: 50%;
+  background: var(--secondary2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+}
+
+.registerLogo {
+  margin-bottom: 40px;
+}
+
+.registerTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.registerSubtitle {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.registerRight {
+  width: 50%;
+  background: #404fa6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.registerForm {
+  height: 100%;
+  width: 100%;
+  max-width: 400px;
+  background: none;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+}
+
+.navbar-registro {
+  background: var(--light);
+}
+
+.registerLogin {
+  color: var(--light);
+  text-align: center;
+  margin: 0 !important;
+}
+
+.registerLogin a {
+  color: var(--secondary2);
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.register-page {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: calc(100vh - 105px);
+}
+
+.register-aside {
+  background: var(--main);
+  padding: 48px 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: sticky;
+  top: 105px;
+  height: calc(100vh - 105px);
+}
+
+.register-aside-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  color: var(--light);
+  max-width: 240px;
+}
+
+.register-aside-content h2 {
+  font-size: 1.7rem;
+  margin: 0;
+  color: var(--light);
+}
+
+.register-aside-content > p {
+  font-size: 0.92rem;
+  color: rgba(239, 242, 241, 0.55);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.register-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.register-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.register-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--secondary2);
+  color: var(--dark);
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.register-step div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.register-step strong {
+  font-size: 0.92rem;
+  color: var(--light);
+}
+
+.register-step span {
+  font-size: 0.8rem;
+  color: rgba(239, 242, 241, 0.45);
+}
+
+.register-step-line {
+  width: 2px;
+  height: 24px;
+  background: rgba(151, 216, 196, 0.25);
+  margin-left: 13px;
+}
+
+.register-aside-footer {
+  font-size: 0.85rem;
+  color: rgba(239, 242, 241, 0.45);
+  margin: 0;
+  margin-top: auto;
+}
+
+.register-aside-footer a {
+  color: var(--secondary2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-aside-footer a:hover {
+  text-decoration: underline;
+}
+
+.register-main {
+  padding: 48px 48px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--light);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 700px;
+}
+
+.register-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-seccion-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.register-seccion-header h3 {
+  font-size: 1.2rem;
+  color: var(--dark);
+  margin: 0;
+  font-weight: 700;
+}
+
+.register-seccion-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--main);
+  color: var(--light);
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.register-seccion .campo label {
+  color: var(--dark) !important;
+  font-weight: 600;
+}
+
+.register-seccion .campo input,
+.register-seccion .campo select {
+  background: white !important;
+  border: 1.5px solid rgba(6, 26, 64, 0.15) !important;
+  color: var(--dark) !important;
+  border-radius: 10px !important;
+  height: 46px !important;
+  font-size: 0.97rem !important;
+}
+
+.register-seccion .campo input::placeholder {
+  color: rgba(6, 26, 64, 0.3) !important;
+}
+
+.register-seccion .campo input:focus,
+.register-seccion .campo select:focus {
+  border-color: var(--main) !important;
+  box-shadow: 0 0 0 3px rgba(64, 89, 173, 0.12) !important;
+  outline: none !important;
+}
+
+.register-seccion .campo select option {
+  background: white;
+  color: var(--dark);
+}
+
+.register-divider {
+  height: 1px;
+  background: rgba(6, 26, 64, 0.1);
+  margin: 4px 0;
+}
+
+.register-submit {
+  height: 50px;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  gap: 10px;
+  background-color: var(--main) !important;
+  color: var(--light) !important;
+  max-width: 700px;
+}
+
+.register-submit:hover {
+  background-color: var(--main) !important;
+  filter: brightness(1.1);
+  box-shadow: 0 0 12px rgba(64, 89, 173, 0.35) !important;
+}
+
+.register-wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  scroll-behavior: smooth;
+}
+
+.register-form-new {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.register-form-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.register-form-footer .auth-footer {
+  text-align: center;
+  color: rgba(6, 26, 64, 0.5);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.register-form-footer .auth-footer a {
+  color: var(--main);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.register-form-footer .auth-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .login-split {
+    grid-template-columns: 1fr;
+  }
+  .login-left {
+    padding: 40px 24px;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 750px) {
+  .register-page {
+    grid-template-columns: 1fr;
+  }
+  .register-aside {
+    position: static;
+    height: auto;
+    padding: 32px 24px;
+  }
+  .register-main {
+    padding: 32px 24px 48px;
+  }
+}
+
+@media (max-width: 450px) {
+  .formSection {
+    width: auto;
+  }
+}

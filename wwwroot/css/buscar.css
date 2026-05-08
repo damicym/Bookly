@@ -1,0 +1,91 @@
+/* Página de búsqueda */
+.busqueda-titulo {
+  text-align: center;
+  padding-top: 30px;
+  font-size: 2.2rem;
+  color: var(--dark);
+  background: transparent;
+}
+
+.busqueda-grid-container {
+  max-height: 600px;
+  overflow-y: auto;
+  margin: 20px auto 60px auto;
+  width: 90%;
+  background: transparent;
+  padding: 6px;
+}
+
+.busqueda-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.busqueda-item {
+  display: flex;
+}
+
+.busqueda-card {
+  background: var(--main);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform .12s ease, box-shadow .12s ease;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-shadow: 0 2px 8px var(--dark);
+}
+
+.busqueda-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px var(--secondary2);
+}
+
+.busqueda-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--dark);
+}
+
+.busqueda-card-title {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--dark);
+}
+
+.busqueda-card-text {
+  color: var(--secondary2);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.busqueda-card-link {
+  margin-top: 8px;
+  text-decoration: none;
+  color: var(--secondary2);
+  font-weight: 600;
+}
+
+.no-result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.no-result p {
+  color: var(--accent);
+  font-size: 1.3rem;
+  font-weight: 550;
+}
+
+.filtroContainer {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  margin-left: 6.4rem;
+}

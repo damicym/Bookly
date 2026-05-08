@@ -1,0 +1,13 @@
+/* Variables CSS y configuración de colores */
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap');
+
+html {
+  --main: #4059AD;
+  --secondary: #6B9AC4;
+  --secondary2: #97D8C4;
+  --light: #EFF2F1;
+  --lightDarker: #ECEFEF;
+  --accent: #F4B942;
+  --dark: #061A40;
+  --red: #D7263D;
+}

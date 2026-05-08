@@ -1,0 +1,238 @@
+/* Página de publicar */
+.publicarPage {
+  padding: 15px;
+}
+
+.tituloPublicaciones {
+  margin: 20px;
+  justify-self: center;
+  font-size: 2.3rem;
+  text-align: center;
+  color: var(--dark);
+}
+
+.publicar-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+.publicar-header {
+  margin-bottom: 32px;
+}
+
+.publicar-header h1 {
+  font-size: 2rem;
+  color: var(--dark);
+  margin: 0 0 6px;
+}
+
+.publicar-header p {
+  color: rgba(6, 26, 64, 0.6);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.publicar-form {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Columna imagen */
+.publicar-col-imagen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.publicar-imagen-preview {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--lightDarker);
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border: 2px solid rgba(64, 89, 173, 0.15);
+}
+
+.publicar-imagen-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.publicar-imagen-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 26, 64, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 16px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.publicar-imagen-preview:hover .publicar-imagen-overlay {
+  opacity: 1;
+}
+
+.publicar-imagen-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--secondary2);
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.publicar-imagen-btn:hover {
+  filter: brightness(1.08);
+}
+
+.publicar-imagen-hint {
+  font-size: 0.8rem;
+  color: rgba(6, 26, 64, 0.45);
+  text-align: center;
+  margin: 0;
+}
+
+.publicar-eliminar-img {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(215, 38, 61, 0.15);
+  border: 1px solid rgba(215, 38, 61, 0.35);
+  color: #ff8a96;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+
+.publicar-eliminar-img:hover {
+  background: rgba(215, 38, 61, 0.28);
+}
+
+/* Columna campos */
+.publicar-col-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.publicar-seccion {
+  background: var(--main);
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.publicar-seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--light);
+  margin: 0 0 4px;
+  opacity: 0.9;
+  position: relative;
+}
+
+.publicar-seccion .campo label {
+  color: rgba(239, 242, 241, 0.8);
+}
+
+.publicar-seccion .campo input,
+.publicar-seccion .campo select,
+.publicar-seccion .campo textarea {
+  background: rgba(239, 242, 241, 0.1);
+  border: 1.5px solid rgba(239, 242, 241, 0.2);
+  color: var(--light);
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.publicar-seccion .campo input::placeholder,
+.publicar-seccion .campo textarea::placeholder {
+  color: rgba(239, 242, 241, 0.35);
+}
+
+.publicar-seccion .campo input:focus,
+.publicar-seccion .campo select:focus,
+.publicar-seccion .campo textarea:focus {
+  border-color: var(--secondary2);
+  box-shadow: 0 0 0 3px rgba(151, 216, 196, 0.2);
+  outline: none;
+}
+
+.publicar-seccion .campo select option {
+  background: var(--main);
+  color: var(--light);
+}
+
+.publicar-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.campo-opcional {
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.55;
+}
+
+.publicar-desc-campo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.publicar-desc-textarea {
+  flex: 1;
+  resize: none;
+  min-height: 120px;
+  height: 100%;
+}
+
+.publicar-submit {
+  font-size: 1.1rem;
+  padding: 14px 28px;
+  width: 100%;
+  border-radius: 12px;
+  gap: 10px;
+}
+
+@media (max-width: 750px) {
+  .publicar-form {
+    grid-template-columns: 1fr;
+  }
+  .publicar-col-imagen {
+    position: static;
+    max-width: 240px;
+    align-self: center;
+    margin: 0 auto;
+  }
+  .publicar-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

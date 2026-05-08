@@ -1,0 +1,358 @@
+/* Cards de libros y publicaciones */
+.libro {
+  background-color: var(--main);
+  border: none;
+  border-radius: 14px;
+  padding: 10px;
+  color: var(--light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 290px;
+  height: 530px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.libro.secundario {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.libro.protagonista {
+  box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(0,0,0,0.35);
+  transform: scale(1.03);
+}
+
+.libro.protagonista:hover {
+  transform: scale(1.06);
+}
+
+.libro.secundario:hover {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.libro.inProfile {
+  cursor: auto !important;
+}
+
+.libro.inProfile:hover .libroImgContainer img {
+  transform: scale(1) !important;
+}
+
+.libroImgContainer {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  max-height: 300px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.libro .libroImgContainer img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.libro:hover .libroImgContainer img {
+  transform: scale(1.05);
+}
+
+.libroActionsContainer {
+  display: flex;
+  gap: 5px;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+
+.desearBtnForm {
+  border-radius: 50%;
+  width: 40px !important;
+  height: 40px !important;
+  transition: all 0.3s;
+  filter: drop-shadow(0px 1px 3px var(--dark));
+}
+
+.desearBtnForm button {
+  border: 0;
+  background-color: var(--light);
+  width: 40px !important;
+  height: 40px !important;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.desearBtnForm button:hover {
+  background-color: var(--red);
+}
+
+.desearBtnForm.editar button:hover {
+  background-color: var(--accent);
+}
+
+.desearBtnForm button:hover svg {
+  color: var(--light);
+}
+
+.desearBtnForm.editar button:hover svg {
+  color: var(--dark);
+}
+
+.desearBtnForm button svg {
+  width: 100%;
+  height: 100%;
+  color: var(--dark);
+  fill: none;
+  transition: all 0.3s;
+  stroke-width: 2px;
+}
+
+.desearBtnForm button.deseado svg {
+  fill: var(--dark);
+  stroke: none;
+  color: var(--dark);
+}
+
+.libro h1 {
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.libro h2 {
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin: 0;
+  color: rgba(239, 242, 241, 0.85);
+}
+
+.libro h3 {
+  font-size: 1.6rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.nombreYMateriaContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pillContainer {
+  display: flex;
+  gap: 5px;
+  margin-top: auto;
+}
+
+.pill {
+  margin: 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  border-radius: 15px;
+  padding: 7px 14px;
+  color: var(--dark);
+  background-color: rgba(239, 242, 241, 0.95);
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.pill-masbarato {
+  background-color: var(--secondary2);
+  color: var(--dark);
+  font-weight: 600;
+}
+
+.tag-masbarato {
+  position: absolute;
+  top: 14px;
+  left: 8.3px;
+  z-index: 10;
+  background: linear-gradient(135deg, var(--main),var(--secondary2));
+  color: var(--light);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 18px 6px 12px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.4), 0 6px 20px rgba(0,0,0,0.35), 4px 4px 0px rgba(0,0,0,0.2);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  white-space: nowrap;
+  clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 0% 100%);
+  transform: skewX(-8deg);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tag-rayo {
+  color: var(--accent);
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.tag-masbarato-detalle {
+  font-size: 1rem !important;
+  padding: 8px 24px 8px 16px !important;
+}
+
+.tag-masbarato-detalle .tag-rayo {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+.librosContainer {
+  display: flex;
+  gap: 3.7rem;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  margin-inline: 40px;
+}
+
+.cardsPublicadas {
+  display: flex;
+  gap: 3.7rem;
+  width: auto;
+  height: 100%;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: calc(5 * 18.125rem + 4 * 3.7rem);
+  margin-inline: auto;
+}
+
+.separador-cards {
+  width: 100%;
+  border: none;
+  border-top: 2px dashed rgba(64, 89, 173, 0.25);
+  margin: 8px 0;
+}
+
+/* Card de publicar */
+.publicarCard {
+  background: transparent !important;
+  border: 2px dashed var(--secondary2) !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.publicarCard:hover {
+  background: rgba(151, 216, 196, 0.08) !important;
+  border-color: var(--secondary2) !important;
+  border-style: solid !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 0 0 3px rgba(151, 216, 196, 0.2), 0 8px 24px rgba(151, 216, 196, 0.15) !important;
+}
+
+.publicarCard:hover .publicarCardInner svg {
+  transform: rotate(90deg) scale(1.1);
+}
+
+.publicarCardInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 100%;
+  color: var(--secondary2);
+}
+
+.publicarCardInner svg {
+  transition: transform 0.3s ease;
+  stroke: var(--secondary2);
+}
+
+.publicarCardInner span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--secondary2);
+  letter-spacing: 0.03em;
+}
+
+/* Card de más publicaciones */
+.masPublicacionesCard {
+  background: rgba(64, 89, 173, 0.06) !important;
+  border: 2px solid rgba(64, 89, 173, 0.2) !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important;
+}
+
+.masPublicacionesCard:hover {
+  background: rgba(64, 89, 173, 0.12) !important;
+  border-color: var(--main) !important;
+  transform: scale(1.02) !important;
+}
+
+.masPublicacionesInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  color: var(--main);
+}
+
+.masPublicacionesNum {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--main);
+  line-height: 1;
+}
+
+.masPublicacionesLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(64, 89, 173, 0.7);
+}
+
+.masPublicacionesInner svg {
+  color: var(--main);
+  opacity: 0.6;
+}
+
+.libroExistenteIndicator {
+  background-color: var(--secondary2);
+  padding: 4px;
+  color: var(--dark);
+  border-radius: 6px;
+  margin-left: 6px;
+  position: absolute;
+  right: 0;
+  display: none;
+}
+
+@media (max-width: 450px) {
+  .cardsPublicadas {
+    justify-content: center;
+  }
+}
