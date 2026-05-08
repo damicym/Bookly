@@ -86,14 +86,14 @@
                     }
                     <div class="imgContainer">
                         <div class="libroImgContainer">
-                        @if (libro.imagen != null)
-                        {
-                            <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
-                        }
-                        else
-                        {
-                            <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-                        }
+                            @if (libro.imagen != null)
+                            {
+                                <img src="data:image/webp;base64,@Convert.ToBase64String(libro.imagen)" alt="imagen del libro" />
+                            }
+                            else
+                            {
+                                <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
+                            }
                             <section class="libroActionsContainer">
                                 <form class="desearBtnForm hoverVerde" action="@Url.Action("Desear", "Book")" method="post" style="display:inline;" onsubmit="return desearLibro(event, this);">
                                     @Html.AntiForgeryToken()
