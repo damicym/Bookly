@@ -91,16 +91,7 @@ async function realizarBusqueda(query) {
                     let anteriorFueProtagonista = data.publicaciones[0]?.esMasBarato ?? false
                     let huboCambio = false
                     data.publicaciones.forEach(libro => {
-                        // Detectar tipo de imagen por magic bytes (primeros bytes del base64)
-                        function getMimeType(b64) {
-                            const raw = atob(b64.substring(0, 8))
-                            const bytes = raw.split('').map(c => c.charCodeAt(0))
-                            if (bytes[0] === 0xFF && bytes[1] === 0xD8) return 'image/jpeg'
-                            if (bytes[0] === 0x89 && bytes[1] === 0x50) return 'image/png'
-                            if (bytes[0] === 0x52 && bytes[1] === 0x49) return 'image/webp'
-                            return 'image/jpeg' // fallback
-                        }
-                        const imgSrc = libro.imagen ? `data:${getMimeType(libro.imagen)};base64,${libro.imagen}` : '/img/book-placeholder.webp'
+                        const imgSrc = libro.imagen ? `data:image/webp;base64,${libro.imagen}` : '/img/book-placeholder.webp'
                         const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Más barato</span>` : ''
                         const claseCard = libro.esMasBarato ? 'libro protagonista' : 'libro secundario'
                         if (huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {

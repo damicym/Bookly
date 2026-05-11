@@ -459,7 +459,7 @@ namespace Bookly.Models
                 connection.Open();
                 string query = @"IF NOT EXISTS (SELECT 1 FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion)
                                  INSERT INTO Deseados (dniUsuario, idPublicacion) VALUES (@dni, @idPublicacion);";
-                connection.Execute(query, new { DNI = dni, idPublicacion });
+                connection.Execute(query, new { dni, idPublicacion });
             }
         }
 
@@ -469,7 +469,7 @@ namespace Bookly.Models
             {
                 connection.Open();
                 string query = @"DELETE FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion";
-                connection.Execute(query, new { DNI = dni, idPublicacion });
+                connection.Execute(query, new { dni, idPublicacion });
             }
         }
 
