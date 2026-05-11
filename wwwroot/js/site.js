@@ -59,10 +59,15 @@ if (searchInput && container) {
 async function realizarBusqueda(query) {
     if (query !== null && query !== undefined) {
         try{
-            const materia = document.getElementById("filtroMateria")?.value?.trim() ?? ""
-            const ano = document.getElementById("filtroAno")?.value?.trim() ?? ""
-            const estado = document.getElementById("filtroEstado")?.value?.trim() ?? ""
-            const editorial = document.getElementById("filtroEditoriales")?.value?.trim() ?? ""
+            // Soporte para selects (legacy) y radio buttons (nuevo diseño)
+            const getRadioVal = (name) => {
+                const checked = document.querySelector(`input[name="${name}"]:checked`)
+                return checked ? checked.value.trim() : ""
+            }
+            const materia = document.getElementById("filtroMateria")?.value?.trim() ?? getRadioVal("filtroMateria")
+            const ano = document.getElementById("filtroAno")?.value?.trim() ?? getRadioVal("filtroAno")
+            const estado = document.getElementById("filtroEstado")?.value?.trim() ?? getRadioVal("filtroEstado")
+            const editorial = document.getElementById("filtroEditoriales")?.value?.trim() ?? getRadioVal("filtroEditoriales")
             const precioMin = limpiarPrecio(document.getElementById("filtroPrecioMin")?.value?.trim() ?? "")
             const precioMax = limpiarPrecio(document.getElementById("filtroPrecioMax")?.value?.trim() ?? "")
 
@@ -170,6 +175,11 @@ const filtrosBusqueda = [
     document.getElementById("filtroPrecioMax")
 ].filter(Boolean)
 
+// También escuchar radio buttons del nuevo diseño de filtros
+const radioFiltros = document.querySelectorAll(
+    'input[name="filtroMateria"], input[name="filtroAno"], input[name="filtroEstado"], input[name="filtroEditoriales"]'
+)
+
 const precioInputs = [
     document.getElementById("filtroPrecioMin"),
     document.getElementById("filtroPrecioMax")
@@ -196,6 +206,115 @@ if (container && filtrosBusqueda.length > 0) {
         filtro.addEventListener("input", ejecutar)
     })
 }
+
+// Listeners para radio buttons del nuevo diseño
+if (container && radioFiltros.length > 0) {
+    radioFiltros.forEach((radio) => {
+        radio.addEventListener("change", () => {
+            clearTimeout(debounceTimer)
+            const queryActual = searchInput?.value?.trim() ?? ""
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(queryActual)
+                actualizarChipsFiltros()
+            }, 200)
+        })
+    })
+}
+
+// ===== SIDEBAR: grupos colapsables =====
+document.querySelectorAll('.filtro-grupo-titulo').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target')
+        const lista = document.getElementById(targetId)
+        if (!lista) return
+        const expanded = btn.getAttribute('aria-expanded') === 'true'
+        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true')
+        lista.classList.toggle('collapsed', expanded)
+    })
+})
+
+// ===== CHIPS DE FILTROS ACTIVOS =====
+const chipLabels = {
+    filtroMateria: null,
+    filtroAno: null,
+    filtroEstado: { a: 'Como nuevo', b: 'Pocas anotaciones', c: 'Con algunas anotaciones', d: 'Muy anotado' },
+    filtroEditoriales: null
+}
+
+function actualizarChipsFiltros() {
+    const chipsContainer = document.getElementById('filtrosActivosChips')
+    if (!chipsContainer) return
+    chipsContainer.innerHTML = ''
+
+    const grupos = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales']
+    grupos.forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`)
+        if (!checked || checked.value === '') return
+        const label = checked.closest('.filtro-opcion')?.textContent?.trim() ?? checked.value
+        const chip = document.createElement('span')
+        chip.className = 'filtro-chip'
+        chip.innerHTML = `${label} <span class="filtro-chip-x">✕</span>`
+        chip.addEventListener('click', () => {
+            const defaultRadio = document.querySelector(`input[name="${name}"][value=""]`)
+            if (defaultRadio) {
+                defaultRadio.checked = true
+                clearTimeout(debounceTimer)
+                debounceTimer = setTimeout(() => {
+                    realizarBusqueda(searchInput?.value?.trim() ?? "")
+                    actualizarChipsFiltros()
+                }, 200)
+            }
+        })
+        chipsContainer.appendChild(chip)
+    })
+
+    // Precio
+    const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
+    const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
+    if (precioMin || precioMax) {
+        const label = precioMin && precioMax ? `$${precioMin} — $${precioMax}` : precioMin ? `Desde $${precioMin}` : `Hasta $${precioMax}`
+        const chip = document.createElement('span')
+        chip.className = 'filtro-chip'
+        chip.innerHTML = `${label} <span class="filtro-chip-x">✕</span>`
+        chip.addEventListener('click', () => {
+            const minEl = document.getElementById('filtroPrecioMin')
+            const maxEl = document.getElementById('filtroPrecioMax')
+            if (minEl) minEl.value = ''
+            if (maxEl) maxEl.value = ''
+            clearTimeout(debounceTimer)
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(searchInput?.value?.trim() ?? "")
+                actualizarChipsFiltros()
+            }, 200)
+        })
+        chipsContainer.appendChild(chip)
+    }
+}
+
+// Botón limpiar todos los filtros
+const btnLimpiar = document.getElementById('btnLimpiarFiltros')
+if (btnLimpiar) {
+    btnLimpiar.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-opcion input[value=""]').forEach(r => r.checked = true)
+        const minEl = document.getElementById('filtroPrecioMin')
+        const maxEl = document.getElementById('filtroPrecioMax')
+        if (minEl) minEl.value = ''
+        if (maxEl) maxEl.value = ''
+        clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => {
+            realizarBusqueda(searchInput?.value?.trim() ?? "")
+            actualizarChipsFiltros()
+        }, 200)
+    })
+}
+
+// Actualizar chips cuando cambian los inputs de precio
+precioInputs.forEach(inputPrecio => {
+    inputPrecio.addEventListener('input', () => {
+        clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => actualizarChipsFiltros(), 400)
+    })
+})
 
 // Especialidad deshabilitado
 const anoSelect = document.getElementById('ano')

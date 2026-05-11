@@ -1,80 +1,329 @@
-/* Página de búsqueda */
-.busqueda-titulo {
-  text-align: center;
-  padding-top: 30px;
-  font-size: 2.2rem;
-  color: var(--dark);
-  background: transparent;
+/* ===== LAYOUT CATÁLOGO ===== */
+.catalogo-layout {
+  margin-top: 105px;
+  margin-left: 220px;
+  min-height: calc(100vh - 105px);
 }
 
-.busqueda-grid-container {
-  max-height: 600px;
-  overflow-y: auto;
-  margin: 20px auto 60px auto;
-  width: 90%;
-  background: transparent;
-  padding: 6px;
-}
-
-.busqueda-grid {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.busqueda-item {
+/* ===== SIDEBAR: fija en pantalla, scroll interno ===== */
+.filtros-sidebar {
+  position: fixed;
+  top: 105px;
+  left: 0;
+  width: 220px;
+  height: calc(100vh - 105px);
+  background: var(--light);
+  border-right: 1px solid rgba(6, 26, 64, 0.1);
+  box-shadow: 2px 0 8px rgba(6, 26, 64, 0.07);
   display: flex;
-}
-
-.busqueda-card {
-  background: var(--main);
-  border-radius: 12px;
+  flex-direction: column;
   overflow: hidden;
-  transition: transform .12s ease, box-shadow .12s ease;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  box-shadow: 0 2px 8px var(--dark);
+  z-index: 100;
 }
 
-.busqueda-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px var(--secondary2);
-}
-
-.busqueda-card-body {
-  padding: 16px;
+.filtros-header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 8px;
+  padding: 14px 16px;
+  background: var(--main);
+  color: var(--light);
+  flex-shrink: 0;
+}
+
+.filtros-header svg {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.filtros-header > span {
+  font-size: 1rem;
+  font-weight: 700;
+  flex: 1;
+  letter-spacing: 0.02em;
+}
+
+.filtros-limpiar {
+  background: transparent;
+  border: 1px solid rgba(239, 242, 241, 0.45);
+  color: var(--light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.filtros-limpiar:hover {
+  background: rgba(239, 242, 241, 0.15);
+  border-color: var(--light);
+}
+
+/* Área scrolleable — solo esto se mueve */
+.filtros-scroll {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.filtros-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filtros-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filtros-scroll::-webkit-scrollbar-thumb {
+  background: rgba(64, 89, 173, 0.25);
+  border-radius: 4px;
+}
+
+/* ===== GRUPOS DE FILTRO ===== */
+.filtro-grupo {
+  border-bottom: 1px solid rgba(6, 26, 64, 0.08);
+}
+
+.filtro-grupo:last-child {
+  border-bottom: none;
+}
+
+.filtro-grupo-titulo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 700;
   color: var(--dark);
+  text-align: left;
+  transition: background 0.15s;
 }
 
-.busqueda-card-title {
-  font-size: 1.1rem;
-  margin: 0;
+.filtro-grupo-titulo:hover {
+  background: rgba(64, 89, 173, 0.06);
+}
+
+.filtro-chevron {
+  flex-shrink: 0;
   color: var(--dark);
+  opacity: 0.5;
+  transition: transform 0.25s ease;
 }
 
-.busqueda-card-text {
-  color: var(--secondary2);
-  font-size: 0.95rem;
-  margin: 0;
+.filtro-grupo-titulo[aria-expanded="false"] .filtro-chevron {
+  transform: rotate(-90deg);
 }
 
-.busqueda-card-link {
-  margin-top: 8px;
-  text-decoration: none;
-  color: var(--secondary2);
+/* ===== LISTA DE OPCIONES ===== */
+.filtro-lista {
+  padding: 2px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.25s ease;
+  max-height: 600px;
+  opacity: 1;
+}
+
+.filtro-lista.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.filtro-opcion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--dark);
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.filtro-opcion:hover {
+  background: rgba(64, 89, 173, 0.07);
+}
+
+.filtro-opcion input[type="radio"] {
+  accent-color: var(--main);
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.filtro-opcion:has(input:checked) {
+  background: rgba(64, 89, 173, 0.1);
+  color: var(--main);
   font-weight: 600;
 }
 
+/* ===== PRECIO ===== */
+.filtro-precio-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.filtro-precio-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: white;
+  border: 1.5px solid rgba(6, 26, 64, 0.15);
+  border-radius: 8px;
+  padding: 5px 8px;
+  flex: 1;
+  transition: border-color 0.2s;
+}
+
+.filtro-precio-input-wrap:focus-within {
+  border-color: var(--main);
+}
+
+.filtro-precio-signo {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--dark);
+  opacity: 0.5;
+}
+
+.filtro-precio-input-wrap input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.82rem;
+  color: var(--dark);
+  width: 100%;
+  min-width: 0;
+}
+
+.filtro-precio-input-wrap input::placeholder {
+  color: rgba(6, 26, 64, 0.35);
+}
+
+.filtro-precio-sep {
+  font-size: 0.9rem;
+  color: var(--dark);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+/* ===== ÁREA DE RESULTADOS ===== */
+.catalogo-resultados {
+  padding: 24px 85px 60px 24px;
+  min-width: 0;
+}
+
+.catalogo-resultados-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.busqueda-titulo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+  padding: 0;
+}
+
+/*
+  Gap calculado para distribuir el espacio disponible entre las cards.
+  Las cards mantienen 230px. El contenedor tiene pad-left 24px y pad-right 85px.
+  El número de cards por fila se ajusta automáticamente al ancho de pantalla.
+  max-width limita a 5 por fila en pantallas anchas.
+*/
+.catalogo-resultados .cardsPublicadas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: calc(5 * 230px + 4 * 20px);
+  margin-inline: 0;
+  margin-bottom: 4%;
+  align-items: flex-start;
+}
+
+.catalogo-resultados .cardsPublicadas .separador-cards {
+  width: 100%;
+}
+
+/* ===== CHIPS DE FILTROS ACTIVOS ===== */
+.filtros-activos-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 0;
+}
+
+/* Cuando hay chips, agrega espacio debajo antes de las cards */
+.filtros-activos-chips:not(:empty) {
+  padding-bottom: 16px;
+}
+
+.filtro-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(64, 89, 173, 0.1);
+  color: var(--main);
+  border: 1.5px solid rgba(64, 89, 173, 0.25);
+  border-radius: 20px;
+  padding: 4px 10px 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.filtro-chip:hover {
+  background: rgba(64, 89, 173, 0.18);
+  border-color: var(--main);
+}
+
+.filtro-chip-x {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(64, 89, 173, 0.2);
+  font-size: 0.7rem;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.filtro-chip:hover .filtro-chip-x {
+  background: var(--main);
+  color: var(--light);
+}
+
+/* ===== NO RESULT ===== */
 .no-result {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   width: 100%;
+  padding: 60px 0;
 }
 
 .no-result p {
@@ -83,9 +332,31 @@
   font-weight: 550;
 }
 
-.filtroContainer {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-  margin-inline: 40px;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .catalogo-layout {
+    margin-left: 0;
+  }
+
+  .filtros-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(6, 26, 64, 0.1);
+  }
+
+  .filtros-scroll {
+    overflow-y: visible;
+  }
+
+  .catalogo-resultados {
+    padding: 16px 20px 60px;
+  }
+
+  .catalogo-resultados .cardsPublicadas {
+    justify-content: center;
+    column-gap: 20px;
+    row-gap: 20px;
+  }
 }
