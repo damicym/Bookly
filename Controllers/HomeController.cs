@@ -31,7 +31,7 @@ namespace Bookly.Controllers
                 publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario)
                     .Where(p => p.idVendedor != user.DNI).ToList();
 
-                ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATexto(anoUsuario)} año";
+                ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATextoCompleto(anoUsuario)}";
             }
             else
             {

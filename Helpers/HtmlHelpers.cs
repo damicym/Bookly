@@ -15,6 +15,20 @@ namespace Bookly.Helpers
                 _ => "Desconocido"
             };
         }
+
+        public static string PasarAñoATextoCompleto(int ano)
+        {
+            return ano switch
+            {
+                1 => "7mo grado",
+                2 => "1er año",
+                3 => "2do año",
+                4 => "3er año",
+                5 => "4to año",
+                6 => "5to año",
+                _ => "año desconocido"
+            };
+        }
         public static string ToUpperPrimeraLetra(string texto)
         {
             if (string.IsNullOrWhiteSpace(texto))

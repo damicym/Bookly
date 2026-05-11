@@ -72,3 +72,6 @@ FOREIGN KEY (idReceptor) REFERENCES Usuarios(DNI);
 ALTER TABLE Resenas
 ADD CONSTRAINT fk_resenas_redactor
 FOREIGN KEY (idRedactor) REFERENCES Usuarios(DNI);
+
+-- Agregar columna de foto de perfil (correr una sola vez)
+ALTER TABLE Usuarios ADD COLUMN IF NOT EXISTS fotoPerfil BYTEA;
