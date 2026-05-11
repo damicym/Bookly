@@ -223,8 +223,20 @@
 }
 
 /* ===== ÁREA DE RESULTADOS ===== */
+/*
+  Layout de catálogo para 1920px:
+  - Sidebar: 220px (fija)
+  - Espacio disponible: 1700px
+  - Padding derecho: 115px
+      La landing (stepsContainer) tiene 3 steps × 550px + 2 gaps × 20px = 1690px
+      → espacio simétrico a cada lado = (1920 - 1690) / 2 = 115px
+  - Padding izquierdo: 40px (espacio entre sidebar y publicaciones)
+  - Área de cards: 1700 - 115 - 40 = 1545px
+  - 5 cards × 230px = 1150px → espacio libre = 395px → 4 gaps ≈ 99px
+  Grid de 5 columnas fijas con space-between distribuye el gap automáticamente.
+*/
 .catalogo-resultados {
-  padding: 24px 85px 60px 24px;
+  padding: 24px 115px 60px 40px;
   min-width: 0;
 }
 
@@ -243,25 +255,26 @@
   padding: 0;
 }
 
-/*
-  Gap calculado para distribuir el espacio disponible entre las cards.
-  Las cards mantienen 230px. El contenedor tiene pad-left 24px y pad-right 85px.
-  El número de cards por fila se ajusta automáticamente al ancho de pantalla.
-  max-width limita a 5 por fila en pantallas anchas.
-*/
 .catalogo-resultados .cardsPublicadas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: flex-start;
+  /*
+    Grid de exactamente 5 columnas fijas de 230px.
+    El gap entre columnas se calcula automáticamente para llenar
+    todo el espacio disponible (justify-content: space-between).
+    El padding del contenedor (.catalogo-resultados) controla
+    el margen derecho (85px) y el espacio con la sidebar (40px).
+  */
+  display: grid;
+  grid-template-columns: repeat(5, 230px);
+  justify-content: space-between;
+  row-gap: 40px;
   width: 100%;
-  max-width: calc(5 * 230px + 4 * 20px);
   margin-inline: 0;
   margin-bottom: 4%;
   align-items: flex-start;
 }
 
 .catalogo-resultados .cardsPublicadas .separador-cards {
+  grid-column: 1 / -1;
   width: 100%;
 }
 
@@ -355,6 +368,8 @@
   }
 
   .catalogo-resultados .cardsPublicadas {
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     column-gap: 20px;
     row-gap: 20px;
