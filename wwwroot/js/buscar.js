@@ -1,0 +1,265 @@
+// ===== BUSCAR: catálogo, búsqueda, filtros y chips =====
+
+const container = document.getElementById("resultados")
+
+if (searchInput && container) {
+    realizarBusqueda(searchInput.value.trim())
+    searchInput.focus()
+    const len = searchInput.value ? searchInput.value.length : 0
+    if (typeof searchInput.setSelectionRange === 'function') {
+        searchInput.setSelectionRange(len, len)
+    } else {
+        searchInput.selectionStart = searchInput.selectionEnd = len
+    }
+}
+
+async function realizarBusqueda(query) {
+    if (query !== null && query !== undefined) {
+        try{
+            // Soporte para selects (legacy) y radio buttons (nuevo diseño)
+            const getRadioVal = (name) => {
+                const checked = document.querySelector(`input[name="${name}"]:checked`)
+                return checked ? checked.value.trim() : ""
+            }
+            const materia = document.getElementById("filtroMateria")?.value?.trim() ?? getRadioVal("filtroMateria")
+            const ano = document.getElementById("filtroAno")?.value?.trim() ?? getRadioVal("filtroAno")
+            const estado = document.getElementById("filtroEstado")?.value?.trim() ?? getRadioVal("filtroEstado")
+            const editorial = document.getElementById("filtroEditoriales")?.value?.trim() ?? getRadioVal("filtroEditoriales")
+            const precioMin = limpiarPrecio(document.getElementById("filtroPrecioMin")?.value?.trim() ?? "")
+            const precioMax = limpiarPrecio(document.getElementById("filtroPrecioMax")?.value?.trim() ?? "")
+
+            const params = new URLSearchParams({
+                query: query ?? "",
+                materia,
+                ano,
+                estado,
+                editorial,
+                precioMin,
+                precioMax
+            })
+
+            const res = await fetch(`/Home/Buscar?${params.toString()}`)
+            const data = await res.json()
+            if (container) {
+                let html = ''
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')
+                const tokenInput = token ? `<input type="hidden" name="__RequestVerificationToken" value="${token.value}">` : ''
+                if (data.publicaciones && data.publicaciones.length > 0) {
+                    let anteriorFueProtagonista = data.publicaciones[0]?.esMasBarato ?? false
+                    let huboCambio = false
+                    data.publicaciones.forEach(libro => {
+                        const imgSrc = libro.imagen ? `data:image/webp;base64,${libro.imagen}` : '/img/book-placeholder.webp'
+                        const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Más barato</span>` : ''
+                        const claseCard = libro.esMasBarato ? 'libro protagonista' : 'libro secundario'
+                        if (huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
+                            html += `<hr class="separador-cards" />`
+                        }
+                        anteriorFueProtagonista = libro.esMasBarato
+                        huboCambio = true
+                        html += `
+                            <div class="${claseCard}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.idVendedor}'">
+                                ${tagMasBarato}
+                                <div class="imgContainer">
+                                    <div class="libroImgContainer">
+                                        <img src="${imgSrc}" alt="imagen del libro" />
+                                        <section class="libroActionsContainer">
+                                            <form class="desearBtnForm hoverVerde" action="/Book/Desear" method="post" style="display:inline" onsubmit="return desearLibro(event, this)">
+                                                ${tokenInput}
+                                                <input type="hidden" name="id" value="${libro.id}" />
+                                                <button ${libro.esDeseado ? 'class="deseado"' : ''} type="submit" onclick="event.stopPropagation()">
+                                                    ${obtenerSvgDeseado(libro.esDeseado)}
+                                                </button>
+                                            </form>
+                                        </section>
+                                    </div>
+                                    <div class="pillContainer">
+                                        <span class="pill" style="background-color:${getColor(libro.estadoLibro)}">${libro.estadoLibro}</span>
+                                        <span class="pill">${pasarAnoATexto(libro.ano)}</span>
+                                    </div>
+                                </div>
+                                <div class="nombreYMateriaContainer">
+                                    <h1>${toUpperPrimeraLetra(libro.nombre)}</h1>
+                                    <h2>${toUpperPrimeraLetra(libro.materia)}</h2>
+                                </div>
+                                <h3>$${libro.precio}</h3>
+                            </div>
+                        `
+                    })
+                } else {
+                    html = '<div class="no-result"><p>No se encontraron resultados.</p></div>'
+                }
+                container.innerHTML = html
+            }
+        } catch (error) {
+            console.error("Error al buscar:", error)
+        }
+    } else {
+        // Limpia resultados si query está vacío
+        const container = document.getElementById("resultados")
+        if (container) container.innerHTML = '<div class="no-result"><p>No se encontraron resultados.</p></div>'
+    }
+}
+
+let debounceTimer
+if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+        clearTimeout(debounceTimer)
+        const query = e.target.value.trim()
+        if (!window.location.href.includes("/Home/Catalogo")) {
+            window.location.href = `/Home/Catalogo?query=${encodeURIComponent(query)}`
+        }
+        debounceTimer = setTimeout(async () => {
+            realizarBusqueda(query)
+        }, 300)  // Espera 300ms
+    })
+}
+
+const filtrosBusqueda = [
+    document.getElementById("filtroMateria"),
+    document.getElementById("filtroAno"),
+    document.getElementById("filtroEstado"),
+    document.getElementById("filtroEditoriales"),
+    document.getElementById("filtroPrecioMin"),
+    document.getElementById("filtroPrecioMax")
+].filter(Boolean)
+
+// También escuchar radio buttons del nuevo diseño de filtros
+const radioFiltros = document.querySelectorAll(
+    'input[name="filtroMateria"], input[name="filtroAno"], input[name="filtroEstado"], input[name="filtroEditoriales"]'
+)
+
+const precioInputs = [
+    document.getElementById("filtroPrecioMin"),
+    document.getElementById("filtroPrecioMax")
+].filter(Boolean)
+
+precioInputs.forEach((inputPrecio) => {
+    inputPrecio.addEventListener("input", (e) => {
+        e.target.value = formatearMiles(e.target.value)
+    })
+    inputPrecio.value = formatearMiles(inputPrecio.value)
+})
+
+if (container && filtrosBusqueda.length > 0) {
+    filtrosBusqueda.forEach((filtro) => {
+        const ejecutar = () => {
+            clearTimeout(debounceTimer)
+            const queryActual = searchInput?.value?.trim() ?? ""
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(queryActual)
+            }, 300)
+        }
+
+        filtro.addEventListener("change", ejecutar)
+        filtro.addEventListener("input", ejecutar)
+    })
+}
+
+// Listeners para radio buttons del nuevo diseño
+if (container && radioFiltros.length > 0) {
+    radioFiltros.forEach((radio) => {
+        radio.addEventListener("change", () => {
+            clearTimeout(debounceTimer)
+            const queryActual = searchInput?.value?.trim() ?? ""
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(queryActual)
+                actualizarChipsFiltros()
+            }, 200)
+        })
+    })
+}
+
+// ===== SIDEBAR: grupos colapsables =====
+document.querySelectorAll('.filtro-grupo-titulo').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target')
+        const lista = document.getElementById(targetId)
+        if (!lista) return
+        const expanded = btn.getAttribute('aria-expanded') === 'true'
+        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true')
+        lista.classList.toggle('collapsed', expanded)
+    })
+})
+
+// ===== CHIPS DE FILTROS ACTIVOS =====
+const chipLabels = {
+    filtroMateria: null,
+    filtroAno: null,
+    filtroEstado: { a: 'Como nuevo', b: 'Pocas anotaciones', c: 'Con algunas anotaciones', d: 'Muy anotado' },
+    filtroEditoriales: null
+}
+
+function actualizarChipsFiltros() {
+    const chipsContainer = document.getElementById('filtrosActivosChips')
+    if (!chipsContainer) return
+    chipsContainer.innerHTML = ''
+
+    const grupos = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales']
+    grupos.forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`)
+        if (!checked || checked.value === '') return
+        const label = checked.closest('.filtro-opcion')?.textContent?.trim() ?? checked.value
+        const chip = document.createElement('span')
+        chip.className = 'filtro-chip'
+        chip.innerHTML = `${label} <span class="filtro-chip-x">✕</span>`
+        chip.addEventListener('click', () => {
+            const defaultRadio = document.querySelector(`input[name="${name}"][value=""]`)
+            if (defaultRadio) {
+                defaultRadio.checked = true
+                clearTimeout(debounceTimer)
+                debounceTimer = setTimeout(() => {
+                    realizarBusqueda(searchInput?.value?.trim() ?? "")
+                    actualizarChipsFiltros()
+                }, 200)
+            }
+        })
+        chipsContainer.appendChild(chip)
+    })
+
+    // Precio
+    const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
+    const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
+    if (precioMin || precioMax) {
+        const label = precioMin && precioMax ? `$${precioMin} — $${precioMax}` : precioMin ? `Desde $${precioMin}` : `Hasta $${precioMax}`
+        const chip = document.createElement('span')
+        chip.className = 'filtro-chip'
+        chip.innerHTML = `${label} <span class="filtro-chip-x">✕</span>`
+        chip.addEventListener('click', () => {
+            const minEl = document.getElementById('filtroPrecioMin')
+            const maxEl = document.getElementById('filtroPrecioMax')
+            if (minEl) minEl.value = ''
+            if (maxEl) maxEl.value = ''
+            clearTimeout(debounceTimer)
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(searchInput?.value?.trim() ?? "")
+                actualizarChipsFiltros()
+            }, 200)
+        })
+        chipsContainer.appendChild(chip)
+    }
+}
+
+// Botón limpiar todos los filtros
+const btnLimpiar = document.getElementById('btnLimpiarFiltros')
+if (btnLimpiar) {
+    btnLimpiar.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-opcion input[value=""]').forEach(r => r.checked = true)
+        const minEl = document.getElementById('filtroPrecioMin')
+        const maxEl = document.getElementById('filtroPrecioMax')
+        if (minEl) minEl.value = ''
+        if (maxEl) maxEl.value = ''
+        clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => {
+            realizarBusqueda(searchInput?.value?.trim() ?? "")
+            actualizarChipsFiltros()
+        }, 200)
+    })
+}
+
+// Actualizar chips cuando cambian los inputs de precio
+precioInputs.forEach(inputPrecio => {
+    inputPrecio.addEventListener('input', () => {
+        clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => actualizarChipsFiltros(), 400)
+    })
+})

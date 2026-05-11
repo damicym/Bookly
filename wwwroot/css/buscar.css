@@ -1,17 +1,20 @@
 /* ===== LAYOUT CATÁLOGO ===== */
 .catalogo-layout {
   margin-top: 105px;
-  margin-left: 220px;
+  display: flex;
+  align-items: flex-start;
   min-height: calc(100vh - 105px);
+  padding-bottom: 32px;
 }
 
-/* ===== SIDEBAR: fija en pantalla, scroll interno ===== */
+/* ===== SIDEBAR: sticky — se queda fija al scrollear pero termina con el contenedor, antes del footer ===== */
 .filtros-sidebar {
-  position: fixed;
+  position: sticky;
   top: 105px;
-  left: 0;
+  align-self: flex-start;
   width: 220px;
-  height: calc(100vh - 105px);
+  flex-shrink: 0;
+  max-height: calc(100vh - 105px);
   background: var(--light);
   border-right: 1px solid rgba(6, 26, 64, 0.1);
   box-shadow: 2px 0 8px rgba(6, 26, 64, 0.07);
@@ -236,8 +239,9 @@
   Grid de 5 columnas fijas con space-between distribuye el gap automáticamente.
 */
 .catalogo-resultados {
-  padding: 24px 115px 60px 40px;
+  flex: 1;
   min-width: 0;
+  padding: 24px 115px 60px 40px;
 }
 
 .catalogo-resultados-header {
@@ -348,15 +352,16 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
   .catalogo-layout {
-    margin-left: 0;
+    flex-direction: column;
   }
 
   .filtros-sidebar {
     position: static;
     width: 100%;
-    height: auto;
+    max-height: none;
     border-right: none;
     border-bottom: 1px solid rgba(6, 26, 64, 0.1);
+    align-self: auto;
   }
 
   .filtros-scroll {
