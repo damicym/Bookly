@@ -25,3 +25,40 @@
   cursor: pointer;
   margin-left: 1;
 }
+
+/* Toast de bienvenida */
+.welcome-toast {
+  position: fixed;
+  bottom: 730px;
+  right: 1570px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--dark);
+  color: var(--light);
+  border-left: 4px solid var(--secondary2);
+  padding: 13px 18px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  box-shadow: 0 6px 24px rgba(6, 26, 64, 0.22);
+  opacity: 0;
+  transform: translateY(-28px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+  max-width: 320px;
+}
+
+.welcome-toast svg {
+  flex-shrink: 0;
+  color: var(--secondary2);
+}
+
+.welcome-toast strong {
+  color: var(--secondary2);
+}
+
+.welcome-toast--visible {
+  opacity: 1;
+  transform: translateY(0);
+}

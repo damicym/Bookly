@@ -17,29 +17,26 @@
         <div class="profile-meta">
             <div class="profile-name-row">
                 <h1 class="profile-name">@HtmlHelpers.ToUpperPrimeraLetra(ViewBag.usuario.nombreComp)</h1>
+                <div class="profile-stats-row">
+                    <div class="profile-stat">
+                        <span class="profile-stat-num">@Model.Count</span>
+                        <span class="profile-stat-label">publicaciones</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="profile-stat-num">0</span>
+                        <span class="profile-stat-label">ventas cerradas</span>
+                    </div>
+                    @{
+                        var favCount = (ViewBag.favoritos as List<PublicacionesCompletas>)?.Count ?? 0;
+                    }
+                    <div class="profile-stat">
+                        <span class="profile-stat-num">@favCount</span>
+                        <span class="profile-stat-label">favoritos</span>
+                    </div>
+                </div>
             </div>
 
             <p class="profile-sub">@HtmlHelpers.PasarAñoATextoCompleto(ViewBag.usuario.ano) &middot; @($"{ViewBag.usuario.especialidad} {ViewBag.usuario.curso}")</p>
-
-            <div class="profile-stats-row">
-                <div class="profile-stat">
-                    <span class="profile-stat-num">@Model.Count</span>
-                    <span class="profile-stat-label">Publicaciones</span>
-                </div>
-                <div class="profile-stat-divider"></div>
-                <div class="profile-stat">
-                    <span class="profile-stat-num">0</span>
-                    <span class="profile-stat-label">Ventas cerradas</span>
-                </div>
-                @{
-                    var favCount = (ViewBag.favoritos as List<PublicacionesCompletas>)?.Count ?? 0;
-                }
-                <div class="profile-stat-divider"></div>
-                <div class="profile-stat">
-                    <span class="profile-stat-num">@favCount</span>
-                    <span class="profile-stat-label">Favoritos</span>
-                </div>
-            </div>
 
             <form id="aboutMeContainer" method="post" action="@Url.Action("UpdateAboutMe", "Usuarios")" class="profile-bio-form">
                 @Html.AntiForgeryToken()

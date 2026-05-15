@@ -22,6 +22,7 @@ namespace Bookly.Controllers
             if (usuario != null)
             {
                 HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(usuario));
+                TempData["WelcomeUser"] = usuario.nombreComp;
                 if (returnView == "Publicar") return RedirectToAction("Publicar", "Book");
                 return RedirectToAction(returnView, "Home");
             }
