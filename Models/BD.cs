@@ -519,5 +519,59 @@ namespace Bookly.Models
             }
         }
 
+        // -----------------------------------------------------------------------
+        // Actualiza solo las imágenes de las publicaciones existentes.
+        // Hace match por nombre de libro. No borra ni inserta nada más.
+        // Llamar UNA SOLA VEZ desde Program.cs, luego comentar la llamada.
+        // Ejemplo: BD.ActualizarImagenes(app.Environment.ContentRootPath);
+        // -----------------------------------------------------------------------
+        public static void ActualizarImagenes(string contentRootPath)
+        {
+            var imgDir = System.IO.Path.Combine(contentRootPath, "wwwroot", "img", "libros");
+
+            byte[] Img(string archivo)
+            {
+                var ruta = System.IO.Path.Combine(imgDir, archivo);
+                return System.IO.File.Exists(ruta) ? System.IO.File.ReadAllBytes(ruta) : null;
+            }
+
+            // Mapeo nombre de libro → archivo de imagen
+            var imagenes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Ciencias Naturales 7",                         "cienciasnaturales.jpg"        },
+                { "Toldot 1",                                     "toldot1.jpg"                  },
+                { "Toldot 2",                                     "toldot2.jpg"                  },
+                { "Toldot 3",                                     "toldot3.jpg"                  },
+                { "Toldot 4",                                     "toldot4.jpg"                  },
+                { "C1 Students Book",                             "c1studentsbook.jpg"           },
+                { "Biologia y Ambiente",                          "biologiayambiente.png"        },
+                { "Geografia Global",                             "geografiaglobal.jpg"          },
+                { "Introduccion a la Programacion",               "introduccionprogramacion.jpg" },
+                { "Educacion Civica Hoy",                         "educacioncivica.jpg"          },
+                { "Ingles Step by Step",                          "inglesstepbystep.jpg"         },
+                { "El Eternauta",                                 "eleternauta.jpg"              },
+                { "Historia",                                     "historia.jpg"                 },
+                { "Libro de Hebreo 1",                            "hebreo1.jpg"                  },
+                { "El extraño caso del Dr. Jekyll y el Sr. Hyde", "jekyllandhyde.jpg"            },
+                { "Fuentes del Judaismo 3",                       "fuentesjudaismo.jpg"          },
+            };
+
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            foreach (var (nombreLibro, archivo) in imagenes)
+            {
+                var bytes = Img(archivo);
+                if (bytes == null) continue;
+
+                connection.Execute(@"
+                    UPDATE p SET p.imagen = @imagen
+                    FROM Publicacion p
+                    INNER JOIN Libros l ON p.idLibro = l.id
+                    WHERE l.nombre = @nombre",
+                    new { imagen = bytes, nombre = nombreLibro });
+            }
+        }
+
     }
 }

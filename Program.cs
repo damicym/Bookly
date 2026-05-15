@@ -1,3 +1,5 @@
+using Bookly.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSession(options =>
@@ -28,4 +30,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Actualiza las imágenes de las publicaciones desde wwwroot/img/libros/ al arrancar
+BD.ActualizarImagenes(app.Environment.ContentRootPath);
+
 app.Run();
