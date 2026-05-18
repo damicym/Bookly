@@ -32,6 +32,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Actualiza las imágenes de las publicaciones desde wwwroot/img/libros/ al arrancar
-BD.ActualizarImagenes(app.Environment.ContentRootPath);
+ BD.ActualizarImagenes(app.Environment.ContentRootPath); // Migración ya ejecutada, no volver a llamar
 
 app.Run();
