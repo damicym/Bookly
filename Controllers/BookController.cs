@@ -96,6 +96,21 @@ namespace Bookly.Controllers
             return RedirectToAction("Profile", "Home");
         }
 
+        // Endpoint de desarrollo: recarga las imágenes del seed desde wwwroot/img/libros/
+        // Usar cuando se resetea la BD con el script SQL
+        [HttpGet]
+        public IActionResult RecargarImagenes()
+        {
+#if DEBUG
+            var contentRoot = HttpContext.RequestServices
+                .GetRequiredService<IWebHostEnvironment>().ContentRootPath;
+            BD.ActualizarImagenes(contentRoot);
+            return Content("✅ Imágenes recargadas correctamente.");
+#else
+            return NotFound();
+#endif
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Desear(int id, bool esDeseado)

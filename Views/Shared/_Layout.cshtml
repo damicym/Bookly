@@ -113,6 +113,15 @@
             if (isProfile && window.location.hash === '#favoritos') {
                 btn.classList.add('activeNavBtn');
             }
+            // Si ya estás en el perfil, activar el tab directamente sin recargar
+            if (isProfile) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (typeof activarTab === 'function') activarTab('favoritos');
+                    history.replaceState(null, '', window.location.pathname);
+                    btn.classList.add('activeNavBtn');
+                });
+            }
             // Si el usuario cambia de tab en el perfil, sincronizar el ícono
             document.querySelectorAll('.profile-tab').forEach(function(tab) {
                 tab.addEventListener('click', function() {

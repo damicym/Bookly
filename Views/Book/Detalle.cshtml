@@ -55,7 +55,7 @@
     @* Columna central: datos *@
     <div class="detalle-col-datos">
         <div class="detalle-meta">
-            <span class="detalle-pill" style="background-color:@HtmlHelpers.GetColor(Model.estadoLibro)">@Model.estadoLibro</span>
+            <span class="detalle-pill" style="background-color:@HtmlHelpers.GetColor(Model.estadoLibro)">@HtmlHelpers.GetEstadoLabel(Model.estadoLibro)</span>
             <span class="detalle-pill">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
         </div>
 

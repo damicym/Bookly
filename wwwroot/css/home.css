@@ -157,3 +157,161 @@
     font-size: 0.95rem;
   }
 }
+
+/* ---- CARRUSEL DE RECOMENDACIONES ---- */
+.carrusel-wrapper {
+  position: relative;
+  width: min(1690px, 100vw - 120px);
+  margin: 0 auto 40px;
+}
+
+/* Fades laterales — sobre el wrapper, z-index por encima de las cards */
+.carrusel-wrapper::before,
+.carrusel-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 48px;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.carrusel-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(239,242,241,0.85), transparent);
+}
+
+.carrusel-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(239,242,241,0.85), transparent);
+}
+
+/* El JS agrega .scrolled cuando no está al inicio y .has-more cuando no está al final */
+.carrusel-wrapper.scrolled::before   { opacity: 1; }
+.carrusel-wrapper.has-more::after    { opacity: 1; }
+
+.carrusel-track-outer {
+  width: 100%;
+  position: relative;
+  clip-path: inset(-40px 0px -40px 0px);
+}
+
+.carrusel-scroll {
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 30px 16px;
+}
+
+.carrusel-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.carrusel-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 32px;
+  align-items: flex-start;
+  /* "safe center": centra cuando las cards caben, pero si no caben
+     arranca desde el inicio (no corta la primera card) */
+  justify-content: safe center;
+}
+
+.carrusel-card {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+/* Cards "mejor precio" en el carrusel */
+.carrusel-track .libro.carrusel-card.protagonista {
+  box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(0,0,0,0.35);
+  transform: none !important;
+}
+
+.carrusel-track .libro.carrusel-card.protagonista:hover {
+  transform: scale(1.03) !important;
+}
+
+/* Botones prev / next */
+.carrusel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(64, 89, 173, 0.25);
+  background: var(--light);
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, opacity 0.2s, transform 0.15s;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.carrusel-btn-prev { left: 0; }
+.carrusel-btn-next { right: 0; }
+
+.carrusel-btn:hover:not(:disabled) {
+  background: var(--main);
+  border-color: var(--main);
+  color: var(--light);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.carrusel-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (max-width: 700px) {
+  .carrusel-btn { display: none; }
+  .carrusel-track {
+    padding: 16px;
+  }
+}
+
+/* ---- CTA EXPLORAR CATÁLOGO ---- */
+.catalogo-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 0 auto 60px;
+  padding: 28px 40px;
+  width: min(700px, 100vw - 120px);
+  background-color: var(--secondary);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.catalogo-cta-texto {
+  color: var(--light);
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.catalogo-cta-btn {
+  width: auto;
+  padding: 12px 28px;
+}
+
+@media (max-width: 450px) {
+  .catalogo-cta {
+    width: calc(100vw - 40px);
+    padding: 22px 20px;
+  }
+  .catalogo-cta-texto {
+    font-size: 0.95rem;
+  }
+}

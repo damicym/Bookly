@@ -36,7 +36,17 @@
                 </div>
             </div>
 
-            <p class="profile-sub">@HtmlHelpers.PasarAñoATextoCompleto(ViewBag.usuario.ano) &middot; @($"{ViewBag.usuario.especialidad} {ViewBag.usuario.curso}")</p>
+            <p class="profile-sub">
+                @HtmlHelpers.PasarAñoATextoCompleto(ViewBag.usuario.ano)
+                @if (!string.IsNullOrEmpty(ViewBag.usuario.especialidad?.ToString()))
+                {
+                    <text>&middot; @ViewBag.usuario.especialidad @ViewBag.usuario.curso</text>
+                }
+                else
+                {
+                    <text>&middot; División @ViewBag.usuario.curso</text>
+                }
+            </p>
 
             <form id="aboutMeContainer" method="post" action="@Url.Action("UpdateAboutMe", "Usuarios")" class="profile-bio-form">
                 @Html.AntiForgeryToken()
@@ -105,7 +115,7 @@
                                 </section>
                             </div>
                             <div class="pillContainer">
-                                <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                                <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@HtmlHelpers.GetEstadoLabel(libro.estadoLibro)</span>
                                 <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
                             </div>
                         </div>
@@ -156,7 +166,7 @@
                                 </section>
                             </div>
                             <div class="pillContainer">
-                                <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                                <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@HtmlHelpers.GetEstadoLabel(libro.estadoLibro)</span>
                                 <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
                             </div>
                         </div>

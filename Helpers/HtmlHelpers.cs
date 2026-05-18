@@ -49,13 +49,20 @@ namespace Bookly.Helpers
         {
             switch (estado)
             {
-                case "Como nuevo": return "var(--secondary2)";           
-                case "Pocas anotaciones": return "var(--accent)";
+                case "Como nuevo":              return "var(--secondary2)";
                 case "Con algunas anotaciones": return "var(--accent)";
-                case "Muy anotado": return "var(--red2)";          
-                case "Muy usado": return "var(--red2)";        
-                default: return "white";
+                case "Muy usado":               return "var(--red2)";
+                default:                        return "white";
             }
+        }
+
+        public static string GetEstadoLabel(string estado)
+        {
+            return estado switch
+            {
+                "Con algunas anotaciones" => "Pocas anotaciones",
+                _ => estado
+            };
         }   
     }
 
