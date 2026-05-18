@@ -6,42 +6,17 @@
     var publicaciones = (List<PublicacionesCompletas>)ViewBag.Publicaciones;
     var vendedor = (Usuarios)ViewBag.Vendedor;
     var usuarioActual = (Usuarios)ViewBag.usuario;
+    var otrasOpciones = (List<PublicacionesCompletas>)ViewBag.OtrasOpciones;
     var max = publicaciones.Count < 4 ? publicaciones.Count : 4;
+    var imgBase64 = Model.imagen != null ? "data:image/webp;base64," + Convert.ToBase64String(Model.imagen) : "/img/book-placeholder.webp";
 }
 
-<div class="detalle-wrapper primerElemento">
+<div class="det-page primerElemento">
 
-    @* Columna izquierda: imagen *@
-    <div class="detalle-col-imagen">
-        <div class="detalle-imagen-box">
-            @if (Model.imagen != null)
-            {
-                <img src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
-            }
-            else
-            {
-                <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
-            }
-
-            @* Botón favorito sobre la imagen, igual que en las cards *@
-            <div class="libroActionsContainer">
-                <form class="desearBtnForm hoverVerde" action="@Url.Action("Desear", "Book")" method="post" onsubmit="return desearLibro(event, this);">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.id" />
-                    <input type="hidden" name="esDeseado" value="@Model.esDeseado" />
-                    <button class="@(Model.esDeseado ? "deseado" : "")" type="submit" title="@(Model.esDeseado ? "Quitar de favoritos" : "Agregar a favoritos")">
-                        @if (Model.esDeseado)
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>
-                        }
-                        else
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>
-                        }
-                    </button>
-                </form>
-            </div>
-
+    @* ── COL 1: Portada ── *@
+    <aside class="det-col-portada">
+        <div class="det-portada">
+            <img src="@imgBase64" alt="@Model.nombre" />
             @if (Model.esMasBarato)
             {
                 <span class="tag-masbarato">
@@ -50,76 +25,197 @@
                 </span>
             }
         </div>
-    </div>
+        <form class="desearBtnForm hoverVerde det-fav-form" action="@Url.Action("Desear", "Book")" method="post" onsubmit="return desearLibro(event, this);">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.id" />
+            <input type="hidden" name="esDeseado" value="@Model.esDeseado" />
+            <button class="@(Model.esDeseado ? "deseado" : "")" type="submit" title="@(Model.esDeseado ? "Quitar de favoritos" : "Agregar a favoritos")">
+                @if (Model.esDeseado)
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>
+                }
+                else
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>
+                }
+            </button>
+        </form>
+    </aside>
 
-    @* Columna central: datos *@
-    <div class="detalle-col-datos">
-        <div class="detalle-meta">
-            <span class="detalle-pill" style="background-color:@HtmlHelpers.GetColor(Model.estadoLibro)">@HtmlHelpers.GetEstadoLabel(Model.estadoLibro)</span>
-            <span class="detalle-pill">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
+    @* ── COL 2: Info del libro ── *@
+    <main class="det-col-info">
+
+        <div class="det-header">
+            <h1 class="det-titulo">@Model.nombre</h1>
+            <p class="det-materia">@Model.materia</p>
+            <p class="det-precio">$@Model.precio</p>
         </div>
 
-        <h1 class="detalle-titulo">@Model.nombre</h1>
-        <p class="detalle-materia">@Model.materia</p>
-        <div class="detalle-precio">$@Model.precio</div>
+        @* Botones de acción — mismo grid que la ficha *@
+        <div class="det-acciones">
+            <button class="det-btn-accion det-btn-consultar mainBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
+                Consultar publicación
+            </button>
+            <button class="det-btn-accion det-btn-favorito @(Model.esDeseado ? "det-btn-favorito--activo" : "")" id="btnFavoritoVisible">
+                @if (Model.esDeseado)
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>
+                    <text>Quitar de favoritos</text>
+                }
+                else
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>
+                    <text>Agregar a favoritos</text>
+                }
+            </button>
+            <script>
+                (function() {
+                    var svgFilled = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>';
+                    var svgOutline = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>';
 
-        <div class="detalle-info-grid">
-            <div class="detalle-info-item">
-                <span class="detalle-info-label">Editorial</span>
-                <span class="detalle-info-valor">@(string.IsNullOrWhiteSpace(Model.editorial) ? "—" : Model.editorial)</span>
+                    var btnVisible = document.getElementById('btnFavoritoVisible');
+                    var form = document.querySelector('.det-fav-form');
+                    var btnOculto = form.querySelector('button');
+
+                    btnVisible.addEventListener('click', async function() {
+                        var esDeseado = btnOculto.classList.contains('deseado');
+                        var formData = new FormData(form);
+                        formData.set('esDeseado', esDeseado ? 'true' : 'false');
+                        var token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                        try {
+                            var res = await fetch(form.getAttribute('action'), {
+                                method: 'POST',
+                                body: formData,
+                                headers: { 'RequestVerificationToken': token }
+                            });
+                            var data = await res.json();
+                            if (data && data.success) {
+                                if (!esDeseado) {
+                                    // Pasar a deseado
+                                    btnOculto.classList.add('deseado');
+                                    btnOculto.innerHTML = svgFilled;
+                                    btnVisible.classList.add('det-btn-favorito--activo');
+                                    btnVisible.innerHTML = svgFilled + '<text>Quitar de favoritos</text>';
+                                    // Actualizar el input hidden
+                                    form.querySelector('input[name="esDeseado"]').value = 'true';
+                                } else {
+                                    // Quitar de deseado
+                                    btnOculto.classList.remove('deseado');
+                                    btnOculto.innerHTML = svgOutline;
+                                    btnVisible.classList.remove('det-btn-favorito--activo');
+                                    btnVisible.innerHTML = svgOutline + '<text>Agregar a favoritos</text>';
+                                    form.querySelector('input[name="esDeseado"]').value = 'false';
+                                }
+                            }
+                        } catch(e) { console.error(e); }
+                    });
+                })();
+            </script>
+        </div>
+
+        @* Ficha 2x2 *@
+        <div class="det-ficha">
+            <div class="det-ficha-item">
+                <span class="det-ficha-label">Editorial</span>
+                <span class="det-ficha-valor">@(string.IsNullOrWhiteSpace(Model.editorial) ? "—" : Model.editorial)</span>
             </div>
-            <div class="detalle-info-item">
-                <span class="detalle-info-label">Año de uso</span>
-                <span class="detalle-info-valor">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
+            <div class="det-ficha-item">
+                <span class="det-ficha-label">Año de uso</span>
+                <span class="det-ficha-valor">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
+            </div>
+            <div class="det-ficha-item">
+                <span class="det-ficha-label">Materia</span>
+                <span class="det-ficha-valor">@(string.IsNullOrWhiteSpace(Model.materia) ? "—" : Model.materia)</span>
+            </div>
+            <div class="det-ficha-item">
+                <span class="det-ficha-label">Estado</span>
+                <span class="det-ficha-valor">@Model.estadoLibro</span>
             </div>
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.descripcion))
         {
-            <div class="detalle-descripcion">
-                <p class="detalle-info-label">Descripción</p>
+            <div class="det-descripcion">
+                <span class="det-descripcion-label">Descripción del vendedor</span>
                 <p>@Model.descripcion</p>
             </div>
         }
 
-        <div class="detalle-acciones-row">
-            <button class="mainBtn detalle-comprar-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>
-                Contactar vendedor
-            </button>
-        </div>
-    </div>
+        @if (otrasOpciones != null && otrasOpciones.Count > 0)
+        {
+            <div class="det-otras-opciones">
+                <div class="det-otras-opciones-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg>
+                    <h3>Otras opciones de compra</h3>
+                    <span class="det-otras-opciones-desde">desde $@otrasOpciones.Min(o => o.precio)</span>
+                </div>
+                <div class="det-otras-opciones-lista">
+                    @foreach (var op in otrasOpciones)
+                    {
+                        var opVendedor = BD.ObtenerUsuarioPorDNI(op.idVendedor);
+                        var opImg = op.imagen != null ? "data:image/webp;base64," + Convert.ToBase64String(op.imagen) : "/img/book-placeholder.webp";
+                        <a class="det-opcion-row" href="@Url.Action("Detalle", "Book", new { id = op.id, idVendedor = op.idVendedor })">
+                            <img class="det-opcion-portada" src="@opImg" alt="@op.nombre" />
+                            <div class="det-opcion-info">
+                                <span class="det-opcion-vendedor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                                    @(opVendedor?.nombreComp ?? op.idVendedor)
+                                </span>
+                                <span class="det-opcion-estado">@op.estadoLibro · @HtmlHelpers.PasarAñoATexto(op.ano)</span>
+                            </div>
+                            <span class="det-opcion-precio">$@op.precio</span>
+                            <span class="det-opcion-cta">Ver</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
 
-    @* Columna derecha: vendedor *@
-    <div class="detalle-col-vendedor">
-        <div class="detalle-vendedor-card">
-            <img src="~/img/default.webp" alt="foto de perfil" class="detalle-vendedor-img" />
-            <p class="detalle-vendedor-nombre">@vendedor.nombreComp</p>
-            <p class="detalle-vendedor-info">@($"{HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano)} {vendedor.especialidad} {vendedor.curso}")</p>
+    </main>
+
+    @* ── COL 3: Vendedor (sidebar derecho) ── *@
+    <aside class="det-col-vendedor">
+        <div class="det-vendedor-card">
+            <div class="det-vendedor-top">
+                <img src="~/img/default.webp" alt="perfil" class="det-vendedor-avatar" />
+                <div>
+                    <span class="det-vendedor-pill">Vendedor</span>
+                    <p class="det-vendedor-nombre">@vendedor.nombreComp</p>
+                    <p class="det-vendedor-sub">@HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano) · @vendedor.especialidad @vendedor.curso</p>
+                </div>
+            </div>
+
+            <div class="det-vendedor-cta-wrap">
+                <button class="det-vendedor-cta-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
+                    Contactar vendedor
+                </button>
+            </div>
 
             @if (max > 0)
             {
-                <div class="detalle-vendedor-publics">
-                    <span class="detalle-info-label">Otras publicaciones</span>
-                    <div class="detalle-vendedor-grid">
+                <div class="det-otras">
+                    <span class="det-otras-label">Más publicaciones</span>
+                    <div class="det-otras-grid">
                         @for (int i = 0; i < max; i++)
                         {
-                            <a class="detalle-vendedor-thumb" href="@Url.Action("Detalle", "Book", new { id = publicaciones[i].id, idVendedor = publicaciones[i].idVendedor })">
-                                @if (publicaciones[i].imagen != null)
-                                {
-                                    <img src="data:image/webp;base64,@Convert.ToBase64String(publicaciones[i].imagen)" alt="@publicaciones[i].nombre" />
-                                }
-                                else
-                                {
-                                    <img src="~/img/book-placeholder.webp" alt="@publicaciones[i].nombre" />
-                                }
-                                <span>@publicaciones[i].nombre</span>
+                            var pubImg = publicaciones[i].imagen != null
+                                ? "data:image/webp;base64," + Convert.ToBase64String(publicaciones[i].imagen)
+                                : "/img/book-placeholder.webp";
+                            <a class="det-otras-thumb" href="@Url.Action("Detalle", "Book", new { id = publicaciones[i].id, idVendedor = publicaciones[i].idVendedor })">
+                                <img src="@pubImg" alt="@publicaciones[i].nombre" />
+                                <div class="det-otras-thumb-info">
+                                    <span class="det-otras-thumb-nombre">@publicaciones[i].nombre</span>
+                                    <span class="det-otras-thumb-precio">$@publicaciones[i].precio</span>
+                                </div>
                             </a>
                         }
                     </div>
                 </div>
             }
         </div>
-    </div>
+    </aside>
 
 </div>

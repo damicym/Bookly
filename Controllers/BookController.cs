@@ -86,6 +86,15 @@ namespace Bookly.Controllers
             ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
             ViewBag.Vendedor = vendedor;
             ViewBag.usuario = user;
+
+            // Otras publicaciones del mismo libro (excluyendo la actual), ordenadas por precio
+            var otrasOpciones = mismoLibro
+                .Where(p => p.id != id)
+                .OrderBy(p => p.precio)
+                .Take(4)
+                .ToList();
+            ViewBag.OtrasOpciones = otrasOpciones;
+
             return View(libro);
         }
 
