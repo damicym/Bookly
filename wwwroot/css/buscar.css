@@ -267,10 +267,10 @@
     El padding del contenedor (.catalogo-resultados) controla
     el margen derecho (85px) y el espacio con la sidebar (40px).
   */
-  display: grid;
-  grid-template-columns: repeat(5, 230px);
-  justify-content: space-between;
-  row-gap: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: flex-start;
   width: 100%;
   margin-inline: 0;
   margin-bottom: 4%;
