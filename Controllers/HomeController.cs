@@ -73,8 +73,16 @@ namespace Bookly.Controllers
             {
                 return RedirectToAction("Login", "Usuarios");
             }
-            ViewBag.usuario = user;
 
+            // Refrescar aboutMe desde la BD para garantizar que siempre esté actualizado
+            var userFresh = BD.ObtenerUsuarioPorDNI(user.DNI);
+            if (userFresh != null)
+            {
+                user.aboutMe = userFresh.aboutMe;
+                HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
+            }
+
+            ViewBag.usuario = user;
             var publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI);
             ViewBag.favoritos = BD.ObtenerPublicacionesFavoritasPorUsuario(user.DNI);
             return View(publicaciones);
@@ -146,6 +154,12 @@ namespace Bookly.Controllers
                     .OrderByDescending(p => p.esMasBarato)
                     .ThenBy(p => p.precio)
                     .ToList();
+
+                // Marcar cuáles ya están en favoritos
+                foreach (var r in resultados)
+                {
+                    r.esDeseado = favoritos.Contains(r.id);
+                }
             } catch (System.Exception ex) {
                 _logger.LogError(ex, "Error al procesar los filtros de búsqueda");
                 resultados = new List<PublicacionesCompletas>();

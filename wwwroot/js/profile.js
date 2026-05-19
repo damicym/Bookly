@@ -2,25 +2,23 @@
 
 const aboutMeContainer = document.getElementById("aboutMeContainer")
 const btnEditAboutMe = document.getElementById("btnEditAboutMe")
-const aboutMe = document.getElementById("aboutMe")
+const aboutMeP = document.getElementById("aboutMe")
+const aboutMeEditable = document.getElementById("aboutMeEditable")
 
-let aboutMeInput = aboutMe ? aboutMe.textContent : ""
-
-function updateAboutMeInput(){
-    aboutMeInput = document.getElementById("aboutMeTextarea").value
-}
-
-if(btnEditAboutMe){
+if (btnEditAboutMe) {
     btnEditAboutMe.addEventListener("click", editarAboutMe)
 }
 
 function editarAboutMe() {
-    const tokenEl = aboutMeContainer ? aboutMeContainer.querySelector('input[name="__RequestVerificationToken"]') : null
-    const tokenInputHtml = tokenEl ? `<input type="hidden" name="__RequestVerificationToken" value="${tokenEl.value}">` : ''
+    const textoActual = aboutMeP ? aboutMeP.textContent.trim() : ''
 
-    aboutMeContainer.innerHTML = `
-        ${tokenInputHtml}
-        <textarea name="aboutMe" onchange="updateAboutMeInput()" id="aboutMeTextarea" maxlength="200" placeholder="Escribí algo sobre vos..." class="aboutMeInput" rows="3">${aboutMeInput}</textarea>
+    // Ocultar el párrafo y el botón editar
+    if (aboutMeP) aboutMeP.style.display = 'none'
+    btnEditAboutMe.style.display = 'none'
+
+    // Inyectar textarea y botón guardar en el div dedicado (el token queda intacto)
+    aboutMeEditable.innerHTML = `
+        <textarea name="aboutMe" id="aboutMeTextarea" maxlength="200" placeholder="Escribí algo sobre vos..." class="aboutMeInput" rows="3">${textoActual}</textarea>
         <button class="mainBtn" type="submit" style="width: min-content">Guardar</button>
     `
 
@@ -31,8 +29,6 @@ function editarAboutMe() {
             const len = ta.value ? ta.value.length : 0
             if (typeof ta.setSelectionRange === 'function') {
                 ta.setSelectionRange(len, len)
-            } else {
-                ta.selectionStart = ta.selectionEnd = len
             }
         }
     }, 0)

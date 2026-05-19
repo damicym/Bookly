@@ -57,10 +57,10 @@
     </section>
 </section>
 
+@if (Model != null && Model.Count > 0)
+{
 <h2 class="tituloPublicaciones">@ViewBag.Titulo</h2>
 <section class="carrusel-wrapper">
-    @if (Model != null && Model.Count > 0)
-    {
         <div class="carrusel-track-outer">
             <div class="carrusel-scroll" id="carruselTrack">
             <div class="carrusel-track">
@@ -123,14 +123,8 @@
         <button class="carrusel-btn carrusel-btn-next" id="carruselNext" aria-label="Siguiente">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
         </button>
-    }
-    else
-    {
-        <div class="no-result">
-            <p>No se encontraron libros recomendados para tu especialidad y año.</p>
-        </div>
-    }
 </section>
+}
 
 <script>
 (function () {

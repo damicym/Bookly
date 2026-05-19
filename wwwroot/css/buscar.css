@@ -1,20 +1,20 @@
 /* ===== LAYOUT CATÁLOGO ===== */
 .catalogo-layout {
-  margin-top: 105px;
+  margin-top: 90px;
   display: flex;
   align-items: flex-start;
-  min-height: calc(100vh - 105px);
+  min-height: calc(100vh - 90px);
   padding-bottom: 32px;
 }
 
 /* ===== SIDEBAR: sticky — se queda fija al scrollear pero termina con el contenedor, antes del footer ===== */
 .filtros-sidebar {
   position: sticky;
-  top: 105px;
+  top: 90px;
   align-self: flex-start;
   width: 220px;
   flex-shrink: 0;
-  max-height: calc(100vh - 105px);
+  max-height: calc(100vh - 90px);
   background: var(--light);
   border-right: 1px solid rgba(6, 26, 64, 0.1);
   box-shadow: 2px 0 8px rgba(6, 26, 64, 0.07);
@@ -241,7 +241,7 @@
 .catalogo-resultados {
   flex: 1;
   min-width: 0;
-  padding: 24px 115px 60px 40px;
+  padding: 24px 40px 60px 40px;
 }
 
 .catalogo-resultados-header {
@@ -336,17 +336,40 @@
 /* ===== NO RESULT ===== */
 .no-result {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   width: 100%;
-  padding: 60px 0;
+  padding: 36px 24px;
+  gap: 12px;
 }
 
-.no-result p {
-  color: var(--accent);
-  font-size: 1.3rem;
-  font-weight: 550;
+.no-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(64, 89, 173, 0.08);
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+
+.no-result-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+}
+
+.no-result-sub {
+  font-size: 0.9rem;
+  color: rgba(6, 26, 64, 0.5);
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.5;
 }
 
 /* ===== RESPONSIVE ===== */

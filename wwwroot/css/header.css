@@ -1,13 +1,13 @@
 /* Header y navegación */
 header {
-  background-color: var(--secondary);
+  background-color: var(--main);
   display: flex;
   gap: 5%;
-  padding: 1%;
   align-items: center;
-  height: 105px;
-  padding: 8px 24px;
-  box-shadow: 0px 0px 5px var(--dark);
+  height: 90px;
+  padding: 0 28px;
+  box-shadow: 0 2px 12px rgba(6, 26, 64, 0.35);
+  border-bottom: 1px solid rgba(151, 216, 196, 0.15);
   position: fixed;
   top: 0;
   z-index: 1000;
@@ -24,7 +24,6 @@ header button {
   background-color: transparent;
   border: 2px solid var(--light);
   border-radius: 16px;
-  font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -38,13 +37,13 @@ header .logo {
 header h1,
 header h2,
 header p {
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin: 0;
 }
 
 .logoSvg {
-  width: 85px;
-  height: 85px;
+  width: 62px;
+  height: 62px;
 }
 
 header .searchNFilter {
@@ -77,15 +76,17 @@ header .searchNFilter {
 
 .search input[type=text] {
   width: 100%;
-  height: 40px;
+  height: 38px;
   padding: 0 42px 0 16px;
   border-radius: 20px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   outline: none;
-  font-size: 0.95rem;
-  background-color: rgba(255, 255, 255, 0.18);
+  font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.1);
   color: var(--light);
   transition: all .2s;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .search input[type=text]::placeholder {
@@ -94,8 +95,9 @@ header .searchNFilter {
 
 .busqueda-input:focus {
   outline: none;
-  background-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 0 0 2px var(--secondary2);
+  background-color: rgba(255, 255, 255, 0.18);
+  border-color: var(--secondary2);
+  box-shadow: 0 0 0 2px rgba(151, 216, 196, 0.25);
 }
 
 .busqueda-input:focus + .search-icon {
@@ -124,7 +126,7 @@ header .searchNFilter {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   width: fit-content;
   margin-left: auto;
   color: var(--light);
@@ -141,27 +143,35 @@ header .searchNFilter {
 
 .profileBtn a {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
   transition: background-color 0.2s;
 }
 
 .profileBtn a:hover {
-  background-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .profileBtn * {
   text-decoration: none;
 }
 
+/* Nombre del usuario en negrita */
+.profileBtn p {
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  color: var(--light);
+}
+
 /* Estado activo: subrayado sutil en lugar del pill */
 .activeNavBtn > a,
 .profileBtn.activeNavBtn > a {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.12);
   border-bottom: 2px solid var(--secondary2);
   border-radius: 20px 20px 16px 16px;
 }
@@ -233,27 +243,28 @@ header .searchNFilter {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  color: rgba(239, 242, 241, 0.75);
+  color: rgba(239, 242, 241, 0.65);
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
-  margin-right: 8px;
+  margin-right: 4px;
 }
 
 .favBtn:hover {
-  background-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.1);
   color: var(--light);
 }
 
 .favBtn.activeNavBtn {
-  color: var(--accent);
+  color: var(--light);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .favBtn.activeNavBtn svg {
-  fill: var(--accent);
-  stroke: var(--accent);
+  fill: rgba(255, 255, 255, 0.9);
+  stroke: var(--light);
 }
 
 .actualNavSection {
@@ -291,14 +302,10 @@ header .searchNFilter {
   border: none;
 }
 
-.profileBtn p {
-  display: block;
-}
-
 @media (max-width: 450px) {
   .logoSvg {
-    width: 70px;
-    height: 70px;
+    width: 52px;
+    height: 52px;
   }
   .search input[type=text] {
     font-size: 0.8rem;

@@ -63,14 +63,17 @@ namespace Bookly.Controllers
         public IActionResult UpdateAboutMe(string aboutMe)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
-            if (user == null)            {
+            if (user == null)
+            {
                 return RedirectToAction("Login");
-            } else {
-                BD.ActualizarAboutMe(user.DNI, aboutMe);
-                user.aboutMe = aboutMe;
-                HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
-                return RedirectToAction("Profile", "Home");
             }
+
+            // Guardar aunque sea string vacío (permite borrar la descripción)
+            aboutMe = aboutMe ?? "";
+            BD.ActualizarAboutMe(user.DNI, aboutMe);
+            user.aboutMe = aboutMe;
+            HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
+            return RedirectToAction("Profile", "Home");
         }
 
     }
