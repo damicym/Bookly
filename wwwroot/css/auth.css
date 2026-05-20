@@ -59,6 +59,143 @@
   padding: 24px;
 }
 
+/* ── Modal de login ── */
+.login-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 26, 64, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.login-modal-overlay--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.login-modal-card {
+  position: relative;
+  background: var(--main);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 24px 64px rgba(6,26,64,0.45);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s ease;
+}
+
+.login-modal-overlay--visible .login-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.login-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(239,242,241,0.6);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.login-modal-close:hover {
+  background: rgba(255,255,255,0.18);
+  color: var(--light);
+}
+
+/* Modal de registro — más ancho */
+.register-modal-card {
+  max-width: 640px !important;
+  padding: 40px 44px !important;
+}
+
+.register-modal-form {
+  gap: 20px;
+}
+
+.register-modal-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.register-modal-seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(239,242,241,0.45);
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Campos dentro de los modales (login y registro) */
+.login-modal-card .auth-header h1 { color: var(--light); }
+.login-modal-card .auth-header p  { color: rgba(239,242,241,0.55); }
+.login-modal-card .auth-footer    { color: rgba(239,242,241,0.5); }
+.login-modal-card .auth-footer a  { color: var(--secondary2); font-weight: 600; text-decoration: none; }
+.login-modal-card .auth-footer a:hover { text-decoration: underline; }
+
+.login-modal-card .campo label {
+  color: rgba(239,242,241,0.75);
+}
+
+.login-modal-card .campo input,
+.login-modal-card .campo select {
+  background: rgba(239,242,241,0.08);
+  border: 1.5px solid rgba(239,242,241,0.18);
+  color: var(--light);
+  border-radius: 10px;
+}
+
+.login-modal-card .campo input::placeholder {
+  color: rgba(239,242,241,0.3);
+}
+
+.login-modal-card .campo input:focus,
+.login-modal-card .campo select:focus {
+  border-color: var(--secondary2);
+  box-shadow: 0 0 0 3px rgba(151,216,196,0.2);
+  outline: none;
+}
+
+.login-modal-card .campo select option {
+  background: var(--main);
+  color: var(--light);
+}
+
+.login-modal-card .ojo-btn {
+  color: rgba(239,242,241,0.5);
+}
+
+.login-modal-card .ojo-btn:hover {
+  color: var(--light);
+}
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
 .auth-card {
   background: var(--main);
   border-radius: 20px;

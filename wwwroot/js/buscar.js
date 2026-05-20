@@ -58,10 +58,10 @@ async function realizarBusqueda(query) {
                         huboCambio = true
                         html += `
                             <div class="${claseCard}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.idVendedor}'">
-                                ${tagMasBarato}
                                 <div class="imgContainer">
                                     <div class="libroImgContainer">
                                         <img src="${imgSrc}" alt="imagen del libro" />
+                                        ${tagMasBarato}
                                         <section class="libroActionsContainer">
                                             <form class="desearBtnForm hoverVerde" action="/Book/Desear" method="post" style="display:inline" onsubmit="return desearLibro(event, this)">
                                                 ${tokenInput}

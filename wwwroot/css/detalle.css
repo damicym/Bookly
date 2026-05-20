@@ -1,14 +1,35 @@
 /* ═══════════════════════════════════════════════════════
-   Detalle — 3 columnas: portada | info | vendedor
+   Detalle — wrapper centrado + 3 columnas: portada | info | vendedor
 ═══════════════════════════════════════════════════════ */
+
+/* Wrapper externo: mismos márgenes laterales que la landing */
+.det-page-wrapper {
+  width: min(1400px, 100vw - 120px);
+  margin: 0 auto;
+  padding: 40px 0 60px;
+  box-sizing: border-box;
+}
+
+/* Título de página */
+.det-page-header {
+  margin-bottom: 28px;
+}
+
+.det-page-titulo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
 
 .det-page {
   display: grid;
-  grid-template-columns: 260px 1fr 290px;
+  grid-template-columns: 300px minmax(0, 560px) 270px;
   gap: 28px;
   width: 100%;
-  padding: 40px 40px 60px 40px;
-  align-items: stretch;
+  align-items: start;
+  justify-content: center;
   box-sizing: border-box;
 }
 
@@ -23,7 +44,6 @@
   position: sticky;
   top: 120px;
   align-self: start;
-  padding-top: 40px;
 }
 
 .det-portada {
@@ -73,6 +93,28 @@
   padding-bottom: 18px;
   border-bottom: 2px solid rgba(6,26,64,0.07);
 }
+
+/* Breadcrumb */
+.det-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: rgba(6,26,64,0.4);
+  margin: 0;
+}
+
+.det-breadcrumb a {
+  color: var(--main);
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.det-breadcrumb a:hover { opacity: 1; }
+
+.det-breadcrumb svg { flex-shrink: 0; opacity: 0.4; }
 
 .det-pills { display: flex; gap: 8px; flex-wrap: wrap; }
 
@@ -184,7 +226,7 @@
   border-color: var(--red) !important;
 }
 
-/* ── Ficha 2x2 ── */
+/* ── Ficha 2x2, items en fila ── */
 .det-ficha {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -195,7 +237,7 @@
   background: #fff;
   border: 1px solid rgba(6,26,64,0.07);
   border-radius: 12px;
-  padding: 14px 18px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -350,7 +392,7 @@
 .det-col-vendedor {
   position: sticky;
   top: 120px;
-  align-self: stretch;
+  align-self: start;
 }
 
 .det-vendedor-card {
@@ -360,7 +402,6 @@
   box-shadow: 0 8px 32px rgba(6,26,64,0.2);
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 /* Cabecera con avatar grande y nombre prominente */
@@ -515,11 +556,16 @@
    Responsive
 ══════════════════════════════ */
 @media (max-width: 960px) {
+  .det-page-wrapper {
+    width: min(1400px, 100vw - 60px);
+  }
+
   .det-page {
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: 220px 1fr;
     grid-template-areas:
       "portada info"
       "vendedor info";
+    justify-content: start;
   }
 
   .det-col-portada { grid-area: portada; }
@@ -528,9 +574,13 @@
 }
 
 @media (max-width: 680px) {
+  .det-page-wrapper {
+    width: 100%;
+    padding: 20px 20px 40px;
+  }
+
   .det-page {
     grid-template-columns: 1fr;
-    padding: 20px 16px 40px;
     gap: 20px;
   }
 

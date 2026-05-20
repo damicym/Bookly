@@ -84,12 +84,12 @@
                             Cerrar sesión
                         </a>
                     } else {
-                        <a class="profile-dropdown-item" href="@Url.Action("Login", "Usuarios")">
+                        <a class="profile-dropdown-item" href="#" onclick="abrirLoginModal(event)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M21 12h-13l3 -3" /><path d="M11 15l-3 -3" /></svg>
                             Iniciar sesión
                         </a>
                         <div class="profile-dropdown-divider"></div>
-                        <a class="profile-dropdown-item" href="@Url.Action("Register", "Usuarios")">
+                        <a class="profile-dropdown-item" href="#" onclick="abrirRegisterModal(event)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                             Registrarse
                         </a>
@@ -160,6 +160,302 @@
         })();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    @* ── Modal de login (solo para usuarios no logueados) ── *@
+    @if (ViewBag.usuario == null)
+    {
+        <div class="login-modal-overlay" id="loginModal" onclick="cerrarLoginModal(event)">
+            <div class="login-modal-card" role="dialog" aria-modal="true" aria-label="Iniciar sesión">
+                <button class="login-modal-close" onclick="cerrarLoginModal()" aria-label="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+                </button>
+
+                <div class="auth-header">
+                    <div class="auth-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+                    </div>
+                    <h1>Bienvenido de vuelta</h1>
+                    <p>Ingresá tus datos para continuar</p>
+                </div>
+
+                <div id="loginModalError" class="auth-error" style="display:none;"></div>
+
+                <form method="post" action="@Url.Action("Login", "Usuarios")" class="auth-form" id="loginModalForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnView" value="" />
+
+                    <div class="campo">
+                        <label for="modalDNI">DNI</label>
+                        <input type="text" id="modalDNI" name="DNI" placeholder="Ingresá tu DNI" required autocomplete="off" pattern="\d+" inputmode="numeric" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="modalPassword">Contraseña</label>
+                        <div class="campo-password">
+                            <input type="password" id="modalPassword" name="password" placeholder="Ingresá tu contraseña" required />
+                            <button type="button" class="ojo-btn" onclick="togglePassword('modalPassword', this)">
+                                <svg class="ojo-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                                <svg class="ojo-on" style="display:none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 3l18 18" /><path d="M10.584 10.587a2 2 0 0 0 2.828 2.83" /><path d="M9.363 5.365a9 9 0 0 1 2.637 -.365c3.6 0 6.6 2 9 6c-.822 1.37 -1.722 2.519 -2.7 3.448m-2.168 1.816a9 9 0 0 1 -4.132 .736c-3.6 0 -6.6 -2 -9 -6c1.168 -1.948 2.494 -3.42 3.978 -4.418" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mainBtn auth-submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M20 12h-13l3 -3m0 6l-3 -3" /></svg>
+                        Iniciar sesión
+                    </button>
+                </form>
+
+                <p class="auth-footer">
+                    ¿No tenés cuenta? <a href="#" onclick="cerrarLoginModal(); abrirRegisterModal(); return false;">Registrate acá</a>
+                </p>
+            </div>
+        </div>
+
+        @* ── Modal de registro ── *@
+        <div class="login-modal-overlay" id="registerModal" onclick="cerrarRegisterModal(event)">
+            <div class="login-modal-card register-modal-card" role="dialog" aria-modal="true" aria-label="Registrarse">
+                <button class="login-modal-close" onclick="cerrarRegisterModal()" aria-label="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+                </button>
+
+                <div class="auth-header">
+                    <div class="auth-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M16 19h6"/><path d="M19 16v6"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4"/></svg>
+                    </div>
+                    <h1>Creá tu cuenta</h1>
+                    <p>Completá tus datos y empezá a usar Bookly</p>
+                </div>
+
+                <div id="registerModalError" class="auth-error" style="display:none;"></div>
+
+                <form method="post" action="@Url.Action("Register", "Usuarios")" autocomplete="off" class="auth-form register-modal-form" id="registerModalForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="register-modal-seccion">
+                        <span class="register-modal-seccion-titulo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+                            Datos personales
+                        </span>
+                        <div class="publicar-grid-2">
+                            <div class="campo">
+                                <label for="rDNI">DNI</label>
+                                <input type="text" id="rDNI" name="DNI" placeholder="Ej.: 44123456" required autocomplete="off" pattern="\d+" autofocus title="Solo números" inputmode="numeric" />
+                            </div>
+                            <div class="campo">
+                                <label for="rNombre">Nombre y apellido</label>
+                                <input type="text" id="rNombre" name="nombreComp" placeholder="Ej.: Juan Pérez" required autocomplete="off" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$" title="Solo letras" />
+                            </div>
+                            <div class="campo">
+                                <label for="rPassword">Contraseña</label>
+                                <div class="campo-password">
+                                    <input type="password" id="rPassword" name="password" placeholder="Creá una contraseña" required autocomplete="off" />
+                                    <button type="button" class="ojo-btn" onclick="togglePassword('rPassword', this)">
+                                        <svg class="ojo-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"/></svg>
+                                        <svg class="ojo-on" style="display:none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 3l18 18"/><path d="M10.584 10.587a2 2 0 0 0 2.828 2.83"/><path d="M9.363 5.365a9 9 0 0 1 2.637 -.365c3.6 0 6.6 2 9 6c-.822 1.37 -1.722 2.519 -2.7 3.448m-2.168 1.816a9 9 0 0 1 -4.132 .736c-3.6 0 -6.6 -2 -9 -6c1.168 -1.948 2.494 -3.42 3.978 -4.418"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="campo">
+                                <label for="rConfirmar">Confirmar contraseña</label>
+                                <div class="campo-password">
+                                    <input type="password" id="rConfirmar" placeholder="Repetí tu contraseña" required autocomplete="off" />
+                                    <button type="button" class="ojo-btn" onclick="togglePassword('rConfirmar', this)">
+                                        <svg class="ojo-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"/></svg>
+                                        <svg class="ojo-on" style="display:none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 3l18 18"/><path d="M10.584 10.587a2 2 0 0 0 2.828 2.83"/><path d="M9.363 5.365a9 9 0 0 1 2.637 -.365c3.6 0 6.6 2 9 6c-.822 1.37 -1.722 2.519 -2.7 3.448m-2.168 1.816a9 9 0 0 1 -4.132 .736c-3.6 0 -6.6 -2 -9 -6c1.168 -1.948 2.494 -3.42 3.978 -4.418"/></svg>
+                                    </button>
+                                </div>
+                                <small id="rPasswordError" style="display:none; color:#ff8a96; font-size:0.8rem; margin-top:2px;">Las contraseñas no coinciden</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="register-modal-seccion">
+                        <span class="register-modal-seccion-titulo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6l0 13"/><path d="M12 6l0 13"/><path d="M21 6l0 13"/></svg>
+                            Datos escolares
+                        </span>
+                        <div class="publicar-grid-2">
+                            <div class="campo">
+                                <label for="rAno">Año de ciclo</label>
+                                <select id="rAno" name="ano" required>
+                                    <option value="0">Seleccioná un año</option>
+                                    <option value="1">7mo grado</option>
+                                    <option value="2">1er año</option>
+                                    <option value="3">2do año</option>
+                                    <option value="4">3er año</option>
+                                    <option value="5">4to año</option>
+                                    <option value="6">5to año</option>
+                                </select>
+                            </div>
+                            <div class="campo">
+                                <label for="rEspecialidad">Especialidad</label>
+                                <select id="rEspecialidad" name="especialidad" disabled class="organizacion-disabled">
+                                    <option value="">Seleccioná una especialidad</option>
+                                    <option value="Informatica">Informática</option>
+                                    <option value="Gestión">Gestión</option>
+                                    <option value="Producción Artística">Producción Artística</option>
+                                    <option value="Química">Química</option>
+                                    <option value="Mecatrónica">Mecatrónica</option>
+                                    <option value="Construcciones">Construcciones</option>
+                                </select>
+                            </div>
+                            <div class="campo">
+                                <label for="rCurso">División</label>
+                                <input type="text" id="rCurso" name="curso" placeholder="Ej.: A" maxlength="1" pattern="[A-Za-z]" title="Una letra (A-Z)" required autocomplete="off" />
+                            </div>
+                            <div class="campo">
+                                <label for="rOrg">Organización</label>
+                                <select id="rOrg" name="organizacion" disabled class="organizacion-disabled">
+                                    <option value="ORT">ORT</option>
+                                </select>
+                                <small class="org-info">Próximamente más organizaciones</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mainBtn auth-submit" id="rSubmitBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10"/></svg>
+                        Crear cuenta
+                    </button>
+                </form>
+
+                <p class="auth-footer">
+                    ¿Ya tenés cuenta? <a href="#" onclick="cerrarRegisterModal(); abrirLoginModal(); return false;">Iniciá sesión</a>
+                </p>
+            </div>
+        </div>
+
+        <script>
+            function abrirRegisterModal(e) {
+                if (e) e.preventDefault();
+                var modal = document.getElementById('registerModal');
+                if (!modal) return;
+                modal.classList.add('login-modal-overlay--visible');
+                document.body.style.overflow = 'hidden';
+                setTimeout(function() {
+                    var input = document.getElementById('rDNI');
+                    if (input) input.focus();
+                }, 80);
+                var wrap = document.getElementById('profileDropdownWrap');
+                if (wrap) wrap.classList.remove('dropdown-open');
+            }
+
+            function cerrarRegisterModal(e) {
+                if (e && e.target !== document.getElementById('registerModal')) return;
+                var modal = document.getElementById('registerModal');
+                if (!modal) return;
+                modal.classList.remove('login-modal-overlay--visible');
+                document.body.style.overflow = '';
+                if (window.location.pathname.toLowerCase().includes('/usuarios/register') ||
+                    window.location.pathname.toLowerCase().includes('/register')) {
+                    window.location.href = '/';
+                }
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    cerrarLoginModal();
+                    cerrarRegisterModal();
+                }
+            });
+
+            // Lógica del formulario de registro en el modal
+            document.addEventListener('DOMContentLoaded', function() {
+                var rAno = document.getElementById('rAno');
+                var rEsp = document.getElementById('rEspecialidad');
+                if (rAno && rEsp) {
+                    function updateEsp() {
+                        var v = parseInt(rAno.value, 10);
+                        if (v >= 4) { rEsp.disabled = false; rEsp.classList.remove('organizacion-disabled'); }
+                        else { rEsp.disabled = true; rEsp.classList.add('organizacion-disabled'); rEsp.value = ''; }
+                    }
+                    rAno.addEventListener('change', updateEsp);
+                    updateEsp();
+                }
+
+                var rPwd = document.getElementById('rPassword');
+                var rConf = document.getElementById('rConfirmar');
+                var rErr = document.getElementById('rPasswordError');
+                var rForm = document.getElementById('registerModalForm');
+                if (rPwd && rConf && rErr && rForm) {
+                    function validar() {
+                        if (rConf.value && rPwd.value !== rConf.value) {
+                            rErr.style.display = 'block';
+                            rConf.style.borderColor = 'rgba(215,38,61,0.6)';
+                        } else {
+                            rErr.style.display = 'none';
+                            rConf.style.borderColor = '';
+                        }
+                    }
+                    rPwd.addEventListener('input', validar);
+                    rConf.addEventListener('input', validar);
+                    rForm.addEventListener('submit', function(e) {
+                        if (rPwd.value !== rConf.value) {
+                            e.preventDefault();
+                            rErr.style.display = 'block';
+                            rConf.focus();
+                        }
+                    });
+                }
+            });
+        </script>
+
+        <script>
+            function abrirLoginModal(e) {
+                if (e) e.preventDefault();
+                var modal = document.getElementById('loginModal');
+                if (!modal) return;
+                modal.classList.add('login-modal-overlay--visible');
+                document.body.style.overflow = 'hidden';
+                setTimeout(function() {
+                    var input = document.getElementById('modalDNI');
+                    if (input) input.focus();
+                }, 80);
+                var wrap = document.getElementById('profileDropdownWrap');
+                if (wrap) wrap.classList.remove('dropdown-open');
+            }
+
+            function cerrarLoginModal(e) {
+                if (e && e.target !== document.getElementById('loginModal')) return;
+                var modal = document.getElementById('loginModal');
+                if (!modal) return;
+                modal.classList.remove('login-modal-overlay--visible');
+                document.body.style.overflow = '';
+                var url = new URL(window.location.href);
+                if (url.searchParams.has('modal')) {
+                    url.searchParams.delete('modal');
+                    url.searchParams.delete('returnView');
+                    history.replaceState(null, '', url.toString());
+                }
+            }
+
+            // Abrir modal según query param al cargar
+            document.addEventListener('DOMContentLoaded', function() {
+                var params = new URLSearchParams(window.location.search);
+                var which = params.get('modal');
+                if (which === 'login') abrirLoginModal();
+                if (which === 'register') abrirRegisterModal();
+
+                @if (TempData["ModalError"] != null)
+                {
+                    string target = TempData["ModalErrorTarget"]?.ToString() ?? "login";
+                    string errorMsg = TempData["ModalError"]?.ToString() ?? "";
+                    <text>
+                    (function() {
+                        var errId = '@target' === 'register' ? 'registerModalError' : 'loginModalError';
+                        var errEl = document.getElementById(errId);
+                        if (errEl) { errEl.textContent = '@Html.Raw(errorMsg.Replace("'", "\\'"))'; errEl.style.display = 'block'; }
+                    })();
+                    </text>
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') { cerrarLoginModal(); cerrarRegisterModal(); }
+            });
+        </script>
+    }
 
     @if (TempData["WelcomeUser"] != null)
     {

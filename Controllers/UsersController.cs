@@ -10,10 +10,10 @@ namespace Bookly.Controllers
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user != null)
             {
-                ViewBag.UsuarioNombre = user.nombreComp;
+                return RedirectToAction("Index", "Home");
             }
-            ViewBag.returnView = returnView;
-            return View();
+            // Redirigir a la home con parámetro para abrir el modal
+            return Redirect("/?modal=login&returnView=" + returnView);
         }
         [HttpPost]
         public IActionResult Login(string DNI, string password, string returnView = "Index")
@@ -26,9 +26,9 @@ namespace Bookly.Controllers
                 if (returnView == "Publicar") return RedirectToAction("Publicar", "Book");
                 return RedirectToAction(returnView, "Home");
             }
-            ViewBag.Error = "DNI o contraseña incorrectos";
-            ViewBag.returnView = returnView;
-            return View();
+            TempData["ModalError"] = "DNI o contraseña incorrectos";
+            TempData["ModalErrorTarget"] = "login";
+            return Redirect("/?modal=login&returnView=" + returnView);
         }
 
         public IActionResult isLogged() {
@@ -38,18 +38,21 @@ namespace Bookly.Controllers
 
         public IActionResult Register()
         {
-            return View();
+            // Redirigir a la home con parámetro para abrir el modal
+            return Redirect("/?modal=register");
         }
         [HttpPost]
         public IActionResult Register(Usuarios usuario)
         {
             if (BD.ExisteUsuario(usuario.DNI))
             {
-                ViewBag.Error = $"No se puede registrar: el usuario con DNI {usuario.DNI} ya tiene una cuenta en Bookly.";
-                return View(usuario);
+                TempData["ModalError"] = $"El DNI {usuario.DNI} ya tiene una cuenta en Bookly.";
+                TempData["ModalErrorTarget"] = "register";
+                return Redirect("/?modal=register");
             }
             BD.registrarse(usuario);
-            return RedirectToAction("Login");
+            TempData["ModalError"] = null;
+            return Redirect("/?modal=login");
         }
         [HttpGet]
         public IActionResult Logout()
