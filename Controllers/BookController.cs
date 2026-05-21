@@ -179,6 +179,27 @@ namespace Bookly.Controllers
             }
         }
 
+        // Devuelve los datos de una publicación por ID (para el modal de editar)
+        [HttpGet]
+        public IActionResult ObtenerPublicacion(int id)
+        {
+            var pub = BD.ObtenerPublicacionCompletaPorId(id);
+            if (pub == null) return Json(new { found = false });
+            return Json(new {
+                found = true,
+                id = pub.id,
+                nombre = pub.nombre,
+                materia = pub.materia,
+                ano = pub.ano,
+                editorial = pub.editorial,
+                estadoLibro = pub.estadoLibro,
+                precio = pub.precio,
+                descripcion = pub.descripcion,
+                tieneImagen = pub.imagen != null,
+                imagenSrc = pub.imagen != null ? "data:image/webp;base64," + Convert.ToBase64String(pub.imagen) : "/img/book-placeholder.webp"
+            });
+        }
+
         // Devuelve los datos de un libro por nombre (para autocompletar campos)
         [HttpGet]
         public IActionResult ObtenerLibroPorNombre(string nombre)

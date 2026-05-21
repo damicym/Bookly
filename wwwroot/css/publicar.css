@@ -236,3 +236,81 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Modales de Publicar y Editar ── */
+.publicar-modal-overlay {
+  align-items: flex-start;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.publicar-modal-card {
+  max-width: 860px !important;
+  width: 100% !important;
+  padding: 32px 36px !important;
+  background: var(--lightDarker) !important;
+  margin: auto;
+}
+
+.publicar-modal-header {
+  margin-bottom: 4px;
+}
+
+.publicar-modal-header h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin: 0 0 4px;
+}
+
+.publicar-modal-header p {
+  font-size: 0.9rem;
+  color: rgba(6, 26, 64, 0.55);
+  margin: 0;
+}
+
+.publicar-modal-form {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+.publicar-modal-col-imagen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.publicar-modal-col-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Cerrar botón en modal claro */
+.publicar-modal-card .login-modal-close {
+  background: rgba(6, 26, 64, 0.08);
+  color: rgba(6, 26, 64, 0.5);
+}
+
+.publicar-modal-card .login-modal-close:hover {
+  background: rgba(6, 26, 64, 0.14);
+  color: var(--dark);
+}
+
+@media (max-width: 600px) {
+  .publicar-modal-form {
+    grid-template-columns: 1fr;
+  }
+  .publicar-modal-col-imagen {
+    max-width: 160px;
+    align-self: center;
+    margin: 0 auto;
+  }
+  .publicar-modal-card {
+    padding: 24px 20px !important;
+  }
+}

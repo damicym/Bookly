@@ -152,8 +152,26 @@ header .searchNFilter {
   transition: background-color 0.2s;
 }
 
+/* Sin nombre (no logueado): alineado igual que favBtn */
+.profileBtn a:not(:has(p)) {
+  padding: 7px;
+  border-radius: 50%;
+}
+
 .profileBtn a:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.profileBtn a .simpleBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  display: block;
+}
+
+.profileBtn a:hover .simpleBtn {
+  background-color: transparent;
 }
 
 .profileBtn * {
@@ -168,12 +186,11 @@ header .searchNFilter {
   color: var(--light);
 }
 
-/* Estado activo: subrayado sutil en lugar del pill */
+/* Estado activo */
 .activeNavBtn > a,
 .profileBtn.activeNavBtn > a {
   background-color: rgba(255, 255, 255, 0.12);
-  border-bottom: 2px solid var(--secondary2);
-  border-radius: 20px 20px 16px 16px;
+  border-radius: 20px;
 }
 
 /* Dropdown */

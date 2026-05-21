@@ -4,6 +4,7 @@ const aboutMeContainer = document.getElementById("aboutMeContainer")
 const btnEditAboutMe = document.getElementById("btnEditAboutMe")
 const aboutMeP = document.getElementById("aboutMe")
 const aboutMeEditable = document.getElementById("aboutMeEditable")
+const aboutMeBioView = document.getElementById("aboutMeBioView")
 
 if (btnEditAboutMe) {
     btnEditAboutMe.addEventListener("click", editarAboutMe)
@@ -12,15 +13,21 @@ if (btnEditAboutMe) {
 function editarAboutMe() {
     const textoActual = aboutMeP ? aboutMeP.textContent.trim() : ''
 
-    // Ocultar el párrafo y el botón editar
-    if (aboutMeP) aboutMeP.style.display = 'none'
-    btnEditAboutMe.style.display = 'none'
+    // Ocultar la fila de texto + botón editar
+    if (aboutMeBioView) aboutMeBioView.style.display = 'none'
 
-    // Inyectar textarea y botón guardar en el div dedicado (el token queda intacto)
+    // Inyectar textarea, botón guardar y cancelar
     aboutMeEditable.innerHTML = `
-        <textarea name="aboutMe" id="aboutMeTextarea" maxlength="200" placeholder="Escribí algo sobre vos..." class="aboutMeInput" rows="3">${textoActual}</textarea>
-        <button class="mainBtn" type="submit" style="width: min-content">Guardar</button>
+        <div class="profile-bio-edit-wrap">
+            <textarea name="aboutMe" id="aboutMeTextarea" maxlength="200" placeholder="Escribí algo sobre vos..." class="aboutMeInput" rows="3">${textoActual}</textarea>
+            <div class="profile-bio-actions">
+                <button class="profile-bio-save-btn" type="submit">Guardar</button>
+                <button class="profile-bio-cancel-btn" type="button" id="btnCancelAboutMe">Cancelar</button>
+            </div>
+        </div>
     `
+
+    document.getElementById('btnCancelAboutMe').addEventListener('click', cancelarAboutMe)
 
     setTimeout(() => {
         const ta = document.getElementById('aboutMeTextarea')
@@ -32,6 +39,11 @@ function editarAboutMe() {
             }
         }
     }, 0)
+}
+
+function cancelarAboutMe() {
+    aboutMeEditable.innerHTML = ''
+    if (aboutMeBioView) aboutMeBioView.style.display = 'flex'
 }
 
 // Solo letras en curso

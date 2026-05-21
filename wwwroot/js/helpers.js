@@ -37,3 +37,8 @@ function getColor(estado) {
         default: return "white"
     }
 }
+
+function getEstadoLabel(estado) {
+    if (estado === "Con algunas anotaciones") return "Pocas anotaciones"
+    return estado
+}

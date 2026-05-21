@@ -14,7 +14,7 @@
 .profile-header-section {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   gap: 40px;
   padding: 48px 60px 44px;
   background: #fff;
@@ -115,9 +115,14 @@
 /* Bio / about me */
 .profile-bio-form {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-bio-view {
+  display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
 .profile-bio-form .aboutMe {
@@ -128,19 +133,76 @@
   line-height: 1.5;
 }
 
+.profile-bio-edit-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+}
+
 .profile-bio-form .aboutMeInput {
-  width: 420px;
+  width: 100%;
   resize: none;
-  background-color: var(--light);
+  background-color: rgba(6, 26, 64, 0.04);
   color: var(--dark);
   border: 1.5px solid rgba(6, 26, 64, 0.18);
   border-radius: 8px;
   font-size: 0.95rem;
-  padding: 8px 12px;
+  padding: 10px 12px;
+  font-family: inherit;
+  line-height: 1.5;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.profile-bio-form .aboutMeInput:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(107, 154, 196, 0.15);
 }
 
 .profile-bio-form .aboutMeInput::placeholder {
-  color: rgba(6, 26, 64, 0.35);
+  color: rgba(6, 26, 64, 0.3);
+}
+
+.profile-bio-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.profile-bio-save-btn {
+  background: var(--secondary2);
+  color: var(--dark);
+  border: none;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.profile-bio-save-btn:hover {
+  filter: brightness(0.93);
+}
+
+.profile-bio-cancel-btn {
+  background: none;
+  border: none;
+  color: rgba(6, 26, 64, 0.4);
+  font-size: 0.88rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 7px 10px;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.profile-bio-cancel-btn:hover {
+  color: var(--dark);
+  background: rgba(6, 26, 64, 0.06);
 }
 
 .profile-bio-edit-btn {

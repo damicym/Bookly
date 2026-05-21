@@ -163,6 +163,11 @@
   position: relative;
   width: min(1690px, 100vw - 120px);
   margin: 0 auto 40px;
+  /* overflow: clip permite que el scroll interno funcione
+     y no corta el contenido en el eje Y (sombras verticales),
+     pero sí contiene el desbordamiento horizontal */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 /* Fades laterales — sobre el wrapper, z-index por encima de las cards */
@@ -196,7 +201,6 @@
 .carrusel-track-outer {
   width: 100%;
   position: relative;
-  clip-path: inset(-40px 0px -40px 0px);
 }
 
 .carrusel-scroll {
@@ -204,7 +208,8 @@
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 30px 16px;
+  padding: 30px 10px;
+  scroll-padding-left: 10px;
 }
 
 .carrusel-scroll::-webkit-scrollbar {
@@ -217,9 +222,8 @@
   flex-wrap: nowrap;
   gap: 32px;
   align-items: flex-start;
-  /* "safe center": centra cuando las cards caben, pero si no caben
-     arranca desde el inicio (no corta la primera card) */
-  justify-content: safe center;
+  justify-content: flex-start;
+  width: max-content;
 }
 
 .carrusel-card {

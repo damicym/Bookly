@@ -218,8 +218,7 @@ namespace Bookly.Controllers
             return estado.ToLower() switch
             {
                 "a" => "Como nuevo",
-                "b" => "Pocas anotaciones",
-                "c" => "Con algunas anotaciones",
+                "b" => "Con algunas anotaciones",
                 "d" => "Muy anotado",
                 _ => estado
             };
