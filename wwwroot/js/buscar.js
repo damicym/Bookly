@@ -73,7 +73,7 @@ async function realizarBusqueda(query) {
                                         </section>
                                     </div>
                                     <div class="pillContainer">
-                                        <span class="pill" style="background-color:${getColor(libro.estadoLibro)}">${getEstadoLabel(libro.estadoLibro)}</span>
+                                        <span class="pill" style="background-color:${getColor(libro.estadoLibro)}">${libro.estadoLibro}</span>
                                         <span class="pill">${pasarAnoATexto(libro.ano)}</span>
                                     </div>
                                 </div>

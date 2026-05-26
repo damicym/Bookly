@@ -53,7 +53,7 @@ INSERT INTO "Publicacion" ("idVendedor", "precio", "idLibro", "status", "estadoL
 ('45000111', 5200,  7, 1, 'Como nuevo',         '2025-09-25', 'Perfecto estado, casi sin uso.', null),
 ('45000222', 3000,  6, 1, 'Muy anotado',        '2025-09-20', 'Subrayado en varias páginas, útil para repaso.', null),
 ('45000222', 5500, 11, 1, 'Como nuevo',         '2025-09-30', 'Inglés Step by Step sin uso.', null),
-('45000333', 2700,  2, 1, 'Muy usado',          '2025-08-10', 'Tapa gastada pero contenido completo.', null),
+('45000333', 2700,  2, 1, 'Muy anotado',         '2025-08-10', 'Tapa gastada pero contenido completo.', null),
 ('45000333', 3200,  3, 1, 'Pocas anotaciones',  '2025-08-15', 'Toldot 2 en buen estado general.', null),
 ('45000444', 4000,  9, 1, 'Como nuevo',         '2025-07-12', 'Introducción a la programación en excelente estado.', null),
 ('45000444', 2800,  4, 1, 'Muy anotado',        '2025-07-20', 'Toldot 3 con apuntes útiles.', null),

@@ -29,16 +29,9 @@ function formatearMiles(valor) {
 
 function getColor(estado) {
     switch(estado) {
-        case "Como nuevo": return "var(--secondary2)"
+        case "Como nuevo":        return "var(--secondary2)"
         case "Pocas anotaciones": return "var(--accent)"
-        case "Con algunas anotaciones": return "var(--accent)"
-        case "Muy anotado": return "var(--red2)"
-        case "Muy usado": return "var(--red2)"
+        case "Muy anotado":       return "var(--red2)"
         default: return "white"
     }
-}
-
-function getEstadoLabel(estado) {
-    if (estado === "Con algunas anotaciones") return "Pocas anotaciones"
-    return estado
 }

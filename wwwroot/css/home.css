@@ -287,35 +287,137 @@
 /* ---- CTA EXPLORAR CATÁLOGO ---- */
 .catalogo-cta {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 24px;
   margin: 0 auto 60px;
-  padding: 28px 40px;
-  width: min(700px, 100vw - 120px);
-  background-color: var(--secondary);
-  border-radius: 14px;
-  text-align: center;
+  padding: 22px 32px;
+  width: min(1690px, 100vw - 120px);
+  background: var(--light);
+  border: 1.5px solid rgba(64, 89, 173, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(64, 89, 173, 0.08);
 }
 
-.catalogo-cta-texto {
-  color: var(--light);
-  font-size: 1rem;
-  opacity: 0.9;
+.catalogo-cta-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--main);
+  flex-shrink: 0;
+}
+
+.catalogo-cta-left svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.catalogo-cta-titulo {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--dark);
   margin: 0;
 }
 
-.catalogo-cta-btn {
-  width: auto;
-  padding: 12px 28px;
+.catalogo-cta-sub {
+  font-size: 0.85rem;
+  color: rgba(6, 26, 64, 0.55);
+  margin: 0;
+  margin-top: 2px;
 }
 
-@media (max-width: 450px) {
+.catalogo-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 10px;
+  background: var(--secondary2);
+  color: var(--dark);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.catalogo-cta-btn:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 0 6px var(--secondary2);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 700px) {
   .catalogo-cta {
+    flex-direction: column;
+    align-items: flex-start;
     width: calc(100vw - 40px);
-    padding: 22px 20px;
+    padding: 20px;
   }
-  .catalogo-cta-texto {
-    font-size: 0.95rem;
+  .catalogo-cta-btn {
+    width: 100%;
+    justify-content: center;
   }
+}
+
+/* ---- Botones de bienvenida ---- */
+.bienvenida-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 10px;
+  background: var(--secondary2);
+  color: var(--dark);
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+
+.bienvenida-btn-primary:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 0 8px var(--secondary2);
+}
+
+.bienvenida-btn-primary svg {
+  transition: transform 0.3s ease;
+}
+
+.bienvenida-btn-primary.wHover:hover svg {
+  transform: translateX(5px);
+}
+
+.bienvenida-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 28px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--dark);
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid rgba(6, 26, 64, 0.25);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.bienvenida-btn-secondary:hover {
+  border-color: var(--dark);
+  background: rgba(6, 26, 64, 0.05);
+}
+
+.bienvenida-btn-secondary svg {
+  transition: transform 0.3s ease;
+}
+
+.bienvenida-btn-secondary.wHover:hover svg {
+  transform: translateX(5px);
 }

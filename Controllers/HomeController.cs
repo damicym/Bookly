@@ -29,13 +29,13 @@ namespace Bookly.Controllers
             {
                 int anoUsuario = user.ano;
                 publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario)
-                    .Where(p => p.idVendedor != user.DNI).ToList();
+                    .Where(p => p.idVendedor != user.DNI).Take(20).ToList();
 
                 ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATextoCompleto(anoUsuario)}";
             }
             else
             {
-                publicaciones = BD.ObtenerLibrosMostrablesConTope(10);
+                publicaciones = BD.ObtenerLibrosMostrablesConTope(20);
                 ViewBag.Titulo = "Últimas publicaciones";
             }
             MarcarMasBaratos(publicaciones);
@@ -218,7 +218,7 @@ namespace Bookly.Controllers
             return estado.ToLower() switch
             {
                 "a" => "Como nuevo",
-                "b" => "Con algunas anotaciones",
+                "b" => "Pocas anotaciones",
                 "d" => "Muy anotado",
                 _ => estado
             };
