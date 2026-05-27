@@ -49,6 +49,8 @@ namespace Bookly.Controllers
             }
             ViewBag.userLogged = user != null;
             ViewBag.usuario = user;
+            ViewBag.totalPublicaciones = BD.ContarPublicacionesActivas();
+            ViewBag.totalUsuarios = BD.ContarUsuarios();
             return View(publicaciones);
         }
 

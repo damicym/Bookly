@@ -14,6 +14,10 @@
 
 <section class="bienvenida primerElemento">
     <div class="bienvenidaInfo">
+        <div class="hero-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+            Plataforma estudiantil
+        </div>
         <h1><span>La forma más cómoda de comprar</span> <span>y vender libros escolares</span></h1>
         <p class="bienvenidaP">Contactá con un estudiante, acordá un precio justo y una ubicación en cuestión de minutos</p>
         <div class="bienvenidaBtnContainer">
@@ -147,39 +151,28 @@
 <script>
 (function () {
     function initCarrusel() {
-        var track = document.getElementById('carruselTrack'); // carrusel-scroll
-        var outer = track ? track.parentElement : null; // carrusel-track-outer
-        var wrapper = outer ? outer.parentElement : null; // carrusel-wrapper
+        var track = document.getElementById('carruselTrack');
+        var outer = track ? track.parentElement : null;
+        var wrapper = outer ? outer.parentElement : null;
         var btnPrev = document.getElementById('carruselPrev');
         var btnNext = document.getElementById('carruselNext');
         if (!track || !btnPrev || !btnNext || !outer) return;
 
         var CARD_W = 230 + 32;
-        var FADE = '40px';
         var PAD_LEFT = 60;
 
         function updateMask() {
             var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
             var atStart = track.scrollLeft <= 4;
-            var pastFirstCard = track.scrollLeft > 262; // más de una card scrolleada
+            var pastFirstCard = track.scrollLeft > 262;
             track.style.maskImage = '';
             track.style.webkitMaskImage = '';
             outer.style.maskImage = '';
             outer.style.webkitMaskImage = '';
-            if (atEnd) {
-                outer.classList.remove('has-more');
-                if (wrapper) wrapper.classList.remove('has-more');
-            } else {
-                outer.classList.add('has-more');
-                if (wrapper) wrapper.classList.add('has-more');
-            }
-            if (atStart || !pastFirstCard) {
-                outer.classList.remove('scrolled');
-                if (wrapper) wrapper.classList.remove('scrolled');
-            } else {
-                outer.classList.add('scrolled');
-                if (wrapper) wrapper.classList.add('scrolled');
-            }
+            if (atEnd) { outer.classList.remove('has-more'); if (wrapper) wrapper.classList.remove('has-more'); }
+            else { outer.classList.add('has-more'); if (wrapper) wrapper.classList.add('has-more'); }
+            if (atStart || !pastFirstCard) { outer.classList.remove('scrolled'); if (wrapper) wrapper.classList.remove('scrolled'); }
+            else { outer.classList.add('scrolled'); if (wrapper) wrapper.classList.add('scrolled'); }
         }
 
         function updateBtns() {
@@ -188,34 +181,19 @@
             btnNext.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
         }
 
-        btnPrev.addEventListener('click', function () {
-            track.scrollBy({ left: -CARD_W * 3, behavior: 'smooth' });
-        });
-        btnNext.addEventListener('click', function () {
-            track.scrollBy({ left: CARD_W * 3, behavior: 'smooth' });
-        });
-
-        track.addEventListener('scroll', function () {
-            updateBtns();
-            updateMask();
-        }, { passive: true });
-
-        // Esperar a que el layout esté listo antes de calcular
+        btnPrev.addEventListener('click', function () { track.scrollBy({ left: -CARD_W * 3, behavior: 'smooth' }); });
+        btnNext.addEventListener('click', function () { track.scrollBy({ left: CARD_W * 3, behavior: 'smooth' }); });
+        track.addEventListener('scroll', function () { updateBtns(); updateMask(); }, { passive: true });
         requestAnimationFrame(function () {
             requestAnimationFrame(function () {
-                track.scrollLeft = 0; // forzar inicio
+                track.scrollLeft = 0;
                 updateBtns();
                 updateMask();
             });
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initCarrusel);
-    } else {
-        initCarrusel();
-    }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCarrusel); }
+    else { initCarrusel(); }
 })();
 </script>
-
-

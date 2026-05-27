@@ -163,14 +163,10 @@
   position: relative;
   width: min(1690px, 100vw - 120px);
   margin: 0 auto 40px;
-  /* overflow: clip permite que el scroll interno funcione
-     y no corta el contenido en el eje Y (sombras verticales),
-     pero sí contiene el desbordamiento horizontal */
   overflow-x: clip;
   overflow-y: visible;
 }
 
-/* Fades laterales — sobre el wrapper, z-index por encima de las cards */
 .carrusel-wrapper::before,
 .carrusel-wrapper::after {
   content: '';
@@ -194,7 +190,6 @@
   background: linear-gradient(to left, rgba(239,242,241,0.85), transparent);
 }
 
-/* El JS agrega .scrolled cuando no está al inicio y .has-more cuando no está al final */
 .carrusel-wrapper.scrolled::before   { opacity: 1; }
 .carrusel-wrapper.has-more::after    { opacity: 1; }
 
@@ -232,7 +227,6 @@
   flex-grow: 0;
 }
 
-/* Cards "mejor precio" en el carrusel */
 .carrusel-track .libro.carrusel-card.protagonista {
   box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(0,0,0,0.35);
   transform: none !important;
@@ -242,7 +236,6 @@
   transform: scale(1.03) !important;
 }
 
-/* Botones prev / next */
 .carrusel-btn {
   position: absolute;
   top: 50%;
@@ -279,9 +272,7 @@
 
 @media (max-width: 700px) {
   .carrusel-btn { display: none; }
-  .carrusel-track {
-    padding: 16px;
-  }
+  .carrusel-track { padding: 16px; }
 }
 
 /* ---- CTA EXPLORAR CATÁLOGO ---- */
@@ -420,4 +411,25 @@
 
 .bienvenida-btn-secondary.wHover:hover svg {
   transform: translateX(5px);
+}
+
+/* ---- Badge "Plataforma estudiantil" ---- */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(64, 89, 173, 0.08);
+  color: var(--main);
+  border: 1px solid rgba(64, 89, 173, 0.2);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  width: fit-content;
+}
+
+.hero-badge svg {
+  color: var(--secondary2);
+  flex-shrink: 0;
 }

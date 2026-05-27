@@ -573,5 +573,23 @@ namespace Bookly.Models
             }
         }
 
+        public static int ContarPublicacionesActivas()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                return connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Publicacion WHERE status = 1");
+            }
+        }
+
+        public static int ContarUsuarios()
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                return connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Usuarios");
+            }
+        }
+
     }
 }
