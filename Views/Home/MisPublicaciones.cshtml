@@ -37,12 +37,9 @@
                                 <img src="~/img/book-placeholder.webp" alt="imagen del libro" />
                             }
                             <section class="libroActionsContainer">
-                                <form class="desearBtnForm editar" action="@Url.Action("Editar", "Book")" method="get" style="display:inline;">
-                                    <input type="hidden" name="id" value="@libro.id" />
-                                    <button type="submit" title="Editar" onclick="event.stopPropagation();">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
-                                    </button>
-                                </form>
+                                <button class="desearBtnForm editar" type="button" title="Editar" onclick="event.stopPropagation(); abrirEditarModal(@libro.id);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                                </button>
                                 <form class="desearBtnForm" action="@Url.Action("Eliminar", "Book")" method="post" onsubmit="return confirm('¿Seguro que querés eliminar esta publicación?');" style="display:inline;">
                                     <input type="hidden" name="id" value="@libro.id" />
                                     <button type="submit" title="Eliminar" onclick="event.stopPropagation();">

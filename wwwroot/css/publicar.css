@@ -249,6 +249,8 @@
   width: 100% !important;
   padding: 32px 36px !important;
   margin: auto;
+  background: var(--light) !important;
+  box-shadow: 0 24px 64px rgba(6,26,64,0.3) !important;
 }
 
 .publicar-modal-header {
@@ -258,13 +260,13 @@
 .publicar-modal-header h2 {
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--light);
+  color: var(--dark);
   margin: 0 0 4px;
 }
 
 .publicar-modal-header p {
   font-size: 0.9rem;
-  color: rgba(239, 242, 241, 0.5);
+  color: rgba(6,26,64,0.45);
   margin: 0;
 }
 
@@ -283,21 +285,68 @@
   gap: 10px;
 }
 
+/* Hint de imagen — blanco sobre fondo claro */
+.publicar-modal-card .publicar-imagen-hint {
+  color: rgba(6,26,64,0.45);
+}
+
 .publicar-modal-col-campos {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Cerrar botón — consistente con modales oscuros */
+/* Secciones dentro del modal — fondo blanco con borde suave */
+.publicar-modal-card .publicar-seccion {
+  background: var(--lightDarker);
+  border: 1.5px solid rgba(6,26,64,0.08);
+  box-shadow: 0 2px 8px rgba(6,26,64,0.05);
+}
+
+.publicar-modal-card .publicar-seccion-titulo {
+  color: var(--main);
+  opacity: 1;
+}
+
+.publicar-modal-card .publicar-seccion .campo label {
+  color: rgba(6,26,64,0.7);
+}
+
+.publicar-modal-card .publicar-seccion .campo input,
+.publicar-modal-card .publicar-seccion .campo select,
+.publicar-modal-card .publicar-seccion .campo textarea {
+  background: var(--light);
+  border: 1.5px solid rgba(6,26,64,0.15);
+  color: var(--dark);
+}
+
+.publicar-modal-card .publicar-seccion .campo input::placeholder,
+.publicar-modal-card .publicar-seccion .campo textarea::placeholder {
+  color: rgba(6,26,64,0.3);
+}
+
+.publicar-modal-card .publicar-seccion .campo input:focus,
+.publicar-modal-card .publicar-seccion .campo select:focus,
+.publicar-modal-card .publicar-seccion .campo textarea:focus {
+  border-color: var(--main);
+  box-shadow: 0 0 0 3px rgba(64,89,173,0.12);
+  outline: none;
+}
+
+.publicar-modal-card .publicar-seccion .campo select option {
+  background: var(--light);
+  color: var(--dark);
+}
+
+/* Cerrar botón — sobre fondo claro */
 .publicar-modal-card .login-modal-close {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(239, 242, 241, 0.6);
+  background: rgba(6,26,64,0.07);
+  color: rgba(6,26,64,0.45);
 }
 
 .publicar-modal-card .login-modal-close:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: var(--light);
+  background: rgba(6,26,64,0.13);
+  color: var(--dark);
 }
 
 @media (max-width: 600px) {

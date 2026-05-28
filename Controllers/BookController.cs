@@ -83,15 +83,16 @@ namespace Bookly.Controllers
                 libro.esMasBarato = libro.precio == minPrecio;
             }
 
-            ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
+            ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor)
+                .Where(p => p.id != id)
+                .ToList();
             ViewBag.Vendedor = vendedor;
             ViewBag.usuario = user;
 
-            // Otras publicaciones del mismo libro (excluyendo la actual), ordenadas por precio
+            // Otras publicaciones del mismo libro (incluyendo la actual), ordenadas por precio
             var otrasOpciones = mismoLibro
-                .Where(p => p.id != id)
                 .OrderBy(p => p.precio)
-                .Take(4)
+                .Take(5)
                 .ToList();
             ViewBag.OtrasOpciones = otrasOpciones;
 
@@ -151,6 +152,10 @@ namespace Bookly.Controllers
         [HttpGet]
         public IActionResult Editar(int id)
         {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+                return RedirectToAction("Login", "Usuarios");
+
             // Obtener la publicación completa por su ID
             PublicacionesCompletas publicacion = BD.ObtenerPublicacionCompletaPorId(id);
 
@@ -160,6 +165,7 @@ namespace Bookly.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            ViewBag.usuario = user;
             // Enviar la publicación a la vista para editar
             return View(publicacion);
         }

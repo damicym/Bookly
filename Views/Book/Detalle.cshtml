@@ -148,12 +148,13 @@
             </div>
         }
 
+        @* Otras opciones del mismo libro *@
         @if (otrasOpciones != null && otrasOpciones.Count > 0)
         {
             <div class="det-otras-opciones">
                 <div class="det-otras-opciones-header">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg>
-                    <h3>Otras opciones de compra</h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg>
+                    <h3>Otras opciones</h3>
                     <span class="det-otras-opciones-desde">desde $@otrasOpciones.Min(o => o.precio)</span>
                 </div>
                 <div class="det-otras-opciones-lista">
@@ -161,17 +162,25 @@
                     {
                         var opVendedor = BD.ObtenerUsuarioPorDNI(op.idVendedor);
                         var opImg = op.imagen != null ? "data:image/webp;base64," + Convert.ToBase64String(op.imagen) : "/img/book-placeholder.webp";
-                        <a class="det-opcion-row" href="@Url.Action("Detalle", "Book", new { id = op.id, idVendedor = op.idVendedor })">
+                        var esActual = op.id == Model.id;
+                        <a class="det-opcion-row @(esActual ? "det-opcion-row--actual" : "")" href="@Url.Action("Detalle", "Book", new { id = op.id, idVendedor = op.idVendedor })">
                             <img class="det-opcion-portada" src="@opImg" alt="@op.nombre" />
                             <div class="det-opcion-info">
                                 <span class="det-opcion-vendedor">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                                     @(opVendedor?.nombreComp ?? op.idVendedor)
                                 </span>
                                 <span class="det-opcion-estado">@op.estadoLibro · @HtmlHelpers.PasarAñoATexto(op.ano)</span>
                             </div>
                             <span class="det-opcion-precio">$@op.precio</span>
-                            <span class="det-opcion-cta">Ver</span>
+                            @if (esActual)
+                            {
+                                <span class="det-opcion-actual-badge">Viendo</span>
+                            }
+                            else
+                            {
+                                <span class="det-opcion-cta">Ver</span>
+                            }
                         </a>
                     }
                 </div>
@@ -180,8 +189,9 @@
 
     </main>
 
-    @* ── COL 3: Vendedor (sidebar derecho) ── *@
+    @* ── COL 3: Vendedor ── *@
     <aside class="det-col-vendedor">
+
         <div class="det-vendedor-card">
             <div class="det-vendedor-top">
                 <img src="~/img/default.webp" alt="perfil" class="det-vendedor-avatar" />
@@ -221,6 +231,7 @@
                 </div>
             }
         </div>
+
     </aside>
 
 </div>

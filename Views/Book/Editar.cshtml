@@ -1,133 +1,38 @@
 @model Bookly.Models.PublicacionesCompletas
-@using Bookly.Helpers
 
 @{
     ViewData["Title"] = "Editar publicación";
 }
 
-<div class="publicar-wrapper primerElemento">
-    <div class="publicar-header">
-        <h1>Editar publicación</h1>
-        <p>Modificá los datos de tu libro.</p>
-    </div>
+@* La view de Editar no renderiza contenido propio.
+   El modal vive en _Layout y se abre automáticamente con los datos del modelo. *@
 
-    <form action="@Url.Action("Editar", "Book")" method="post" enctype="multipart/form-data" class="publicar-form">
-        <input type="hidden" name="id" value="@Model.id" />
-        <input type="hidden" id="imagenEliminada" name="imagenEliminada" value="false" />
-
-        <!-- Columna izquierda: imagen -->
-        <div class="publicar-col publicar-col-imagen">
-            <div class="publicar-imagen-preview" id="imagenPreviewContainer">
-                @if (Model.imagen != null)
-                {
-                    <img id="imagenPreview" src="data:image/webp;base64,@Convert.ToBase64String(Model.imagen)" alt="imagen del libro" />
-                }
-                else
-                {
-                    <img id="imagenPreview" src="/img/book-placeholder.webp" alt="imagen del libro" />
-                }
-                <div class="publicar-imagen-overlay">
-                    <label for="fileInput" class="publicar-imagen-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
-                        Cambiar imagen
-                    </label>
-                    <input name="imagen" accept="image/*" type="file" id="fileInput" style="display:none">
-                </div>
-            </div>
-            @if (Model.imagen != null)
-            {
-                <button type="button" class="publicar-eliminar-img" onclick="eliminarImagenActual(event)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                    Eliminar imagen
-                </button>
-            }
-            <p class="publicar-imagen-hint" id="fileName">@(Model.imagen != null ? "Imagen actual del libro" : "Sin imagen")</p>
-        </div>
-
-        <!-- Columna derecha: campos -->
-        <div class="publicar-col publicar-col-campos">
-
-            <div class="publicar-seccion">
-                <h3 class="publicar-seccion-titulo">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
-                    Información del libro
-                </h3>
-                <div class="publicar-grid-2">
-                    <div class="campo">
-                        <label for="nombre">Nombre del libro</label>
-                        <input type="text" id="nombre" name="nombre" value="@Model.nombre" required />
-                    </div>
-                    <div class="campo">
-                        <label for="materia">Materia</label>
-                        <input type="text" id="materia" name="materia" value="@Model.materia" required />
-                    </div>
-                    <div class="campo">
-                        <label for="ano">Nivel escolar</label>
-                        <select id="ano" name="ano" required>
-                            @if (Model.ano == 1) { <option value="1" selected>7mo grado</option> } else { <option value="1">7mo grado</option> }
-                            @if (Model.ano == 2) { <option value="2" selected>1er año</option> } else { <option value="2">1er año</option> }
-                            @if (Model.ano == 3) { <option value="3" selected>2do año</option> } else { <option value="3">2do año</option> }
-                            @if (Model.ano == 4) { <option value="4" selected>3er año</option> } else { <option value="4">3er año</option> }
-                            @if (Model.ano == 5) { <option value="5" selected>4to año</option> } else { <option value="5">4to año</option> }
-                            @if (Model.ano == 6) { <option value="6" selected>5to año</option> } else { <option value="6">5to año</option> }
-                        </select>
-                    </div>
-                    <div class="campo">
-                        <label for="editorial">Editorial</label>
-                        <input type="text" id="editorial" name="editorial" value="@Model.editorial" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="publicar-seccion">
-                <h3 class="publicar-seccion-titulo">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M3 11l9 -9l9 9l-9 9z" /></svg>
-                    Detalles de la venta
-                </h3>
-                <div class="publicar-grid-2">
-                    <div class="campo">
-                        <label for="estadoLibro">Estado del libro</label>
-                        <select id="estadoLibro" name="estadoLibro" required>
-                            @if (Model.estadoLibro == "Como nuevo") { <option value="Como nuevo" selected>Como nuevo</option> } else { <option value="Como nuevo">Como nuevo</option> }
-                            @if (Model.estadoLibro == "Pocas anotaciones") { <option value="Pocas anotaciones" selected>Pocas anotaciones</option> } else { <option value="Pocas anotaciones">Pocas anotaciones</option> }
-                            @if (Model.estadoLibro == "Muy anotado") { <option value="Muy anotado" selected>Muy anotado</option> } else { <option value="Muy anotado">Muy anotado</option> }
-                        </select>
-                    </div>
-                    <div class="campo">
-                        <label for="precio">Precio ($)</label>
-                        <input type="number" id="precio" name="precio" step="0.01" value="@Model.precio" required />
-                    </div>
-                </div>
-                <div class="campo publicar-desc-campo">
-                    <label for="descripcion">Descripción <span class="campo-opcional">(opcional)</span></label>
-                    <textarea id="descripcion" name="descripcion" class="publicar-desc-textarea">@Model.descripcion</textarea>
-                </div>
-            </div>
-
-            <button type="submit" class="mainBtn publicar-submit">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
-                Guardar cambios
-            </button>
-        </div>
-
-    </form>
-</div>
-
+@section Scripts {
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput) {
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                document.getElementById('fileName').textContent = file.name;
-                const reader = new FileReader();
-                reader.onload = e => document.getElementById('imagenPreview').src = e.target.result;
-                reader.readAsDataURL(file);
-                const imagenEliminada = document.getElementById('imagenEliminada');
-                if (imagenEliminada) imagenEliminada.value = 'false';
+    document.addEventListener('DOMContentLoaded', async function() {
+        if (typeof abrirEditarModal === 'function') {
+            await abrirEditarModal(@Model.id);
+        }
+
+        // Al cerrar el modal, volver al perfil en lugar de quedarse en /Book/Editar
+        var modal = document.getElementById('editarModal');
+        if (modal) {
+            var originalCerrar = window.cerrarEditarModal;
+            window.cerrarEditarModal = function(e) {
+                if (e && e.target !== modal) return;
+                modal.classList.remove('login-modal-overlay--visible');
+                document.body.style.overflow = '';
+                window.location.href = '@Url.Action("Profile", "Home")';
+            };
+            var closeBtn = modal.querySelector('.login-modal-close');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    modal.classList.remove('login-modal-overlay--visible');
+                    document.body.style.overflow = '';
+                    window.location.href = '@Url.Action("Profile", "Home")';
+                };
             }
-        });
-    }
-});
+        }
+    });
 </script>
+}

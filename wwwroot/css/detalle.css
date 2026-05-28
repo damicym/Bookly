@@ -3,9 +3,9 @@
 ═══════════════════════════════════════════════════════ */
 
 .det-page-wrapper {
-  width: min(1400px, 100vw - 32px);
+  width: min(1400px, 100vw - 48px);
   margin: 0 auto;
-  padding: 40px 16px 60px;
+  padding: 40px 0 60px;
   box-sizing: border-box;
 }
 
@@ -19,13 +19,11 @@
   letter-spacing: -0.02em;
 }
 
-/* Grid principal: portada | info | vendedor
-   El separador horizontal se logra con un pseudo-elemento
-   que cruza las 3 columnas desde el det-header */
+/* Grid principal: portada | info | vendedor */
 .det-page {
   display: grid;
-  grid-template-columns: 280px 1fr 270px;
-  gap: 32px;
+  grid-template-columns: 280px 1fr 290px;
+  gap: 48px;
   width: 100%;
   align-items: start;
   box-sizing: border-box;
@@ -273,40 +271,43 @@
   line-height: 1.7;
 }
 
-/* ── Otras opciones de compra ── */
+/* ── Otras opciones de compra (columna central, ancho completo) ── */
 .det-otras-opciones {
-  background: #fff;
-  border: 1px solid rgba(6,26,64,0.08);
-  border-radius: 16px;
+  background: var(--light);
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(6,26,64,0.06);
+  box-shadow: 0 4px 20px rgba(6,26,64,0.08);
+  border: 1.5px solid rgba(6,26,64,0.07);
 }
 
 .det-otras-opciones-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(6,26,64,0.07);
+  padding: 13px 20px;
+  border-bottom: 1.5px solid rgba(6,26,64,0.07);
   background: var(--secondary2);
 }
 
-.det-otras-opciones-header svg { color: var(--main); flex-shrink: 0; }
+.det-otras-opciones-header svg { color: var(--dark); flex-shrink: 0; opacity: 0.6; }
 
 .det-otras-opciones-header h3 {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--dark);
   margin: 0;
   flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  opacity: 0.65;
 }
 
 .det-otras-opciones-desde {
   font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--main);
-  background: rgba(64,89,173,0.08);
-  padding: 3px 10px;
+  font-weight: 800;
+  color: var(--dark);
+  background: rgba(6,26,64,0.1);
+  padding: 3px 12px;
   border-radius: 20px;
 }
 
@@ -320,10 +321,11 @@
   text-decoration: none;
   border-bottom: 1px solid rgba(6,26,64,0.06);
   transition: background 0.15s;
+  background: var(--light);
 }
 
 .det-opcion-row:last-child { border-bottom: none; }
-.det-opcion-row:hover { background: rgba(64,89,173,0.04); }
+.det-opcion-row:hover { background: var(--lightDarker); }
 
 .det-opcion-portada {
   width: 40px;
@@ -331,7 +333,7 @@
   object-fit: cover;
   border-radius: 6px;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(6,26,64,0.12);
 }
 
 .det-opcion-info {
@@ -351,8 +353,8 @@
   gap: 5px;
 }
 
-.det-opcion-vendedor svg { color: var(--main); flex-shrink: 0; }
-.det-opcion-estado { font-size: 0.73rem; color: rgba(6,26,64,0.45); }
+.det-opcion-vendedor svg { color: var(--secondary); flex-shrink: 0; }
+.det-opcion-estado { font-size: 0.73rem; color: rgba(6,26,64,0.4); }
 
 .det-opcion-precio {
   font-size: 1.05rem;
@@ -366,14 +368,18 @@
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--main);
-  border: 1.5px solid var(--main);
+  border: 1.5px solid rgba(64,89,173,0.3);
   border-radius: 8px;
   padding: 5px 12px;
   flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.det-opcion-row:hover .det-opcion-cta { background: var(--main); color: #fff; }
+.det-opcion-row:hover .det-opcion-cta {
+  background: var(--main);
+  color: #fff;
+  border-color: var(--main);
+}
 
 /* ══════════════════════════════
    COL 3 — Vendedor
@@ -382,6 +388,9 @@
   position: sticky;
   top: 120px;
   align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .det-vendedor-card {
@@ -584,11 +593,11 @@
 
 .det-page {
   display: grid;
-  grid-template-columns: 300px minmax(0, 560px) 270px;
-  gap: 28px;
+  grid-template-columns: 280px 1fr 290px;
+  gap: 48px;
   width: 100%;
   align-items: start;
-  justify-content: center;
+  justify-content: stretch;
   box-sizing: border-box;
 }
 
@@ -842,108 +851,7 @@
   line-height: 1.7;
 }
 
-/* ── Otras opciones de compra ── */
-.det-otras-opciones {
-  background: #fff;
-  border: 1px solid rgba(6,26,64,0.08);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(6,26,64,0.06);
-}
-
-.det-otras-opciones-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(6,26,64,0.07);
-  background: var(--secondary2); 
-}
-
-.det-otras-opciones-header svg { color: var(--main); flex-shrink: 0; }
-
-.det-otras-opciones-header h3 {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--dark);
-  margin: 0;
-  flex: 1;
-}
-
-.det-otras-opciones-desde {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--main);
-  background: rgba(64,89,173,0.08);
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-.det-otras-opciones-lista { display: flex; flex-direction: column; }
-
-.det-opcion-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 20px;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(6,26,64,0.06);
-  transition: background 0.15s;
-}
-
-.det-opcion-row:last-child { border-bottom: none; }
-.det-opcion-row:hover { background: rgba(64,89,173,0.04); }
-
-.det-opcion-portada {
-  width: 40px;
-  height: 54px;
-  object-fit: cover;
-  border-radius: 6px;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.det-opcion-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.det-opcion-vendedor {
-  font-size: 0.83rem;
-  font-weight: 600;
-  color: var(--dark);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.det-opcion-vendedor svg { color: var(--main); flex-shrink: 0;}
-
-.det-opcion-estado { font-size: 0.73rem; color: rgba(6,26,64,0.45); }
-
-.det-opcion-precio {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--main);
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.det-opcion-cta {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--main);
-  border: 1.5px solid var(--main);
-  border-radius: 8px;
-  padding: 5px 12px;
-  flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
-}
-
-.det-opcion-row:hover .det-opcion-cta { background: var(--main); color: #fff; }
+/* (estilos de otras opciones definidos arriba) */
 
 /* ══════════════════════════════
    COL 3 — Vendedor (columna derecha completa)
@@ -952,7 +860,10 @@
   position: sticky;
   top: 120px;
   align-self: start;
-  padding-top: 168px;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .det-vendedor-card {
@@ -1146,4 +1057,26 @@
 
   .det-col-portada { position: static; width: 160px; margin: 0 auto; }
   .det-acciones { grid-template-columns: 1fr; }
+}
+
+/* ── Fila activa en "Otras opciones de compra" ── */
+.det-opcion-row--actual {
+  background: rgba(64,89,173,0.06);
+  border-left: 3px solid var(--secondary);
+  pointer-events: none;
+  cursor: default;
+}
+
+.det-opcion-row--actual:hover { background: rgba(64,89,173,0.06); }
+
+.det-opcion-actual-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--secondary);
+  background: rgba(107,154,196,0.12);
+  border: 1.5px solid rgba(107,154,196,0.3);
+  border-radius: 7px;
+  padding: 4px 9px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
