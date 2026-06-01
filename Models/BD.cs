@@ -1,595 +1,339 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Data.SqlClient;
-using Dapper;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Bookly.Models
 {
+    /// <summary>
+    /// Capa de acceso a datos: todas las llamadas van a la API REST.
+    /// La URL base se lee de la variable de entorno API_URL (ver .env).
+    /// </summary>
     public static class BD
     {
-        private static string _connectionString = @"Server=localhost;DataBase=Bookly;Integrated Security=True;TrustServerCertificate=True;";
-        public static List<Libros> libros = new List<Libros>();
+        private static readonly string _apiBase =
+            Environment.GetEnvironmentVariable("API_URL") ?? "http://localhost:3000/api";
 
-        // -------------------- USUARIOS --------------------
+        private static readonly HttpClient _http = new HttpClient();
 
+        private static readonly JsonSerializerOptions _jsonOpts = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        // ── helpers ──────────────────────────────────────────────────────────
+
+        private static T Get<T>(string path)
+        {
+            var response = _http.GetAsync($"{_apiBase}{path}").GetAwaiter().GetResult();
+            if (!response.IsSuccessStatusCode) return default;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return JsonSerializer.Deserialize<T>(json, _jsonOpts);
+        }
+
+        private static HttpResponseMessage Post(string path, object body)
+        {
+            var json = JsonSerializer.Serialize(body);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            return _http.PostAsync($"{_apiBase}{path}", content).GetAwaiter().GetResult();
+        }
+
+        private static HttpResponseMessage Put(string path, object body)
+        {
+            var json = JsonSerializer.Serialize(body);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            return _http.PutAsync($"{_apiBase}{path}", content).GetAwaiter().GetResult();
+        }
+
+        private static HttpResponseMessage Delete(string path)
+        {
+            return _http.DeleteAsync($"{_apiBase}{path}").GetAwaiter().GetResult();
+        }
+
+        // ── USUARIOS ─────────────────────────────────────────────────────────
+
+        /// <summary>POST /api/usuarios/login</summary>
         public static Usuarios login(string dni, string password)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"SELECT DNI, nombreComp, ano, especialidad, curso, password, aboutMe 
-                                 FROM Usuarios 
-                                 WHERE DNI = @pDNI AND password = @pPassword";
-                Usuarios usuario = connection.QueryFirstOrDefault<Usuarios>(query, new { pDNI = dni, pPassword = password });
-                return usuario;
-            }
+            var response = Post("/usuarios/login", new { dni, password });
+            if (!response.IsSuccessStatusCode) return null;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+            // La API devuelve { success: true, user: { ... } } — extraemos el objeto user
+            var wrapper = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+            if (!wrapper.TryGetProperty("user", out var userEl)) return null;
+            return JsonSerializer.Deserialize<Usuarios>(userEl.GetRawText(), _jsonOpts);
         }
 
+        /// <summary>PUT /api/usuarios/:dni/about</summary>
         public static void ActualizarAboutMe(string dni, string aboutMe)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "UPDATE Usuarios SET aboutMe = @aboutMe WHERE DNI = @DNI";
-                connection.Execute(query, new { aboutMe, DNI = dni });
-            }
+            Put($"/usuarios/{Uri.EscapeDataString(dni)}/about", new { aboutMe });
         }
 
-
-
+        /// <summary>POST /api/usuarios/register</summary>
         public static void registrarse(Usuarios usuario)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            Post("/usuarios/register", new
             {
-                connection.Open();
-                string query = @"INSERT INTO Usuarios (DNI, nombreComp, ano, especialidad, curso, password) 
-                                 VALUES (@DNI, @nombreComp, @ano, @especialidad, @curso, @password)";
-                connection.Execute(query, new
-                {
-                    DNI = usuario.DNI,
-                    nombreComp = usuario.nombreComp,
-                    ano = usuario.ano,
-                    especialidad = usuario.especialidad,
-                    curso = usuario.curso,
-                    password = usuario.password
-                });
-            }
+                dni       = usuario.DNI,
+                nombreComp = usuario.nombreComp,
+                ano       = usuario.ano,
+                especialidad = usuario.especialidad,
+                curso     = usuario.curso,
+                password  = usuario.password
+            });
         }
 
-        // public static void logout()
-        // {
-        //     UsuarioLogueado = null;
-        // }
-
+        /// <summary>
+        /// Verifica si el usuario existe intentando GET /api/usuarios/:dni.
+        /// Devuelve true si la respuesta es 200 OK.
+        /// </summary>
         public static bool ExisteUsuario(string dni)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "SELECT COUNT(1) FROM Usuarios WHERE DNI = @DNI";
-                int count = connection.ExecuteScalar<int>(query, new { DNI = dni ?? "" });
-                return count > 0;
-            }
+            if (string.IsNullOrWhiteSpace(dni)) return false;
+            var response = _http.GetAsync($"{_apiBase}/usuarios/{Uri.EscapeDataString(dni)}")
+                                .GetAwaiter().GetResult();
+            return response.IsSuccessStatusCode;
         }
 
+        /// <summary>GET /api/usuarios/:dni</summary>
         public static Usuarios ObtenerUsuarioPorDNI(string dni)
         {
-            if (string.IsNullOrWhiteSpace(dni))
-                return null;
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"SELECT DNI, nombreComp, ano, especialidad, curso, password, aboutMe 
-                                 FROM Usuarios WHERE DNI = @DNI";
-                Usuarios usuario = connection.QueryFirstOrDefault<Usuarios>(query, new { DNI = dni });
-                return usuario;
-            }
+            if (string.IsNullOrWhiteSpace(dni)) return null;
+            return Get<Usuarios>($"/usuarios/{Uri.EscapeDataString(dni)}");
         }
 
-        // -------------------- LIBROS --------------------
+        // ── LIBROS ───────────────────────────────────────────────────────────
 
+        /// <summary>GET /api/libros</summary>
         public static List<Libros> ObtenerLibros()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "SELECT id, nombre, materia, ano, editorial FROM Libros";
-                return connection.Query<Libros>(query).ToList();
-            }
+            return Get<List<Libros>>("/libros") ?? new List<Libros>();
         }
 
+        /// <summary>GET /api/libros/:id</summary>
         public static Libros ObtenerLibroPorId(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"SELECT id, nombre, materia, ano, editorial 
-                                 FROM Libros WHERE id = @pId";
-                return connection.QueryFirstOrDefault<Libros>(query, new { pId = id });
-            }
+            return Get<Libros>($"/libros/{id}");
         }
 
-        // -------------------- PUBLICACIONES --------------------
-
-        public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                // Verificar si ya existe un libro con ese nombre; si existe, usar su id, sino insertar
-                int idLibro = connection.ExecuteScalar<int?>("SELECT TOP 1 id FROM Libros WHERE nombre = @nombre", new { nombre = libro.nombre }) ?? 0;
-                if (idLibro == 0)
-                {
-                    string insertLibro = @"
-                    INSERT INTO Libros (nombre, materia, ano, editorial)
-                    VALUES (@nombre, @materia, @ano, @editorial);
-                    SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-                    idLibro = connection.ExecuteScalar<int>(insertLibro, new
-                    {
-                        nombre = libro.nombre,
-                        materia = libro.materia,
-                        ano = libro.ano,
-                        editorial = libro.editorial
-                    });
-                }
-
-                // Insertar la publicación, incluyendo la imagen si está presente
-                string insertPublicacion = @"
-                    INSERT INTO Publicacion 
-                    (idVendedor, precio, idLibro, status, estadoLibro, fecha, descripcion, imagen)
-                    VALUES (@idVendedor, @precio, @idLibro, @status, @estadoLibro, @fecha, @descripcion, @imagen);";
-
-                connection.Execute(insertPublicacion, new
-                {
-                    idVendedor = dniVendedor,
-                    precio = precio,
-                    idLibro = idLibro,
-                    status = 1,
-                    estadoLibro = string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro,
-                    fecha = DateTime.Now,
-                    descripcion = descripcion,
-                    imagen = imagen // puede ser null
-                });
-            }
-        }
-
-
-        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano,string editorial, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                // Obtener el idLibro asociado
-                int idLibro = connection.ExecuteScalar<int>(
-                    "SELECT idLibro FROM Publicacion WHERE id = @id", new { id = idPublicacion });
-
-                // Actualizar tabla Libros
-                string updateLibro = @"
-                    UPDATE Libros
-                    SET nombre = @nombre,
-                        materia = @materia,
-                        ano = @ano,
-                        editorial = @editorial
-                    WHERE id = @idLibro";
-                connection.Execute(updateLibro, new { nombre, materia, ano, editorial, idLibro });
-                
-                string updatePublicacion = @"
-                    UPDATE Publicacion
-                    SET precio = @precio,
-                        estadoLibro = @estadoLibro,
-                        descripcion = @descripcion,
-                        imagen = @imagen
-                    WHERE id = @id";
-                connection.Execute(updatePublicacion, new { id = idPublicacion, precio, estadoLibro, descripcion, imagen });
-            }
-        }
-
-        public static void EditarPublicacion(int idLibro, decimal precio, string estadoLibro, string descripcion)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"UPDATE Publicacion
-                                 SET precio = @precio,
-                                     estadoLibro = @estadoLibro,
-                                     descripcion = @descripcion
-                                 WHERE idLibro = @idLibro";
-                connection.Execute(query, new { idLibro, precio, estadoLibro, descripcion });
-            }
-        }
-
-        public static void EliminarLibro(int id)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string deleteLibro = "DELETE FROM Libros WHERE id = @pId";
-                connection.Execute(deleteLibro, new { pId = id });
-
-                string deletePublicacion = "DELETE FROM Publicacion WHERE idLibro = @pId";
-                connection.Execute(deletePublicacion, new { pId = id });
-
-          
-            }
-        }
-
-        public static List<Libros> ObtenerLibrosPorUsuario(string dni)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"SELECT l.id, l.nombre, l.materia, l.ano, l.editorial
-                                 FROM Libros l
-                                 JOIN Publicacion p ON l.id = p.idLibro
-                                 WHERE p.idVendedor = @dni";
-                return connection.Query<Libros>(query, new { dni }).ToList();
-            }
-        }
-
-        public static List<Publicacion> ObtenerPublicacionesPorUsuario(string dni)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"
-                    SELECT 
-                        p.id,
-                        p.idVendedor,
-                        p.precio,
-                        p.status,
-                        p.estadoLibro,
-                        p.fecha,
-                        p.descripcion,
-                        l.nombre AS nombreLibro
-                    FROM Publicacion p
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE p.idVendedor = @dni";
-
-                return connection.Query<Publicacion>(query, new { dni }).ToList();
-            }
-        }
-        public static List<Libros> ObtenerLibrosPorFiltro(int ano, string materia)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "SELECT id, nombre, materia, ano, editorial FROM Libros WHERE 1=1";
-                if (ano == null)
-                    query += " AND ano = @ano";
-                if (!string.IsNullOrEmpty(materia))
-                    query += " AND materia = @materia";
-                return connection.Query<Libros>(query, new { ano, materia }).ToList();
-            }
-        }
-
-        // Devuelve los nombres de libros que coinciden con lo q se esta escribiendo (para autocomplete)
-        public static List<string> BuscarNombresLibros(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return new List<string>();
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"SELECT DISTINCT nombre FROM Libros WHERE nombre LIKE '%' + @text + '%' ORDER BY nombre";
-                return connection.Query<string>(query, new { text }).ToList();
-            }
-        }
-
-        // Obtener un libro por su nombre exacto (primera coincidencia)
+        /// <summary>
+        /// GET /api/libros/search?nombre=x
+        /// ⚠️  Requiere que el endpoint soporte el parámetro "nombre".
+        /// </summary>
         public static Libros ObtenerLibroPorNombre(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre)) return null;
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"SELECT TOP 1 id, nombre, materia, ano, editorial FROM Libros WHERE nombre = @nombre";
-                return connection.QueryFirstOrDefault<Libros>(query, new { nombre });
-            }
+            var results = Get<List<Libros>>($"/libros/search?nombre={Uri.EscapeDataString(nombre)}");
+            return results?.Count > 0 ? results[0] : null;
         }
+
+        /// <summary>
+        /// GET /api/libros/autocomplete?q=texto
+        /// ⚠️  Endpoint nuevo: debe devolver List&lt;string&gt; con nombres de libros.
+        /// </summary>
+        public static List<string> BuscarNombresLibros(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return new List<string>();
+            return Get<List<string>>($"/libros/autocomplete?q={Uri.EscapeDataString(text)}")
+                   ?? new List<string>();
+        }
+
+        /// <summary>GET /api/libros/usuario/:dni</summary>
+        public static List<Libros> ObtenerLibrosPorUsuario(string dni)
+        {
+            return Get<List<Libros>>($"/libros/usuario/{Uri.EscapeDataString(dni)}")
+                   ?? new List<Libros>();
+        }
+
+        /// <summary>
+        /// GET /api/libros/search?ano=x&amp;materia=y
+        /// </summary>
+        public static List<Libros> ObtenerLibrosPorFiltro(int ano, string materia)
+        {
+            var qs = new StringBuilder("/libros/search?");
+            qs.Append($"ano={ano}");
+            if (!string.IsNullOrEmpty(materia))
+                qs.Append($"&materia={Uri.EscapeDataString(materia)}");
+            return Get<List<Libros>>(qs.ToString()) ?? new List<Libros>();
+        }
+
+        // ── PUBLICACIONES ────────────────────────────────────────────────────
+
+        /// <summary>
+        /// GET /api/publicaciones/feed  (sin límite → devuelve todo)
+        /// GET /api/publicaciones/feed?limit=N
+        /// ⚠️  Asegurate que tu API soporte "limit" como parámetro opcional.
+        /// </summary>
         public static List<PublicacionesCompletas> ObtenerLibrosMostrablesConTope(int tope = -1)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = $@"
-                    SELECT {(tope != -1 ? $"TOP {tope}" : "")}
-                        p.id,
-                        l.nombre,
-                        l.materia,
-                        l.ano,
-                        l.editorial,
-                        p.estadoLibro,
-                        p.precio,
-                        p.descripcion,
-                        p.idVendedor,
-                        p.fecha,
-                        p.status,
-                        p.imagen 
-                    FROM Publicacion p
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE p.status = 1
-                    ORDER BY p.fecha DESC";
-
-                return connection.Query<PublicacionesCompletas>(query).ToList();
-            }
+            var path = tope > 0
+                ? $"/publicaciones/feed?limit={tope}"
+                : "/publicaciones/feed";
+            return Get<List<PublicacionesCompletas>>(path) ?? new List<PublicacionesCompletas>();
         }
+
+        /// <summary>GET /api/publicaciones/recomendaciones?ano=x&especialidad=y</summary>
         public static List<PublicacionesCompletas> ObtenerRecomendaciones(int ano, string especialidad)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                    SELECT 
-                        p.id,
-                        l.nombre,
-                        l.materia,
-                        l.ano,
-                        l.editorial,
-                        p.estadoLibro,
-                        p.precio,
-                        p.descripcion,
-                        p.idVendedor,
-                        p.fecha,
-                        p.status,
-                        p.imagen 
-                    FROM Publicacion p
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE p.status = 1
-                    AND l.ano = @ano
-                    AND (@especialidad IS NULL OR l.materia LIKE '%' + @especialidad + '%')
-                    ORDER BY p.fecha DESC";
-
-                return connection.Query<PublicacionesCompletas>(query, new { ano, especialidad }).ToList();
-            }
+            var path = $"/publicaciones/recomendaciones?ano={ano}";
+            if (!string.IsNullOrEmpty(especialidad))
+                path += $"&especialidad={Uri.EscapeDataString(especialidad)}";
+            return Get<List<PublicacionesCompletas>>(path) ?? new List<PublicacionesCompletas>();
         }
+
+        /// <summary>GET /api/publicaciones/recomendaciones?ano=x</summary>
         public static List<PublicacionesCompletas> ObtenerRecomendacionesPorAno(int ano)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                    SELECT 
-                        p.id,
-                        l.nombre,
-                        l.materia,
-                        l.ano,
-                        l.editorial,
-                        p.estadoLibro,
-                        p.precio,
-                        p.descripcion,
-                        p.idVendedor,
-                        p.fecha,
-                        p.status,
-                        p.imagen 
-                    FROM Publicacion p
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE l.ano = @ano
-                    ORDER BY p.fecha DESC";
-
-                return connection.Query<PublicacionesCompletas>(query, new { ano }).ToList();
-            }
+            return Get<List<PublicacionesCompletas>>($"/publicaciones/recomendaciones?ano={ano}")
+                   ?? new List<PublicacionesCompletas>();
         }
+
+        /// <summary>GET /api/publicaciones/usuario/:dni</summary>
         public static List<PublicacionesCompletas> ObtenerPublicacionesCompletasPorUsuario(string dni)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = @"
-                    SELECT 
-                        p.id,
-                        p.idLibro,
-                        l.nombre,
-                        l.materia,
-                        l.ano,
-                        l.editorial,
-                        p.estadoLibro,
-                        p.precio,
-                        p.descripcion,
-                        p.idVendedor,
-                        p.fecha,
-                        p.status,
-                        p.imagen
-                    FROM Publicacion p
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE p.idVendedor = @dni
-                    ORDER BY p.fecha DESC";
-
-                return connection.Query<PublicacionesCompletas>(query, new { dni }).ToList();
-            }
+            return Get<List<PublicacionesCompletas>>($"/publicaciones/usuario/{Uri.EscapeDataString(dni)}")
+                   ?? new List<PublicacionesCompletas>();
         }
+
+        /// <summary>GET /api/publicaciones/:id</summary>
         public static PublicacionesCompletas ObtenerPublicacionCompletaPorId(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"
-                    SELECT 
-                        p.id,
-                        p.idLibro,
-                        l.nombre,
-                        l.materia,
-                        l.ano,
-                        l.editorial,
-                        p.estadoLibro,
-                        p.precio,
-                        p.descripcion,
-                        p.idVendedor,
-                        p.fecha,
-                        p.status,
-                        p.imagen 
-                    FROM Publicacion p
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE p.id = @pId";
-
-                return connection.QueryFirstOrDefault<PublicacionesCompletas>(query, new { pId = id });
-            }
+            return Get<PublicacionesCompletas>($"/publicaciones/{id}");
         }
+
+        /// <summary>
+        /// POST /api/publicaciones/:id_vendedor  (multipart/form-data)
+        /// </summary>
+        public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
+        {
+            using var form = new MultipartFormDataContent();
+            form.Add(new StringContent(libro.nombre  ?? ""),    "nombre");
+            form.Add(new StringContent(libro.materia ?? ""),    "materia");
+            form.Add(new StringContent(libro.ano.ToString()),   "ano");
+            form.Add(new StringContent(libro.editorial ?? ""),  "editorial");
+            form.Add(new StringContent(precio.ToString(System.Globalization.CultureInfo.InvariantCulture)), "precio");
+            form.Add(new StringContent(string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro), "estadoLibro");
+            form.Add(new StringContent(descripcion ?? ""),      "descripcion");
+
+            if (imagen != null && imagen.Length > 0)
+                form.Add(new ByteArrayContent(imagen), "imagen", "imagen.jpg");
+
+            _http.PostAsync($"{_apiBase}/publicaciones/{Uri.EscapeDataString(dniVendedor)}", form)
+                 .GetAwaiter().GetResult();
+        }
+
+        /// <summary>PUT /api/publicaciones/:id  (multipart/form-data)</summary>
+        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
+        {
+            using var form = new MultipartFormDataContent();
+            form.Add(new StringContent(nombre    ?? ""),  "nombre");
+            form.Add(new StringContent(materia   ?? ""),  "materia");
+            form.Add(new StringContent(ano       ?? ""),  "ano");
+            form.Add(new StringContent(editorial ?? ""),  "editorial");
+            form.Add(new StringContent(precio.ToString(System.Globalization.CultureInfo.InvariantCulture)), "precio");
+            form.Add(new StringContent(estadoLibro  ?? ""), "estadoLibro");
+            form.Add(new StringContent(descripcion  ?? ""), "descripcion");
+
+            if (imagen != null && imagen.Length > 0)
+                form.Add(new ByteArrayContent(imagen), "imagen", "imagen.jpg");
+            else
+                form.Add(new StringContent("true"), "imagenEliminada");
+
+            // PUT con multipart requiere un HttpRequestMessage manual
+            var request = new HttpRequestMessage(HttpMethod.Put, $"{_apiBase}/publicaciones/{idPublicacion}")
+            {
+                Content = form
+            };
+            _http.SendAsync(request).GetAwaiter().GetResult();
+        }
+
+        /// <summary>DELETE /api/publicaciones/:id</summary>
         public static void EliminarPublicacion(int idPublicacion)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                
-                int idLibro = connection.ExecuteScalar<int>("SELECT idLibro FROM Publicacion WHERE id = @id", new { id = idPublicacion });
-
-                connection.Execute("DELETE FROM Publicacion WHERE id = @id", new { id = idPublicacion });
-
-                int count = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Publicacion WHERE idLibro = @idLibro", new { idLibro });
-                if (count == 0)
-                {
-                    connection.Execute("DELETE FROM Libros WHERE id = @idLibro", new { idLibro });
-                }
-            }
+            Delete($"/publicaciones/{idPublicacion}");
         }
 
+        /// <summary>DELETE /api/libros/:id</summary>
+        public static void EliminarLibro(int id)
+        {
+            Delete($"/libros/{id}");
+        }
+
+        // ── DESEADOS ─────────────────────────────────────────────────────────
+
+        /// <summary>POST /api/deseados/add</summary>
         public static void AgregarDeseado(string dni, int idPublicacion)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"IF NOT EXISTS (SELECT 1 FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion)
-                                 INSERT INTO Deseados (dniUsuario, idPublicacion) VALUES (@dni, @idPublicacion);";
-                connection.Execute(query, new { dni, idPublicacion });
-            }
+            Post("/deseados/add", new { dni, idPublicacion });
         }
 
+        /// <summary>POST /api/deseados/remove</summary>
         public static void EliminarDeseado(string dni, int idPublicacion)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"DELETE FROM Deseados WHERE dniUsuario = @dni AND idPublicacion = @idPublicacion";
-                connection.Execute(query, new { dni, idPublicacion });
-            }
+            Post("/deseados/remove", new { dni, idPublicacion });
         }
 
+        /// <summary>GET /api/deseados/:dni/ids</summary>
         public static List<int> ObtenerDeseadosPorUsuario(string dni)
         {
-            if (string.IsNullOrWhiteSpace(dni))
-                return new List<int>();
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"SELECT idPublicacion FROM Deseados WHERE dniUsuario = @dni";
-                return connection.Query<int>(query, new { dni }).ToList();
-            }
+            if (string.IsNullOrWhiteSpace(dni)) return new List<int>();
+            return Get<List<int>>($"/deseados/{Uri.EscapeDataString(dni)}/ids")
+                   ?? new List<int>();
         }
 
+        /// <summary>GET /api/deseados/:dni/favoritos</summary>
         public static List<PublicacionesCompletas> ObtenerPublicacionesFavoritasPorUsuario(string dni)
         {
-            if (string.IsNullOrWhiteSpace(dni))
-                return new List<PublicacionesCompletas>();
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = @"
-                    SELECT 
-                        p.id,
-                        p.idLibro,
-                        l.nombre,
-                        l.materia,
-                        l.ano,
-                        l.editorial,
-                        p.estadoLibro,
-                        p.precio,
-                        p.descripcion,
-                        p.idVendedor,
-                        p.fecha,
-                        p.status,
-                        p.imagen
-                    FROM Deseados d
-                    INNER JOIN Publicacion p ON d.idPublicacion = p.id
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE d.dniUsuario = @dni
-                    ORDER BY p.fecha DESC";
-
-                return connection.Query<PublicacionesCompletas>(query, new { dni }).ToList();
-            }
+            if (string.IsNullOrWhiteSpace(dni)) return new List<PublicacionesCompletas>();
+            return Get<List<PublicacionesCompletas>>($"/deseados/{Uri.EscapeDataString(dni)}/favoritos")
+                   ?? new List<PublicacionesCompletas>();
         }
 
-        // -----------------------------------------------------------------------
-        // Actualiza solo las imágenes de las publicaciones existentes.
-        // Hace match por nombre de libro. No borra ni inserta nada más.
-        // Llamar UNA SOLA VEZ desde Program.cs, luego comentar la llamada.
-        // Ejemplo: BD.ActualizarImagenes(app.Environment.ContentRootPath);
-        // -----------------------------------------------------------------------
-        public static void ActualizarImagenes(string contentRootPath)
-        {
-            var imgDir = System.IO.Path.Combine(contentRootPath, "wwwroot", "img", "libros");
+        // ── STATS ────────────────────────────────────────────────────────────
 
-            byte[] Img(string archivo)
-            {
-                var ruta = System.IO.Path.Combine(imgDir, archivo);
-                return System.IO.File.Exists(ruta) ? System.IO.File.ReadAllBytes(ruta) : null;
-            }
-
-            // Mapeo nombre de libro → archivo de imagen
-            var imagenes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "Ciencias Naturales 7",                         "cienciasnaturales.jpg"        },
-                { "Toldot 1",                                     "toldot1.jpg"                  },
-                { "Toldot 2",                                     "toldot2.jpg"                  },
-                { "Toldot 3",                                     "toldot3.jpg"                  },
-                { "Toldot 4",                                     "toldot4.jpg"                  },
-                { "C1 Students Book",                             "c1studentsbook.jpg"           },
-                { "Biologia y Ambiente",                          "biologiayambiente.png"        },
-                { "Geografia Global",                             "geografiaglobal.jpg"          },
-                { "Introduccion a la Programacion",               "introduccionprogramacion.jpg" },
-                { "Educacion Civica Hoy",                         "educacioncivica.jpg"          },
-                { "Ingles Step by Step",                          "inglesstepbystep.jpg"         },
-                { "El Eternauta",                                 "eleternauta.jpg"              },
-                { "Historia",                                     "historia.jpg"                 },
-                { "Libro de Hebreo 1",                            "hebreo1.jpg"                  },
-                { "El extraño caso del Dr. Jekyll y el Sr. Hyde", "jekyllandhyde.jpg"            },
-                { "Fuentes del Judaismo 3",                       "fuentesjudaismo.jpg"          },
-            };
-
-            using var connection = new SqlConnection(_connectionString);
-            connection.Open();
-
-            foreach (var (nombreLibro, archivo) in imagenes)
-            {
-                var bytes = Img(archivo);
-                if (bytes == null) continue;
-
-                connection.Execute(@"
-                    UPDATE p SET p.imagen = @imagen
-                    FROM Publicacion p
-                    INNER JOIN Libros l ON p.idLibro = l.id
-                    WHERE l.nombre = @nombre",
-                    new { imagen = bytes, nombre = nombreLibro });
-            }
-        }
-
+        /// <summary>
+        /// GET /api/publicaciones/count
+        /// ⚠️  Endpoint nuevo: debe devolver { "count": N }
+        /// </summary>
         public static int ContarPublicacionesActivas()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                return connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Publicacion WHERE status = 1");
-            }
+            var result = Get<CountResponse>("/publicaciones/count");
+            return result?.count ?? 0;
         }
 
+        /// <summary>
+        /// GET /api/usuarios/count
+        /// ⚠️  Endpoint nuevo: debe devolver { "count": N }
+        /// </summary>
         public static int ContarUsuarios()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                return connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Usuarios");
-            }
+            var result = Get<CountResponse>("/usuarios/count");
+            return result?.count ?? 0;
         }
 
+        // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────
+
+        /// <summary>
+        /// ActualizarImagenes ya no aplica en la arquitectura API.
+        /// Se deja como no-op para no romper la llamada en Program.cs.
+        /// Podés eliminar la llamada en Program.cs con seguridad.
+        /// </summary>
+        public static void ActualizarImagenes(string contentRootPath)
+        {
+            // No-op: la migración de imágenes debe hacerse directamente en la API/BD.
+        }
+
+        // ── tipos auxiliares ──────────────────────────────────────────────────
+
+        private class CountResponse
+        {
+            public int count { get; set; }
+        }
     }
 }
+
+// No hay endpoint para estadísticas: ContarPublicacionesActivas() y ContarUsuarios() — necesitás GET /api/publicaciones/count y GET /api/usuarios/count, o un endpoint combinado GET /api/stats.
