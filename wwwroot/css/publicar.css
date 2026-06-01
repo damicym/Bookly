@@ -296,11 +296,11 @@
   gap: 20px;
 }
 
-/* Secciones dentro del modal — fondo blanco con borde suave */
+/* Secciones dentro del modal — fondo azul clarito */
 .publicar-modal-card .publicar-seccion {
-  background: var(--lightDarker);
-  border: 1.5px solid rgba(6,26,64,0.08);
-  box-shadow: 0 2px 8px rgba(6,26,64,0.05);
+  background: rgba(107, 154, 196, 0.12);
+  border: 1.5px solid rgba(107, 154, 196, 0.25);
+  box-shadow: 0 2px 8px rgba(64,89,173,0.07);
 }
 
 .publicar-modal-card .publicar-seccion-titulo {
