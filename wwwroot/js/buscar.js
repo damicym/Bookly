@@ -283,3 +283,17 @@ precioInputs.forEach(inputPrecio => {
         debounceTimer = setTimeout(() => actualizarChipsFiltros(), 400)
     })
 })
+
+// ===== TOGGLE SIDEBAR FILTROS =====
+const btnToggleFiltros = document.getElementById('btnToggleFiltros')
+const filtrosSidebar = document.querySelector('.filtros-sidebar')
+const catalogoLayout = document.querySelector('.catalogo-layout')
+
+if (btnToggleFiltros && filtrosSidebar) {
+    btnToggleFiltros.addEventListener('click', () => {
+        const isCollapsed = filtrosSidebar.classList.toggle('collapsed')
+        catalogoLayout?.classList.toggle('sidebar-collapsed', isCollapsed)
+        btnToggleFiltros.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true')
+        btnToggleFiltros.setAttribute('aria-label', isCollapsed ? 'Expandir filtros' : 'Colapsar filtros')
+    })
+}

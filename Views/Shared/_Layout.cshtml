@@ -457,6 +457,16 @@
         </script>
     }
 
+    @* ── Fallback: redirigir a login si el usuario no está logueado y hace click en publicar ── *@
+    @if (ViewBag.usuario == null)
+    {
+        <script>
+        function abrirPublicarModal() {
+            window.location.href = '@Url.Action("Login", "Usuarios")';
+        }
+        </script>
+    }
+
     @* ── Modales de Publicar y Editar (solo para usuarios logueados) ── *@
     @if (ViewBag.usuario != null)
     {
@@ -661,7 +671,10 @@
         // ── Modal Publicar ──
         function abrirPublicarModal() {
             var modal = document.getElementById('publicarModal');
-            if (!modal) return;
+            if (!modal) {
+                window.location.href = '@Url.Action("Login", "Usuarios")';
+                return;
+            }
             // Reset form
             document.getElementById('publicarModalForm').reset();
             document.getElementById('pubModalImgPreview').src = '/img/book-placeholder.webp';

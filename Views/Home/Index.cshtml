@@ -14,10 +14,6 @@
 
 <section class="bienvenida primerElemento">
     <div class="bienvenidaInfo">
-        <div class="hero-badge">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
-            Plataforma estudiantil
-        </div>
         <h1><span>La forma más cómoda de comprar</span> <span>y vender libros escolares</span></h1>
         <p class="bienvenidaP">Contactá con un estudiante, acordá un precio justo y una ubicación en cuestión de minutos</p>
         <div class="bienvenidaBtnContainer">
@@ -29,6 +25,13 @@
             {
                 <button class="bienvenida-btn-secondary wHover" onclick="location.href='@Url.Action("Login", "Usuarios")'">
                     Iniciar sesión
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+                </button>
+            }
+            else
+            {
+                <button class="bienvenida-btn-secondary wHover" onclick="location.href='@Url.Action("Catalogo", "Home")'">
+                    Explorar Catálogo
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
                 </button>
             }

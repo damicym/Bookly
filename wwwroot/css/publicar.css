@@ -362,6 +362,7 @@
     padding: 24px 20px !important;
   }
 }
+<<<<<<< HEAD
 
 /* ── Overlay hover de imagen en modal de editar ── */
 .edit-img-overlay {
@@ -427,4 +428,10 @@
 
 .edit-eliminar-img svg {
   flex-shrink: 0;
+=======
+input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+>>>>>>> bdfa9e447f3402248550ceb408d113f39151c5c7
 }
