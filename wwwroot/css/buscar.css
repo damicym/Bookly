@@ -22,6 +22,7 @@
   flex-direction: column;
   overflow: hidden;
   z-index: 100;
+  transition: width 0.3s ease;
 }
 
 .filtros-header {
@@ -62,6 +63,76 @@
 .filtros-limpiar:hover {
   background: rgba(239, 242, 241, 0.15);
   border-color: var(--light);
+}
+
+/* Botón toggle colapsar/expandir sidebar */
+.filtros-toggle {
+  background: transparent;
+  border: none;
+  color: var(--light);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.filtros-toggle:hover {
+  opacity: 1;
+}
+
+.filtros-toggle-chevron {
+  transition: transform 0.3s ease;
+}
+
+/* Estado colapsado del sidebar */
+.filtros-sidebar.collapsed {
+  position: fixed;
+  top: 90px;
+  left: 0;
+  width: fit-content;
+  border-bottom-right-radius: 1.35rem;
+}
+
+.filtros-sidebar.collapsed .filtros-limpiar {
+  display: none;
+}
+
+.filtros-sidebar.collapsed .filtros-header {
+  gap: 6px;
+}
+
+.filtros-sidebar.collapsed .filtros-header > span {
+  flex: 0;
+}
+
+.filtros-sidebar.collapsed .filtros-toggle-chevron {
+  transform: rotate(180deg);
+}
+
+.filtros-sidebar.collapsed .filtros-scroll {
+  display: none;
+}
+
+/* Centrar resultados cuando el sidebar está colapsado */
+.catalogo-layout.sidebar-collapsed {
+  display: block; /* salir de flex para que margin:auto funcione en el hijo */
+}
+
+.catalogo-layout.sidebar-collapsed .catalogo-resultados {
+  display: block;
+  width: 100%;
+  max-width: 1620px; /* 6 cols × 230px + 5 gaps × 32px + 2 × 40px padding */
+  margin: 0 auto;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.catalogo-layout.sidebar-collapsed .catalogo-resultados .cardsPublicadas {
+  justify-content: flex-start;
 }
 
 /* Área scrolleable — solo esto se mueve */
