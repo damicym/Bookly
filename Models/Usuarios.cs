@@ -1,14 +1,28 @@
+using System.Text.Json.Serialization;
+
 namespace Bookly.Models
 {
     public class Usuarios
     {
+        [JsonPropertyName("dni")]
         public string DNI { get; set; }
+
+        [JsonPropertyName("nombre_comp")]
         public string nombreComp { get; set; }
+
+        [JsonPropertyName("ano")]
         public int ano { get; set; }
+
+        [JsonPropertyName("especialidad")]
         public string especialidad { get; set; }
-        public char curso { get; set; }
+
+        [JsonPropertyName("curso")]
+        public string curso { get; set; }
+
+        [JsonPropertyName("password")]
         public string password { get; set; }
+
+        [JsonPropertyName("about_me")]
         public string aboutMe { get; set; }
     }
-    
 }
