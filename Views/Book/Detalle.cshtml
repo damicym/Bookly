@@ -18,13 +18,6 @@
     <aside class="det-col-portada">
         <div class="det-portada">
             <img src="@imgBase64" alt="@Model.nombre" />
-            @if (Model.esMasBarato)
-            {
-                <span class="tag-masbarato">
-                    <svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg>
-                    Mejor precio
-                </span>
-            }
         </div>
         <form class="desearBtnForm hoverVerde det-fav-form" action="@Url.Action("Desear", "Book")" method="post" onsubmit="return desearLibro(event, this);">
             @Html.AntiForgeryToken()
@@ -53,8 +46,16 @@
                 @Model.materia
             </p>
             <h1 class="det-titulo">@Model.nombre</h1>
-            <p class="det-materia">@Model.materia</p>
-            <p class="det-precio">$@Model.precio</p>
+            <div class="det-precio-row">
+                <p class="det-precio">$@Model.precio</p>
+                @if (Model.esMasBarato)
+                {
+                    <span class="tag-masbarato tag-masbarato-detalle">
+                        <svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg>
+                        Mejor precio
+                    </span>
+                }
+            </div>
         </div>
 
         @* Botones de acción — mismo grid que la ficha *@

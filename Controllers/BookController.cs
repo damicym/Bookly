@@ -72,15 +72,26 @@ namespace Bookly.Controllers
             }
 
             // Marcar si es el más barato entre publicaciones del mismo libro
+            // (excluyendo las del usuario logueado, igual que en el catálogo)
             var todasPublicaciones = BD.ObtenerLibrosMostrablesConTope();
             var mismoLibro = todasPublicaciones
                 .Where(p => p.nombre != null && libro.nombre != null &&
                             p.nombre.Trim().ToLowerInvariant() == libro.nombre.Trim().ToLowerInvariant())
                 .ToList();
-            if (mismoLibro.Count > 1)
+
+            // Subconjunto visible para el usuario actual (sin sus propias publicaciones)
+            var mismoLibroVisible = user != null
+                ? mismoLibro.Where(p => p.idVendedor != user.DNI).ToList()
+                : mismoLibro;
+
+            if (mismoLibroVisible.Count > 1)
             {
-                double minPrecio = mismoLibro.Min(p => p.precio);
+                double minPrecio = mismoLibroVisible.Min(p => p.precio);
                 libro.esMasBarato = libro.precio == minPrecio;
+            }
+            else
+            {
+                libro.esMasBarato = false;
             }
 
             ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor)

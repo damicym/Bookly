@@ -43,66 +43,95 @@
 
 .libroActionsContainer {
   display: flex;
-  gap: 5px;
+  gap: 6px;
   position: absolute;
   right: 8px;
   top: 8px;
 }
 
+/* Botón base — chip compacto */
 .desearBtnForm {
   border-radius: 50%;
-  width: 40px !important;
-  height: 40px !important;
-  transition: all 0.3s;
-  filter: drop-shadow(0px 1px 3px var(--dark));
+  width: 34px;
+  height: 34px;
+  transition: all 0.25s ease;
+  filter: drop-shadow(0 2px 6px rgba(6,26,64,0.35));
 }
 
-.desearBtnForm button {
+.desearBtnForm button,
+button.desearBtnForm {
   border: 0;
-  background-color: var(--light);
-  width: 40px !important;
-  height: 40px !important;
-  transition: all 0.3s;
+  width: 34px;
+  height: 34px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(239, 242, 241, 0.88);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(239, 242, 241, 0.6);
+  box-shadow: 0 2px 8px rgba(6, 26, 64, 0.25);
 }
 
-.desearBtnForm button:hover {
-  background-color: var(--red);
+.desearBtnForm button svg,
+button.desearBtnForm svg {
+  width: 18px;
+  height: 18px;
+  color: var(--dark);
+  fill: none;
+  transition: all 0.25s ease;
+  stroke-width: 2.2px;
+  flex-shrink: 0;
 }
 
-.desearBtnForm.editar button:hover {
-  background-color: var(--accent);
+
+/* Editar — hover accent */
+.desearBtnForm.editar button:hover,
+button.desearBtnForm.editar:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(244, 185, 66, 0.4);
 }
 
-.desearBtnForm button:hover svg {
+.desearBtnForm.editar button:hover svg,
+button.desearBtnForm.editar:hover svg {
+  color: var(--dark);
+}
+
+/* Eliminar — hover rojo */
+.desearBtnForm:not(.editar):not(.hoverVerde) button:hover svg {
   color: var(--light);
 }
 
-.desearBtnForm.editar button:hover svg {
-  color: var(--dark);
-}
-
-.desearBtnForm button svg {
-  width: 100%;
-  height: 100%;
-  color: var(--dark);
-  fill: none;
-  transition: all 0.3s;
-  stroke-width: 2px;
+/* Favorito activo (deseado) */
+.desearBtnForm button.deseado {
+  background: rgba(239, 242, 241, 0.88);
+  border-color: rgba(239, 242, 241, 0.6);
 }
 
 .desearBtnForm button.deseado svg {
   fill: var(--dark);
-  stroke: none;
+  stroke: var(--dark);
+  color: var(--dark);
+}
+
+.desearBtnForm button.deseado:hover {
+  background: var(--dark);
+  border-color: var(--dark);
+}
+
+.desearBtnForm button.deseado:hover svg {
+  fill: var(--dark);
+  stroke: var(--dark);
   color: var(--dark);
 }
 
 .libro h1 {
-  font-size: 1.8rem;
-  font-weight: 400;
+  font-size: 1.15rem;
+  font-weight: 700;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -113,7 +142,7 @@
 }
 
 .libro h2 {
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   font-weight: 400;
   margin: 0;
   color: rgba(239, 242, 241, 0.85);
@@ -126,8 +155,8 @@
 }
 
 .libro h3 {
-  font-size: 1.6rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 600;
   margin: 0;
   color: var(--secondary2);
   margin-top: auto;
@@ -213,7 +242,7 @@
   top: 10px;
   left: -4px;
   z-index: 10;
-  background: linear-gradient(135deg, var(--main), var(--secondary2));
+  background: linear-gradient(135deg, var(--main) 40%, var(--secondary2) 100%);
   color: var(--light);
   font-size: 0.75rem;
   font-weight: 800;
@@ -247,14 +276,44 @@
   height: 18px;
 }
 
+/* Fila precio + tag en detalle */
+.det-precio-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.det-precio-row .det-precio {
+  margin: 0;
+}
+
 .tag-masbarato-detalle {
-  font-size: 1rem !important;
-  padding: 8px 24px 8px 16px !important;
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  background: linear-gradient(135deg, var(--main) 40%, var(--secondary2) 100%) !important;
+  border: none !important;
+  color: var(--light) !important;
+  border-radius: 20px !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  padding: 5px 13px !important;
+  letter-spacing: 0.03em !important;
+  box-shadow: 0 2px 8px rgba(64, 89, 173, 0.3) !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.tag-masbarato-detalle::before {
+  display: none !important;
 }
 
 .tag-masbarato-detalle .tag-rayo {
-  width: 22px !important;
-  height: 22px !important;
+  width: 13px !important;
+  height: 13px !important;
+  color: var(--accent) !important;
 }
 
 .librosContainer {

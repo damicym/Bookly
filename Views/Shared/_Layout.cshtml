@@ -457,6 +457,16 @@
         </script>
     }
 
+    @* ── Fallback: redirigir a login si el usuario no está logueado y hace click en publicar ── *@
+    @if (ViewBag.usuario == null)
+    {
+        <script>
+        function abrirPublicarModal() {
+            window.location.href = '@Url.Action("Login", "Usuarios")';
+        }
+        </script>
+    }
+
     @* ── Modales de Publicar y Editar (solo para usuarios logueados) ── *@
     @if (ViewBag.usuario != null)
     {
@@ -601,12 +611,12 @@
                             </h3>
                             <div class="publicar-grid-2">
                                 <div class="campo">
-                                    <label for="editModalNombre">Nombre del libro</label>
-                                    <input type="text" id="editModalNombre" name="nombre" required />
+                                    <label for="editModalNombre">Nombre</label>
+                                    <input type="text" id="editModalNombre" name="nombre" placeholder="Ej.: Toldot Israel" required />
                                 </div>
                                 <div class="campo">
                                     <label for="editModalMateria">Materia</label>
-                                    <input type="text" id="editModalMateria" name="materia" required />
+                                    <input type="text" id="editModalMateria" name="materia" placeholder="Ej.: Historia Judía" required />
                                 </div>
                                 <div class="campo">
                                     <label for="editModalAno">Nivel escolar</label>
@@ -621,7 +631,7 @@
                                 </div>
                                 <div class="campo">
                                     <label for="editModalEditorial">Editorial</label>
-                                    <input type="text" id="editModalEditorial" name="editorial" />
+                                    <input type="text" id="editModalEditorial" name="editorial" placeholder="Ej.: Editorial ORT" />
                                 </div>
                             </div>
                         </div>
@@ -642,12 +652,12 @@
                                 </div>
                                 <div class="campo">
                                     <label for="editModalPrecio">Precio ($)</label>
-                                    <input type="number" id="editModalPrecio" name="precio" step="0.01" required />
+                                    <input type="number" id="editModalPrecio" name="precio" placeholder="0.00" step="0.01" required />
                                 </div>
                             </div>
                             <div class="campo">
                                 <label for="editModalDesc">Descripción <span class="campo-opcional">(opcional)</span></label>
-                                <textarea id="editModalDesc" name="descripcion" class="publicar-desc-textarea"></textarea>
+                                <textarea id="editModalDesc" name="descripcion" class="publicar-desc-textarea" placeholder="Contá el estado del libro, si tiene subrayados, si le faltan páginas..."></textarea>
                             </div>
                         </div>
 
@@ -664,7 +674,10 @@
         // ── Modal Publicar ──
         function abrirPublicarModal() {
             var modal = document.getElementById('publicarModal');
-            if (!modal) return;
+            if (!modal) {
+                window.location.href = '@Url.Action("Login", "Usuarios")';
+                return;
+            }
             // Reset form
             document.getElementById('publicarModalForm').reset();
             document.getElementById('pubModalImgPreview').src = '/img/book-placeholder.webp';

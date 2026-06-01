@@ -412,24 +412,3 @@
 .bienvenida-btn-secondary.wHover:hover svg {
   transform: translateX(5px);
 }
-
-/* ---- Badge "Plataforma estudiantil" ---- */
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(64, 89, 173, 0.08);
-  color: var(--main);
-  border: 1px solid rgba(64, 89, 173, 0.2);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  width: fit-content;
-}
-
-.hero-badge svg {
-  color: var(--secondary2);
-  flex-shrink: 0;
-}

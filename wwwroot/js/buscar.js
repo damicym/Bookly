@@ -49,7 +49,7 @@ async function realizarBusqueda(query) {
                     let huboCambio = false
                     data.publicaciones.forEach(libro => {
                         const imgSrc = libro.imagen ? `data:image/webp;base64,${libro.imagen}` : '/img/book-placeholder.webp'
-                        const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Más barato</span>` : ''
+                        const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Mejor precio</span>` : ''
                         const claseCard = libro.esMasBarato ? 'libro protagonista' : 'libro secundario'
                         if (huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
                             html += `<hr class="separador-cards" />`
@@ -283,3 +283,17 @@ precioInputs.forEach(inputPrecio => {
         debounceTimer = setTimeout(() => actualizarChipsFiltros(), 400)
     })
 })
+
+// ===== TOGGLE SIDEBAR FILTROS =====
+const btnToggleFiltros = document.getElementById('btnToggleFiltros')
+const filtrosSidebar = document.querySelector('.filtros-sidebar')
+const catalogoLayout = document.querySelector('.catalogo-layout')
+
+if (btnToggleFiltros && filtrosSidebar) {
+    btnToggleFiltros.addEventListener('click', () => {
+        const isCollapsed = filtrosSidebar.classList.toggle('collapsed')
+        catalogoLayout?.classList.toggle('sidebar-collapsed', isCollapsed)
+        btnToggleFiltros.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true')
+        btnToggleFiltros.setAttribute('aria-label', isCollapsed ? 'Expandir filtros' : 'Colapsar filtros')
+    })
+}
