@@ -79,27 +79,28 @@
   align-items: center;
   text-align: center;
   width: 550px;
-  padding: 15px;
-  border-radius: 14px;
+  padding: 24px 20px;
+  border-radius: 16px;
   height: 220px;
-  background-color: var(--secondary);
+  background: #ffffff !important;
+  border: 1.5px solid rgba(64, 89, 173, 0.15) !important;
+  box-shadow: 0 2px 16px rgba(64, 89, 173, 0.08) !important;
 }
 
 .step h1 {
-  color: var(--light);
+  color: var(--dark);
   font-size: 1.9rem;
   margin: 0;
 }
 
 .step p {
   font-size: 1rem;
-  color: var(--light);
-  opacity: 0.95;
+  color: rgba(6, 26, 64, 0.6);
   margin: 0;
 }
 
 .stepSvgContainer {
-  background-color: rgba(151, 216, 196, 0.7);
+  background-color: rgba(107, 154, 196, 0.15);
   width: 50px;
   height: 55px;
   border-radius: 15px;
@@ -110,7 +111,7 @@
 }
 
 .stepSvgContainer svg {
-  color: var(--dark);
+  color: var(--main);
   width: 30px;
   height: 30px;
 }

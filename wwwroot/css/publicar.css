@@ -298,7 +298,7 @@
 
 /* Secciones dentro del modal — fondo azul clarito */
 .publicar-modal-card .publicar-seccion {
-  background: rgba(107, 154, 196, 0.12);
+  background: var(--lightDarker);
   border: 1.5px solid rgba(107, 154, 196, 0.25);
   box-shadow: 0 2px 8px rgba(64,89,173,0.07);
 }
@@ -361,4 +361,70 @@
   .publicar-modal-card {
     padding: 24px 20px !important;
   }
+}
+
+/* ── Overlay hover de imagen en modal de editar ── */
+.edit-img-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(6, 26, 64, 0.6);
+  color: var(--light);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  border-radius: 0;
+  z-index: 2;
+}
+
+#editModalImgContainer:hover .edit-img-overlay {
+  opacity: 1;
+}
+
+#editModalImgContainer:has(.edit-eliminar-img:hover) .edit-img-overlay {
+  opacity: 0;
+}
+
+.edit-img-overlay svg {
+  stroke: var(--light);
+  opacity: 0.9;
+}
+
+/* ── Botón quitar imagen — cruz en esquina ── */
+.edit-eliminar-img {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(6, 26, 64, 0.55);
+  backdrop-filter: blur(4px);
+  color: rgba(239, 242, 241, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.edit-eliminar-img:hover {
+  background: var(--red);
+  color: var(--light);
+  transform: scale(1.1);
+}
+
+.edit-eliminar-img svg {
+  flex-shrink: 0;
 }
