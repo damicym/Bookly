@@ -39,12 +39,12 @@ async function realizarBusqueda(query) {
             })
 
             const res = await fetch(`/Home/Buscar?${params.toString()}`)
+            
+            if (!res.ok) {
+                throw new Error(`Error HTTP: ${res.status}`)
+            }
+            
             const data = await res.json()
-            // Debug: verificar TODAS las propiedades del primer libro
-            // if (data.publicaciones && data.publicaciones.length > 0) {
-            //     console.log('Primer libro - TODAS las propiedades:', data.publicaciones[0])
-            //     console.log('Propiedades disponibles:', Object.keys(data.publicaciones[0]))
-            // }
 
             if (container) {
                 let html = ''
@@ -79,7 +79,7 @@ async function realizarBusqueda(query) {
                                         </section>
                                     </div>
                                     <div class="pillContainer">
-                                        ${libro?.estado_libro 
+                                        ${libro.estado_libro 
                                             ? `<span class="pill" style="background-color:${getColor(libro.estado_libro)}">${libro.estado_libro}</span>`
                                             : ''
                                         }
@@ -117,6 +117,22 @@ async function realizarBusqueda(query) {
             }
         } catch (error) {
             console.error("Error al buscar:", error)
+            
+            // Mostrar mensaje de error amigable al usuario
+            if (container) {
+                container.innerHTML = `<div class="no-result">
+                    <div class="no-result-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M12 9v4" />
+                            <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z" />
+                            <path d="M12 16h.01" />
+                        </svg>
+                    </div>
+                    <p class="no-result-title">Error de conexión</p>
+                    <p class="no-result-sub">No se pudo conectar con el servidor. Verificá tu conexión a internet o que la API esté funcionando.</p>
+                </div>`
+            }
         }
     } else {
         // Limpia resultados si query está vacío

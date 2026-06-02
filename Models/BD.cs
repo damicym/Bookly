@@ -27,29 +27,75 @@ namespace Bookly.Models
 
         private static T Get<T>(string path)
         {
-            var response = _http.GetAsync($"{_apiBase}{path}").GetAwaiter().GetResult();
-            if (!response.IsSuccessStatusCode) return default;
-            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            return JsonSerializer.Deserialize<T>(json, _jsonOpts);
+            try
+            {
+                var response = _http.GetAsync($"{_apiBase}{path}").GetAwaiter().GetResult();
+                if (!response.IsSuccessStatusCode) return default;
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonSerializer.Deserialize<T>(json, _jsonOpts);
+            }
+            catch (HttpRequestException)
+            {
+                // Error de conexión con la API
+                return default;
+            }
+            catch (Exception)
+            {
+                // Cualquier otro error
+                return default;
+            }
         }
 
         private static HttpResponseMessage Post(string path, object body)
         {
-            var json = JsonSerializer.Serialize(body);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            return _http.PostAsync($"{_apiBase}{path}", content).GetAwaiter().GetResult();
+            try
+            {
+                var json = JsonSerializer.Serialize(body);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                return _http.PostAsync($"{_apiBase}{path}", content).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static HttpResponseMessage Put(string path, object body)
         {
-            var json = JsonSerializer.Serialize(body);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            return _http.PutAsync($"{_apiBase}{path}", content).GetAwaiter().GetResult();
+            try
+            {
+                var json = JsonSerializer.Serialize(body);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                return _http.PutAsync($"{_apiBase}{path}", content).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static HttpResponseMessage Delete(string path)
         {
-            return _http.DeleteAsync($"{_apiBase}{path}").GetAwaiter().GetResult();
+            try
+            {
+                return _http.DeleteAsync($"{_apiBase}{path}").GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         // ── USUARIOS ─────────────────────────────────────────────────────────
@@ -57,14 +103,21 @@ namespace Bookly.Models
         /// <summary>POST /api/usuarios/login</summary>
         public static Usuarios login(string dni, string password)
         {
-            var response = Post("/usuarios/login", new { dni, password });
-            if (!response.IsSuccessStatusCode) return null;
-            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            try
+            {
+                var response = Post("/usuarios/login", new { dni, password });
+                if (response == null || !response.IsSuccessStatusCode) return null;
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-            // La API devuelve { success: true, user: { ... } } — extraemos el objeto user
-            var wrapper = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
-            if (!wrapper.TryGetProperty("user", out var userEl)) return null;
-            return JsonSerializer.Deserialize<Usuarios>(userEl.GetRawText(), _jsonOpts);
+                // La API devuelve { success: true, user: { ... } } — extraemos el objeto user
+                var wrapper = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                if (!wrapper.TryGetProperty("user", out var userEl)) return null;
+                return JsonSerializer.Deserialize<Usuarios>(userEl.GetRawText(), _jsonOpts);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>PUT /api/usuarios/:dni/about</summary>
