@@ -40,6 +40,12 @@ async function realizarBusqueda(query) {
 
             const res = await fetch(`/Home/Buscar?${params.toString()}`)
             const data = await res.json()
+            // Debug: verificar TODAS las propiedades del primer libro
+            // if (data.publicaciones && data.publicaciones.length > 0) {
+            //     console.log('Primer libro - TODAS las propiedades:', data.publicaciones[0])
+            //     console.log('Propiedades disponibles:', Object.keys(data.publicaciones[0]))
+            // }
+
             if (container) {
                 let html = ''
                 const token = document.querySelector('input[name="__RequestVerificationToken"]')
@@ -57,7 +63,7 @@ async function realizarBusqueda(query) {
                         anteriorFueProtagonista = libro.esMasBarato
                         huboCambio = true
                         html += `
-                            <div class="${claseCard}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.idVendedor}'">
+                            <div class="${claseCard}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.id_vendedor}'">
                                 <div class="imgContainer">
                                     <div class="libroImgContainer">
                                         <img src="${imgSrc}" alt="imagen del libro" />
@@ -73,13 +79,22 @@ async function realizarBusqueda(query) {
                                         </section>
                                     </div>
                                     <div class="pillContainer">
-                                        <span class="pill" style="background-color:${getColor(libro.estadoLibro)}">${libro.estadoLibro}</span>
-                                        <span class="pill">${pasarAnoATexto(libro.ano)}</span>
+                                        ${libro?.estado_libro 
+                                            ? `<span class="pill" style="background-color:${getColor(libro.estado_libro)}">${libro.estado_libro}</span>`
+                                            : ''
+                                        }
+                                        ${pasarAnoATexto(libro.ano)
+                                            ? `<span class="pill">${pasarAnoATexto(libro.ano)}</span>`
+                                            : ''
+                                        }
                                     </div>
                                 </div>
                                 <div class="nombreYMateriaContainer">
                                     <h1>${toUpperPrimeraLetra(libro.nombre)}</h1>
-                                    <h2>${toUpperPrimeraLetra(libro.materia)}</h2>
+                                    ${libro.materia
+                                        ? `<h2>${toUpperPrimeraLetra(libro.materia)}</h2>`
+                                        : ''
+                                    }
                                 </div>
                                 <h3>$${libro.precio}</h3>
                             </div>

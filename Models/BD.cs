@@ -122,7 +122,6 @@ namespace Bookly.Models
 
         /// <summary>
         /// GET /api/libros/search?nombre=x
-        /// ⚠️  Requiere que el endpoint soporte el parámetro "nombre".
         /// </summary>
         public static Libros ObtenerLibroPorNombre(string nombre)
         {
@@ -133,7 +132,6 @@ namespace Bookly.Models
 
         /// <summary>
         /// GET /api/libros/autocomplete?q=texto
-        /// ⚠️  Endpoint nuevo: debe devolver List&lt;string&gt; con nombres de libros.
         /// </summary>
         public static List<string> BuscarNombresLibros(string text)
         {
@@ -166,9 +164,8 @@ namespace Bookly.Models
         /// <summary>
         /// GET /api/publicaciones/feed  (sin límite → devuelve todo)
         /// GET /api/publicaciones/feed?limit=N
-        /// ⚠️  Asegurate que tu API soporte "limit" como parámetro opcional.
         /// </summary>
-        public static List<PublicacionesCompletas> ObtenerLibrosMostrablesConTope(int tope = -1)
+        public static List<PublicacionesCompletas> ObtenerPublicacionesCompletasConTope(int tope = -1)
         {
             var path = tope > 0
                 ? $"/publicaciones/feed?limit={tope}"
@@ -293,28 +290,6 @@ namespace Bookly.Models
                    ?? new List<PublicacionesCompletas>();
         }
 
-        // ── STATS ────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// GET /api/publicaciones/count
-        /// ⚠️  Endpoint nuevo: debe devolver { "count": N }
-        /// </summary>
-        public static int ContarPublicacionesActivas()
-        {
-            var result = Get<CountResponse>("/publicaciones/count");
-            return result?.count ?? 0;
-        }
-
-        /// <summary>
-        /// GET /api/usuarios/count
-        /// ⚠️  Endpoint nuevo: debe devolver { "count": N }
-        /// </summary>
-        public static int ContarUsuarios()
-        {
-            var result = Get<CountResponse>("/usuarios/count");
-            return result?.count ?? 0;
-        }
-
         // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────
 
         /// <summary>
@@ -326,14 +301,5 @@ namespace Bookly.Models
         {
             // No-op: la migración de imágenes debe hacerse directamente en la API/BD.
         }
-
-        // ── tipos auxiliares ──────────────────────────────────────────────────
-
-        private class CountResponse
-        {
-            public int count { get; set; }
-        }
     }
 }
-
-// No hay endpoint para estadísticas: ContarPublicacionesActivas() y ContarUsuarios() — necesitás GET /api/publicaciones/count y GET /api/usuarios/count, o un endpoint combinado GET /api/stats.

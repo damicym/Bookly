@@ -12,7 +12,7 @@ namespace Bookly.Helpers
                 4 => "3ero",
                 5 => "4to",
                 6 => "5to",
-                _ => "Desconocido"
+                _ => null
             };
         }
 
@@ -26,7 +26,7 @@ namespace Bookly.Helpers
                 4 => "3er año",
                 5 => "4to año",
                 6 => "5to año",
-                _ => "año desconocido"
+                _ => null
             };
         }
         public static string ToUpperPrimeraLetra(string texto)

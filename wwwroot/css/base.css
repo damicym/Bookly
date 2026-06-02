@@ -5,10 +5,6 @@
   box-sizing: border-box;
 }
 
-html {
-  /* sin overflow-x — el carrusel maneja su propio scroll interno */
-}
-
 html,
 body {
   margin: 0;

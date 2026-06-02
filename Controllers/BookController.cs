@@ -73,7 +73,7 @@ namespace Bookly.Controllers
 
             // Marcar si es el más barato entre publicaciones del mismo libro
             // (excluyendo las del usuario logueado, igual que en el catálogo)
-            var todasPublicaciones = BD.ObtenerLibrosMostrablesConTope();
+            var todasPublicaciones = BD.ObtenerPublicacionesCompletasConTope();
             var mismoLibro = todasPublicaciones
                 .Where(p => p.nombre != null && libro.nombre != null &&
                             p.nombre.Trim().ToLowerInvariant() == libro.nombre.Trim().ToLowerInvariant())

@@ -8,7 +8,7 @@ function pasarAnoATexto(ano) {
         case 4: return "3ero"
         case 5: return "4to"
         case 6: return "5to"
-        default: return "Desconocido"
+        default: return null
     }
 }
 

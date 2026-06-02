@@ -115,13 +115,19 @@
                                 </section>
                             </div>
                             <div class="pillContainer">
-                                <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                                <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                                @if (libro.estadoLibro != null) {
+                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                                }
+                                @if (HtmlHelpers.PasarAñoATexto(libro.ano) != null) {
+                                    <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                                }
                             </div>
                         </div>
                         <div class="nombreYMateriaContainer">
                             <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                            <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                            @if (libro.materia != null) {
+                                <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                            }
                         </div>
                         <h3>$@libro.precio</h3>
                     </div>
@@ -166,13 +172,19 @@
                                 </section>
                             </div>
                             <div class="pillContainer">
-                                <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                                <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                                @if (libro.estadoLibro != null) {
+                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
+                                }
+                                @if (HtmlHelpers.PasarAñoATexto(libro.ano) != null) {
+                                    <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                                }
                             </div>
                         </div>
                         <div class="nombreYMateriaContainer">
                             <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                            <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                            @if (libro.materia != null) {
+                                <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
+                            }
                         </div>
                         <h3>$@libro.precio</h3>
                     </div>

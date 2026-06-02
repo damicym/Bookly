@@ -35,7 +35,7 @@ namespace Bookly.Controllers
             }
             else
             {
-                publicaciones = BD.ObtenerLibrosMostrablesConTope(20);
+                publicaciones = BD.ObtenerPublicacionesCompletasConTope(20);
                 ViewBag.Titulo = "Últimas publicaciones";
             }
             MarcarMasBaratos(publicaciones);
@@ -49,8 +49,6 @@ namespace Bookly.Controllers
             }
             ViewBag.userLogged = user != null;
             ViewBag.usuario = user;
-            ViewBag.totalPublicaciones = BD.ContarPublicacionesActivas();
-            ViewBag.totalUsuarios = BD.ContarUsuarios();
             return View(publicaciones);
         }
 
@@ -134,7 +132,7 @@ namespace Bookly.Controllers
                 var estadoNormalizado = RemoveTildes(NormalizarEstado(estado)).ToLower();
                 var editorialNormalizada = RemoveTildes(editorial).ToLower();
 
-                var consulta = BD.ObtenerLibrosMostrablesConTope()
+                var consulta = BD.ObtenerPublicacionesCompletasConTope()
                     .Where(l => l.nombre != null)
                     .Where(l => string.IsNullOrWhiteSpace(query) || RemoveTildes(l.nombre).ToLower().Contains(queryNormalizada))
                     .Where(l => string.IsNullOrWhiteSpace(materia) || RemoveTildes(l.materia).ToLower().Equals(materiaNormalizada))
