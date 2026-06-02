@@ -1,4 +1,8 @@
 using Bookly.Models;
+using DotNetEnv;
+
+// Cargar variables de entorno desde el archivo .env
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

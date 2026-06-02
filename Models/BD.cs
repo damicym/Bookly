@@ -29,19 +29,33 @@ namespace Bookly.Models
         {
             try
             {
-                var response = _http.GetAsync($"{_apiBase}{path}").GetAwaiter().GetResult();
-                if (!response.IsSuccessStatusCode) return default;
+                var fullUrl = $"{_apiBase}{path}";
+                Console.WriteLine($"[BD.Get] Solicitando: {fullUrl}");
+                
+                var response = _http.GetAsync(fullUrl).GetAwaiter().GetResult();
+                
+                Console.WriteLine($"[BD.Get] Status Code: {response.StatusCode}");
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    Console.WriteLine($"[BD.Get] Error Response: {errorContent}");
+                    return default;
+                }
+                
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                Console.WriteLine($"[BD.Get] Response (primeros 200 chars): {json.Substring(0, Math.Min(200, json.Length))}...");
+                
                 return JsonSerializer.Deserialize<T>(json, _jsonOpts);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
-                // Error de conexión con la API
+                Console.WriteLine($"[BD.Get] Error de conexión: {ex.Message}");
                 return default;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Cualquier otro error
+                Console.WriteLine($"[BD.Get] Error general: {ex.Message}");
                 return default;
             }
         }
@@ -50,16 +64,33 @@ namespace Bookly.Models
         {
             try
             {
+                var fullUrl = $"{_apiBase}{path}";
+                Console.WriteLine($"[BD.Post] Solicitando: {fullUrl}");
+                
                 var json = JsonSerializer.Serialize(body);
+                Console.WriteLine($"[BD.Post] Body: {json}");
+                
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                return _http.PostAsync($"{_apiBase}{path}", content).GetAwaiter().GetResult();
+                var response = _http.PostAsync(fullUrl, content).GetAwaiter().GetResult();
+                
+                Console.WriteLine($"[BD.Post] Status Code: {response.StatusCode}");
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    Console.WriteLine($"[BD.Post] Error Response: {errorContent}");
+                }
+                
+                return response;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
+                Console.WriteLine($"[BD.Post] Error de conexión: {ex.Message}");
                 return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[BD.Post] Error general: {ex.Message}");
                 return null;
             }
         }
