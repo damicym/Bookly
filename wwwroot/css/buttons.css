@@ -151,6 +151,20 @@
   z-index: 1;
 }
 
+/* ── Estado disabled para botones que esperan API ── */
+.mainBtn:disabled,
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.mainBtn:disabled:hover {
+  filter: none;
+  box-shadow: none;
+  transform: none;
+}
+
 .carruselBtn:hover {
   background-color: var(--secondary);
   transform: scale(1.08);

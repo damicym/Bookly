@@ -106,6 +106,7 @@
     <footer>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/pageloader.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/helpers.js" asp-append-version="true"></script>
     <script src="~/js/desear.js" asp-append-version="true"></script>
@@ -395,7 +396,19 @@
                             e.preventDefault();
                             rErr.style.display = 'block';
                             rConf.focus();
+                            return;
                         }
+                        var btn = rForm.querySelector('button[type="submit"]');
+                        if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+                    });
+                }
+
+                // Disable login submit on submit
+                var loginForm = document.getElementById('loginModalForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', function() {
+                        var btn = loginForm.querySelector('button[type="submit"]');
+                        if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
                     });
                 }
             });
@@ -713,6 +726,24 @@
                 'pubModalEditorial', 'pubModalLibroId', 'pubModalLibroIndicator'
             );
 
+            // Disable submit en publicar modal
+            var pubForm = document.getElementById('publicarModalForm');
+            if (pubForm) {
+                pubForm.addEventListener('submit', function() {
+                    var btn = pubForm.querySelector('button[type="submit"]');
+                    if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+                });
+            }
+
+            // Disable submit en editar modal
+            var editForm = document.getElementById('editarModalForm');
+            if (editForm) {
+                editForm.addEventListener('submit', function() {
+                    var btn = editForm.querySelector('button[type="submit"]');
+                    if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+                });
+            }
+
             // Image preview para editar
             var efi = document.getElementById('editModalFileInput');
             if (efi) {
@@ -732,10 +763,21 @@
         async function abrirEditarModal(id) {
             var modal = document.getElementById('editarModal');
             if (!modal) return;
+            // Deshabilitar el botón que disparó la apertura
+            var triggerBtn = document.querySelector(`.desearBtnForm.editar button[onclick*="${id}"], button[onclick*="abrirEditarModal(${id})"]`);
+            // Buscar por id en el onclick del botón padre
+            var allEditBtns = document.querySelectorAll('.desearBtnForm.editar');
+            var foundBtn = null;
+            allEditBtns.forEach(function(form) {
+                if (form.getAttribute('onclick') && form.getAttribute('onclick').includes('abrirEditarModal(' + id + ')')) {
+                    foundBtn = form;
+                }
+            });
+            if (foundBtn) foundBtn.style.opacity = '0.5';
             try {
                 var res = await fetch('/Book/ObtenerPublicacion?id=' + id);
                 var data = await res.json();
-                if (!data.found) return;
+                if (!data.found) { if (foundBtn) foundBtn.style.opacity = ''; return; }
                 document.getElementById('editarModalId').value = data.id;
                 document.getElementById('editModalNombre').value = data.nombre || '';
                 document.getElementById('editModalMateria').value = data.materia || '';
@@ -753,7 +795,8 @@
                 if (overlaySpan) overlaySpan.textContent = data.tieneImagen ? 'Cambiar imagen' : 'Subir imagen';
                 // Reset file input
                 document.getElementById('editModalFileInput').value = '';
-            } catch(e) { console.error(e); return; }
+            } catch(e) { console.error(e); if (foundBtn) foundBtn.style.opacity = ''; return; }
+            if (foundBtn) foundBtn.style.opacity = '';
             modal.classList.add('login-modal-overlay--visible');
             document.body.style.overflow = 'hidden';
         }
@@ -789,13 +832,25 @@
             input.parentNode.style.position = 'relative';
             input.parentNode.appendChild(container);
 
+            // Busca el botón submit del form padre para deshabilitarlo durante fetch
+            function getSubmitBtn() {
+                var form = input.closest('form');
+                return form ? form.querySelector('button[type="submit"]') : null;
+            }
+
             async function fetchSuggestions(text) {
                 if (!text || text.length < 1) { container.style.display = 'none'; return; }
+                var btn = getSubmitBtn();
+                if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
                 try {
                     var resp = await fetch('/Book/AutocompleteNombres?q=' + encodeURIComponent(text));
                     var data = await resp.json();
                     renderSuggestions(data || []);
-                } catch(e) { container.style.display = 'none'; }
+                } catch(e) {
+                    container.style.display = 'none';
+                } finally {
+                    if (typeof setButtonLoading === 'function') setButtonLoading(btn, false);
+                }
             }
 
             function renderSuggestions(list) {
@@ -808,6 +863,8 @@
                     div.addEventListener('click', async function() {
                         input.value = item;
                         container.style.display = 'none';
+                        var btn = getSubmitBtn();
+                        if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
                         try {
                             var r = await fetch('/Book/ObtenerLibroPorNombre?nombre=' + encodeURIComponent(item));
                             var d = await r.json();
@@ -823,7 +880,10 @@
                                 if (li) li.value = d.id || '';
                                 if (ind) { ind.style.display = 'block'; ind.innerHTML = '✓ Libro existente'; }
                             }
-                        } catch(e) {}
+                        } catch(e) {
+                        } finally {
+                            if (typeof setButtonLoading === 'function') setButtonLoading(btn, false);
+                        }
                     });
                     container.appendChild(div);
                 });

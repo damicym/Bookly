@@ -239,14 +239,31 @@ header .searchNFilter {
 
 .profile-dropdown-item:hover {
   background-color: rgba(6, 26, 64, 0.07);
+  transform: translateX(2px);
+  transition: background-color 0.15s, transform 0.15s;
+}
+
+.profile-dropdown-item svg {
+  transition: transform 0.2s;
+}
+
+.profile-dropdown-item:hover svg {
+  transform: scale(1.15);
 }
 
 .profile-dropdown-logout {
   color: var(--red) !important;
+  transition: background-color 0.15s, transform 0.15s, color 0.15s;
 }
 
 .profile-dropdown-logout:hover {
-  background-color: rgba(215, 38, 61, 0.08);
+  background-color: rgba(215, 38, 61, 0.1);
+  color: var(--red) !important;
+  transform: translateX(2px);
+}
+
+.profile-dropdown-logout:hover svg {
+  transform: scale(1.15) translateX(1px);
 }
 
 .profile-dropdown-divider {

@@ -21,6 +21,32 @@
   margin-bottom: 32px;
 }
 
+.publicar-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(6, 26, 64, 0.45);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 16px;
+  padding: 5px 0;
+  transition: color 0.2s, gap 0.2s;
+}
+
+.publicar-back-btn:hover {
+  color: var(--main);
+  gap: 8px;
+}
+
+.publicar-back-btn svg {
+  transition: transform 0.2s;
+}
+
+.publicar-back-btn:hover svg {
+  transform: translateX(-3px);
+}
+
 .publicar-header h1 {
   font-size: 2rem;
   color: var(--dark);

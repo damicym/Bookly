@@ -122,6 +122,14 @@ function eliminarImagenActual(event) {
 
         // Realiza la petición al servidor 
         let lastSuggestions = [];
+        let fetchingApi = false;
+
+        function setSubmitDisabled(disabled) {
+            const btn = document.getElementById('publicarSubmitBtn');
+            if (!btn) return;
+            btn.disabled = disabled;
+        }
+
         async function fetchSuggestions(text) {
             if (!text || text.length < 1) {
                 container.style.display = 'none';
@@ -136,6 +144,7 @@ function eliminarImagenActual(event) {
             }
             try {
                 const url = `/Book/AutocompleteNombres?q=${encodeURIComponent(text)}`;
+                setSubmitDisabled(true);
                 const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
                 if (!resp.ok) throw new Error('Error en petición');
                 const data = await resp.json();
@@ -164,6 +173,8 @@ function eliminarImagenActual(event) {
             } catch (e) {
                 container.style.display = 'none';
                 container.innerHTML = '';
+            } finally {
+                setSubmitDisabled(false);
             }
         }
 
@@ -179,6 +190,7 @@ function eliminarImagenActual(event) {
                     container.style.display = 'none';
                     // Solicitar datos completos del libro y autocompletar campos
                     try {
+                        setSubmitDisabled(true);
                         const resp = await fetch(`/Book/ObtenerLibroPorNombre?nombre=${encodeURIComponent(item)}`);
                         if (!resp.ok) throw new Error('err');
                         const data = await resp.json();
@@ -207,6 +219,8 @@ function eliminarImagenActual(event) {
                         }
                     } catch (e) {
                         // silencioso
+                    } finally {
+                        setSubmitDisabled(false);
                     }
                 });
                 container.appendChild(div);

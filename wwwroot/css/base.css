@@ -45,3 +45,9 @@ a:visited {
 .primerElemento {
   margin-top: 90px !important;
 }
+
+/* Spin animation para botones en carga */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

@@ -22,6 +22,8 @@ async function desearLibro(event, form) {
     const estadoActualDeseado = btn ? btn.classList.contains('deseado') : false
     formData.set('esDeseado', estadoActualDeseado ? 'true' : 'false')
 
+    if (btn) btn.disabled = true
+
     try {
         const headers = token ? { 'RequestVerificationToken': token } : {}
         const res = await fetch(action, {
@@ -45,6 +47,8 @@ async function desearLibro(event, form) {
         }
     } catch (err) {
         console.error('Error al enviar petición Desear:', err)
+    } finally {
+        if (btn) btn.disabled = false
     }
 
     return false

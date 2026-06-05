@@ -1,0 +1,127 @@
+/* ═══════════════════════════════════════════════════
+   PAGE LOADER — libro abierto inspirado en el logo Bookly
+   Fondo blanco · solo contorno · paleta secondary
+   ═══════════════════════════════════════════════════ */
+
+#pageLoader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  opacity: 1;
+  transition: opacity 0.28s ease;
+  pointer-events: all;
+}
+
+#pageLoader.loader-hiding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════
+   SVG del libro abierto
+   viewBox: 0 0 120 80  (libro visto desde arriba, abierto)
+══════════════════════════════════════════ */
+.loader-book-svg {
+  width: 110px;
+  height: auto;
+  overflow: visible;
+}
+
+.loader-book-svg * {
+  fill: none;
+  stroke: var(--secondary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Tapa izquierda (estática) ── */
+.lb-left-cover {
+  stroke-width: 2.2;
+}
+
+/* ── Tapa derecha (estática) ── */
+.lb-right-cover {
+  stroke-width: 2.2;
+}
+
+/* ── Lomo central ── */
+.lb-spine {
+  stroke-width: 2.8;
+  stroke-linecap: butt;
+}
+
+/* ── Líneas de páginas izquierda (fan) ── */
+.lb-lines-left {
+  stroke-width: 1.2;
+  stroke-opacity: 0.5;
+}
+
+/* ── Páginas derecha que se pasan ── */
+.lb-page-a {
+  stroke-width: 1.6;
+  transform-box: fill-box;
+  transform-origin: 0% 50%; /* borde izquierdo del path = el lomo */
+  animation: pageFlipR 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.lb-page-b {
+  stroke-width: 1.3;
+  stroke-opacity: 0.5;
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: pageFlipR 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0.18s;
+}
+
+.lb-page-c {
+  stroke-width: 1;
+  stroke-opacity: 0.25;
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: pageFlipR 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0.34s;
+}
+
+/*
+  Efecto pasar página: la página de la derecha se "cierra" hacia el lomo
+  (scaleX 1 → 0) y vuelve — como el gesto de pasar una hoja.
+  transform-origin en el lomo hace que colapse ahí.
+*/
+@keyframes pageFlipR {
+  0%        { transform: scaleX(1);     opacity: 1; }
+  0%        { transform: scaleX(1);     opacity: 1; }
+  28%       { transform: scaleX(0.08);  opacity: 0.7; }
+  52%       { transform: scaleX(0.08);  opacity: 0.7; }
+  82%       { transform: scaleX(1);     opacity: 1; }
+  100%      { transform: scaleX(1);     opacity: 1; }
+}
+
+/* ── Puntos de carga ── */
+.loader-dots {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.loader-dots span {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--secondary);
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+.loader-dots span:nth-child(1) { animation-delay: 0s; }
+.loader-dots span:nth-child(2) { animation-delay: 0.16s; }
+.loader-dots span:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: translateY(0);    opacity: 0.3; }
+  40%            { transform: translateY(-5px); opacity: 1;   }
+}

@@ -85,6 +85,8 @@
                     var btnOculto = form.querySelector('button');
 
                     btnVisible.addEventListener('click', async function() {
+                        if (btnVisible.disabled) return;
+                        btnVisible.disabled = true;
                         var esDeseado = btnOculto.classList.contains('deseado');
                         var formData = new FormData(form);
                         formData.set('esDeseado', esDeseado ? 'true' : 'false');
@@ -116,6 +118,9 @@
                                 }
                             }
                         } catch(e) { console.error(e); }
+                        finally {
+                            btnVisible.disabled = false;
+                        }
                     });
                 })();
             </script>

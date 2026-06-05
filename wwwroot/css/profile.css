@@ -208,19 +208,31 @@
 .profile-bio-edit-btn {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  color: rgba(6, 26, 64, 0.35);
-  font-size: 0.82rem;
+  gap: 6px;
+  background: rgba(6, 26, 64, 0.06);
+  border: 1.5px solid rgba(6, 26, 64, 0.12);
+  color: rgba(6, 26, 64, 0.55);
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0;
-  transition: color 0.2s;
+  padding: 5px 12px;
+  border-radius: 20px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
   font-family: inherit;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .profile-bio-edit-btn:hover {
-  color: var(--main);
+  background: var(--main);
+  border-color: var(--main);
+  color: var(--light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(64, 89, 173, 0.25);
+}
+
+.profile-bio-edit-btn:active {
+  transform: scale(0.97);
 }
 
 /* ---- TABS ---- */

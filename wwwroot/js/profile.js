@@ -21,13 +21,23 @@ function editarAboutMe() {
         <div class="profile-bio-edit-wrap">
             <textarea name="aboutMe" id="aboutMeTextarea" maxlength="200" placeholder="Escribí algo sobre vos..." class="aboutMeInput" rows="3">${textoActual}</textarea>
             <div class="profile-bio-actions">
-                <button class="profile-bio-save-btn" type="submit">Guardar</button>
+                <button class="profile-bio-save-btn" type="submit" id="aboutMeSaveBtn">Guardar</button>
                 <button class="profile-bio-cancel-btn" type="button" id="btnCancelAboutMe">Cancelar</button>
             </div>
         </div>
     `
 
     document.getElementById('btnCancelAboutMe').addEventListener('click', cancelarAboutMe)
+
+    // Disable save btn on submit
+    const aboutMeForm = document.getElementById('aboutMeContainer')
+    if (aboutMeForm) {
+        aboutMeForm.addEventListener('submit', function onSubmitAboutMe() {
+            const saveBtn = document.getElementById('aboutMeSaveBtn')
+            if (typeof setButtonLoading === 'function') setButtonLoading(saveBtn, true)
+            aboutMeForm.removeEventListener('submit', onSubmitAboutMe)
+        }, { once: true })
+    }
 
     setTimeout(() => {
         const ta = document.getElementById('aboutMeTextarea')
