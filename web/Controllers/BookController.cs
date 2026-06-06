@@ -37,18 +37,7 @@ namespace Bookly.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Usuario");
 
-            byte[] imagenBytes = null;
-            
-            if (imagen != null && imagen.Length > 0)
-            {
-                using (var ms = new MemoryStream())
-                {
-                    imagen.CopyTo(ms);
-                    imagenBytes = ms.ToArray();
-                }
-            }
-
-            BD.PublicarLibro(libro, user.DNI, precio, estadoLibro, descripcion, imagenBytes);
+            BD.PublicarLibro(libro, user.DNI, precio, estadoLibro, descripcion, imagen);
 
             return RedirectToAction("Index", "Home");
         }
@@ -212,8 +201,8 @@ namespace Bookly.Controllers
                 estadoLibro = pub.estadoLibro,
                 precio = pub.precio,
                 descripcion = pub.descripcion,
-                tieneImagen = pub.imagen != null,
-                imagenSrc = pub.imagen != null ? "data:image/webp;base64," + Convert.ToBase64String(pub.imagen) : "/img/book-placeholder.webp"
+                tieneImagen = !string.IsNullOrWhiteSpace(pub.imagen),
+                imagenSrc = !string.IsNullOrWhiteSpace(pub.imagen) ? pub.imagen : "/img/book-placeholder.webp"
             });
         }
 
@@ -249,26 +238,16 @@ namespace Bookly.Controllers
             if (publicacion == null)
                 return NotFound();
 
-            byte[] imagenBytes = publicacion.imagen;
+            IFormFile imagenFile = imagen;
 
             // Si el usuario marcó la imagen para eliminar
             if (imagenEliminada == "true")
             {
-                imagenBytes = null;  // Establece la imagen como null para usar la predeterminada
+                imagenFile = null;
             }
-            // Si se subió una nueva imagen
-            else if (imagen != null && imagen.Length > 0)
-            {
-                using (var ms = new MemoryStream())
-                {
-                    imagen.CopyTo(ms);
-                    imagenBytes = ms.ToArray();
-                }
-            }
-            // Si no se hizo nada, mantiene la imagen actual
 
             // Actualizar en base de datos
-            BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenBytes);
+            BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenFile);
 
             return RedirectToAction("Profile", "Home");
         }

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace Bookly.Models
 {
@@ -22,6 +23,20 @@ namespace Bookly.Models
         {
             PropertyNameCaseInsensitive = true
         };
+
+        private static void AddImageToMultipart(MultipartFormDataContent form, IFormFile imagen)
+        {
+            if (imagen == null || imagen.Length <= 0) return;
+
+            using var ms = new MemoryStream();
+            imagen.CopyTo(ms);
+            var bytes = ms.ToArray();
+            var fileContent = new ByteArrayContent(bytes);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(
+                string.IsNullOrWhiteSpace(imagen.ContentType) ? "application/octet-stream" : imagen.ContentType
+            );
+            form.Add(fileContent, "imagen", string.IsNullOrWhiteSpace(imagen.FileName) ? "imagen.webp" : imagen.FileName);
+        }
 
         // ── helpers ──────────────────────────────────────────────────────────
 
@@ -154,7 +169,7 @@ namespace Bookly.Models
         /// <summary>PUT /api/usuarios/:dni/about</summary>
         public static void ActualizarAboutMe(string dni, string aboutMe)
         {
-            Put($"/usuarios/{Uri.EscapeDataString(dni)}/about", new { aboutMe });
+            Put($"/usuarios/{Uri.EscapeDataString(dni)}/about", new { about_me = aboutMe });
         }
 
         /// <summary>POST /api/usuarios/register</summary>
@@ -163,7 +178,7 @@ namespace Bookly.Models
             Post("/usuarios/register", new
             {
                 dni       = usuario.DNI,
-                nombreComp = usuario.nombreComp,
+                nombre_comp = usuario.nombreComp,
                 ano       = usuario.ano,
                 especialidad = usuario.especialidad,
                 curso     = usuario.curso,
@@ -289,40 +304,48 @@ namespace Bookly.Models
         /// <summary>
         /// POST /api/publicaciones/:id_vendedor  (multipart/form-data)
         /// </summary>
-        public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
+        public static void PublicarLibro(Libros libro, string dniVendedor, decimal precio, string estadoLibro, string descripcion, IFormFile imagen)
         {
             using var form = new MultipartFormDataContent();
-            form.Add(new StringContent(libro.nombre  ?? ""),    "nombre");
-            form.Add(new StringContent(libro.materia ?? ""),    "materia");
-            form.Add(new StringContent(libro.ano.ToString()),   "ano");
-            form.Add(new StringContent(libro.editorial ?? ""),  "editorial");
+            var libroPayload = JsonSerializer.Serialize(new
+            {
+                id = libro?.id,
+                nombre = libro?.nombre,
+                materia = libro?.materia,
+                ano = libro?.ano,
+                editorial = libro?.editorial
+            });
+            form.Add(new StringContent(libroPayload, Encoding.UTF8, "application/json"), "libro");
             form.Add(new StringContent(precio.ToString(System.Globalization.CultureInfo.InvariantCulture)), "precio");
-            form.Add(new StringContent(string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro), "estadoLibro");
+            form.Add(new StringContent(string.IsNullOrEmpty(estadoLibro) ? "Sin especificar" : estadoLibro), "estado_libro");
             form.Add(new StringContent(descripcion ?? ""),      "descripcion");
 
-            if (imagen != null && imagen.Length > 0)
-                form.Add(new ByteArrayContent(imagen), "imagen", "imagen.jpg");
+            AddImageToMultipart(form, imagen);
 
             _http.PostAsync($"{_apiBase}/publicaciones/{Uri.EscapeDataString(dniVendedor)}", form)
                  .GetAwaiter().GetResult();
         }
 
         /// <summary>PUT /api/publicaciones/:id  (multipart/form-data)</summary>
-        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, byte[] imagen)
+        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen)
         {
             using var form = new MultipartFormDataContent();
-            form.Add(new StringContent(nombre    ?? ""),  "nombre");
-            form.Add(new StringContent(materia   ?? ""),  "materia");
-            form.Add(new StringContent(ano       ?? ""),  "ano");
-            form.Add(new StringContent(editorial ?? ""),  "editorial");
+            int? anoParsed = null;
+            if (int.TryParse(ano, out var anoInt)) anoParsed = anoInt;
+
+            var libroPayload = JsonSerializer.Serialize(new
+            {
+                nombre,
+                materia,
+                ano = anoParsed,
+                editorial
+            });
+            form.Add(new StringContent(libroPayload, Encoding.UTF8, "application/json"), "libro");
             form.Add(new StringContent(precio.ToString(System.Globalization.CultureInfo.InvariantCulture)), "precio");
-            form.Add(new StringContent(estadoLibro  ?? ""), "estadoLibro");
+            form.Add(new StringContent(estadoLibro  ?? ""), "estado_libro");
             form.Add(new StringContent(descripcion  ?? ""), "descripcion");
 
-            if (imagen != null && imagen.Length > 0)
-                form.Add(new ByteArrayContent(imagen), "imagen", "imagen.jpg");
-            else
-                form.Add(new StringContent("true"), "imagenEliminada");
+            AddImageToMultipart(form, imagen);
 
             // PUT con multipart requiere un HttpRequestMessage manual
             var request = new HttpRequestMessage(HttpMethod.Put, $"{_apiBase}/publicaciones/{idPublicacion}")
@@ -349,13 +372,13 @@ namespace Bookly.Models
         /// <summary>POST /api/deseados/add</summary>
         public static void AgregarDeseado(string dni, int idPublicacion)
         {
-            Post("/deseados/add", new { dni, idPublicacion });
+            Post("/deseados/add", new { dni, id_publicacion = idPublicacion });
         }
 
         /// <summary>POST /api/deseados/remove</summary>
         public static void EliminarDeseado(string dni, int idPublicacion)
         {
-            Post("/deseados/remove", new { dni, idPublicacion });
+            Post("/deseados/remove", new { dni, id_publicacion = idPublicacion });
         }
 
         /// <summary>GET /api/deseados/:dni/ids</summary>

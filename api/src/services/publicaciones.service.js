@@ -1,32 +1,83 @@
 import supabase from '../db/supabase.js'
 import { fetchBooksByIds, mapBooksById } from '../db/helpers.js'
+import { randomUUID } from 'crypto'
+import sharp from 'sharp'
+
+const PUBLICATIONS_BUCKET = 'images'
+const MAX_IMAGE_WIDTH = 900
+const MAX_IMAGE_HEIGHT = 1200
+const WEBP_QUALITY = 78
+
+async function toOptimizedWebp(imageFile) {
+	if (!imageFile?.buffer || !imageFile.mimetype?.startsWith('image/')) {
+		throw new Error('El archivo subido no es una imagen válida')
+	}
+
+	return sharp(imageFile.buffer, { failOn: 'none' })
+		.rotate()
+		.resize({
+			width: MAX_IMAGE_WIDTH,
+			height: MAX_IMAGE_HEIGHT,
+			fit: 'inside',
+			withoutEnlargement: true
+		})
+		.webp({ quality: WEBP_QUALITY })
+		.toBuffer()
+}
+
+async function uploadPublicationImage(imageFile) {
+	if (!imageFile) return null
+
+	const filePath = `${randomUUID()}.webp`
+	const webpBuffer = await toOptimizedWebp(imageFile)
+
+	const { error } = await supabase.storage
+		.from(PUBLICATIONS_BUCKET)
+		.upload(filePath, webpBuffer, {
+			contentType: 'image/webp',
+			upsert: false
+		})
+
+	if (error) throw error
+
+	const { data } = supabase.storage
+		.from(PUBLICATIONS_BUCKET)
+		.getPublicUrl(filePath)
+
+	return data.publicUrl
+}
 
 export async function createPublication(publication, dniVendedor) {
-	let idLibro = publication.idLibro || publication.id_libro || null
+	let idLibro = publication?.libro?.id || null
+	let imagenUrl = publication?.imagen || null
+	if (publication?.imageFile) {
+		imagenUrl = await uploadPublicationImage(publication.imageFile)
+	}
 
-	if (!idLibro && publication.libro && publication.libro.nombre) {
-		const { data: existing } = await supabase
+	let libro = null
+	if (idLibro !== null) {
+		const { data: libroData, error: errL } = await supabase
 			.from('libros')
-			.select('id')
-			.eq('nombre', publication.libro.nombre)
-			.limit(1)
+			.select('nombre')
+			.eq('id', idLibro)
 			.maybeSingle()
-		if (existing && existing.id) idLibro = existing.id
-		else {
-			const insertLibro = {
-				nombre: publication.libro.nombre,
-				materia: publication.libro.materia || null,
-				ano: publication.libro.ano || null,
-				editorial: publication.libro.editorial || null
-			}
-			const { data: newLibro, error: errLibro } = await supabase
-				.from('libros')
-				.insert(insertLibro)
-				.select('id')
-				.maybeSingle()
-			if (errLibro) throw errLibro
-			idLibro = newLibro.id
-		}
+		if (errL && errL.code !== 'PGRST116') throw errL // Ignorar error de no encontrado
+		libro = libroData
+	}
+
+	if (!libro || !libro.nombre || libro.nombre !== publication.libro?.nombre) {
+		const { data: newLibro, error: errN } = await supabase
+			.from('libros')
+			.insert({
+				nombre: publication.libro?.nombre || 'Libro sin nombre',
+				materia: publication.libro?.materia || null,
+				ano: publication.libro?.ano || null,
+				editorial: publication.libro?.editorial || null
+			})
+			.select()
+			.maybeSingle()
+		if (errN) throw errN
+		idLibro = newLibro.id
 	}
 
 	const insertPub = {
@@ -37,7 +88,7 @@ export async function createPublication(publication, dniVendedor) {
 		estado_libro: publication.estadoLibro || publication.estado_libro || 'Sin especificar',
 		fecha: publication.fecha || new Date().toISOString(),
 		descripcion: publication.descripcion || null,
-		imagen: publication.imagen || null
+		imagen: imagenUrl
 	}
 
 	const { data, error } = await supabase
@@ -49,15 +100,19 @@ export async function createPublication(publication, dniVendedor) {
 	return data || null
 }
 
-export async function updatePublicationFull(idPublicacion, libroFields, precio, estadoLibro, descripcion, imagen) {
+export async function updatePublicationFull(idPublicacion, libroFields, precio, estadoLibro, descripcion, imagen, imageFile = null) {
 	const { data: pub } = await supabase
 		.from('publicaciones')
-		.select('id_libro')
+		.select('id_libro, imagen')
 		.eq('id', idPublicacion)
 		.maybeSingle()
 	if (!pub) throw new Error('Publicación no encontrada')
 
 	const idLibro = pub.id_libro
+	let imagenUrl = imagen !== undefined && imagen !== null && imagen !== '' ? imagen : pub.imagen || null
+	if (imageFile) {
+		imagenUrl = await uploadPublicationImage(imageFile)
+	}
 	if (libroFields) {
 		const { error: errL } = await supabase
 			.from('libros')
@@ -73,7 +128,7 @@ export async function updatePublicationFull(idPublicacion, libroFields, precio, 
 
 	const { error } = await supabase
 		.from('publicaciones')
-		.update({ precio, estado_libro: estadoLibro, descripcion, imagen })
+		.update({ precio, estado_libro: estadoLibro, descripcion, imagen: imagenUrl })
 		.eq('id', idPublicacion)
 	if (error) throw error
 	return true

@@ -405,6 +405,12 @@
 }
 
 /* ===== NO RESULT ===== */
+.no-result p {
+  margin: 0;
+  padding: 0;
+  font-weight: 450;
+}
+
 .no-result {
   display: flex;
   flex-direction: column;
