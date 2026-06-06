@@ -40,7 +40,7 @@ public class PublicacionesCompletas
     public int status { get; set; }
 
     [JsonPropertyName("imagen")]
-    public byte[] imagen { get; set; }
+    public string imagen { get; set; }
 
     // Campos calculados en C#, no vienen de la API
     public bool esDeseado { get; set; }

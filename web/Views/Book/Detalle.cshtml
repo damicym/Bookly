@@ -8,7 +8,7 @@
     var usuarioActual = (Usuarios)ViewBag.usuario;
     var otrasOpciones = (List<PublicacionesCompletas>)ViewBag.OtrasOpciones;
     var max = publicaciones.Count < 4 ? publicaciones.Count : 4;
-    var imgBase64 = Model.imagen != null ? "data:image/webp;base64," + Convert.ToBase64String(Model.imagen) : "/img/book-placeholder.webp";
+    var imgBase64 = string.IsNullOrWhiteSpace(Model.imagen) ? Url.Content("~/img/book-placeholder.webp") : Model.imagen;
 }
 
 <div class="det-page-wrapper primerElemento">
@@ -67,12 +67,12 @@
                 @if (Model.esDeseado)
                 {
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>
-                    <text>Quitar de favoritos</text>
+                    <span>Quitar de favoritos</span>
                 }
                 else
                 {
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>
-                    <text>Agregar a favoritos</text>
+                    <span>Agregar a favoritos</span>
                 }
             </button>
             <script>
@@ -105,7 +105,7 @@
                                     btnOculto.classList.add('deseado');
                                     btnOculto.innerHTML = svgFilled;
                                     btnVisible.classList.add('det-btn-favorito--activo');
-                                    btnVisible.innerHTML = svgFilled + '<text>Quitar de favoritos</text>';
+                                    btnVisible.innerHTML = svgFilled + '<span>Quitar de favoritos</span>';
                                     // Actualizar el input hidden
                                     form.querySelector('input[name="esDeseado"]').value = 'true';
                                 } else {
@@ -113,7 +113,7 @@
                                     btnOculto.classList.remove('deseado');
                                     btnOculto.innerHTML = svgOutline;
                                     btnVisible.classList.remove('det-btn-favorito--activo');
-                                    btnVisible.innerHTML = svgOutline + '<text>Agregar a favoritos</text>';
+                                    btnVisible.innerHTML = svgOutline + '<span>Agregar a favoritos</span>';
                                     form.querySelector('input[name="esDeseado"]').value = 'false';
                                 }
                             }
@@ -167,7 +167,7 @@
                     @foreach (var op in otrasOpciones)
                     {
                         var opVendedor = BD.ObtenerUsuarioPorDNI(op.idVendedor);
-                        var opImg = op.imagen != null ? "data:image/webp;base64," + Convert.ToBase64String(op.imagen) : "/img/book-placeholder.webp";
+                        var opImg = string.IsNullOrWhiteSpace(op.imagen) ? Url.Content("~/img/book-placeholder.webp") : op.imagen;
                         var esActual = op.id == Model.id;
                         <a class="det-opcion-row @(esActual ? "det-opcion-row--actual" : "")" href="@Url.Action("Detalle", "Book", new { id = op.id, idVendedor = op.idVendedor })">
                             <img class="det-opcion-portada" src="@opImg" alt="@op.nombre" />
@@ -223,8 +223,8 @@
                         @for (int i = 0; i < max; i++)
                         {
                             var pubImg = publicaciones[i].imagen != null
-                                ? "data:image/webp;base64," + Convert.ToBase64String(publicaciones[i].imagen)
-                                : "/img/book-placeholder.webp";
+                                ? publicaciones[i].imagen
+                                : Url.Content("~/img/book-placeholder.webp");
                             <a class="det-otras-thumb" href="@Url.Action("Detalle", "Book", new { id = publicaciones[i].id, idVendedor = publicaciones[i].idVendedor })">
                                 <img src="@pubImg" alt="@publicaciones[i].nombre" />
                                 <div class="det-otras-thumb-info">

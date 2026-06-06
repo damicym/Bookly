@@ -42,5 +42,22 @@ export async function getFavoritePublications(dni) {
 	if (error) throw error
 	const bookIds = [...new Set((pubs || []).map(p => p.id_libro))].filter(Boolean)
 	const booksMap = await mapBooksById(bookIds)
-	return (pubs || []).map(p => ({ ...p, libro: booksMap.get(p.id_libro) || null }))
+	return (pubs || []).map(p => {
+		const libro = booksMap.get(p.id_libro) || {}
+		return {
+			id: p.id,
+			id_libro: p.id_libro,
+			nombre: libro.nombre || null,
+			materia: libro.materia || null,
+			ano: libro.ano || null,
+			editorial: libro.editorial || null,
+			estado_libro: p.estado_libro,
+			precio: p.precio,
+			descripcion: p.descripcion,
+			id_vendedor: p.id_vendedor,
+			fecha: p.fecha,
+			status: p.status,
+			imagen: p.imagen
+		}
+	})
 }

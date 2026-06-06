@@ -22,7 +22,7 @@ public class Publicacion
     public string descripcion { get; set; }
 
     [JsonPropertyName("imagen")]
-    public byte[] imagen { get; set; }
+    public string imagen { get; set; }
 
     [JsonPropertyName("fecha")]
     public DateTime fecha { get; set; }

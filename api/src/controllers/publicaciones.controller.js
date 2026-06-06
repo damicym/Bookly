@@ -1,16 +1,32 @@
 import * as publicacionesService from '../services/publicaciones.service.js'
 
+function parseLibroField(libro) {
+  if (!libro) return null
+  if (typeof libro === 'object') return libro
+  if (typeof libro === 'string') {
+    try {
+      return JSON.parse(libro)
+    } catch {
+      return null
+    }
+  }
+  return null
+}
+
 export async function createPublication(req, res) {
   try {
     const { id_vendedor } = req.params
-    const { libro, precio, estado_libro, descripcion, imagen } = req.body
+    const { libro, precio, estado_libro, descripcion } = req.body
+    const libroParsed = parseLibroField(libro)
+    const imagenBody = typeof req.body.imagen === 'string' ? req.body.imagen : null
+    const imageFile = req.file || null
     
-    if (!precio || !libro) {
+    if (!precio || !libroParsed) {
       return res.status(400).json({ error: 'Datos incompletos' })
     }
     
     const pub = await publicacionesService.createPublication(
-      { libro, precio, estado_libro, descripcion, imagen },
+      { libro: libroParsed, precio, estado_libro, descripcion, imagen: imagenBody, imageFile },
       id_vendedor
     )
     res.status(201).json(pub)
@@ -22,15 +38,19 @@ export async function createPublication(req, res) {
 export async function updatePublication(req, res) {
   try {
     const { id } = req.params
-    const { libro, precio, estado_libro, descripcion, imagen } = req.body
+    const { libro, precio, estado_libro, descripcion } = req.body
+    const libroParsed = parseLibroField(libro)
+    const imagenBody = typeof req.body.imagen === 'string' ? req.body.imagen : null
+    const imageFile = req.file || null
     
     await publicacionesService.updatePublicationFull(
       parseInt(id),
-      libro,
+      libroParsed,
       precio,
       estado_libro,
       descripcion,
-      imagen
+      imagenBody,
+      imageFile
     )
     res.json({ success: true, message: 'Publicación actualizada' })
   } catch (err) {
