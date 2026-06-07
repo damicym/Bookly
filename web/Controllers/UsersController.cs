@@ -66,17 +66,43 @@ namespace Bookly.Controllers
         public IActionResult UpdateAboutMe(string aboutMe)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
-            if (user == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            // Guardar aunque sea string vacío (permite borrar la descripción)
+            if (user == null) return RedirectToAction("Login");
             aboutMe = aboutMe ?? "";
             BD.ActualizarAboutMe(user.DNI, aboutMe);
             user.aboutMe = aboutMe;
             HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
             return RedirectToAction("Profile", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateFotoPerfil(IFormFile fotoPerfil)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+                return Json(new { success = false, message = "No autenticado" });
+
+            if (fotoPerfil == null || fotoPerfil.Length == 0)
+                return Json(new { success = false, message = "Archivo inválido" });
+
+            if (fotoPerfil.Length > 5 * 1024 * 1024)
+                return Json(new { success = false, message = "La imagen no puede superar 5MB" });
+
+            byte[] bytes;
+            using (var ms = new MemoryStream())
+            {
+                fotoPerfil.CopyTo(ms);
+                bytes = ms.ToArray();
+            }
+
+            var url = BD.SubirFotoPerfil(user.DNI, bytes, fotoPerfil.ContentType);
+            if (url == null)
+                return Json(new { success = false, message = "Error al subir la foto" });
+
+            user.fotoPerfil = url;
+            HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
+
+            return Json(new { success = true, src = url });
         }
 
     }

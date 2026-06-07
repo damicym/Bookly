@@ -46,11 +46,19 @@ export async function updateAbout(req, res) {
   try {
     const { dni } = req.params
     const { about_me } = req.body
-    if (!about_me) {
-      return res.status(400).json({ error: 'about_me es requerido' })
-    }
-    await usuariosService.updateAboutMe(dni, about_me)
+    await usuariosService.updateAboutMe(dni, about_me ?? '')
     res.json({ success: true, message: 'Perfil actualizado' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+export async function updateFotoPerfil(req, res) {
+  try {
+    const { dni } = req.params
+    if (!req.file) return res.status(400).json({ error: 'Archivo requerido' })
+    const url = await usuariosService.subirFotoPerfil(dni, req.file.buffer, req.file.mimetype)
+    res.json({ success: true, url })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

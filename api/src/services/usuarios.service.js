@@ -51,3 +51,24 @@ export async function updateAboutMe(dni, about_me) {
 	if (error) throw error
 	return true
 }
+
+export async function subirFotoPerfil(dni, buffer, mimetype) {
+	const ext = mimetype.includes('png') ? 'png' : 'jpg'
+	const storagePath = `perfiles/${dni}.${ext}`
+
+	const { error: uploadError } = await supabase.storage
+		.from('images')
+		.upload(storagePath, buffer, { contentType: mimetype, upsert: true })
+	if (uploadError) throw uploadError
+
+	const { data } = supabase.storage.from('images').getPublicUrl(storagePath)
+	const url = data.publicUrl
+
+	const { error: updateError } = await supabase
+		.from('usuarios')
+		.update({ foto_perfil: url })
+		.eq('dni', dni)
+	if (updateError) throw updateError
+
+	return url
+}

@@ -27,8 +27,9 @@ export async function searchBooks(req, res) {
     const { ano, materia, nombre } = req.query
     
     if (nombre) {
-      const books = await librosService.searchBookNames(nombre)
-      return res.json(books)
+      // Devolver array de objetos completos para que ObtenerLibroPorNombre funcione
+      const book = await librosService.getBookByName(nombre)
+      return res.json(book ? [book] : [])
     }
     
     if (ano || materia) {

@@ -33,6 +33,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     reader.readAsDataURL(file)
                 }
+
+                // Cambiar texto del overlay a "Cambiar imagen"
+                const overlaySpan = document.querySelector('#imagenPreviewContainer .edit-img-overlay span')
+                if (overlaySpan) overlaySpan.textContent = 'Cambiar imagen'
                 
                 // 3. Actualizar estado
                 const estadoImagen = document.getElementById('estadoImagen')

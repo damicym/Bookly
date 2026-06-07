@@ -11,7 +11,23 @@
     @* ===== HEADER DE PERFIL ===== *@
     <section class="profile-header-section">
         <div class="profile-avatar-wrap">
-            <img src="~/img/default.webp" alt="foto de perfil" class="profile-avatar" />
+            @{
+                var fotoPerfilUrl = ViewBag.usuario?.fotoPerfil as string;
+                string avatarSrc = !string.IsNullOrWhiteSpace(fotoPerfilUrl)
+                    ? fotoPerfilUrl
+                    : "/img/default.webp";
+            }
+            <div class="profile-avatar-container" id="avatarContainer" title="Cambiar foto de perfil">
+                <img src="@avatarSrc" alt="foto de perfil" class="profile-avatar" id="profileAvatarImg" />
+                <div class="profile-avatar-overlay">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /><path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg>
+                    <span class="profile-avatar-overlay-label">@(avatarSrc == "/img/default.webp" ? "Subir foto" : "Cambiar foto")</span>
+                </div>
+                <form id="fotoPerfilForm" action="@Url.Action("UpdateFotoPerfil", "Usuarios")" method="post" enctype="multipart/form-data" style="display:none;">
+                    @Html.AntiForgeryToken()
+                    <input type="file" id="fotoPerfilInput" name="fotoPerfil" accept="image/*" style="display:none;" />
+                </form>
+            </div>
         </div>
 
         <div class="profile-meta">
@@ -94,7 +110,7 @@
                     <div class="libro inProfile">
                         <div class="imgContainer">
                             <div class="libroImgContainer">
-                                <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" />
+                                <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" loading="lazy" />
                                 <section class="libroActionsContainer">
                                     <button class="desearBtnForm editar" type="button" title="Editar" onclick="event.stopPropagation(); abrirEditarModal(@libro.id);">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
@@ -145,7 +161,7 @@
                     <div class="libro" id="fav-card-@libro.id" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
                         <div class="imgContainer">
                             <div class="libroImgContainer">
-                                <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" />
+                                <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" loading="lazy" />
                                 <section class="libroActionsContainer">
                                     <form class="desearBtnForm hoverVerde" action="@Url.Action("Desear", "Book")" method="post" style="display:inline;" onsubmit="return quitarFavorito(event, this, 'fav-card-@libro.id');">
                                         @Html.AntiForgeryToken()
@@ -262,3 +278,48 @@
     }
 </script>
 }
+
+<script>
+// ── Foto de perfil ──
+(function() {
+    const container = document.getElementById('avatarContainer');
+    const input = document.getElementById('fotoPerfilInput');
+    const form = document.getElementById('fotoPerfilForm');
+    const img = document.getElementById('profileAvatarImg');
+    const label = document.querySelector('.profile-avatar-overlay-label');
+    if (!container || !input || !form || !img) return;
+
+    container.addEventListener('click', function() { input.click(); });
+
+    input.addEventListener('change', async function() {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Preview inmediato
+        const reader = new FileReader();
+        reader.onload = e => { img.src = e.target.result; };
+        reader.readAsDataURL(file);
+
+        const formData = new FormData(form);
+        formData.set('fotoPerfil', file);
+        const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        try {
+            const res = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'RequestVerificationToken': token }
+            });
+            const data = await res.json();
+            if (data && data.success) {
+                img.src = data.src;
+                if (label) label.textContent = 'Cambiar foto';
+            } else {
+                alert(data?.message || 'Error al subir la foto');
+            }
+        } catch(e) {
+            console.error('Error al subir foto de perfil:', e);
+        }
+    });
+})();
+</script>

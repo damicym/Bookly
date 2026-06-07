@@ -17,7 +17,7 @@
     @* ── COL 1: Portada ── *@
     <aside class="det-col-portada">
         <div class="det-portada">
-            <img src="@imgBase64" alt="@Model.nombre" />
+            <img src="@imgBase64" alt="@Model.nombre" loading="lazy" />
         </div>
         <form class="desearBtnForm hoverVerde det-fav-form" action="@Url.Action("Desear", "Book")" method="post" onsubmit="return desearLibro(event, this);">
             @Html.AntiForgeryToken()

@@ -172,6 +172,26 @@ namespace Bookly.Models
             Put($"/usuarios/{Uri.EscapeDataString(dni)}/about", new { about_me = aboutMe });
         }
 
+        /// <summary>POST /api/usuarios/:dni/foto — sube foto de perfil, devuelve URL pública</summary>
+        public static string SubirFotoPerfil(string dni, byte[] bytes, string contentType)
+        {
+            try
+            {
+                using var form = new MultipartFormDataContent();
+                var imgContent = new ByteArrayContent(bytes);
+                imgContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                form.Add(imgContent, "fotoPerfil", "foto.jpg");
+                var response = _http.PostAsync($"{_apiBase}/usuarios/{Uri.EscapeDataString(dni)}/foto", form)
+                                    .GetAwaiter().GetResult();
+                if (!response.IsSuccessStatusCode) return null;
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var el = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                if (el.TryGetProperty("url", out var urlEl)) return urlEl.GetString();
+                return null;
+            }
+            catch { return null; }
+        }
+
         /// <summary>POST /api/usuarios/register</summary>
         public static void registrarse(Usuarios usuario)
         {
@@ -220,13 +240,16 @@ namespace Bookly.Models
         }
 
         /// <summary>
-        /// GET /api/libros/search?nombre=x
+        /// <summary>
+        /// Busca un libro por nombre exacto usando GET /api/libros
+        /// y filtrando en memoria — evita problemas con el endpoint search.
         /// </summary>
         public static Libros ObtenerLibroPorNombre(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre)) return null;
-            var results = Get<List<Libros>>($"/libros/search?nombre={Uri.EscapeDataString(nombre)}");
-            return results?.Count > 0 ? results[0] : null;
+            var todos = Get<List<Libros>>("/libros");
+            return todos?.FirstOrDefault(l =>
+                string.Equals(l.nombre, nombre, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
