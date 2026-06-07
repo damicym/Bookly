@@ -41,6 +41,7 @@ const IMAGENES = {
   'Fuentes del Judaismo 3':                       'fuentesjudaismo.jpg',
 }
 
+// AJUSTA ESTA RUTA SEGÚN DÓNDE ESTÉN TUS IMÁGENES LOCALES ⬇️
 const IMG_DIR = path.resolve(__dirname, '../web/wwwroot/img/libros')
 const BUCKET = 'images'
 
