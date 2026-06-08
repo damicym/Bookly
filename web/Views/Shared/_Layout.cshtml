@@ -951,6 +951,7 @@
         </script>
     }
 
+    @* ── Welcome Toast — antes del header para que el dropdown lo tape siempre ── *@
     @if (TempData["WelcomeUser"] != null)
     {
         <div id="welcomeToast" class="welcome-toast" role="status" aria-live="polite">
@@ -961,13 +962,11 @@
             (function () {
                 var toast = document.getElementById('welcomeToast');
                 if (!toast) return;
-                // Mostrar con animación
                 requestAnimationFrame(function () {
                     requestAnimationFrame(function () {
                         toast.classList.add('welcome-toast--visible');
                     });
                 });
-                // esconder después de 3.5s
                 setTimeout(function () {
                     toast.classList.remove('welcome-toast--visible');
                     toast.addEventListener('transitionend', function () {
@@ -1000,22 +999,4 @@
 </html>
 
 </footer>
-
-
-<!-- nav sections eleminiados 
-    <svg class="simpleBtn" xmlns="http://www.w3.org/2000/svg"  width="50"  height="50"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-message"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>
-    <svg class="simpleBtn" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-menu-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg>
- -->
-
-<!--
-    <div class="filter" style="display: flex; gap: 8px; align-items: center;">
-        <select class="header-dropdown simpleBtn" name="categoria">
-            <option>Categorías</option>
-        </select>
-        <select class="header-dropdown simpleBtn" name="año">
-            <option>Materias</option>
-        </select>
-        <button class="simpleBtn" >Lista de deseados</button>
-    </div>
--->
 

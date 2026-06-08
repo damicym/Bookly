@@ -205,7 +205,7 @@ header .searchNFilter {
   pointer-events: none;
   transform: translateY(-6px);
   transition: opacity 0.18s ease, transform 0.18s ease;
-  z-index: 200;
+  z-index: 999;
 }
 
 .profile-dropdown-inner {

@@ -193,8 +193,6 @@
 .login-modal-card .ojo-btn:hover {
   color: var(--light);
 }
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
 
 .auth-card {
   background: var(--main);
