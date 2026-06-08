@@ -65,6 +65,12 @@
   border-color: var(--light);
 }
 
+.filtros-limpiar:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Botón toggle colapsar/expandir sidebar */
 .filtros-toggle {
   background: transparent;

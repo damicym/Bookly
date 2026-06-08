@@ -215,6 +215,7 @@ if (container && radioFiltros.length > 0) {
             debounceTimer = setTimeout(() => {
                 realizarBusqueda(queryActual)
                 actualizarChipsFiltros()
+                actualizarEstadoBotonLimpiar()
             }, 200)
         })
     })
@@ -292,6 +293,18 @@ function actualizarChipsFiltros() {
 
 // Botón limpiar todos los filtros
 const btnLimpiar = document.getElementById('btnLimpiarFiltros')
+
+function actualizarEstadoBotonLimpiar() {
+    if (!btnLimpiar) return
+    const hayRadioActivo = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales'].some(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`)
+        return checked && checked.value !== ''
+    })
+    const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
+    const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
+    btnLimpiar.disabled = !hayRadioActivo && !precioMin && !precioMax
+}
+
 if (btnLimpiar) {
     btnLimpiar.addEventListener('click', () => {
         document.querySelectorAll('.filtro-opcion input[value=""]').forEach(r => r.checked = true)
@@ -303,6 +316,7 @@ if (btnLimpiar) {
         debounceTimer = setTimeout(() => {
             realizarBusqueda(searchInput?.value?.trim() ?? "")
             actualizarChipsFiltros()
+            actualizarEstadoBotonLimpiar()
         }, 200)
     })
 }
@@ -311,9 +325,15 @@ if (btnLimpiar) {
 precioInputs.forEach(inputPrecio => {
     inputPrecio.addEventListener('input', () => {
         clearTimeout(debounceTimer)
-        debounceTimer = setTimeout(() => actualizarChipsFiltros(), 400)
+        debounceTimer = setTimeout(() => {
+            actualizarChipsFiltros()
+            actualizarEstadoBotonLimpiar()
+        }, 400)
     })
 })
+
+// Estado inicial del botón limpiar
+actualizarEstadoBotonLimpiar()
 
 // ===== TOGGLE SIDEBAR FILTROS =====
 const btnToggleFiltros = document.getElementById('btnToggleFiltros')
