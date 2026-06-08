@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    @* ── Page Loader — al inicio del body para que esté disponible inmediatamente ── *@
-    <div id="pageLoader" role="status" aria-label="Cargando">
+    @* ── Page Loader — inline styles para que sea visible desde el primer byte ── *@
+    <div id="pageLoader" role="status" aria-label="Cargando" style="position:fixed;inset:0;z-index:99999;background:rgba(6,26,64,0.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;opacity:1;transition:opacity 0.3s ease;">
         <div class="loader-inner">
             <div class="loader-spinner"></div>
             <svg class="loader-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -42,7 +42,6 @@
             else nombreMostrable = "Iniciar sesión";
         }
         @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
-        @if (usuario != null) {
         <section class="searchNFilter">
             <div class="search">
                 <input id="searchInput" name="query" type="text" placeholder="Buscar nombre de un libro" class="busqueda-input" value="@(ViewData["Title"]?.ToString() == "Resultados de búsqueda" ? ViewBag.query : "")" />
@@ -58,11 +57,9 @@
                 </div>
             </div>
         </section>
-        }
         <nav class="navSections">
 
-            @if (usuario != null) {
-            <a class="favBtn" id="chatBtnHeader" href="#" title="Mensajes">
+            <a class="favBtn" id="chatBtnHeader" title="Mensajes">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M8 9h8" />
@@ -70,15 +67,19 @@
                     <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
                 </svg>
             </a>
+
             <a class="favBtn" id="favBtnHeader" href="@Url.Action("Profile", "Home")#favoritos" title="Mis favoritos">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
                 </svg>
             </a>
+
             <div class="profileBtn@(ViewData["Title"]?.ToString() == "Perfil" ? " activeNavBtn" : "")" id="profileDropdownWrap">
-                <a href="@Url.Action("Profile", "Home")">
-                    <p>@HtmlHelpers.ToUpperPrimeraLetra(nombreMostrable)</p>
+                <a href="@(usuario != null ? Url.Action("Profile", "Home") : Url.Action("Login", "Usuarios"))">
+                    @if (usuario != null) {
+                        <p>@HtmlHelpers.ToUpperPrimeraLetra(nombreMostrable)</p>
+                    }
                     @{
                         var fotoNav = usuario?.fotoPerfil as string;
                     }
@@ -98,32 +99,32 @@
                 </a>
                 <div class="profile-dropdown">
                   <div class="profile-dropdown-inner">
-                    @if (ViewData["Title"]?.ToString() != "Perfil") {
+                    @if (usuario != null) {
+                        @if (ViewData["Title"]?.ToString() != "Perfil") {
                         <a class="profile-dropdown-item" href="@Url.Action("Profile", "Home")">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" /></svg>
                             Mi perfil
                         </a>
                         <div class="profile-dropdown-divider"></div>
-                    }
+                        }
                         <a class="profile-dropdown-item profile-dropdown-logout" href="@Url.Action("Logout", "Usuarios")">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
                             Cerrar sesión
                         </a>
+                    } else {
+                        <a class="profile-dropdown-item" href="#" onclick="abrirLoginModal(event)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M21 12h-13l3 -3" /><path d="M11 15l-3 -3" /></svg>
+                            Iniciar sesión
+                        </a>
+                        <div class="profile-dropdown-divider"></div>
+                        <a class="profile-dropdown-item" href="#" onclick="abrirRegisterModal(event)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
+                            Registrarse
+                        </a>
+                    }
                   </div>
                 </div>
             </div>
-
-            } else {
-
-            <button class="nav-auth-btn nav-auth-btn--secondary" onclick="abrirLoginModal(event, 'Profile')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M21 12h-13l3 -3" /><path d="M11 15l-3 -3" /></svg>
-                Iniciar sesión
-            </button>
-            <button class="nav-auth-btn nav-auth-btn--primary" onclick="abrirRegisterModal(event)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
-                Registrarse
-            </button>
-            }
         </nav>
         }
     </header>
@@ -189,25 +190,7 @@
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    <script>
-        (function() {
-            var loader = document.getElementById('pageLoader');
-            if (!loader) return;
-            function hide() {
-                loader.classList.add('loader-hiding');
-                setTimeout(function() {
-                    loader.style.display = 'none';
-                }, 320);
-            }
-            if (document.readyState === 'complete') {
-                hide();
-            } else {
-                window.addEventListener('load', hide);
-                // Fallback: ocultar después de 3s aunque no cargue todo
-                setTimeout(hide, 3000);
-            }
-        })();
-    </script>
+    @* ── Page Loader ── *@
 
     @* ── Modal de login (solo para usuarios no logueados) ── *@
     @if (ViewBag.usuario == null)
@@ -462,14 +445,12 @@
         </script>
 
         <script>
-            function abrirLoginModal(e, returnView) {
+            function abrirLoginModal(e) {
                 if (e) e.preventDefault();
                 var modal = document.getElementById('loginModal');
                 if (!modal) return;
                 modal.classList.add('login-modal-overlay--visible');
                 document.body.style.overflow = 'hidden';
-                var returnInput = document.querySelector('#loginModalForm input[name="returnView"]');
-                if (returnInput) returnInput.value = returnView || '';
                 setTimeout(function() {
                     var input = document.getElementById('modalDNI');
                     if (input) input.focus();
@@ -671,7 +652,7 @@
                             <div class="publicar-grid-2">
                                 <div class="campo">
                                     <label for="editModalNombre">Nombre</label>
-                                    <input type="text" id="editModalNombre" name="nombre" placeholder="Ej.: Toldot Israel" required maxlength="50" />
+                                    <input type="text" id="editModalNombre" name="nombre" placeholder="Ej.: Toldot Israel" required />
                                 </div>
                                 <div class="campo">
                                     <label for="editModalMateria">Materia</label>

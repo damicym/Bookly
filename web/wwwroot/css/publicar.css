@@ -210,6 +210,18 @@
   outline: none;
 }
 
+/* Neutralizar autofill del browser dentro de publicar */
+.publicar-seccion .campo input:-webkit-autofill,
+.publicar-seccion .campo input:-webkit-autofill:hover,
+.publicar-seccion .campo input:-webkit-autofill:focus,
+.publicar-seccion .campo input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #3a4e8c inset !important;
+  box-shadow: 0 0 0 1000px #3a4e8c inset !important;
+  -webkit-text-fill-color: var(--light) !important;
+  caret-color: var(--light);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
 .publicar-seccion .campo select option {
   background: var(--main);
   color: var(--light);

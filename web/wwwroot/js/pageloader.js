@@ -63,13 +63,8 @@
     `;
 
     function crearLoader() {
-        if (document.getElementById('pageLoader')) return;
-        var el = document.createElement('div');
-        el.id = 'pageLoader';
-        el.setAttribute('role', 'status');
-        el.setAttribute('aria-label', 'Cargando');
-        el.innerHTML = LOADER_HTML;
-        document.body.appendChild(el);
+        // El loader ya existe en el HTML estático al inicio del body
+        // Esta función se mantiene como no-op por compatibilidad
     }
 
     function mostrarLoader() {
@@ -86,7 +81,7 @@
         setTimeout(function () {
             el.style.display = 'none';
             el.classList.remove('loader-hiding');
-        }, 300);
+        }, 150);
     }
 
     // Crear al cargar
@@ -98,26 +93,42 @@
 
     // ── Interceptar clicks en links internos ──
     document.addEventListener('click', function (e) {
+        // Caso 1: <a href>
         var link = e.target.closest('a[href]');
-        if (!link) return;
-        var href = link.getAttribute('href');
-        if (!href) return;
-        if (
-            href.startsWith('#') ||
-            href.startsWith('javascript:') ||
-            href.startsWith('mailto:') ||
-            link.target === '_blank' ||
-            link.hasAttribute('download')
-        ) return;
-        try {
-            var url = new URL(href, window.location.origin);
-            if (url.origin !== window.location.origin) return;
-            if (url.pathname === window.location.pathname && url.hash) return;
-        } catch (err) { return; }
+        if (link) {
+            var href = link.getAttribute('href');
+            if (!href) return;
+            if (
+                href.startsWith('#') ||
+                href.startsWith('javascript:') ||
+                href.startsWith('mailto:') ||
+                link.target === '_blank' ||
+                link.hasAttribute('download')
+            ) return;
+            try {
+                var url = new URL(href, window.location.origin);
+                if (url.origin !== window.location.origin) return;
+                if (url.pathname === window.location.pathname && url.hash) return;
+            } catch (err) { return; }
+            e.preventDefault();
+            mostrarLoader();
+            setTimeout(function () { window.location.href = href; }, 60);
+            return;
+        }
 
-        e.preventDefault();
+        // Caso 2: elemento con onclick que navega (ej: divs de publicaciones)
+        var el = e.target.closest('[onclick]');
+        if (!el) return;
+        var onclickVal = el.getAttribute('onclick') || '';
+        var match = onclickVal.match(/window\.location\.href\s*=\s*['"]([^'"]+)['"]/);
+        if (!match) return;
+        var dest = match[1];
+        try {
+            var destUrl = new URL(dest, window.location.origin);
+            if (destUrl.origin !== window.location.origin) return;
+            if (destUrl.pathname === window.location.pathname) return;
+        } catch (err) { return; }
         mostrarLoader();
-        setTimeout(function () { window.location.href = href; }, 60);
     }, true);
 
     // ── Interceptar submit de forms que redirigen ──
@@ -135,11 +146,46 @@
     }, true);
 
     // ── Ocultar al cargar la página ──
-    window.addEventListener('pageshow', ocultarLoader);
-    window.addEventListener('load', ocultarLoader);
-    document.addEventListener('DOMContentLoaded', ocultarLoader);
+    // En el catálogo, el loader se oculta manualmente desde buscar.js
+    // para esperar a que las publicaciones terminen de cargar
+    var esCatalogo = window.location.pathname.toLowerCase().includes('/home/buscar') ||
+                     window.location.pathname.toLowerCase().includes('/home/catalogo') ||
+                     document.getElementById('resultados') !== null;
+
+    function ocultarLoaderAlCargar() {
+        if (!esCatalogo) ocultarLoader();
+    }
+
+    // DOMContentLoaded: el HTML está listo, no esperamos imágenes ni recursos externos
+    document.addEventListener('DOMContentLoaded', function() {
+        esCatalogo = document.getElementById('resultados') !== null;
+        ocultarLoaderAlCargar();
+    });
+
+    // pageshow cubre navegación con bfcache (botón atrás/adelante del browser)
+    window.addEventListener('pageshow', ocultarLoaderAlCargar);
 
     window.mostrarPageLoader = mostrarLoader;
     window.ocultarPageLoader = ocultarLoader;
+
+    // ── Interceptar fetch global ──
+    var _fetchOriginal = window.fetch;
+    var _fetchActivo = 0;
+    window.fetch = function(url) {
+        // No mostrar loader para búsquedas en tiempo real (se disparan con cada tecla)
+        var urlStr = (url || '').toString();
+        var esBusqueda = urlStr.includes('/Home/Buscar') || urlStr.includes('/Home/Catalogo') || urlStr.includes('/Book/AutocompleteNombres');
+        if (esBusqueda) return _fetchOriginal.apply(this, arguments);
+
+        _fetchActivo++;
+        mostrarLoader();
+        return _fetchOriginal.apply(this, arguments).finally(function() {
+            _fetchActivo--;
+            if (_fetchActivo <= 0) {
+                _fetchActivo = 0;
+                ocultarLoader();
+            }
+        });
+    };
 
 })();

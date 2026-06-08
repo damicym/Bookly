@@ -116,7 +116,7 @@ namespace Bookly.Controllers
             return View();
         }
         
-        public IActionResult Buscar(string query, string materia, string ano, string estado, string editorial, string precioMin, string precioMax/* , string orden, string direccion */)
+        public IActionResult Buscar(string query, string materia, string ano, string estado, string editorial, string precioMin, string precioMax, string ordenEstado, string ordenPrecio)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             List<PublicacionesCompletas> resultados;
@@ -149,11 +149,36 @@ namespace Bookly.Controllers
 
                 resultados = consulta.ToList();
                 MarcarMasBaratos(resultados);
-                // Los más baratos de su grupo van primero
-                resultados = resultados
-                    .OrderByDescending(p => p.esMasBarato)
-                    .ThenBy(p => p.precio)
-                    .ToList();
+
+                // Aplicar ordenamiento según filtros seleccionados
+                // ordenEstado tiene prioridad sobre ordenPrecio si ambos están activos
+                if (!string.IsNullOrWhiteSpace(ordenEstado))
+                {
+                    // Mapa de estado a valor numérico: a=mejor(1), b=medio(2), d=peor(3)
+                    Func<PublicacionesCompletas, int> estadoOrden = p => {
+                        var e = RemoveTildes(NormalizarEstado(p.estadoLibro ?? "")).ToLower();
+                        if (e == "como nuevo" || e == "a") return 1;
+                        if (e == "pocas anotaciones" || e == "b") return 2;
+                        return 3;
+                    };
+                    resultados = ordenEstado == "asc"
+                        ? resultados.OrderBy(estadoOrden).ThenBy(p => p.precio).ToList()
+                        : resultados.OrderByDescending(estadoOrden).ThenBy(p => p.precio).ToList();
+                }
+                else if (!string.IsNullOrWhiteSpace(ordenPrecio))
+                {
+                    resultados = ordenPrecio == "asc"
+                        ? resultados.OrderBy(p => p.precio).ToList()
+                        : resultados.OrderByDescending(p => p.precio).ToList();
+                }
+                else
+                {
+                    // Orden por defecto: más baratos de su grupo primero
+                    resultados = resultados
+                        .OrderByDescending(p => p.esMasBarato)
+                        .ThenBy(p => p.precio)
+                        .ToList();
+                }
 
                 // Marcar cuáles ya están en favoritos
                 foreach (var r in resultados)

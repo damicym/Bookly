@@ -86,6 +86,25 @@
             </div>
         </div>
 
+        @* Orden por estado *@
+        <div class="filtro-grupo">
+            <button class="filtro-grupo-titulo" type="button" aria-expanded="true" data-target="listaOrdenEstado">
+                <span>Orden por estado</span>
+                <svg class="filtro-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+            </button>
+            <div class="filtro-lista" id="listaOrdenEstado">
+                <label class="filtro-opcion">
+                    <input type="radio" name="filtroOrdenEstado" value="" checked /> Sin ordenar
+                </label>
+                <label class="filtro-opcion">
+                    <input type="radio" name="filtroOrdenEstado" value="asc" /> Mejor estado primero
+                </label>
+                <label class="filtro-opcion">
+                    <input type="radio" name="filtroOrdenEstado" value="desc" /> Peor estado primero
+                </label>
+            </div>
+        </div>
+
         @* Editorial *@
         <div class="filtro-grupo">
             <button class="filtro-grupo-titulo" type="button" aria-expanded="true" data-target="listaEditorial">
@@ -125,6 +144,25 @@
                 </div>
             </div>
         </div>@* fin filtro-grupo precio *@
+
+        @* Orden por precio *@
+        <div class="filtro-grupo">
+            <button class="filtro-grupo-titulo" type="button" aria-expanded="true" data-target="listaOrdenPrecio">
+                <span>Orden por precio</span>
+                <svg class="filtro-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+            </button>
+            <div class="filtro-lista" id="listaOrdenPrecio">
+                <label class="filtro-opcion">
+                    <input type="radio" name="filtroOrdenPrecio" value="" checked /> Sin ordenar
+                </label>
+                <label class="filtro-opcion">
+                    <input type="radio" name="filtroOrdenPrecio" value="asc" /> Menor precio primero
+                </label>
+                <label class="filtro-opcion">
+                    <input type="radio" name="filtroOrdenPrecio" value="desc" /> Mayor precio primero
+                </label>
+            </div>
+        </div>
 
         </div>@* fin filtros-scroll *@
 

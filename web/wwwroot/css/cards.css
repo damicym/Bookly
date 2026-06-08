@@ -459,13 +459,16 @@ button.desearBtnForm.editar:hover svg {
 
 .libroExistenteIndicator {
   background-color: var(--secondary2);
-  padding: 4px;
+  padding: 4px 6px;
   color: var(--dark);
   border-radius: 6px;
   margin-left: 6px;
   position: absolute;
   right: 0;
   display: none;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
 }
 
 @media (max-width: 450px) {

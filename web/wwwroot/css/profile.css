@@ -287,7 +287,7 @@
 /* ---- TABS ---- */
 .profile-tabs {
   display: flex;
-  margin-inline: 60px;
+  margin-inline: 160px 60px;
   border-bottom: 1px solid rgba(6, 26, 64, 0.1);
 }
 
@@ -328,7 +328,7 @@
   display: none;
   flex-direction: column;
   gap: 28px;
-  padding: 32px 60px 60px;
+  padding: 32px 40px 60px;
 }
 
 .profile-tab-panel.active {
@@ -383,7 +383,7 @@
   }
 
   .profile-tab-panel {
-    padding: 24px 16px 40px;
+    padding: 24px 20px 40px;
   }
 
   .profile-avatar-container {
@@ -420,11 +420,17 @@
 .profile-tab-panel .cardsPublicadas {
   display: grid;
   grid-template-columns: repeat(auto-fill, 230px);
-  gap: 20px;
-  justify-content: center;
-  margin-inline: 0;
-  max-width: 100%;
+  gap: 32px;
+  max-width: calc(6 * 230px + 5 * 32px); /* 1540px — 6 cols máx */
   width: 100%;
+  margin-inline: auto;
+  margin-bottom: 4%;
+}
+
+@media (max-width: 560px) {
+  .profile-tab-panel .cardsPublicadas {
+    gap: 20px;
+  }
 }
 
 /* Estado vacío centrado dentro del grid */

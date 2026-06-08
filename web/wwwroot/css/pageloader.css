@@ -15,7 +15,7 @@
   justify-content: center;
   gap: 20px;
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.15s ease;
   pointer-events: all;
 }
 

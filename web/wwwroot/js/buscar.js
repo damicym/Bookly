@@ -3,7 +3,7 @@
 const container = document.getElementById("resultados")
 
 if (searchInput && container) {
-    realizarBusqueda(searchInput.value.trim())
+    realizarBusqueda(searchInput.value.trim(), true)
     searchInput.focus()
     const len = searchInput.value ? searchInput.value.length : 0
     if (typeof searchInput.setSelectionRange === 'function') {
@@ -13,7 +13,7 @@ if (searchInput && container) {
     }
 }
 
-async function realizarBusqueda(query) {
+async function realizarBusqueda(query, esCargaInicial) {
     if (query !== null && query !== undefined) {
         try{
             // Soporte para selects (legacy) y radio buttons (nuevo diseño)
@@ -27,6 +27,8 @@ async function realizarBusqueda(query) {
             const editorial = document.getElementById("filtroEditoriales")?.value?.trim() ?? getRadioVal("filtroEditoriales")
             const precioMin = limpiarPrecio(document.getElementById("filtroPrecioMin")?.value?.trim() ?? "")
             const precioMax = limpiarPrecio(document.getElementById("filtroPrecioMax")?.value?.trim() ?? "")
+            const ordenEstado = getRadioVal("filtroOrdenEstado")
+            const ordenPrecio = getRadioVal("filtroOrdenPrecio")
 
             const params = new URLSearchParams({
                 query: query ?? "",
@@ -35,7 +37,9 @@ async function realizarBusqueda(query) {
                 estado,
                 editorial,
                 precioMin,
-                precioMax
+                precioMax,
+                ordenEstado,
+                ordenPrecio
             })
 
             const res = await fetch(`/Home/Buscar?${params.toString()}`)
@@ -51,13 +55,14 @@ async function realizarBusqueda(query) {
                 const token = document.querySelector('input[name="__RequestVerificationToken"]')
                 const tokenInput = token ? `<input type="hidden" name="__RequestVerificationToken" value="${token.value}">` : ''
                 if (data.publicaciones && data.publicaciones.length > 0) {
+                    const hayOrden = ordenEstado !== '' || ordenPrecio !== ''
                     let anteriorFueProtagonista = data.publicaciones[0]?.esMasBarato ?? false
                     let huboCambio = false
                     data.publicaciones.forEach(libro => {
                         const imgSrc = libro.imagen ? libro.imagen : '/img/book-placeholder.webp'
                         const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Mejor precio</span>` : ''
-                        const claseCard = libro.esMasBarato ? 'libro protagonista' : 'libro secundario'
-                        if (huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
+                        const claseCard = (!hayOrden && libro.esMasBarato) ? 'libro protagonista' : 'libro secundario'
+                        if (!hayOrden && huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
                             html += `<hr class="separador-cards" />`
                         }
                         anteriorFueProtagonista = libro.esMasBarato
@@ -115,8 +120,10 @@ async function realizarBusqueda(query) {
                 }
                 container.innerHTML = html
             }
+            if (esCargaInicial && typeof ocultarPageLoader === 'function') ocultarPageLoader()
         } catch (error) {
             console.error("Error al buscar:", error)
+            if (esCargaInicial && typeof ocultarPageLoader === 'function') ocultarPageLoader()
             
             // Mostrar mensaje de error amigable al usuario
             if (container) {
@@ -148,6 +155,7 @@ async function realizarBusqueda(query) {
             <p class="no-result-title">Buscá un libro</p>
             <p class="no-result-sub">Escribí el nombre de un libro en la barra de búsqueda para ver resultados.</p>
         </div>`
+        if (esCargaInicial && typeof ocultarPageLoader === 'function') ocultarPageLoader()
     }
 }
 
@@ -176,7 +184,7 @@ const filtrosBusqueda = [
 
 // También escuchar radio buttons del nuevo diseño de filtros
 const radioFiltros = document.querySelectorAll(
-    'input[name="filtroMateria"], input[name="filtroAno"], input[name="filtroEstado"], input[name="filtroEditoriales"]'
+    'input[name="filtroMateria"], input[name="filtroAno"], input[name="filtroEstado"], input[name="filtroEditoriales"], input[name="filtroOrdenEstado"], input[name="filtroOrdenPrecio"]'
 )
 
 const precioInputs = [
@@ -246,7 +254,7 @@ function actualizarChipsFiltros() {
     if (!chipsContainer) return
     chipsContainer.innerHTML = ''
 
-    const grupos = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales']
+    const grupos = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales', 'filtroOrdenEstado', 'filtroOrdenPrecio']
     grupos.forEach(name => {
         const checked = document.querySelector(`input[name="${name}"]:checked`)
         if (!checked || checked.value === '') return
@@ -296,7 +304,7 @@ const btnLimpiar = document.getElementById('btnLimpiarFiltros')
 
 function actualizarEstadoBotonLimpiar() {
     if (!btnLimpiar) return
-    const hayRadioActivo = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales'].some(name => {
+    const hayRadioActivo = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales', 'filtroOrdenEstado', 'filtroOrdenPrecio'].some(name => {
         const checked = document.querySelector(`input[name="${name}"]:checked`)
         return checked && checked.value !== ''
     })

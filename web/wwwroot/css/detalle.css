@@ -5,7 +5,7 @@
 .det-page-wrapper {
   width: min(1400px, 100vw - 48px);
   margin: 0 auto;
-  padding: 40px 0 60px;
+  padding: 20px 0 60px;
   box-sizing: border-box;
 }
 
@@ -468,6 +468,7 @@
   cursor: pointer;
   transition: filter 0.2s, transform 0.15s;
   box-shadow: 0 4px 14px rgba(151,216,196,0.35);
+  margin-bottom: 10px;
 }
 
 .det-vendedor-cta-btn:hover {
@@ -945,6 +946,7 @@
   cursor: pointer;
   transition: filter 0.2s, transform 0.15s;
   box-shadow: 0 4px 14px rgba(151,216,196,0.35);
+  margin-bottom: 10px;
 }
 
 .det-vendedor-cta-btn:hover {
@@ -1079,4 +1081,32 @@
   padding: 4px 9px;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* ── Botón volver ── */
+.det-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(6, 26, 64, 0.4);
+  text-decoration: none;
+  margin-bottom: 20px;
+  padding: 5px 0;
+  transition: color 0.15s, gap 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.det-volver:hover {
+  color: var(--main);
+  gap: 9px;
+}
+
+.det-volver svg {
+  transition: transform 0.15s;
+}
+
+.det-volver:hover svg {
+  transform: translateX(-3px);
 }
