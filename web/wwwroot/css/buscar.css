@@ -411,6 +411,64 @@
   color: var(--light);
 }
 
+/* ===== SKELETON LOADER ===== */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.libro-skeleton {
+  background-color: var(--main);
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 230px;
+  height: 420px;
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+
+.skeleton-block {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(239, 242, 241, 0.12) 25%,
+    rgba(239, 242, 241, 0.28) 50%,
+    rgba(239, 242, 241, 0.12) 75%
+  );
+  background-size: 600px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+}
+
+.skeleton-titulo {
+  height: 20px;
+  width: 85%;
+}
+
+.skeleton-titulo-2 {
+  height: 20px;
+  width: 60%;
+}
+
+.skeleton-materia {
+  height: 14px;
+  width: 55%;
+}
+
+.skeleton-precio {
+  height: 22px;
+  width: 40%;
+  margin-top: auto;
+}
+
 /* ===== NO RESULT ===== */
 .no-result p {
   margin: 0;

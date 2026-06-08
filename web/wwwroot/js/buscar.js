@@ -13,8 +13,22 @@ if (searchInput && container) {
     }
 }
 
+function mostrarSkeleton(cantidad = 10) {
+    if (!container) return
+    const skeletonCard = `
+        <div class="libro-skeleton">
+            <div class="skeleton-block skeleton-img"></div>
+            <div class="skeleton-block skeleton-titulo"></div>
+            <div class="skeleton-block skeleton-titulo-2"></div>
+            <div class="skeleton-block skeleton-materia"></div>
+            <div class="skeleton-block skeleton-precio"></div>
+        </div>`
+    container.innerHTML = skeletonCard.repeat(cantidad)
+}
+
 async function realizarBusqueda(query, esCargaInicial) {
     if (query !== null && query !== undefined) {
+        mostrarSkeleton()
         try{
             // Soporte para selects (legacy) y radio buttons (nuevo diseño)
             const getRadioVal = (name) => {
@@ -218,6 +232,7 @@ if (container && filtrosBusqueda.length > 0) {
 if (container && radioFiltros.length > 0) {
     radioFiltros.forEach((radio) => {
         radio.addEventListener("change", () => {
+            mostrarSkeleton()
             clearTimeout(debounceTimer)
             const queryActual = searchInput?.value?.trim() ?? ""
             debounceTimer = setTimeout(() => {
