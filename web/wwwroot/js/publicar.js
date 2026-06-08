@@ -190,7 +190,7 @@ function eliminarImagenActual(event) {
                 div.className = 'autocomplete-item';
                 div.textContent = item;
                 div.addEventListener('click', async () => {
-                    input.value = item; // al seleccionar, se completa el input
+                    input.value = item.substring(0, 50); // respetar maxlength
                     container.style.display = 'none';
                     // Solicitar datos completos del libro y autocompletar campos
                     try {

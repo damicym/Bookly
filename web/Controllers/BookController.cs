@@ -39,7 +39,7 @@ namespace Bookly.Controllers
 
             BD.PublicarLibro(libro, user.DNI, precio, estadoLibro, descripcion, imagen);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Profile", "Home");
         }
 
         [HttpGet]

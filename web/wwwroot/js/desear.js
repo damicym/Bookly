@@ -19,6 +19,12 @@ async function desearLibro(event, form) {
     const tokenEl = form.querySelector('input[name="__RequestVerificationToken"]')
     const token = tokenEl ? tokenEl.value : null
 
+    // Si no hay token (no hay sesión), abrir modal de login
+    if (!token) {
+        if (typeof abrirLoginModal === 'function') abrirLoginModal()
+        return false
+    }
+
     const estadoActualDeseado = btn ? btn.classList.contains('deseado') : false
     formData.set('esDeseado', estadoActualDeseado ? 'true' : 'false')
 
