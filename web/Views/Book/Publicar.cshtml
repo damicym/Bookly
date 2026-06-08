@@ -39,12 +39,12 @@
                 <div class="publicar-grid-2">
                     <div class="campo">
                         <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus autocomplete="off"/>
+                        <input type="text" id="nombre" name="libro.nombre" placeholder="Ej.: Toldot Israel" required autofocus autocomplete="off" maxlength="50" />
                         <input type="hidden" id="libroId" name="libro.id" value="" />
                     </div>
                     <div class="campo">
                         <label for="materia">Materia</label>
-                        <input type="text" id="materia" name="libro.materia" placeholder="Ej.: Historia Judía" required />
+                        <input type="text" id="materia" name="libro.materia" placeholder="Ej.: Historia Judía" required maxlength="60" />
                     </div>
                     <div class="campo">
                         <label for="ano">Nivel escolar</label>
@@ -60,7 +60,7 @@
                     </div>
                     <div class="campo">
                         <label for="editorial">Editorial</label>
-                        <input type="text" id="editorial" name="libro.editorial" placeholder="Ej.: Editorial ORT" />
+                        <input type="text" id="editorial" name="libro.editorial" placeholder="Ej.: Editorial ORT" maxlength="60" />
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="campo publicar-desc-campo">
                     <label for="descripcion">Descripción <span class="campo-opcional">(opcional)</span></label>
-                    <textarea id="descripcion" name="descripcion" placeholder="Contá el estado del libro, si tiene subrayados, si le faltan páginas..." class="publicar-desc-textarea"></textarea>
+                    <textarea id="descripcion" name="descripcion" placeholder="Contá el estado del libro, si tiene subrayados, si le faltan páginas..." class="publicar-desc-textarea" maxlength="500"></textarea>
                 </div>
             </div>
 
@@ -105,9 +105,46 @@
 (function() {
     var form = document.querySelector('.publicar-form');
     if (!form) return;
-    form.addEventListener('submit', function() {
+
+    // Validación al submit
+    form.addEventListener('submit', function(e) {
+        var nombre = document.getElementById('nombre');
+        var precio = document.getElementById('precio');
+        var desc = document.getElementById('descripcion');
+
+        // Precio: entre 1 y 999999
+        if (precio && (parseFloat(precio.value) < 1 || parseFloat(precio.value) > 999999)) {
+            e.preventDefault();
+            precio.setCustomValidity('El precio debe estar entre $1 y $999.999');
+            precio.reportValidity();
+            return;
+        } else if (precio) {
+            precio.setCustomValidity('');
+        }
+
+        // Nombre: mínimo 2 chars, máximo 50
+        if (nombre) {
+            var val = nombre.value.trim();
+            if (val.length < 2) {
+                e.preventDefault();
+                nombre.setCustomValidity('El nombre debe tener al menos 2 caracteres');
+                nombre.reportValidity();
+                return;
+            }
+            if (val.length > 50) {
+                nombre.value = val.substring(0, 50);
+            }
+            nombre.setCustomValidity('');
+        }
+
         var btn = document.getElementById('publicarSubmitBtn');
         if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+    });
+
+    // Limpiar validación al escribir
+    ['nombre','precio','descripcion'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', function() { this.setCustomValidity(''); });
     });
 })();
 </script>

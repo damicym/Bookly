@@ -352,3 +352,87 @@ header .searchNFilter {
     height: 34px;
   }
 }
+
+/* ── Botón iniciar sesión en nav (no logueado) ── */
+.nav-login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--light);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.nav-login-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--light);
+}
+
+/* ── Texto "Iniciar sesión" cuando no hay usuario ── */
+.nav-no-login-text {
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  color: rgba(239, 242, 241, 0.75);
+  transition: color 0.2s;
+}
+
+.profileBtn a:hover .nav-no-login-text {
+  color: var(--light);
+}
+
+/* ── Botones auth en nav (no logueado) ── */
+.nav-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s, filter 0.2s;
+}
+
+.nav-auth-btn:hover {
+  transform: translateY(-2px);
+}
+
+.nav-auth-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.nav-auth-btn--secondary {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--light);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+}
+
+.nav-auth-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  color: var(--light);
+}
+
+.nav-auth-btn--primary {
+  background: var(--secondary2);
+  color: var(--dark);
+  border: 1.5px solid transparent;
+}
+
+.nav-auth-btn--primary:hover {
+  filter: brightness(1.07);
+  box-shadow: 0 4px 14px rgba(151, 216, 196, 0.45);
+  color: var(--dark);
+}
