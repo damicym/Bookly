@@ -255,7 +255,8 @@ header .searchNFilter {
 }
 
 .profile-dropdown-inner .profile-dropdown-item:hover {
-  background-color: rgba(6, 26, 64, 0.07);
+  background-color: rgba(6, 26, 64, 0.1);
+  color: var(--dark) !important;
 }
 
 .profile-dropdown-item svg {
@@ -268,7 +269,11 @@ header .searchNFilter {
 }
 
 .profile-dropdown-logout:hover {
-  background-color: rgba(215, 38, 61, 0.1);
+  background-color: rgba(215, 38, 61, 0.18) !important;
+  color: var(--red) !important;
+}
+
+.profile-dropdown-logout:hover svg {
   color: var(--red) !important;
 }
 
