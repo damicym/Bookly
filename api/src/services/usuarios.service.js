@@ -1,9 +1,10 @@
 import supabase from '../db/supabase.js'
+import sharp from 'sharp'
 
 export async function login(dni, password) {
 	const { data, error } = await supabase
 		.from('usuarios')
-		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me')
+		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil')
 		.eq('dni', dni)
 		.eq('password', password)
 		.maybeSingle()
@@ -36,7 +37,7 @@ export async function register(user) {
 export async function getUserByDni(dni) {
 	const { data, error } = await supabase
 		.from('usuarios')
-		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me')
+		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil')
 		.eq('dni', dni)
 		.maybeSingle()
 	if (error) throw error
@@ -53,12 +54,17 @@ export async function updateAboutMe(dni, about_me) {
 }
 
 export async function subirFotoPerfil(dni, buffer, mimetype) {
-	const ext = mimetype.includes('png') ? 'png' : 'jpg'
-	const storagePath = `perfiles/${dni}.${ext}`
+	// Convertir siempre a webp — el bucket solo acepta image/webp
+	const webpBuffer = await sharp(buffer)
+		.resize({ width: 400, height: 400, fit: 'cover' })
+		.webp({ quality: 85 })
+		.toBuffer()
+
+	const storagePath = `perfiles/${dni}.webp`
 
 	const { error: uploadError } = await supabase.storage
 		.from('images')
-		.upload(storagePath, buffer, { contentType: mimetype, upsert: true })
+		.upload(storagePath, webpBuffer, { contentType: 'image/webp', upsert: true })
 	if (uploadError) throw uploadError
 
 	const { data } = supabase.storage.from('images').getPublicUrl(storagePath)

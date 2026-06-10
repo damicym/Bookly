@@ -103,7 +103,7 @@ namespace Bookly.Controllers
             user.fotoPerfil = url;
             HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
 
-            return Json(new { success = true, src = url });
+            return Json(new { success = true, src = url, url = url });
         }
 
     }

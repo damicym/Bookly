@@ -74,11 +74,12 @@ namespace Bookly.Controllers
                 return RedirectToAction("Login", "Usuarios");
             }
 
-            // Refrescar aboutMe desde la BD para garantizar que siempre esté actualizado
+            // Refrescar datos desde la BD para garantizar que siempre estén actualizados
             var userFresh = BD.ObtenerUsuarioPorDNI(user.DNI);
             if (userFresh != null)
             {
                 user.aboutMe = userFresh.aboutMe;
+                user.fotoPerfil = userFresh.fotoPerfil;
                 HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
             }
 

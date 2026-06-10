@@ -447,3 +447,19 @@ header .searchNFilter {
   box-shadow: 0 4px 14px rgba(151, 216, 196, 0.45);
   color: var(--dark);
 }
+
+/* ── Foto de perfil en el nav ── */
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(151, 216, 196, 0.55);
+  display: block;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.profileBtn a:hover .nav-avatar {
+  border-color: var(--secondary2);
+}

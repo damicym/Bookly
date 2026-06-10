@@ -158,7 +158,12 @@
 
         <div class="det-vendedor-card">
             <div class="det-vendedor-top">
-                <img src="~/img/default.webp" alt="perfil" class="det-vendedor-avatar" />
+                @{
+                    var avatarVendedor = !string.IsNullOrWhiteSpace(vendedor.fotoPerfil)
+                        ? vendedor.fotoPerfil
+                        : Url.Content("~/img/default.webp");
+                }
+                <img src="@avatarVendedor" alt="perfil" class="det-vendedor-avatar" />
                 <div>
                     <span class="det-vendedor-pill">Vendedor</span>
                     <p class="det-vendedor-nombre">@vendedor.nombreComp</p>

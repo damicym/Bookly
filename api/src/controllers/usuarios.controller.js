@@ -60,6 +60,7 @@ export async function updateFotoPerfil(req, res) {
     const url = await usuariosService.subirFotoPerfil(dni, req.file.buffer, req.file.mimetype)
     res.json({ success: true, url })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error('[updateFotoPerfil] Error:', err.message, err.stack)
+    res.status(500).json({ error: err.message || 'Error al subir la foto' })
   }
 }

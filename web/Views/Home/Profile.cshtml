@@ -289,11 +289,14 @@
     const label = document.querySelector('.profile-avatar-overlay-label');
     if (!container || !input || !form || !img) return;
 
-    container.addEventListener('click', function() { input.click(); });
-
+    container.addEventListener('click', function(e) {
+        // Evitar doble disparo si el click viene del label del overlay
+        input.click();
+    });
     input.addEventListener('change', async function() {
         const file = this.files[0];
         if (!file) return;
+        console.log('Archivo seleccionado:', file.name);
 
         // Preview inmediato
         const reader = new FileReader();
@@ -310,15 +313,32 @@
                 body: formData,
                 headers: { 'RequestVerificationToken': token }
             });
+            console.log('Response status:', res.status);
             const data = await res.json();
+            console.log('Response data:', data);
             if (data && data.success) {
-                img.src = data.src;
+                const nuevaSrc = (data.src || data.url) + '?t=' + Date.now();
+                img.src = nuevaSrc;
                 if (label) label.textContent = 'Cambiar foto';
+                var navAvatar = document.querySelector('.nav-avatar');
+                if (navAvatar) {
+                    navAvatar.src = nuevaSrc;
+                } else {
+                    var svgBtn = document.querySelector('.profileBtn a .simpleBtn');
+                    if (svgBtn) {
+                        var newImg = document.createElement('img');
+                        newImg.src = nuevaSrc;
+                        newImg.alt = 'foto de perfil';
+                        newImg.className = 'nav-avatar';
+                        svgBtn.replaceWith(newImg);
+                    }
+                }
             } else {
-                alert(data?.message || 'Error al subir la foto');
+                console.error('Error del servidor:', data);
+                alert(data?.message || data?.error || 'Error al subir la foto');
             }
         } catch(e) {
-            console.error('Error al subir foto de perfil:', e);
+            console.error('Error en fetch:', e);
         }
     });
 })();

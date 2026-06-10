@@ -48,7 +48,7 @@ async function uploadPublicationImage(imageFile) {
 }
 
 export async function createPublication(publication, dniVendedor) {
-	let idLibro = publication?.libro?.id || null
+	let idLibro = (publication?.libro?.id && publication.libro.id > 0) ? publication.libro.id : null
 	let imagenUrl = publication?.imagen || null
 	if (publication?.imageFile) {
 		imagenUrl = await uploadPublicationImage(publication.imageFile)
