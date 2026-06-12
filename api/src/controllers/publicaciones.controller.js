@@ -43,9 +43,8 @@ export async function updatePublication(req, res) {
     const imagenBody = typeof req.body.imagen === 'string' ? req.body.imagen : null
     const imageFile = req.file || null
     
-    await publicacionesService.updatePublicationFull(
+    await publicacionesService.updatePublication(
       parseInt(id),
-      libroParsed,
       precio,
       estado_libro,
       descripcion,

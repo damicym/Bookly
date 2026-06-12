@@ -172,6 +172,18 @@ namespace Bookly.Models
             Put($"/usuarios/{Uri.EscapeDataString(dni)}/about", new { about_me = aboutMe });
         }
 
+        /// <summary>DELETE /api/usuarios/:dni/foto — elimina foto de perfil (vuelve a default)</summary>
+        public static bool EliminarFotoPerfil(string dni)
+        {
+            try
+            {
+                var response = _http.DeleteAsync($"{_apiBase}/usuarios/{Uri.EscapeDataString(dni)}/foto")
+                                    .GetAwaiter().GetResult();
+                return response.IsSuccessStatusCode;
+            }
+            catch { return false; }
+        }
+
         /// <summary>POST /api/usuarios/:dni/foto — sube foto de perfil, devuelve URL pública</summary>
         public static string SubirFotoPerfil(string dni, byte[] bytes, string contentType)
         {

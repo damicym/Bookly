@@ -79,7 +79,9 @@ namespace Bookly.Controllers
             if (userFresh != null)
             {
                 user.aboutMe = userFresh.aboutMe;
-                user.fotoPerfil = userFresh.fotoPerfil;
+                // Solo pisar fotoPerfil si viene con valor, nunca con null
+                if (!string.IsNullOrWhiteSpace(userFresh.fotoPerfil))
+                    user.fotoPerfil = userFresh.fotoPerfil;
                 HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
             }
 
