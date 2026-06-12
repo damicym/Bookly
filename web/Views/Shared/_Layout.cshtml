@@ -42,7 +42,6 @@
             else nombreMostrable = "Iniciar sesión";
         }
         @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
-        @if (usuario != null) {
         <section class="searchNFilter">
             <div class="search">
                 <input id="searchInput" name="query" type="text" placeholder="Buscar nombre de un libro" class="busqueda-input" value="@(ViewData["Title"]?.ToString() == "Resultados de búsqueda" ? ViewBag.query : "")" />
@@ -58,7 +57,6 @@
                 </div>
             </div>
         </section>
-        }
         <nav class="navSections">
 
             @if (usuario != null) {

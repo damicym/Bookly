@@ -76,6 +76,23 @@ namespace Bookly.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public IActionResult DeleteFotoPerfil()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+                return Json(new { success = false, message = "No autenticado" });
+
+            var ok = BD.EliminarFotoPerfil(user.DNI);
+            if (!ok)
+                return Json(new { success = false, message = "Error al eliminar la foto" });
+
+            user.fotoPerfil = null;
+            HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult UpdateFotoPerfil(IFormFile fotoPerfil)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
