@@ -24,8 +24,7 @@ namespace Bookly.Controllers
                 HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(usuario));
                 TempData["WelcomeUser"] = usuario.nombreComp;
                 if (returnView == "Publicar") return RedirectToAction("Publicar", "Book");
-                if (returnView == "Profile") return RedirectToAction("Profile", "Home");
-                return RedirectToAction(returnView == "Index" || string.IsNullOrEmpty(returnView) ? "Index" : "Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
             TempData["ModalError"] = "DNI o contraseña incorrectos";
             TempData["ModalErrorTarget"] = "login";
