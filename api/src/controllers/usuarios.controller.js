@@ -64,3 +64,14 @@ export async function updateFotoPerfil(req, res) {
     res.status(500).json({ error: err.message || 'Error al subir la foto' })
   }
 }
+
+export async function deleteFotoPerfil(req, res) {
+  try {
+    const { dni } = req.params
+    await usuariosService.deleteFotoPerfil(dni)
+    res.json({ success: true, message: 'Foto de perfil eliminada' })
+  } catch (err) {
+    console.error('[deleteFotoPerfil] Error:', err.message, err.stack)
+    res.status(500).json({ error: err.message || 'Error al eliminar la foto' })
+  }
+}

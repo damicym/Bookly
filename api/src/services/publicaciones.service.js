@@ -1,51 +1,8 @@
 import supabase from '../db/supabase.js'
 import { fetchBooksByIds, mapBooksById } from '../db/helpers.js'
-import { randomUUID } from 'crypto'
-import sharp from 'sharp'
+import { uploadPublicationImage } from '../utils/imgParser.js'
 
-const PUBLICATIONS_BUCKET = 'images'
-const MAX_IMAGE_WIDTH = 900
-const MAX_IMAGE_HEIGHT = 1200
-const WEBP_QUALITY = 78
-
-async function toOptimizedWebp(imageFile) {
-	if (!imageFile?.buffer || !imageFile.mimetype?.startsWith('image/')) {
-		throw new Error('El archivo subido no es una imagen válida')
-	}
-
-	return sharp(imageFile.buffer, { failOn: 'none' })
-		.rotate()
-		.resize({
-			width: MAX_IMAGE_WIDTH,
-			height: MAX_IMAGE_HEIGHT,
-			fit: 'inside',
-			withoutEnlargement: true
-		})
-		.webp({ quality: WEBP_QUALITY })
-		.toBuffer()
-}
-
-async function uploadPublicationImage(imageFile) {
-	if (!imageFile) return null
-
-	const filePath = `${randomUUID()}.webp`
-	const webpBuffer = await toOptimizedWebp(imageFile)
-
-	const { error } = await supabase.storage
-		.from(PUBLICATIONS_BUCKET)
-		.upload(filePath, webpBuffer, {
-			contentType: 'image/webp',
-			upsert: false
-		})
-
-	if (error) throw error
-
-	const { data } = supabase.storage
-		.from(PUBLICATIONS_BUCKET)
-		.getPublicUrl(filePath)
-
-	return data.publicUrl
-}
+const PERFILES_BUCKET = 'images/perfiles'
 
 /**
  * Si le llega idLibro null, es porque es un libro nuevo -> agreagrlo a la db
@@ -55,7 +12,7 @@ export async function createPublication(publication, dniVendedor) {
 	let idLibro = publication?.libro?.id || null
 	let imagenUrl = publication?.imagen || null
 	if (publication?.imageFile) {
-		imagenUrl = await uploadPublicationImage(publication.imageFile)
+		imagenUrl = await uploadPublicationImage(publication.imageFile, PERFILES_BUCKET)
 	}
 
 	if (idLibro === null) {
@@ -126,7 +83,7 @@ export async function updatePublication(idPublicacion, precio, estadoLibro, desc
 	let imagenUrl = imagen ? imagen : pub.imagen || null
 	if (imageFile) {
 		try {
-			imagenUrl = await uploadPublicationImage(imageFile)
+			imagenUrl = await uploadPublicationImage(imageFile, PERFILES_BUCKET)
 		} catch (err) {
 			console.error('Error al subir la imagen optimizada:', err)
 			throw new Error('No se pudo procesar la imagen proporcionada')

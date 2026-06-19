@@ -105,16 +105,10 @@ namespace Bookly.Controllers
             if (fotoPerfil.Length > 5 * 1024 * 1024)
                 return Json(new { success = false, message = "La imagen no puede superar 5MB" });
 
-            byte[] bytes;
-            using (var ms = new MemoryStream())
-            {
-                fotoPerfil.CopyTo(ms);
-                bytes = ms.ToArray();
-            }
-
-            var url = BD.SubirFotoPerfil(user.DNI, bytes, fotoPerfil.ContentType);
-            if (url == null)
+            var url = BD.SubirFotoPerfil(user.DNI, fotoPerfil);
+            if (url == null){
                 return Json(new { success = false, message = "Error al subir la foto" });
+            }
 
             user.fotoPerfil = url;
             HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));

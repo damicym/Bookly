@@ -1,5 +1,34 @@
 import supabase from '../db/supabase.js'
-import sharp from 'sharp'
+import { uploadPublicationImage } from '../utils/imgParser.js'
+
+const PERFILES_BUCKET = 'images/perfiles'
+
+export async function subirFotoPerfil(dni, imageFile) {
+	let imagenUrl = null
+	if (imageFile) {
+		imagenUrl = await uploadPublicationImage(publication.imageFile, PERFILES_BUCKET)
+	} else {
+		console.log("No recibe imageFile at subirFotoPerfil")
+		return null
+	}
+
+	const { error: updateError } = await supabase
+		.from('usuarios')
+		.update({ foto_perfil: imagenUrl })
+		.eq('dni', dni)
+	if (updateError) throw updateError
+
+	return imagenUrl
+}
+
+export async function deleteFotoPerfil(dni) {
+	const { error: updateError } = await supabase
+		.from('usuarios')
+		.update({ foto_perfil: null })
+		.eq('dni', dni)
+	if (updateError) throw updateError
+	return true
+}
 
 export async function login(dni, password) {
 	const { data, error } = await supabase
@@ -51,30 +80,4 @@ export async function updateAboutMe(dni, about_me) {
 		.eq('dni', dni)
 	if (error) throw error
 	return true
-}
-
-export async function subirFotoPerfil(dni, buffer, mimetype) {
-	// Convertir siempre a webp — el bucket solo acepta image/webp
-	const webpBuffer = await sharp(buffer)
-		.resize({ width: 400, height: 400, fit: 'cover' })
-		.webp({ quality: 85 })
-		.toBuffer()
-
-	const storagePath = `perfiles/${dni}.webp`
-
-	const { error: uploadError } = await supabase.storage
-		.from('images')
-		.upload(storagePath, webpBuffer, { contentType: 'image/webp', upsert: true })
-	if (uploadError) throw uploadError
-
-	const { data } = supabase.storage.from('images').getPublicUrl(storagePath)
-	const url = data.publicUrl
-
-	const { error: updateError } = await supabase
-		.from('usuarios')
-		.update({ foto_perfil: url })
-		.eq('dni', dni)
-	if (updateError) throw updateError
-
-	return url
 }
