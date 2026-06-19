@@ -41,8 +41,8 @@ async function realizarBusqueda(query, esCargaInicial) {
             const editorial = document.getElementById("filtroEditoriales")?.value?.trim() ?? getRadioVal("filtroEditoriales")
             const precioMin = limpiarPrecio(document.getElementById("filtroPrecioMin")?.value?.trim() ?? "")
             const precioMax = limpiarPrecio(document.getElementById("filtroPrecioMax")?.value?.trim() ?? "")
-            const ordenEstado = getRadioVal("filtroOrdenEstado")
-            const ordenPrecio = getRadioVal("filtroOrdenPrecio")
+            const ordenEstado = document.getElementById('selectOrdenEstado')?.value ?? ""
+            const ordenPrecio = document.getElementById('selectOrdenPrecio')?.value ?? ""
 
             const params = new URLSearchParams({
                 query: query ?? "",
@@ -196,9 +196,9 @@ const filtrosBusqueda = [
     document.getElementById("filtroPrecioMax")
 ].filter(Boolean)
 
-// También escuchar radio buttons del nuevo diseño de filtros
+// También escuchar radio buttons de los filtros del sidebar
 const radioFiltros = document.querySelectorAll(
-    'input[name="filtroMateria"], input[name="filtroAno"], input[name="filtroEstado"], input[name="filtroEditoriales"], input[name="filtroOrdenEstado"], input[name="filtroOrdenPrecio"]'
+    'input[name="filtroMateria"], input[name="filtroAno"], input[name="filtroEstado"], input[name="filtroEditoriales"]'
 )
 
 const precioInputs = [
@@ -269,7 +269,8 @@ function actualizarChipsFiltros() {
     if (!chipsContainer) return
     chipsContainer.innerHTML = ''
 
-    const grupos = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales', 'filtroOrdenEstado', 'filtroOrdenPrecio']
+    // Chips de radios del sidebar
+    const grupos = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales']
     grupos.forEach(name => {
         const checked = document.querySelector(`input[name="${name}"]:checked`)
         if (!checked || checked.value === '') return
@@ -285,13 +286,38 @@ function actualizarChipsFiltros() {
                 debounceTimer = setTimeout(() => {
                     realizarBusqueda(searchInput?.value?.trim() ?? "")
                     actualizarChipsFiltros()
+                    actualizarEstadoBotonLimpiar()
                 }, 200)
             }
         })
         chipsContainer.appendChild(chip)
     })
 
-    // Precio
+    // Chips de selects de orden
+    ;[
+        { id: 'selectOrdenEstado' },
+        { id: 'selectOrdenPrecio' }
+    ].forEach(({ id }) => {
+        const sel = document.getElementById(id)
+        if (!sel || sel.value === '') return
+        const label = sel.options[sel.selectedIndex]?.text ?? sel.value
+        const chip = document.createElement('span')
+        chip.className = 'filtro-chip'
+        chip.innerHTML = `${label} <span class="filtro-chip-x">✕</span>`
+        chip.addEventListener('click', () => {
+            sel.value = ''
+            sel.classList.remove('activo')
+            clearTimeout(debounceTimer)
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(searchInput?.value?.trim() ?? "")
+                actualizarChipsFiltros()
+                actualizarEstadoBotonLimpiar()
+            }, 200)
+        })
+        chipsContainer.appendChild(chip)
+    })
+
+    // Chip de rango de precio
     const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
     const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
     if (precioMin || precioMax) {
@@ -308,6 +334,7 @@ function actualizarChipsFiltros() {
             debounceTimer = setTimeout(() => {
                 realizarBusqueda(searchInput?.value?.trim() ?? "")
                 actualizarChipsFiltros()
+                actualizarEstadoBotonLimpiar()
             }, 200)
         })
         chipsContainer.appendChild(chip)
@@ -319,18 +346,24 @@ const btnLimpiar = document.getElementById('btnLimpiarFiltros')
 
 function actualizarEstadoBotonLimpiar() {
     if (!btnLimpiar) return
-    const hayRadioActivo = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales', 'filtroOrdenEstado', 'filtroOrdenPrecio'].some(name => {
+    const hayRadioActivo = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales'].some(name => {
         const checked = document.querySelector(`input[name="${name}"]:checked`)
         return checked && checked.value !== ''
     })
+    const hayOrdenActivo = (document.getElementById('selectOrdenEstado')?.value ?? '') !== ''
+        || (document.getElementById('selectOrdenPrecio')?.value ?? '') !== ''
     const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
     const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
-    btnLimpiar.disabled = !hayRadioActivo && !precioMin && !precioMax
+    btnLimpiar.disabled = !hayRadioActivo && !hayOrdenActivo && !precioMin && !precioMax
 }
 
 if (btnLimpiar) {
     btnLimpiar.addEventListener('click', () => {
         document.querySelectorAll('.filtro-opcion input[value=""]').forEach(r => r.checked = true)
+        const selE = document.getElementById('selectOrdenEstado')
+        const selP = document.getElementById('selectOrdenPrecio')
+        if (selE) { selE.value = ''; selE.classList.remove('activo') }
+        if (selP) { selP.value = ''; selP.classList.remove('activo') }
         const minEl = document.getElementById('filtroPrecioMin')
         const maxEl = document.getElementById('filtroPrecioMax')
         if (minEl) minEl.value = ''
@@ -357,6 +390,24 @@ precioInputs.forEach(inputPrecio => {
 
 // Estado inicial del botón limpiar
 actualizarEstadoBotonLimpiar()
+
+// ===== DROPDOWNS DE ORDEN =====
+const selectOrdenEstado = document.getElementById('selectOrdenEstado')
+const selectOrdenPrecio = document.getElementById('selectOrdenPrecio')
+
+;[selectOrdenEstado, selectOrdenPrecio].forEach(sel => {
+    if (!sel) return
+    sel.addEventListener('change', () => {
+        sel.classList.toggle('activo', sel.value !== '')
+        mostrarSkeleton()
+        clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => {
+            realizarBusqueda(searchInput?.value?.trim() ?? "")
+            actualizarChipsFiltros()
+            actualizarEstadoBotonLimpiar()
+        }, 200)
+    })
+})
 
 // ===== TOGGLE SIDEBAR FILTROS =====
 const btnToggleFiltros = document.getElementById('btnToggleFiltros')

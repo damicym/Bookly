@@ -86,25 +86,6 @@
             </div>
         </div>
 
-        @* Orden por estado *@
-        <div class="filtro-grupo">
-            <button class="filtro-grupo-titulo" type="button" aria-expanded="true" data-target="listaOrdenEstado">
-                <span>Orden por estado</span>
-                <svg class="filtro-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
-            </button>
-            <div class="filtro-lista" id="listaOrdenEstado">
-                <label class="filtro-opcion">
-                    <input type="radio" name="filtroOrdenEstado" value="" checked /> Sin ordenar
-                </label>
-                <label class="filtro-opcion">
-                    <input type="radio" name="filtroOrdenEstado" value="asc" /> Mejor estado primero
-                </label>
-                <label class="filtro-opcion">
-                    <input type="radio" name="filtroOrdenEstado" value="desc" /> Peor estado primero
-                </label>
-            </div>
-        </div>
-
         @* Editorial *@
         <div class="filtro-grupo">
             <button class="filtro-grupo-titulo" type="button" aria-expanded="true" data-target="listaEditorial">
@@ -145,25 +126,6 @@
             </div>
         </div>@* fin filtro-grupo precio *@
 
-        @* Orden por precio *@
-        <div class="filtro-grupo">
-            <button class="filtro-grupo-titulo" type="button" aria-expanded="true" data-target="listaOrdenPrecio">
-                <span>Orden por precio</span>
-                <svg class="filtro-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
-            </button>
-            <div class="filtro-lista" id="listaOrdenPrecio">
-                <label class="filtro-opcion">
-                    <input type="radio" name="filtroOrdenPrecio" value="" checked /> Sin ordenar
-                </label>
-                <label class="filtro-opcion">
-                    <input type="radio" name="filtroOrdenPrecio" value="asc" /> Menor precio primero
-                </label>
-                <label class="filtro-opcion">
-                    <input type="radio" name="filtroOrdenPrecio" value="desc" /> Mayor precio primero
-                </label>
-            </div>
-        </div>
-
         </div>@* fin filtros-scroll *@
 
     </aside>
@@ -171,7 +133,27 @@
     @* ===== RESULTADOS ===== *@
     <div class="catalogo-resultados">
         <div class="catalogo-resultados-header">
-            <h2 class="busqueda-titulo">Catálogo</h2>
+            <div class="catalogo-titulo-row">
+                <h2 class="busqueda-titulo">Catálogo</h2>
+                <div class="orden-dropdowns">
+                    <div class="orden-dropdown-wrap">
+                        <label class="orden-label" for="selectOrdenEstado">Ordenar por</label>
+                        <select id="selectOrdenEstado" class="orden-select">
+                            <option value="">Estado</option>
+                            <option value="asc">Mejor estado primero</option>
+                            <option value="desc">Peor estado primero</option>
+                        </select>
+                    </div>
+                    <div class="orden-dropdown-wrap">
+                        <label class="orden-label" for="selectOrdenPrecio">Ordenar por</label>
+                        <select id="selectOrdenPrecio" class="orden-select">
+                            <option value="">Precio</option>
+                            <option value="asc">Menor precio primero</option>
+                            <option value="desc">Mayor precio primero</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div class="filtros-activos-chips" id="filtrosActivosChips"></div>
         </div>
         <section class="publicaciones">

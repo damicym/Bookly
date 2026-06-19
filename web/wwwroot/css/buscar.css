@@ -328,6 +328,75 @@
   margin-bottom: 8px;
 }
 
+/* Fila título + dropdowns de orden */
+.catalogo-titulo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.orden-dropdowns {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-shrink: 0;
+  margin-right: 60px;
+}
+
+.orden-dropdown-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* "Ordenar por " label */
+.orden-label {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--dark);
+  white-space: nowrap;
+  pointer-events: none;
+  margin-right: 4px;
+}
+
+/* El select parece texto azul con chevron, sin caja */
+.orden-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0 14px 0 0;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--main);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%234059ad' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0px center;
+  min-width: 0;
+}
+
+.orden-select:hover {
+  opacity: 0.8;
+}
+
+.orden-select:focus {
+  outline: none;
+}
+
+.orden-select:not(.activo) {
+  color: var(--main);
+  font-weight: 400;
+}
+
+.orden-select.activo {
+  color: var(--main);
+  font-weight: 600;
+}
+
 .busqueda-titulo {
   font-size: 1.8rem;
   font-weight: 700;
@@ -543,5 +612,21 @@
     justify-content: center;
     column-gap: 20px;
     row-gap: 20px;
+  }
+
+  .catalogo-titulo-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .orden-dropdowns {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .orden-select {
+    min-width: 0;
+    flex: 1;
   }
 }
