@@ -2,8 +2,9 @@ namespace Bookly.Helpers
 {
     public static class HtmlHelpers
     {
-        public static string PasarAñoATexto(int ano)
+        public static string PasarAñoATexto(int? ano)
         {
+            if (!ano.HasValue) return null;
             return ano switch
             {
                 1 => "7mo",
@@ -16,8 +17,9 @@ namespace Bookly.Helpers
             };
         }
 
-        public static string PasarAñoATextoCompleto(int ano)
+        public static string PasarAñoATextoCompleto(int? ano)
         {
+            if (!ano.HasValue) return null;
             return ano switch
             {
                 1 => "7mo grado",

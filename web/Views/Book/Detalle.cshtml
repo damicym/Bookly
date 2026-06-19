@@ -90,10 +90,12 @@
                 <span class="det-ficha-label">Editorial</span>
                 <span class="det-ficha-valor">@(string.IsNullOrWhiteSpace(Model.editorial) ? "—" : Model.editorial)</span>
             </div>
-            <div class="det-ficha-item">
-                <span class="det-ficha-label">Año de uso</span>
-                <span class="det-ficha-valor">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
-            </div>
+            @if (Model.ano.HasValue) {
+                <div class="det-ficha-item">
+                    <span class="det-ficha-label">Año de uso</span>
+                    <span class="det-ficha-valor">@HtmlHelpers.PasarAñoATexto(Model.ano.Value)</span>
+                </div>
+            }
             <div class="det-ficha-item">
                 <span class="det-ficha-label">Materia</span>
                 <span class="det-ficha-valor">@(string.IsNullOrWhiteSpace(Model.materia) ? "—" : Model.materia)</span>
@@ -134,7 +136,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                                     @(opVendedor?.nombreComp ?? op.idVendedor)
                                 </span>
-                                <span class="det-opcion-estado">@op.estadoLibro · @HtmlHelpers.PasarAñoATexto(op.ano)</span>
+                                <span class="det-opcion-estado">@op.estadoLibro@if(op.ano.HasValue) { <text> · @HtmlHelpers.PasarAñoATexto(op.ano.Value)</text> }</span>
                             </div>
                             <span class="det-opcion-precio">$@op.precio</span>
                             @if (esActual)
@@ -167,7 +169,7 @@
                 <div>
                     <span class="det-vendedor-pill">Vendedor</span>
                     <p class="det-vendedor-nombre">@vendedor.nombreComp</p>
-                    <p class="det-vendedor-sub">@HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano) · @vendedor.especialidad @vendedor.curso</p>
+                    <p class="det-vendedor-sub">@if (vendedor.ano.HasValue) { @HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano.Value); if (!string.IsNullOrWhiteSpace(vendedor.especialidad) || !string.IsNullOrWhiteSpace(vendedor.curso)) { <text> · </text> } } @vendedor.especialidad @vendedor.curso</p>
                     <p class="det-vendedor-about">@vendedor.aboutMe</p>
                 </div>
             </div>
