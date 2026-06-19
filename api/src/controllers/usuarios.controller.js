@@ -57,7 +57,8 @@ export async function updateFotoPerfil(req, res) {
   try {
     const { dni } = req.params
     if (!req.file) return res.status(400).json({ error: 'Archivo requerido' })
-    const url = await usuariosService.subirFotoPerfil(dni, req.file.buffer, req.file.mimetype)
+    // Pasamos el objeto `req.file` directamente (contiene .buffer y .mimetype)
+    const url = await usuariosService.subirFotoPerfil(dni, req.file)
     res.json({ success: true, url })
   } catch (err) {
     console.error('[updateFotoPerfil] Error:', err.message, err.stack)

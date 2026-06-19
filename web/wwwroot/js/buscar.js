@@ -110,12 +110,14 @@ async function realizarBusqueda(query, esCargaInicial) {
                                 </div>
                                 <div class="nombreYMateriaContainer">
                                     <h1>${toUpperPrimeraLetra(libro.nombre)}</h1>
-                                    ${libro.materia
-                                        ? `<h2>${toUpperPrimeraLetra(libro.materia)}</h2>`
-                                        : ''
-                                    }
                                 </div>
-                                <h3>$${libro.precio}</h3>
+                                <div class="libro-footer">
+                                    ${libro.materia
+                                        ? `<span class="libro-footer-materia">${toUpperPrimeraLetra(libro.materia)}</span>`
+                                        : '<span></span>'
+                                    }
+                                    <h3>$${formatearMiles(String(libro.precio))}</h3>
+                                </div>
                             </div>
                         `
                     })

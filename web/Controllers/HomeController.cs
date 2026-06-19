@@ -25,16 +25,14 @@ namespace Bookly.Controllers
             var favoritos = user != null
                 ? BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet()
                 : new HashSet<int>();
-            if (user != null)
-            {
-                int anoUsuario = user.ano;
+            int? anoUsuario = user?.ano;
+            if (user != null && anoUsuario.HasValue) {
                 publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario)
                     .Where(p => p.idVendedor != user.DNI).Take(20).ToList();
 
                 ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATextoCompleto(anoUsuario)}";
             }
-            else
-            {
+            else {
                 publicaciones = BD.ObtenerPublicacionesCompletasConTope(20);
                 ViewBag.Titulo = "Últimas publicaciones";
             }

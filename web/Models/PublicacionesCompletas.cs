@@ -13,13 +13,13 @@ public class PublicacionesCompletas
     public string nombre { get; set; }
 
     [JsonPropertyName("materia")]
-    public string materia { get; set; }
+    public string? materia { get; set; }
 
     [JsonPropertyName("ano")]
-    public int ano { get; set; }
+    public int? ano { get; set; }
 
     [JsonPropertyName("editorial")]
-    public string editorial { get; set; }
+    public string? editorial { get; set; }
 
     [JsonPropertyName("estado_libro")]
     public string estadoLibro { get; set; }

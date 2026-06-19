@@ -287,8 +287,9 @@ namespace Bookly.Models
         }
 
         /// <summary>GET /api/publicaciones/recomendaciones?ano=x</summary>
-        public static List<PublicacionesCompletas> ObtenerRecomendacionesPorAno(int ano)
+        public static List<PublicacionesCompletas> ObtenerRecomendacionesPorAno(int? ano)
         {
+            if (!ano.HasValue) return new List<PublicacionesCompletas>();
             return Get<List<PublicacionesCompletas>>($"/publicaciones/recomendaciones?ano={ano}")
                    ?? new List<PublicacionesCompletas>();
         }

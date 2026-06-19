@@ -10,11 +10,11 @@ public class Libros
     public string nombre { get; set; }
 
     [JsonPropertyName("materia")]
-    public string materia { get; set; }
+    public string? materia { get; set; }
 
     [JsonPropertyName("ano")]
-    public int ano { get; set; }
+    public int? ano { get; set; }
 
     [JsonPropertyName("editorial")]
-    public string editorial { get; set; }
+    public string? editorial { get; set; }
 }

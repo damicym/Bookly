@@ -83,11 +83,25 @@ namespace Bookly.Controllers
                 libro.esMasBarato = false;
             }
 
-            ViewBag.Publicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor)
-                .Where(p => p.id != id)
+            var todasDelVendedor = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
+            ViewBag.Publicaciones = todasDelVendedor
+                .Where(p => p.id != id && p.status == 1)
                 .ToList();
             ViewBag.Vendedor = vendedor;
             ViewBag.usuario = user;
+
+            // Estadísticas del vendedor para la tarjeta
+            ViewBag.VendedorPublicacionesActivas = todasDelVendedor.Count(p => p.status == 1);
+            ViewBag.VendedorVentasCerradas = todasDelVendedor.Count(p => p.status == 0);
+            ViewBag.VendedorTotalPublicaciones = todasDelVendedor.Count;
+
+            // Libros favoritos del vendedor — deduplicados por nombre de libro
+            var favoritasVendedor = BD.ObtenerPublicacionesFavoritasPorUsuario(idVendedor);
+            ViewBag.VendedorLibrosFavoritos = favoritasVendedor
+                .GroupBy(f => f.nombre?.Trim().ToLowerInvariant() ?? "")
+                .Select(g => g.First())
+                .Take(6)
+                .ToList();
 
             // Otras publicaciones del mismo libro (incluyendo la actual), ordenadas por precio
             var otrasOpciones = mismoLibro

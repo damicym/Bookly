@@ -19,6 +19,7 @@ export async function createPublication(req, res) {
     const { libro, precio, estado_libro, descripcion } = req.body
     const libroParsed = parseLibroField(libro)
     const imagenBody = typeof req.body.imagen === 'string' ? req.body.imagen : null
+    const imagenEliminada = req.body.imagen_eliminada === 'true' || req.body.imagen_eliminada === true
     const imageFile = req.file || null
     
     if (!precio || !libroParsed) {

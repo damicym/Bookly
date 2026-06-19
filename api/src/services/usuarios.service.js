@@ -6,7 +6,8 @@ const PERFILES_BUCKET = 'images/perfiles'
 export async function subirFotoPerfil(dni, imageFile) {
 	let imagenUrl = null
 	if (imageFile) {
-		imagenUrl = await uploadPublicationImage(publication.imageFile, PERFILES_BUCKET)
+		// imageFile viene como objeto con .buffer y .mimetype (desde Multer)
+		imagenUrl = await uploadPublicationImage(imageFile, PERFILES_BUCKET)
 	} else {
 		console.log("No recibe imageFile at subirFotoPerfil")
 		return null

@@ -11,7 +11,7 @@ namespace Bookly.Models
         public string nombreComp { get; set; }
 
         [JsonPropertyName("ano")]
-        public int ano { get; set; }
+        public int? ano { get; set; }
 
         [JsonPropertyName("especialidad")]
         public string especialidad { get; set; }
