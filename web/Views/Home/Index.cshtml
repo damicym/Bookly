@@ -75,7 +75,7 @@
             <div class="carrusel-track">
                 @foreach (PublicacionesCompletas libro in Model)
                 {
-                    <div class="libro carrusel-card @(libro.esMasBarato ? "protagonista" : "")" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                    <div class="libro carrusel-card @(libro.esMasBarato ? "protagonista" : "")" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
                         <div class="imgContainer">
                             <div class="libroImgContainer">
                                 <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" loading="lazy" />

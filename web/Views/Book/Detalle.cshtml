@@ -131,7 +131,7 @@
                         var opVendedor = BD.ObtenerUsuarioPorDNI(op.idVendedor);
                         var opImg = string.IsNullOrWhiteSpace(op.imagen) ? Url.Content("~/img/book-placeholder.webp") : op.imagen;
                         var esActual = op.id == Model.id;
-                        <a class="det-opcion-row @(esActual ? "det-opcion-row--actual" : "")" href="@Url.Action("Detalle", "Book", new { id = op.id, idVendedor = op.idVendedor })">
+                        <a class="det-opcion-row @(esActual ? "det-opcion-row--actual" : "")" href="@Url.Action("Detalle", "Book", new { id = op.id })">
                             <img class="det-opcion-portada" src="@opImg" alt="@op.nombre" />
                             <div class="det-opcion-info">
                                 <span class="det-opcion-vendedor">
@@ -234,7 +234,7 @@
                             var pubImg = publicaciones[i].imagen != null
                                 ? publicaciones[i].imagen
                                 : Url.Content("~/img/book-placeholder.webp");
-                            <a class="det-otras-thumb" href="@Url.Action("Detalle", "Book", new { id = publicaciones[i].id, idVendedor = publicaciones[i].idVendedor })">
+                            <a class="det-otras-thumb" href="@Url.Action("Detalle", "Book", new { id = publicaciones[i].id })">
                                 <img src="@pubImg" alt="@publicaciones[i].nombre" />
                                 <div class="det-otras-thumb-info">
                                     <span class="det-otras-thumb-nombre">@publicaciones[i].nombre</span>

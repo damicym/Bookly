@@ -43,11 +43,11 @@ namespace Bookly.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int id, string idVendedor)
+        public IActionResult Detalle(int id)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             PublicacionesCompletas libro = BD.ObtenerPublicacionCompletaPorId(id);
-            Usuarios vendedor = BD.ObtenerUsuarioPorDNI(idVendedor);
+            Usuarios vendedor = BD.ObtenerUsuarioPorDNI(libro.idVendedor);
             if (libro == null)
             {
                 return RedirectToAction("Index", "Home");
@@ -83,7 +83,7 @@ namespace Bookly.Controllers
                 libro.esMasBarato = false;
             }
 
-            var todasDelVendedor = BD.ObtenerPublicacionesCompletasPorUsuario(idVendedor);
+            var todasDelVendedor = BD.ObtenerPublicacionesCompletasPorUsuario(libro.idVendedor);
             ViewBag.Publicaciones = todasDelVendedor
                 .Where(p => p.id != id && p.status == 1)
                 .ToList();
@@ -96,7 +96,7 @@ namespace Bookly.Controllers
             ViewBag.VendedorTotalPublicaciones = todasDelVendedor.Count;
 
             // Libros favoritos del vendedor — deduplicados por nombre de libro
-            var favoritasVendedor = BD.ObtenerPublicacionesFavoritasPorUsuario(idVendedor);
+            var favoritasVendedor = BD.ObtenerPublicacionesFavoritasPorUsuario(libro.idVendedor);
             ViewBag.VendedorLibrosFavoritos = favoritasVendedor
                 .GroupBy(f => f.nombre?.Trim().ToLowerInvariant() ?? "")
                 .Select(g => g.First())
