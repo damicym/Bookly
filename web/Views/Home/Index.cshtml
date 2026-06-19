@@ -115,11 +115,15 @@
                         </div>
                         <div class="nombreYMateriaContainer">
                             <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                            @if (libro.materia != null) {
-                                <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                            }
                         </div>
-                        <h3>$@libro.precio</h3>
+                        <div class="libro-footer">
+                            @if (libro.materia != null) {
+                                <span class="libro-footer-materia">@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</span>
+                            } else {
+                                <span></span>
+                            }
+                            <h3>$@HtmlHelpers.FormatPrecio(libro.precio)</h3>
+                        </div>
                     </div>
                 }
 

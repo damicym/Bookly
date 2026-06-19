@@ -5,6 +5,8 @@
     ViewData["Title"] = "Ver libro";
     var publicaciones = (List<PublicacionesCompletas>)ViewBag.Publicaciones;
     var vendedor = (Usuarios)ViewBag.Vendedor;
+    var vendedorActivas = (int)(ViewBag.VendedorPublicacionesActivas ?? 0);
+    var vendedorCerradas = (int)(ViewBag.VendedorVentasCerradas ?? 0);
     var usuarioActual = (Usuarios)ViewBag.usuario;
     var otrasOpciones = (List<PublicacionesCompletas>)ViewBag.OtrasOpciones;
     var max = publicaciones.Count < 4 ? publicaciones.Count : 4;
@@ -172,6 +174,46 @@
                 </div>
             </div>
 
+            @* ── Barra de nivel de ventas ── *@
+            @{
+                var ventas = vendedorCerradas;
+                // Niveles: 0=Nuevo, 1-4=Principiante, 5-14=Regular, 15-29=Bueno, 30+=Experto
+                string nivelLabel;
+                int nivelIdx;
+                if      (ventas == 0)  { nivelLabel = "Nuevo";       nivelIdx = 0; }
+                else if (ventas < 5)   { nivelLabel = "Principiante"; nivelIdx = 1; }
+                else if (ventas < 15)  { nivelLabel = "Regular";      nivelIdx = 2; }
+                else if (ventas < 30)  { nivelLabel = "Bueno";        nivelIdx = 3; }
+                else                   { nivelLabel = "Experto";      nivelIdx = 4; }
+                // Porcentaje dentro del nivel actual para la barra
+                int pct = nivelIdx switch {
+                    0 => (int)Math.Min(ventas * 20, 100),          // 0-4 → 0-80%
+                    1 => (int)Math.Min((ventas / 4.0) * 100, 100), // 1-4
+                    2 => (int)Math.Min(((ventas - 5) / 9.0) * 100, 100),  // 5-13
+                    3 => (int)Math.Min(((ventas - 15) / 14.0) * 100, 100), // 15-28
+                    _ => 100
+                };
+            }
+            <div class="det-vendedor-nivel">
+                <div class="det-vendedor-nivel-header">
+                    <span class="det-vendedor-nivel-titulo">Reputación del vendedor</span>
+                    <span class="det-vendedor-nivel-badge nivel-@nivelIdx">@nivelLabel</span>
+                </div>
+                <div class="det-vendedor-nivel-barra-wrap">
+                    <div class="det-vendedor-nivel-barra">
+                        <div class="det-vendedor-nivel-fill nivel-fill-@nivelIdx" style="width: @pct%"></div>
+                    </div>
+                    <span class="det-vendedor-nivel-ventas">@ventas venta@(ventas == 1 ? "" : "s")</span>
+                </div>
+                <div class="det-vendedor-nivel-steps">
+                    <span class="@(nivelIdx >= 0 ? "step-active" : "")">Nuevo</span>
+                    <span class="@(nivelIdx >= 1 ? "step-active" : "")">Principiante</span>
+                    <span class="@(nivelIdx >= 2 ? "step-active" : "")">Regular</span>
+                    <span class="@(nivelIdx >= 3 ? "step-active" : "")">Bueno</span>
+                    <span class="@(nivelIdx >= 4 ? "step-active" : "")">Experto</span>
+                </div>
+            </div>
+
             <div class="det-vendedor-cta-wrap">
                 <button class="det-vendedor-cta-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
@@ -179,10 +221,11 @@
                 </button>
             </div>
 
+            @* ── Más publicaciones ── *@
             @if (max > 0)
             {
                 <div class="det-otras">
-                    <span class="det-otras-label">Más publicaciones</span>
+                    <span class="det-otras-label">Publicaciones <span class="det-otras-count">(@vendedorActivas)</span></span>
                     <div class="det-otras-grid">
                         @for (int i = 0; i < max; i++)
                         {
@@ -200,6 +243,42 @@
                     </div>
                 </div>
             }
+
+            @* ── Favoritos del vendedor ── *@
+            @{
+                var libFav = (List<PublicacionesCompletas>)(ViewBag.VendedorLibrosFavoritos ?? new List<PublicacionesCompletas>());
+            }
+            <div class="det-vendedor-favs">
+                <span class="det-otras-label">
+                    Favoritos
+                    @if (libFav.Count > 0) { <span class="det-otras-count">(@libFav.Count)</span> }
+                </span>
+                @if (libFav.Count == 0)
+                {
+                    <div class="det-favs-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/>
+                        </svg>
+                        <span>Sin favoritos aún</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="det-favs-grid">
+                        @foreach (var fav in libFav)
+                        {
+                            var favImg = string.IsNullOrWhiteSpace(fav.imagen)
+                                ? Url.Content("~/img/book-placeholder.webp")
+                                : fav.imagen;
+                            <div class="det-fav-libro" title="@fav.nombre">
+                                <img src="@favImg" alt="@fav.nombre" />
+                                <span class="det-fav-libro-nombre">@fav.nombre</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
         </div>
 
     </aside>

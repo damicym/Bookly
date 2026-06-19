@@ -45,6 +45,16 @@ namespace Bookly.Helpers
 
             return string.Join(' ', palabras);
         }
+        public static string FormatPrecio(double precio)
+        {
+            return precio.ToString("N0", new System.Globalization.CultureInfo("es-AR"));
+        }
+
+        public static string FormatPrecio(decimal precio)
+        {
+            return precio.ToString("N0", new System.Globalization.CultureInfo("es-AR"));
+        }
+
         public static string GetColor(string estado)
         {
             switch (estado)
