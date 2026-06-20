@@ -368,7 +368,7 @@ namespace Bookly.Models
         }
 
         /// <summary>PUT /api/publicaciones/:id  (multipart/form-data)</summary>
-        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen)
+        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile? imagen)
         {
             using var form = new MultipartFormDataContent();
             int? anoParsed = null;

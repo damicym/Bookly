@@ -80,7 +80,7 @@ export async function updatePublication(idPublicacion, precio, estadoLibro, desc
 	const idLibro = pub.id_libro
 	if (!idLibro) throw new Error('La publicación no tiene un libro asociado')
 	
-	let imagenUrl = imagen ? imagen : pub.imagen || null
+	let imagenUrl = imagen ? imagen : null
 	if (imageFile) {
 		try {
 			imagenUrl = await uploadPublicationImage(imageFile, PERFILES_BUCKET)
