@@ -24,8 +24,7 @@ namespace Bookly.Controllers
                 HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(usuario));
                 TempData["WelcomeUser"] = usuario.nombreComp;
                 if (returnView == "Publicar") return RedirectToAction("Publicar", "Book");
-                if (returnView == "Profile") return RedirectToAction("Profile", "Home");
-                return RedirectToAction(returnView == "Index" || string.IsNullOrEmpty(returnView) ? "Index" : "Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
             TempData["ModalError"] = "DNI o contraseña incorrectos";
             TempData["ModalErrorTarget"] = "login";
@@ -77,6 +76,23 @@ namespace Bookly.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public IActionResult DeleteFotoPerfil()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+                return Json(new { success = false, message = "No autenticado" });
+
+            var ok = BD.EliminarFotoPerfil(user.DNI);
+            if (!ok)
+                return Json(new { success = false, message = "Error al eliminar la foto" });
+
+            user.fotoPerfil = null;
+            HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult UpdateFotoPerfil(IFormFile fotoPerfil)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
@@ -89,21 +105,15 @@ namespace Bookly.Controllers
             if (fotoPerfil.Length > 5 * 1024 * 1024)
                 return Json(new { success = false, message = "La imagen no puede superar 5MB" });
 
-            byte[] bytes;
-            using (var ms = new MemoryStream())
-            {
-                fotoPerfil.CopyTo(ms);
-                bytes = ms.ToArray();
-            }
-
-            var url = BD.SubirFotoPerfil(user.DNI, bytes, fotoPerfil.ContentType);
-            if (url == null)
+            var url = BD.SubirFotoPerfil(user.DNI, fotoPerfil);
+            if (url == null){
                 return Json(new { success = false, message = "Error al subir la foto" });
+            }
 
             user.fotoPerfil = url;
             HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
 
-            return Json(new { success = true, src = url });
+            return Json(new { success = true, src = url, url = url });
         }
 
     }

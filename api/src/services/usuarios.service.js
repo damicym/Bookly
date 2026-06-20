@@ -1,9 +1,40 @@
 import supabase from '../db/supabase.js'
+import { uploadPublicationImage } from '../utils/imgParser.js'
+
+const PERFILES_BUCKET = 'images/perfiles'
+
+export async function subirFotoPerfil(dni, imageFile) {
+	let imagenUrl = null
+	if (imageFile) {
+		// imageFile viene como objeto con .buffer y .mimetype (desde Multer)
+		imagenUrl = await uploadPublicationImage(imageFile, PERFILES_BUCKET)
+	} else {
+		console.log("No recibe imageFile at subirFotoPerfil")
+		return null
+	}
+
+	const { error: updateError } = await supabase
+		.from('usuarios')
+		.update({ foto_perfil: imagenUrl })
+		.eq('dni', dni)
+	if (updateError) throw updateError
+
+	return imagenUrl
+}
+
+export async function deleteFotoPerfil(dni) {
+	const { error: updateError } = await supabase
+		.from('usuarios')
+		.update({ foto_perfil: null })
+		.eq('dni', dni)
+	if (updateError) throw updateError
+	return true
+}
 
 export async function login(dni, password) {
 	const { data, error } = await supabase
 		.from('usuarios')
-		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me')
+		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil')
 		.eq('dni', dni)
 		.eq('password', password)
 		.maybeSingle()
@@ -36,7 +67,7 @@ export async function register(user) {
 export async function getUserByDni(dni) {
 	const { data, error } = await supabase
 		.from('usuarios')
-		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me')
+		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil')
 		.eq('dni', dni)
 		.maybeSingle()
 	if (error) throw error
@@ -50,25 +81,4 @@ export async function updateAboutMe(dni, about_me) {
 		.eq('dni', dni)
 	if (error) throw error
 	return true
-}
-
-export async function subirFotoPerfil(dni, buffer, mimetype) {
-	const ext = mimetype.includes('png') ? 'png' : 'jpg'
-	const storagePath = `perfiles/${dni}.${ext}`
-
-	const { error: uploadError } = await supabase.storage
-		.from('images')
-		.upload(storagePath, buffer, { contentType: mimetype, upsert: true })
-	if (uploadError) throw uploadError
-
-	const { data } = supabase.storage.from('images').getPublicUrl(storagePath)
-	const url = data.publicUrl
-
-	const { error: updateError } = await supabase
-		.from('usuarios')
-		.update({ foto_perfil: url })
-		.eq('dni', dni)
-	if (updateError) throw updateError
-
-	return url
 }

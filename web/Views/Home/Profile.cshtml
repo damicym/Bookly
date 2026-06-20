@@ -28,6 +28,31 @@
                     <input type="file" id="fotoPerfilInput" name="fotoPerfil" accept="image/*" style="display:none;" />
                 </form>
             </div>
+            @if (avatarSrc != "/img/default.webp")
+            {
+                <button id="btnEliminarFoto" type="button" title="Eliminar foto de perfil" style="
+                    margin-top: 8px;
+                    background: none;
+                    border: none;
+                    color: rgba(6,26,64,0.45);
+                    font-size: 0.78rem;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    font-family: inherit;
+                    padding: 4px 8px;
+                    border-radius: 8px;
+                    transition: color 0.18s, background 0.18s;
+                " onmouseover="this.style.color='var(--red)'; this.style.background='rgba(215,38,61,0.08)'"
+                   onmouseout="this.style.color='rgba(6,26,64,0.45)'; this.style.background='none'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                    Eliminar foto
+                </button>
+                <form id="eliminarFotoForm" action="@Url.Action("DeleteFotoPerfil", "Usuarios")" method="post" style="display:none;">
+                    @Html.AntiForgeryToken()
+                </form>
+            }
         </div>
 
         <div class="profile-meta">
@@ -115,9 +140,9 @@
                                     <button class="desearBtnForm editar" type="button" title="Editar" onclick="event.stopPropagation(); abrirEditarModal(@libro.id);">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
                                     </button>
-                                    <form class="desearBtnForm eliminar" action="@Url.Action("Eliminar", "Book")" method="post" onsubmit="return confirm('¿Seguro que querés eliminar esta publicación?');" style="display:inline;">
+                                    <form class="desearBtnForm eliminar" action="@Url.Action("Eliminar", "Book")" method="post" id="eliminarForm_@libro.id" style="display:inline;">
                                         <input type="hidden" name="id" value="@libro.id" />
-                                        <button type="submit" title="Eliminar" onclick="event.stopPropagation();">
+                                        <button type="button" title="Eliminar" onclick="event.stopPropagation(); mostrarConfirmEliminar('eliminarForm_@libro.id');">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                         </button>
                                     </form>
@@ -127,18 +152,25 @@
                                 @if (libro.estadoLibro != null) {
                                     <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
                                 }
-                                @if (HtmlHelpers.PasarAñoATexto(libro.ano) != null) {
-                                    <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                                @if (libro.ano.HasValue) {
+                                    var añoTexto = HtmlHelpers.PasarAñoATexto(libro.ano.Value);
+                                    if (añoTexto != null) {
+                                        <span class="pill">@añoTexto</span>
+                                    }
                                 }
                             </div>
                         </div>
                         <div class="nombreYMateriaContainer">
                             <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                            @if (libro.materia != null) {
-                                <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                            }
                         </div>
-                        <h3>$@libro.precio</h3>
+                        <div class="libro-footer">
+                            @if (libro.materia != null) {
+                                <span class="libro-footer-materia">@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</span>
+                            } else {
+                                <span></span>
+                            }
+                            <h3>$@HtmlHelpers.FormatPrecio(libro.precio)</h3>
+                        </div>
                     </div>
                 }
             }
@@ -158,7 +190,7 @@
             {
                 foreach (PublicacionesCompletas libro in favoritos)
                 {
-                    <div class="libro" id="fav-card-@libro.id" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                    <div class="libro" id="fav-card-@libro.id" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
                         <div class="imgContainer">
                             <div class="libroImgContainer">
                                 <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" loading="lazy" />
@@ -177,18 +209,25 @@
                                 @if (libro.estadoLibro != null) {
                                     <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
                                 }
-                                @if (HtmlHelpers.PasarAñoATexto(libro.ano) != null) {
-                                    <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                                @if (libro.ano.HasValue) {
+                                    var añoTexto2 = HtmlHelpers.PasarAñoATexto(libro.ano.Value);
+                                    if (añoTexto2 != null) {
+                                        <span class="pill">@añoTexto2</span>
+                                    }
                                 }
                             </div>
                         </div>
                         <div class="nombreYMateriaContainer">
                             <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                            @if (libro.materia != null) {
-                                <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                            }
                         </div>
-                        <h3>$@libro.precio</h3>
+                        <div class="libro-footer">
+                            @if (libro.materia != null) {
+                                <span class="libro-footer-materia">@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</span>
+                            } else {
+                                <span></span>
+                            }
+                            <h3>$@HtmlHelpers.FormatPrecio(libro.precio)</h3>
+                        </div>
                     </div>
                 }
             }
@@ -289,11 +328,14 @@
     const label = document.querySelector('.profile-avatar-overlay-label');
     if (!container || !input || !form || !img) return;
 
-    container.addEventListener('click', function() { input.click(); });
-
+    container.addEventListener('click', function(e) {
+        // Evitar doble disparo si el click viene del label del overlay
+        input.click();
+    });
     input.addEventListener('change', async function() {
         const file = this.files[0];
         if (!file) return;
+        console.log('Archivo seleccionado:', file.name);
 
         // Preview inmediato
         const reader = new FileReader();
@@ -310,15 +352,216 @@
                 body: formData,
                 headers: { 'RequestVerificationToken': token }
             });
+            console.log('Response status:', res.status);
             const data = await res.json();
+            console.log('Response data:', data);
             if (data && data.success) {
-                img.src = data.src;
+                const nuevaSrc = (data.src || data.url) + '?t=' + Date.now();
+                img.src = nuevaSrc;
                 if (label) label.textContent = 'Cambiar foto';
+                var navAvatar = document.querySelector('.nav-avatar');
+                if (navAvatar) {
+                    navAvatar.src = nuevaSrc;
+                } else {
+                    var svgBtn = document.querySelector('.profileBtn a .simpleBtn');
+                    if (svgBtn) {
+                        var newImg = document.createElement('img');
+                        newImg.src = nuevaSrc;
+                        newImg.alt = 'foto de perfil';
+                        newImg.className = 'nav-avatar';
+                        svgBtn.replaceWith(newImg);
+                    }
+                }
+                // Mostrar botón de eliminar si no existe
+                if (!document.getElementById('btnEliminarFoto')) {
+                    location.reload();
+                }
             } else {
-                alert(data?.message || 'Error al subir la foto');
+                console.error('Error del servidor:', data);
+                alert(data?.message || data?.error || 'Error al subir la foto');
             }
         } catch(e) {
-            console.error('Error al subir foto de perfil:', e);
+            console.error('Error en fetch:', e);
+        }
+    });
+
+    // ── Eliminar foto ──
+    const btnEliminar = document.getElementById('btnEliminarFoto');
+    const eliminarFotoForm = document.getElementById('eliminarFotoForm');
+    if (btnEliminar && eliminarFotoForm) {
+        btnEliminar.addEventListener('click', async function() {
+            const token = eliminarFotoForm.querySelector('input[name="__RequestVerificationToken"]').value;
+            try {
+                const res = await fetch(eliminarFotoForm.action, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token }
+                });
+                const data = await res.json();
+                if (data && data.success) {
+                    img.src = '/img/default.webp';
+                    if (label) label.textContent = 'Subir foto';
+                    btnEliminar.remove();
+                    eliminarFotoForm.remove();
+                    // Actualizar avatar del nav
+                    var navAvatar = document.querySelector('.nav-avatar');
+                    if (navAvatar) {
+                        var svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        svgIcon.setAttribute('class', 'simpleBtn');
+                        svgIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                        svgIcon.setAttribute('width', '50');
+                        svgIcon.setAttribute('height', '50');
+                        svgIcon.setAttribute('viewBox', '0 0 24 24');
+                        svgIcon.setAttribute('fill', 'none');
+                        svgIcon.setAttribute('stroke', 'currentColor');
+                        svgIcon.setAttribute('stroke-width', '1');
+                        svgIcon.setAttribute('stroke-linecap', 'round');
+                        svgIcon.setAttribute('stroke-linejoin', 'round');
+                        svgIcon.innerHTML = '<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />';
+                        navAvatar.replaceWith(svgIcon);
+                    }
+                } else {
+                    alert(data?.message || 'Error al eliminar la foto');
+                }
+            } catch(e) {
+                console.error('Error al eliminar foto:', e);
+            }
+        });
+    }
+})();
+</script>
+
+@* ── Modal de confirmación para eliminar publicación ── *@
+<div id="eliminarModal" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(96, 130, 182, 0.45);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+">
+    <div style="
+        background: var(--light);
+        border-radius: 20px;
+        padding: 36px 40px 32px;
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 24px 64px rgba(6, 26, 64, 0.2);
+        text-align: center;
+        animation: confirmEntrada 0.25s ease;
+    ">
+        <div style="
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            background: rgba(215, 38, 61, 0.15);
+            border: 1.5px solid rgba(215, 38, 61, 0.35);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--red2);
+            flex-shrink: 0;
+        ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" />
+                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+            </svg>
+        </div>
+        <div>
+            <p style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin: 0 0 6px;">¿Eliminar publicación?</p>
+            <p style="font-size: 0.88rem; color: rgba(6,26,64,0.55); margin: 0;">Esta acción no se puede deshacer.</p>
+        </div>
+        <div style="display: flex; gap: 12px; width: 100%; margin-top: 4px;">
+            <button id="eliminarCancelarBtn" style="
+                flex: 1; padding: 10px 16px;
+                border-radius: 10px;
+                border: 1.5px solid rgba(6,26,64,0.2);
+                background: transparent;
+                color: rgba(6,26,64,0.7);
+                font-size: 0.95rem; font-weight: 600;
+                cursor: pointer;
+                font-family: inherit;
+                transition: background 0.18s, border-color 0.18s;
+            " onmouseover="this.style.background='rgba(6,26,64,0.07)'; this.style.borderColor='rgba(6,26,64,0.35)';"
+               onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(6,26,64,0.2)';">
+                Cancelar
+            </button>
+            <button id="eliminarAceptarBtn" style="
+                flex: 1; padding: 10px 16px;
+                border-radius: 10px;
+                border: none;
+                background: var(--red);
+                color: var(--light);
+                font-size: 0.95rem; font-weight: 700;
+                cursor: pointer;
+                font-family: inherit;
+                display: flex; align-items: center; justify-content: center; gap: 6px;
+                transition: filter 0.18s, box-shadow 0.18s;
+            " onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 4px 16px rgba(215,38,61,0.4)';"
+               onmouseout="this.style.filter='none'; this.style.boxShadow='none';">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" />
+                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                </svg>
+                Eliminar
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+@@keyframes confirmEntrada {
+    from { transform: translateY(16px) scale(0.97); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+</style>
+
+<script>
+(function() {
+    var modal = document.getElementById('eliminarModal');
+    var formIdPendiente = null;
+
+    window.mostrarConfirmEliminar = function(formId) {
+        formIdPendiente = formId;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    };
+
+    document.getElementById('eliminarCancelarBtn').addEventListener('click', function() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        formIdPendiente = null;
+    });
+
+    document.getElementById('eliminarAceptarBtn').addEventListener('click', function() {
+        if (formIdPendiente) {
+            document.getElementById(formIdPendiente).submit();
+        }
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            formIdPendiente = null;
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            formIdPendiente = null;
         }
     });
 })();

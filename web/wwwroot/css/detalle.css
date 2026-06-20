@@ -5,7 +5,7 @@
 .det-page-wrapper {
   width: min(1400px, 100vw - 48px);
   margin: 0 auto;
-  padding: 40px 0 60px;
+  padding: 20px 0 60px;
   box-sizing: border-box;
 }
 
@@ -18,6 +18,25 @@
   margin: 0;
   letter-spacing: -0.02em;
 }
+
+/* Botón volver */
+.det-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(6, 26, 64, 0.4);
+  text-decoration: none;
+  margin-bottom: 20px;
+  padding: 5px 0;
+  transition: color 0.15s, gap 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.det-volver:hover { color: var(--main); gap: 9px; }
+.det-volver svg { transition: transform 0.15s; }
+.det-volver:hover svg { transform: translateX(-3px); }
 
 /* Grid principal: portada | info | vendedor */
 .det-page {
@@ -66,6 +85,7 @@
 
 .det-portada img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+/* Botón favorito oculto — lo dispara el botón visible en la info */
 .det-fav-form { display: none !important; }
 
 /* ══════════════════════════════
@@ -92,7 +112,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.88rem;
+  font-size: 0.78rem;
   color: rgba(6,26,64,0.4);
   margin: 0;
 }
@@ -271,7 +291,7 @@
   line-height: 1.7;
 }
 
-/* ── Otras opciones de compra (columna central, ancho completo) ── */
+/* ── Otras opciones de compra ── */
 .det-otras-opciones {
   background: var(--light);
   border-radius: 18px;
@@ -326,6 +346,27 @@
 
 .det-opcion-row:last-child { border-bottom: none; }
 .det-opcion-row:hover { background: var(--lightDarker); }
+
+.det-opcion-row--actual {
+  background: rgba(64,89,173,0.06);
+  border-left: 3px solid var(--secondary);
+  pointer-events: none;
+  cursor: default;
+}
+
+.det-opcion-row--actual:hover { background: rgba(64,89,173,0.06); }
+
+.det-opcion-actual-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--secondary);
+  background: rgba(107,154,196,0.12);
+  border: 1.5px solid rgba(107,154,196,0.3);
+  border-radius: 7px;
+  padding: 4px 9px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 
 .det-opcion-portada {
   width: 40px;
@@ -443,8 +484,16 @@
   text-transform: uppercase;
 }
 
-.det-vendedor-sub {
+.det-vendedor-about {
   font-size: 0.75rem;
+  color: rgba(239,242,241,0.5);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.det-vendedor-sub {
+  font-size: 0.85rem;
   color: rgba(239,242,241,0.5);
   margin: 0;
   line-height: 1.5;
@@ -468,6 +517,7 @@
   cursor: pointer;
   transition: filter 0.2s, transform 0.15s;
   box-shadow: 0 4px 14px rgba(151,216,196,0.35);
+  margin-bottom: 10px;
 }
 
 .det-vendedor-cta-btn:hover {
@@ -535,6 +585,7 @@
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -544,6 +595,186 @@
   font-weight: 700;
   color: var(--secondary2);
 }
+
+/* ══════════════════════════════
+   Barra de nivel/reputación
+══════════════════════════════ */
+.det-vendedor-nivel {
+  margin: 0 16px 4px;
+  padding: 14px 4px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.det-vendedor-nivel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.det-vendedor-nivel-titulo {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: rgba(239,242,241,0.35);
+}
+
+.det-vendedor-nivel-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* colores por nivel */
+.nivel-0 { background: rgba(239,242,241,0.12); color: rgba(239,242,241,0.55); }
+.nivel-1 { background: rgba(107,154,196,0.25); color: #8bbce0; }
+.nivel-2 { background: rgba(244,185,66,0.22);  color: #f4b942; }
+.nivel-3 { background: rgba(151,216,196,0.22); color: var(--secondary2); }
+.nivel-4 { background: rgba(255,195,80,0.25);  color: #ffd060; }
+
+.det-vendedor-nivel-barra-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.det-vendedor-nivel-barra {
+  flex: 1;
+  height: 7px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.det-vendedor-nivel-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+.nivel-fill-0 { background: rgba(239,242,241,0.3); }
+.nivel-fill-1 { background: #6b9ac4; }
+.nivel-fill-2 { background: var(--accent); }
+.nivel-fill-3 { background: var(--secondary2); }
+.nivel-fill-4 { background: linear-gradient(90deg, var(--secondary2), #ffd060); }
+
+.det-vendedor-nivel-ventas {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(239,242,241,0.45);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.det-vendedor-nivel-steps {
+  display: flex;
+  justify-content: space-between;
+}
+
+.det-vendedor-nivel-steps span {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(239,242,241,0.2);
+}
+
+.det-vendedor-nivel-steps span.step-active {
+  color: rgba(239,242,241,0.55);
+}
+
+/* ══════════════════════════════
+   Contador en labels de sección
+══════════════════════════════ */
+.det-otras-count {
+  font-size: inherit;
+  font-weight: 600;
+  color: rgba(239,242,241,0.5);
+  margin-left: 2px;
+}
+
+/* ══════════════════════════════
+   Favoritos del vendedor
+══════════════════════════════ */
+.det-vendedor-favs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.det-favs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 8px;
+  color: rgba(239,242,241,0.2);
+}
+
+.det-favs-empty svg {
+  width: 28px;
+  height: 28px;
+  opacity: 0.35;
+}
+
+.det-favs-empty span {
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.det-favs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.det-fav-libro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: default;
+}
+
+.det-fav-libro img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 7px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+.det-fav-libro:hover img {
+  transform: scale(1.04);
+}
+
+.det-fav-libro-nombre {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(239,242,241,0.6);
+  text-align: center;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* ══════════════════════════════
+   Stats del vendedor (legacy — ocultar)
+══════════════════════════════ */
+.det-vendedor-stats { display: none; }
 
 /* ══════════════════════════════
    Responsive
@@ -575,508 +806,4 @@
 
   .det-col-portada { position: static; width: 160px; margin: 0 auto; }
   .det-acciones { grid-template-columns: 1fr; }
-}
-
-
-/* Título de página */
-.det-page-header {
-  margin-bottom: 28px;
-}
-
-.det-page-titulo {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--dark);
-  margin: 0;
-  letter-spacing: -0.02em;
-}
-
-.det-page {
-  display: grid;
-  grid-template-columns: 280px 1fr 290px;
-  gap: 48px;
-  width: 100%;
-  align-items: start;
-  justify-content: stretch;
-  box-sizing: border-box;
-}
-
-/* ══════════════════════════════
-   COL 1 — Portada
-══════════════════════════════ */
-.det-col-portada {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  position: sticky;
-  top: 120px;
-  align-self: start;
-}
-
-.det-portada {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 18px;
-  overflow: hidden;
-  position: relative;
-  background: var(--lightDarker);
-  box-shadow:
-    0 4px 0 rgba(6,26,64,0.06),
-    0 16px 48px rgba(6,26,64,0.16),
-    0 4px 12px rgba(6,26,64,0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.det-portada:hover {
-  transform: translateY(-6px);
-  box-shadow:
-    0 4px 0 rgba(6,26,64,0.08),
-    0 24px 56px rgba(6,26,64,0.2),
-    0 8px 18px rgba(6,26,64,0.1);
-}
-
-.det-portada img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-/* Botón favorito oculto — lo dispara el botón visible en la info */
-.det-fav-form {
-  display: none !important;
-}
-
-/* ══════════════════════════════
-   COL 2 — Info del libro
-══════════════════════════════ */
-.det-col-info {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  align-self: start;
-}
-
-/* Encabezado */
-.det-header {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-bottom: 18px;
-  border-bottom: 2px solid rgba(6,26,64,0.07);
-}
-
-/* Breadcrumb */
-.det-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.78rem;
-  color: rgba(6,26,64,0.4);
-  margin: 0;
-}
-
-.det-breadcrumb a {
-  color: var(--main);
-  text-decoration: none;
-  font-weight: 600;
-  opacity: 0.7;
-  transition: opacity 0.15s;
-}
-
-.det-breadcrumb a:hover { opacity: 1; }
-
-.det-breadcrumb svg { flex-shrink: 0; opacity: 0.4; }
-
-.det-pills { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.det-pill {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 14px;
-  border-radius: 20px;
-  color: var(--dark);
-  letter-spacing: 0.03em;
-}
-
-.det-pill-ano {
-  background: rgba(64,89,173,0.1) !important;
-  color: var(--main) !important;
-}
-
-.det-titulo {
-  font-size: 2.4rem;
-  font-weight: 800;
-  color: var(--dark);
-  margin: 0;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-}
-
-.det-materia {
-  font-size: 0.9rem;
-  color: rgba(6,26,64,0.45);
-  margin: 0;
-}
-
-.det-precio {
-  font-size: 1.95rem;
-  font-weight: 700;
-  color: var(--main);
-  margin: 6px 0 0;
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-/* ── Botones de acción — mismo grid 2 cols que la ficha ── */
-.det-acciones {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-/* Botón base compartido — misma altura que las ficha-items */
-.det-btn-accion {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: filter 0.2s, transform 0.15s, box-shadow 0.2s;
-  white-space: nowrap;
-}
-
-.det-btn-accion:hover { transform: translateY(-2px); }
-.det-btn-accion:active { transform: scale(0.98); }
-
-/* Consultar — verde menta (igual que mainBtn) */
-.det-btn-consultar {
-  background: var(--secondary2) !important;
-  color: var(--dark) !important;
-  box-shadow: 0 4px 14px rgba(151,216,196,0.35);
-  width: auto !important;
-  font-size: 0.88rem !important;
-  padding: 14px 16px !important;
-  border-radius: 12px !important;
-}
-
-.det-btn-consultar:hover {
-  filter: brightness(1.06);
-  box-shadow: 0 6px 20px rgba(151,216,196,0.5);
-  background: var(--secondary2) !important;
-  color: var(--dark) !important;
-}
-
-/* Favorito — azul con borde */
-.det-btn-favorito {
-  background: #fff;
-  color: var(--main);
-  border: 1.5px solid rgba(64,89,173,0.25) !important;
-  box-shadow: 0 2px 8px rgba(6,26,64,0.06);
-}
-
-.det-btn-favorito:hover {
-  background: rgba(64,89,173,0.06);
-  border-color: var(--main) !important;
-  box-shadow: 0 4px 14px rgba(64,89,173,0.15);
-}
-
-/* Estado activo: ya es favorito */
-.det-btn-favorito--activo {
-  background: rgba(215,38,61,0.06);
-  color: var(--red);
-  border-color: rgba(215,38,61,0.2) !important;
-}
-
-.det-btn-favorito--activo:hover {
-  background: rgba(215,38,61,0.1);
-  border-color: var(--red) !important;
-}
-
-/* ── Ficha 2x2, items en fila ── */
-.det-ficha {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.det-ficha-item {
-  background: #fff;
-  border: 1px solid rgba(6,26,64,0.07);
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  box-shadow: 0 2px 6px rgba(6,26,64,0.04);
-}
-
-.det-ficha-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(6,26,64,0.35);
-}
-
-.det-ficha-valor {
-  font-size: 0.98rem;
-  font-weight: 700;
-  color: var(--dark);
-}
-
-/* Descripción */
-.det-descripcion {
-  padding: 16px 20px;
-  background: var(--main);
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(64,89,173,0.15);
-}
-
-.det-descripcion-label {
-  display: block;
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(239,242,241,0.4);
-  margin-bottom: 8px;
-}
-
-.det-descripcion p {
-  color: rgba(239,242,241,0.88);
-  font-size: 0.93rem;
-  margin: 0;
-  line-height: 1.7;
-}
-
-/* (estilos de otras opciones definidos arriba) */
-
-/* ══════════════════════════════
-   COL 3 — Vendedor (columna derecha completa)
-══════════════════════════════ */
-.det-col-vendedor {
-  position: sticky;
-  top: 120px;
-  align-self: start;
-  padding-top: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.det-vendedor-card {
-  background: var(--main);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(6,26,64,0.2);
-  display: flex;
-  flex-direction: column;
-}
-
-/* Cabecera con avatar grande y nombre prominente */
-.det-vendedor-top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 28px 20px 22px;
-  background: rgba(0,0,0,0.18);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  text-align: center;
-}
-
-.det-vendedor-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 3px solid rgba(151,216,196,0.55);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-}
-
-.det-vendedor-nombre {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #fff;
-  margin: 0 0 2px;
-}
-
-.det-vendedor-pill {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 800;
-  padding: 4px 14px;
-  border-radius: 12px;
-  background-color: var(--secondary2);
-  color: var(--dark);
-  letter-spacing: 0.06em;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-
-.det-vendedor-sub {
-  font-size: 0.75rem;
-  color: rgba(239,242,241,0.5);
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* Botón contactar dentro del panel */
-.det-vendedor-cta-wrap {
-  padding: 16px 16px 0;
-}
-
-.det-vendedor-cta-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 13px 16px;
-  background: var(--secondary2);
-  color: var(--dark);
-  font-size: 0.92rem;
-  font-weight: 700;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: filter 0.2s, transform 0.15s;
-  box-shadow: 0 4px 14px rgba(151,216,196,0.35);
-}
-
-.det-vendedor-cta-btn:hover {
-  filter: brightness(1.07);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(151,216,196,0.5);
-}
-
-/* Publicaciones del vendedor */
-.det-otras {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px 16px 22px;
-  flex: 1;
-}
-
-.det-otras-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(239,242,241,0.35);
-}
-
-.det-otras-grid { display: flex; flex-direction: column; gap: 9px; }
-
-.det-otras-thumb {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  border-radius: 12px;
-  overflow: hidden;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: background 0.2s, transform 0.2s, border-color 0.2s;
-}
-
-.det-otras-thumb:hover {
-  background: rgba(151,216,196,0.13);
-  border-color: rgba(151,216,196,0.3);
-  transform: translateX(4px);
-}
-
-.det-otras-thumb img {
-  width: 54px;
-  height: 72px;
-  object-fit: cover;
-  display: block;
-  flex-shrink: 0;
-}
-
-.det-otras-thumb-info {
-  padding: 10px 13px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.det-otras-thumb-nombre {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: rgba(239,242,241,0.9);
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.det-otras-thumb-precio {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--secondary2);
-}
-
-/* ══════════════════════════════
-   Responsive
-══════════════════════════════ */
-@media (max-width: 960px) {
-  .det-page-wrapper {
-    width: min(1400px, 100vw - 60px);
-  }
-
-  .det-page {
-    grid-template-columns: 220px 1fr;
-    grid-template-areas:
-      "portada info"
-      "vendedor info";
-    justify-content: start;
-  }
-
-  .det-col-portada { grid-area: portada; }
-  .det-col-info { grid-area: info; }
-  .det-col-vendedor { grid-area: vendedor; position: static; }
-}
-
-@media (max-width: 680px) {
-  .det-page-wrapper {
-    width: 100%;
-    padding: 20px 20px 40px;
-  }
-
-  .det-page {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .det-col-portada { position: static; width: 160px; margin: 0 auto; }
-  .det-acciones { grid-template-columns: 1fr; }
-}
-
-/* ── Fila activa en "Otras opciones de compra" ── */
-.det-opcion-row--actual {
-  background: rgba(64,89,173,0.06);
-  border-left: 3px solid var(--secondary);
-  pointer-events: none;
-  cursor: default;
-}
-
-.det-opcion-row--actual:hover { background: rgba(64,89,173,0.06); }
-
-.det-opcion-actual-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--secondary);
-  background: rgba(107,154,196,0.12);
-  border: 1.5px solid rgba(107,154,196,0.3);
-  border-radius: 7px;
-  padding: 4px 9px;
-  flex-shrink: 0;
-  white-space: nowrap;
 }

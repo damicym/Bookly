@@ -50,15 +50,14 @@
   width: fit-content;
   justify-content: center;
   align-items: center;
-  margin: 40px auto;
+  margin: 40px auto 0;
   text-align: center;
 }
 
 .bienvenidaGuia h1 {
   color: var(--dark);
-  font-size: 2.3rem;
   margin: 0;
-  font-size: 1.7rem;
+  font-size: 2rem;
 }
 
 .stepsContainer {

@@ -42,7 +42,6 @@
             else nombreMostrable = "Iniciar sesión";
         }
         @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
-        @if (usuario != null) {
         <section class="searchNFilter">
             <div class="search">
                 <input id="searchInput" name="query" type="text" placeholder="Buscar nombre de un libro" class="busqueda-input" value="@(ViewData["Title"]?.ToString() == "Resultados de búsqueda" ? ViewBag.query : "")" />
@@ -58,7 +57,6 @@
                 </div>
             </div>
         </section>
-        }
         <nav class="navSections">
 
             @if (usuario != null) {
@@ -665,21 +663,21 @@
                     <div class="publicar-modal-col-campos">
                         <div class="publicar-seccion">
                             <h3 class="publicar-seccion-titulo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
-                                Información del libro
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
+                                Información del libro (no editable)
                             </h3>
                             <div class="publicar-grid-2">
                                 <div class="campo">
                                     <label for="editModalNombre">Nombre</label>
-                                    <input type="text" id="editModalNombre" name="nombre" placeholder="Ej.: Toldot Israel" required maxlength="50" />
+                                    <input disabled type="text" id="editModalNombre" name="nombre" placeholder="Ej.: Toldot Israel" required maxlength="50" />
                                 </div>
                                 <div class="campo">
                                     <label for="editModalMateria">Materia</label>
-                                    <input type="text" id="editModalMateria" name="materia" placeholder="Ej.: Historia Judía" required />
+                                    <input disabled type="text" id="editModalMateria" name="materia" placeholder="Ej.: Historia Judía" required />
                                 </div>
                                 <div class="campo">
                                     <label for="editModalAno">Nivel escolar</label>
-                                    <select id="editModalAno" name="ano" required>
+                                    <select disabled id="editModalAno" name="ano" required>
                                         <option value="1">7mo grado</option>
                                         <option value="2">1er año</option>
                                         <option value="3">2do año</option>
@@ -690,14 +688,14 @@
                                 </div>
                                 <div class="campo">
                                     <label for="editModalEditorial">Editorial</label>
-                                    <input type="text" id="editModalEditorial" name="editorial" placeholder="Ej.: Editorial ORT" />
+                                    <input disabled type="text" id="editModalEditorial" name="editorial" placeholder="Ej.: Editorial ORT" />
                                 </div>
                             </div>
                         </div>
 
                         <div class="publicar-seccion">
                             <h3 class="publicar-seccion-titulo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M3 11l9 -9l9 9l-9 9z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-report-money"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><path d="M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2" /><path d="M14 11h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5" /><path d="M12 17v1m0 -8v1" /></svg>
                                 Detalles de la venta
                             </h3>
                             <div class="publicar-grid-2">
@@ -951,6 +949,7 @@
         </script>
     }
 
+    @* ── Welcome Toast — antes del header para que el dropdown lo tape siempre ── *@
     @if (TempData["WelcomeUser"] != null)
     {
         <div id="welcomeToast" class="welcome-toast" role="status" aria-live="polite">
@@ -961,13 +960,11 @@
             (function () {
                 var toast = document.getElementById('welcomeToast');
                 if (!toast) return;
-                // Mostrar con animación
                 requestAnimationFrame(function () {
                     requestAnimationFrame(function () {
                         toast.classList.add('welcome-toast--visible');
                     });
                 });
-                // esconder después de 3.5s
                 setTimeout(function () {
                     toast.classList.remove('welcome-toast--visible');
                     toast.addEventListener('transitionend', function () {
@@ -1000,22 +997,4 @@
 </html>
 
 </footer>
-
-
-<!-- nav sections eleminiados 
-    <svg class="simpleBtn" xmlns="http://www.w3.org/2000/svg"  width="50"  height="50"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-message"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>
-    <svg class="simpleBtn" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-menu-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg>
- -->
-
-<!--
-    <div class="filter" style="display: flex; gap: 8px; align-items: center;">
-        <select class="header-dropdown simpleBtn" name="categoria">
-            <option>Categorías</option>
-        </select>
-        <select class="header-dropdown simpleBtn" name="año">
-            <option>Materias</option>
-        </select>
-        <button class="simpleBtn" >Lista de deseados</button>
-    </div>
--->
 

@@ -5,6 +5,8 @@
     ViewData["Title"] = "Ver libro";
     var publicaciones = (List<PublicacionesCompletas>)ViewBag.Publicaciones;
     var vendedor = (Usuarios)ViewBag.Vendedor;
+    var vendedorActivas = (int)(ViewBag.VendedorPublicacionesActivas ?? 0);
+    var vendedorCerradas = (int)(ViewBag.VendedorVentasCerradas ?? 0);
     var usuarioActual = (Usuarios)ViewBag.usuario;
     var otrasOpciones = (List<PublicacionesCompletas>)ViewBag.OtrasOpciones;
     var max = publicaciones.Count < 4 ? publicaciones.Count : 4;
@@ -12,6 +14,12 @@
 }
 
 <div class="det-page-wrapper primerElemento">
+
+<a class="det-volver" href="javascript:history.back()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+    Volver
+</a>
+
 <div class="det-page">
 
     @* ── COL 1: Portada ── *@
@@ -84,10 +92,12 @@
                 <span class="det-ficha-label">Editorial</span>
                 <span class="det-ficha-valor">@(string.IsNullOrWhiteSpace(Model.editorial) ? "—" : Model.editorial)</span>
             </div>
-            <div class="det-ficha-item">
-                <span class="det-ficha-label">Año de uso</span>
-                <span class="det-ficha-valor">@HtmlHelpers.PasarAñoATexto(Model.ano)</span>
-            </div>
+            @if (Model.ano.HasValue) {
+                <div class="det-ficha-item">
+                    <span class="det-ficha-label">Año de uso</span>
+                    <span class="det-ficha-valor">@HtmlHelpers.PasarAñoATexto(Model.ano.Value)</span>
+                </div>
+            }
             <div class="det-ficha-item">
                 <span class="det-ficha-label">Materia</span>
                 <span class="det-ficha-valor">@(string.IsNullOrWhiteSpace(Model.materia) ? "—" : Model.materia)</span>
@@ -121,14 +131,14 @@
                         var opVendedor = BD.ObtenerUsuarioPorDNI(op.idVendedor);
                         var opImg = string.IsNullOrWhiteSpace(op.imagen) ? Url.Content("~/img/book-placeholder.webp") : op.imagen;
                         var esActual = op.id == Model.id;
-                        <a class="det-opcion-row @(esActual ? "det-opcion-row--actual" : "")" href="@Url.Action("Detalle", "Book", new { id = op.id, idVendedor = op.idVendedor })">
+                        <a class="det-opcion-row @(esActual ? "det-opcion-row--actual" : "")" href="@Url.Action("Detalle", "Book", new { id = op.id })">
                             <img class="det-opcion-portada" src="@opImg" alt="@op.nombre" />
                             <div class="det-opcion-info">
                                 <span class="det-opcion-vendedor">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                                     @(opVendedor?.nombreComp ?? op.idVendedor)
                                 </span>
-                                <span class="det-opcion-estado">@op.estadoLibro · @HtmlHelpers.PasarAñoATexto(op.ano)</span>
+                                <span class="det-opcion-estado">@op.estadoLibro@if(op.ano.HasValue) { <text> · @HtmlHelpers.PasarAñoATexto(op.ano.Value)</text> }</span>
                             </div>
                             <span class="det-opcion-precio">$@op.precio</span>
                             @if (esActual)
@@ -152,11 +162,57 @@
 
         <div class="det-vendedor-card">
             <div class="det-vendedor-top">
-                <img src="~/img/default.webp" alt="perfil" class="det-vendedor-avatar" />
+                @{
+                    var avatarVendedor = !string.IsNullOrWhiteSpace(vendedor.fotoPerfil)
+                        ? vendedor.fotoPerfil
+                        : Url.Content("~/img/default.webp");
+                }
+                <img src="@avatarVendedor" alt="perfil" class="det-vendedor-avatar" />
                 <div>
                     <span class="det-vendedor-pill">Vendedor</span>
                     <p class="det-vendedor-nombre">@vendedor.nombreComp</p>
-                    <p class="det-vendedor-sub">@HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano) · @vendedor.especialidad @vendedor.curso</p>
+                    <p class="det-vendedor-sub">@if (vendedor.ano.HasValue) { @HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano.Value); if (!string.IsNullOrWhiteSpace(vendedor.especialidad) || !string.IsNullOrWhiteSpace(vendedor.curso)) { <text> · </text> } } @vendedor.especialidad @vendedor.curso</p>
+                    <p class="det-vendedor-about">@vendedor.aboutMe</p>
+                </div>
+            </div>
+
+            @* ── Barra de nivel de ventas ── *@
+            @{
+                var ventas = vendedorCerradas;
+                // Niveles: 0=Nuevo, 1-4=Principiante, 5-14=Regular, 15-29=Bueno, 30+=Experto
+                string nivelLabel;
+                int nivelIdx;
+                if      (ventas == 0)  { nivelLabel = "Nuevo";       nivelIdx = 0; }
+                else if (ventas < 5)   { nivelLabel = "Principiante"; nivelIdx = 1; }
+                else if (ventas < 15)  { nivelLabel = "Regular";      nivelIdx = 2; }
+                else if (ventas < 30)  { nivelLabel = "Bueno";        nivelIdx = 3; }
+                else                   { nivelLabel = "Experto";      nivelIdx = 4; }
+                // Porcentaje dentro del nivel actual para la barra
+                int pct = nivelIdx switch {
+                    0 => (int)Math.Min(ventas * 20, 100),          // 0-4 → 0-80%
+                    1 => (int)Math.Min((ventas / 4.0) * 100, 100), // 1-4
+                    2 => (int)Math.Min(((ventas - 5) / 9.0) * 100, 100),  // 5-13
+                    3 => (int)Math.Min(((ventas - 15) / 14.0) * 100, 100), // 15-28
+                    _ => 100
+                };
+            }
+            <div class="det-vendedor-nivel">
+                <div class="det-vendedor-nivel-header">
+                    <span class="det-vendedor-nivel-titulo">Reputación del vendedor</span>
+                    <span class="det-vendedor-nivel-badge nivel-@nivelIdx">@nivelLabel</span>
+                </div>
+                <div class="det-vendedor-nivel-barra-wrap">
+                    <div class="det-vendedor-nivel-barra">
+                        <div class="det-vendedor-nivel-fill nivel-fill-@nivelIdx" style="width: @pct%"></div>
+                    </div>
+                    <span class="det-vendedor-nivel-ventas">@ventas venta@(ventas == 1 ? "" : "s")</span>
+                </div>
+                <div class="det-vendedor-nivel-steps">
+                    <span class="@(nivelIdx >= 0 ? "step-active" : "")">Nuevo</span>
+                    <span class="@(nivelIdx >= 1 ? "step-active" : "")">Principiante</span>
+                    <span class="@(nivelIdx >= 2 ? "step-active" : "")">Regular</span>
+                    <span class="@(nivelIdx >= 3 ? "step-active" : "")">Bueno</span>
+                    <span class="@(nivelIdx >= 4 ? "step-active" : "")">Experto</span>
                 </div>
             </div>
 
@@ -167,17 +223,18 @@
                 </button>
             </div>
 
+            @* ── Más publicaciones ── *@
             @if (max > 0)
             {
                 <div class="det-otras">
-                    <span class="det-otras-label">Más publicaciones</span>
+                    <span class="det-otras-label">Publicaciones <span class="det-otras-count">(@vendedorActivas)</span></span>
                     <div class="det-otras-grid">
                         @for (int i = 0; i < max; i++)
                         {
                             var pubImg = publicaciones[i].imagen != null
                                 ? publicaciones[i].imagen
                                 : Url.Content("~/img/book-placeholder.webp");
-                            <a class="det-otras-thumb" href="@Url.Action("Detalle", "Book", new { id = publicaciones[i].id, idVendedor = publicaciones[i].idVendedor })">
+                            <a class="det-otras-thumb" href="@Url.Action("Detalle", "Book", new { id = publicaciones[i].id })">
                                 <img src="@pubImg" alt="@publicaciones[i].nombre" />
                                 <div class="det-otras-thumb-info">
                                     <span class="det-otras-thumb-nombre">@publicaciones[i].nombre</span>
@@ -188,6 +245,42 @@
                     </div>
                 </div>
             }
+
+            @* ── Favoritos del vendedor ── *@
+            @{
+                var libFav = (List<PublicacionesCompletas>)(ViewBag.VendedorLibrosFavoritos ?? new List<PublicacionesCompletas>());
+            }
+            <div class="det-vendedor-favs">
+                <span class="det-otras-label">
+                    Favoritos
+                    @if (libFav.Count > 0) { <span class="det-otras-count">(@libFav.Count)</span> }
+                </span>
+                @if (libFav.Count == 0)
+                {
+                    <div class="det-favs-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/>
+                        </svg>
+                        <span>Sin favoritos aún</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="det-favs-grid">
+                        @foreach (var fav in libFav)
+                        {
+                            var favImg = string.IsNullOrWhiteSpace(fav.imagen)
+                                ? Url.Content("~/img/book-placeholder.webp")
+                                : fav.imagen;
+                            <div class="det-fav-libro" title="@fav.nombre">
+                                <img src="@favImg" alt="@fav.nombre" />
+                                <span class="det-fav-libro-nombre">@fav.nombre</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
         </div>
 
     </aside>

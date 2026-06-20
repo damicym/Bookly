@@ -57,9 +57,22 @@ export async function updateFotoPerfil(req, res) {
   try {
     const { dni } = req.params
     if (!req.file) return res.status(400).json({ error: 'Archivo requerido' })
-    const url = await usuariosService.subirFotoPerfil(dni, req.file.buffer, req.file.mimetype)
+    // Pasamos el objeto `req.file` directamente (contiene .buffer y .mimetype)
+    const url = await usuariosService.subirFotoPerfil(dni, req.file)
     res.json({ success: true, url })
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error('[updateFotoPerfil] Error:', err.message, err.stack)
+    res.status(500).json({ error: err.message || 'Error al subir la foto' })
+  }
+}
+
+export async function deleteFotoPerfil(req, res) {
+  try {
+    const { dni } = req.params
+    await usuariosService.deleteFotoPerfil(dni)
+    res.json({ success: true, message: 'Foto de perfil eliminada' })
+  } catch (err) {
+    console.error('[deleteFotoPerfil] Error:', err.message, err.stack)
+    res.status(500).json({ error: err.message || 'Error al eliminar la foto' })
   }
 }

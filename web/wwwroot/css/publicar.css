@@ -4,9 +4,9 @@
 }
 
 .tituloPublicaciones {
-  margin: 20px;
+  margin: 70px auto 0;
   justify-self: center;
-  font-size: 2.3rem;
+  font-size: 2rem;
   text-align: center;
   color: var(--dark);
 }
@@ -208,6 +208,18 @@
   border-color: var(--secondary2);
   box-shadow: 0 0 0 3px rgba(151, 216, 196, 0.2);
   outline: none;
+}
+
+/* Neutralizar autofill del browser dentro de publicar */
+.publicar-seccion .campo input:-webkit-autofill,
+.publicar-seccion .campo input:-webkit-autofill:hover,
+.publicar-seccion .campo input:-webkit-autofill:focus,
+.publicar-seccion .campo input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #3a4e8c inset !important;
+  box-shadow: 0 0 0 1000px #3a4e8c inset !important;
+  -webkit-text-fill-color: var(--light) !important;
+  caret-color: var(--light);
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 .publicar-seccion .campo select option {

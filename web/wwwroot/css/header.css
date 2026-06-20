@@ -162,6 +162,11 @@ header .searchNFilter {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Cuando el hover está sobre el dropdown, no resaltar el <a> padre */
+.profileBtn:has(.profile-dropdown:hover) > a {
+  background-color: transparent;
+}
+
 .profileBtn a .simpleBtn {
   width: 32px;
   height: 32px;
@@ -200,12 +205,12 @@ header .searchNFilter {
   right: 0;
   padding-top: 10px;
   background-color: transparent;
-  min-width: 170px;
+  width: max-content;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-6px);
   transition: opacity 0.18s ease, transform 0.18s ease;
-  z-index: 200;
+  z-index: 999;
 }
 
 .profile-dropdown-inner {
@@ -213,6 +218,8 @@ header .searchNFilter {
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(6, 26, 64, 0.18);
   padding: 6px;
+  display: flex;
+  flex-direction: column;
 }
 
 .profileBtn:hover .profile-dropdown,
@@ -235,35 +242,39 @@ header .searchNFilter {
   text-decoration: none !important;
   transition: background-color 0.15s;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
-.profile-dropdown-item:hover {
-  background-color: rgba(6, 26, 64, 0.07);
-  transform: translateX(2px);
-  transition: background-color 0.15s, transform 0.15s;
+.profile-dropdown-inner .profile-dropdown-item {
+  display: flex !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  border-radius: 8px !important;
+  justify-content: flex-start !important;
+  padding: 9px 12px !important;
+}
+
+.profile-dropdown-inner .profile-dropdown-item:hover {
+  background-color: rgba(6, 26, 64, 0.1);
+  color: var(--dark) !important;
 }
 
 .profile-dropdown-item svg {
-  transition: transform 0.2s;
-}
-
-.profile-dropdown-item:hover svg {
-  transform: scale(1.15);
+  flex-shrink: 0;
 }
 
 .profile-dropdown-logout {
   color: var(--red) !important;
-  transition: background-color 0.15s, transform 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 .profile-dropdown-logout:hover {
-  background-color: rgba(215, 38, 61, 0.1);
+  background-color: rgba(215, 38, 61, 0.18) !important;
   color: var(--red) !important;
-  transform: translateX(2px);
 }
 
 .profile-dropdown-logout:hover svg {
-  transform: scale(1.15) translateX(1px);
+  color: var(--red) !important;
 }
 
 .profile-dropdown-divider {
@@ -435,4 +446,20 @@ header .searchNFilter {
   filter: brightness(1.07);
   box-shadow: 0 4px 14px rgba(151, 216, 196, 0.45);
   color: var(--dark);
+}
+
+/* ── Foto de perfil en el nav ── */
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(151, 216, 196, 0.55);
+  display: block;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.profileBtn a:hover .nav-avatar {
+  border-color: var(--secondary2);
 }

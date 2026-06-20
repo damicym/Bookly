@@ -16,7 +16,7 @@
         <h1><span>La forma más cómoda de comprar</span> <span>y vender libros escolares</span></h1>
         <p class="bienvenidaP">Contactá con un estudiante, acordá un precio justo y una ubicación en cuestión de minutos</p>
         <div class="bienvenidaBtnContainer">
-            <button class="bienvenida-btn-primary wHover" onclick="abrirPublicarModal()">
+            <button class="bienvenida-btn-primary wHover" onclick="location.href='@Url.Action("Publicar", "Book")'">
                 Publicar un libro
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
             </button>
@@ -75,7 +75,7 @@
             <div class="carrusel-track">
                 @foreach (PublicacionesCompletas libro in Model)
                 {
-                    <div class="libro carrusel-card @(libro.esMasBarato ? "protagonista" : "")" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id, idVendedor = libro.idVendedor })'">
+                    <div class="libro carrusel-card @(libro.esMasBarato ? "protagonista" : "")" onclick="window.location.href='@Url.Action("Detalle", "Book", new { id = libro.id })'">
                         <div class="imgContainer">
                             <div class="libroImgContainer">
                                 <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" loading="lazy" />
@@ -108,18 +108,25 @@
                                 @if (libro.estadoLibro != null) {
                                     <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
                                 }
-                                @if (HtmlHelpers.PasarAñoATexto(libro.ano) != null) {
-                                    <span class="pill">@HtmlHelpers.PasarAñoATexto(libro.ano)</span>
+                                @if (libro.ano.HasValue) {
+                                    var añoTexto = HtmlHelpers.PasarAñoATexto(libro.ano.Value);
+                                    if (añoTexto != null) {
+                                        <span class="pill">@añoTexto</span>
+                                    }
                                 }
                             </div>
                         </div>
                         <div class="nombreYMateriaContainer">
                             <h1>@HtmlHelpers.ToUpperPrimeraLetra(libro.nombre)</h1>
-                            @if (libro.materia != null) {
-                                <h2>@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</h2>
-                            }
                         </div>
-                        <h3>$@libro.precio</h3>
+                        <div class="libro-footer">
+                            @if (libro.materia != null) {
+                                <span class="libro-footer-materia">@HtmlHelpers.ToUpperPrimeraLetra(libro.materia)</span>
+                            } else {
+                                <span></span>
+                            }
+                            <h3>$@HtmlHelpers.FormatPrecio(libro.precio)</h3>
+                        </div>
                     </div>
                 }
 

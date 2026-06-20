@@ -3,7 +3,7 @@
 const container = document.getElementById("resultados")
 
 if (searchInput && container) {
-    realizarBusqueda(searchInput.value.trim())
+    realizarBusqueda(searchInput.value.trim(), true)
     searchInput.focus()
     const len = searchInput.value ? searchInput.value.length : 0
     if (typeof searchInput.setSelectionRange === 'function') {
@@ -13,8 +13,22 @@ if (searchInput && container) {
     }
 }
 
-async function realizarBusqueda(query) {
+function mostrarSkeleton(cantidad = 10) {
+    if (!container) return
+    const skeletonCard = `
+        <div class="libro-skeleton">
+            <div class="skeleton-block skeleton-img"></div>
+            <div class="skeleton-block skeleton-titulo"></div>
+            <div class="skeleton-block skeleton-titulo-2"></div>
+            <div class="skeleton-block skeleton-materia"></div>
+            <div class="skeleton-block skeleton-precio"></div>
+        </div>`
+    container.innerHTML = skeletonCard.repeat(cantidad)
+}
+
+async function realizarBusqueda(query, esCargaInicial) {
     if (query !== null && query !== undefined) {
+        mostrarSkeleton()
         try{
             // Soporte para selects (legacy) y radio buttons (nuevo diseño)
             const getRadioVal = (name) => {
@@ -27,6 +41,8 @@ async function realizarBusqueda(query) {
             const editorial = document.getElementById("filtroEditoriales")?.value?.trim() ?? getRadioVal("filtroEditoriales")
             const precioMin = limpiarPrecio(document.getElementById("filtroPrecioMin")?.value?.trim() ?? "")
             const precioMax = limpiarPrecio(document.getElementById("filtroPrecioMax")?.value?.trim() ?? "")
+            const ordenEstado = document.getElementById('selectOrdenEstado')?.value ?? ""
+            const ordenPrecio = document.getElementById('selectOrdenPrecio')?.value ?? ""
 
             const params = new URLSearchParams({
                 query: query ?? "",
@@ -35,7 +51,9 @@ async function realizarBusqueda(query) {
                 estado,
                 editorial,
                 precioMin,
-                precioMax
+                precioMax,
+                ordenEstado,
+                ordenPrecio
             })
 
             const res = await fetch(`/Home/Buscar?${params.toString()}`)
@@ -51,13 +69,14 @@ async function realizarBusqueda(query) {
                 const token = document.querySelector('input[name="__RequestVerificationToken"]')
                 const tokenInput = token ? `<input type="hidden" name="__RequestVerificationToken" value="${token.value}">` : ''
                 if (data.publicaciones && data.publicaciones.length > 0) {
+                    const hayOrden = ordenEstado !== '' || ordenPrecio !== ''
                     let anteriorFueProtagonista = data.publicaciones[0]?.esMasBarato ?? false
                     let huboCambio = false
                     data.publicaciones.forEach(libro => {
                         const imgSrc = libro.imagen ? libro.imagen : '/img/book-placeholder.webp'
                         const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Mejor precio</span>` : ''
-                        const claseCard = libro.esMasBarato ? 'libro protagonista' : 'libro secundario'
-                        if (huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
+                        const claseCard = (!hayOrden && libro.esMasBarato) ? 'libro protagonista' : 'libro secundario'
+                        if (!hayOrden && huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
                             html += `<hr class="separador-cards" />`
                         }
                         anteriorFueProtagonista = libro.esMasBarato
@@ -91,12 +110,14 @@ async function realizarBusqueda(query) {
                                 </div>
                                 <div class="nombreYMateriaContainer">
                                     <h1>${toUpperPrimeraLetra(libro.nombre)}</h1>
-                                    ${libro.materia
-                                        ? `<h2>${toUpperPrimeraLetra(libro.materia)}</h2>`
-                                        : ''
-                                    }
                                 </div>
-                                <h3>$${libro.precio}</h3>
+                                <div class="libro-footer">
+                                    ${libro.materia
+                                        ? `<span class="libro-footer-materia">${toUpperPrimeraLetra(libro.materia)}</span>`
+                                        : '<span></span>'
+                                    }
+                                    <h3>$${formatearMiles(String(libro.precio))}</h3>
+                                </div>
                             </div>
                         `
                     })
@@ -115,8 +136,10 @@ async function realizarBusqueda(query) {
                 }
                 container.innerHTML = html
             }
+            if (esCargaInicial && typeof ocultarPageLoader === 'function') ocultarPageLoader()
         } catch (error) {
             console.error("Error al buscar:", error)
+            if (esCargaInicial && typeof ocultarPageLoader === 'function') ocultarPageLoader()
             
             // Mostrar mensaje de error amigable al usuario
             if (container) {
@@ -148,6 +171,7 @@ async function realizarBusqueda(query) {
             <p class="no-result-title">Buscá un libro</p>
             <p class="no-result-sub">Escribí el nombre de un libro en la barra de búsqueda para ver resultados.</p>
         </div>`
+        if (esCargaInicial && typeof ocultarPageLoader === 'function') ocultarPageLoader()
     }
 }
 
@@ -174,7 +198,7 @@ const filtrosBusqueda = [
     document.getElementById("filtroPrecioMax")
 ].filter(Boolean)
 
-// También escuchar radio buttons del nuevo diseño de filtros
+// También escuchar radio buttons de los filtros del sidebar
 const radioFiltros = document.querySelectorAll(
     'input[name="filtroMateria"], input[name="filtroAno"], input[name="filtroEstado"], input[name="filtroEditoriales"]'
 )
@@ -210,11 +234,13 @@ if (container && filtrosBusqueda.length > 0) {
 if (container && radioFiltros.length > 0) {
     radioFiltros.forEach((radio) => {
         radio.addEventListener("change", () => {
+            mostrarSkeleton()
             clearTimeout(debounceTimer)
             const queryActual = searchInput?.value?.trim() ?? ""
             debounceTimer = setTimeout(() => {
                 realizarBusqueda(queryActual)
                 actualizarChipsFiltros()
+                actualizarEstadoBotonLimpiar()
             }, 200)
         })
     })
@@ -245,6 +271,7 @@ function actualizarChipsFiltros() {
     if (!chipsContainer) return
     chipsContainer.innerHTML = ''
 
+    // Chips de radios del sidebar
     const grupos = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales']
     grupos.forEach(name => {
         const checked = document.querySelector(`input[name="${name}"]:checked`)
@@ -261,13 +288,38 @@ function actualizarChipsFiltros() {
                 debounceTimer = setTimeout(() => {
                     realizarBusqueda(searchInput?.value?.trim() ?? "")
                     actualizarChipsFiltros()
+                    actualizarEstadoBotonLimpiar()
                 }, 200)
             }
         })
         chipsContainer.appendChild(chip)
     })
 
-    // Precio
+    // Chips de selects de orden
+    ;[
+        { id: 'selectOrdenEstado' },
+        { id: 'selectOrdenPrecio' }
+    ].forEach(({ id }) => {
+        const sel = document.getElementById(id)
+        if (!sel || sel.value === '') return
+        const label = sel.options[sel.selectedIndex]?.text ?? sel.value
+        const chip = document.createElement('span')
+        chip.className = 'filtro-chip'
+        chip.innerHTML = `${label} <span class="filtro-chip-x">✕</span>`
+        chip.addEventListener('click', () => {
+            sel.value = ''
+            sel.classList.remove('activo')
+            clearTimeout(debounceTimer)
+            debounceTimer = setTimeout(() => {
+                realizarBusqueda(searchInput?.value?.trim() ?? "")
+                actualizarChipsFiltros()
+                actualizarEstadoBotonLimpiar()
+            }, 200)
+        })
+        chipsContainer.appendChild(chip)
+    })
+
+    // Chip de rango de precio
     const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
     const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
     if (precioMin || precioMax) {
@@ -284,6 +336,7 @@ function actualizarChipsFiltros() {
             debounceTimer = setTimeout(() => {
                 realizarBusqueda(searchInput?.value?.trim() ?? "")
                 actualizarChipsFiltros()
+                actualizarEstadoBotonLimpiar()
             }, 200)
         })
         chipsContainer.appendChild(chip)
@@ -292,9 +345,27 @@ function actualizarChipsFiltros() {
 
 // Botón limpiar todos los filtros
 const btnLimpiar = document.getElementById('btnLimpiarFiltros')
+
+function actualizarEstadoBotonLimpiar() {
+    if (!btnLimpiar) return
+    const hayRadioActivo = ['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales'].some(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`)
+        return checked && checked.value !== ''
+    })
+    const hayOrdenActivo = (document.getElementById('selectOrdenEstado')?.value ?? '') !== ''
+        || (document.getElementById('selectOrdenPrecio')?.value ?? '') !== ''
+    const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
+    const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
+    btnLimpiar.disabled = !hayRadioActivo && !hayOrdenActivo && !precioMin && !precioMax
+}
+
 if (btnLimpiar) {
     btnLimpiar.addEventListener('click', () => {
         document.querySelectorAll('.filtro-opcion input[value=""]').forEach(r => r.checked = true)
+        const selE = document.getElementById('selectOrdenEstado')
+        const selP = document.getElementById('selectOrdenPrecio')
+        if (selE) { selE.value = ''; selE.classList.remove('activo') }
+        if (selP) { selP.value = ''; selP.classList.remove('activo') }
         const minEl = document.getElementById('filtroPrecioMin')
         const maxEl = document.getElementById('filtroPrecioMax')
         if (minEl) minEl.value = ''
@@ -303,6 +374,7 @@ if (btnLimpiar) {
         debounceTimer = setTimeout(() => {
             realizarBusqueda(searchInput?.value?.trim() ?? "")
             actualizarChipsFiltros()
+            actualizarEstadoBotonLimpiar()
         }, 200)
     })
 }
@@ -311,7 +383,31 @@ if (btnLimpiar) {
 precioInputs.forEach(inputPrecio => {
     inputPrecio.addEventListener('input', () => {
         clearTimeout(debounceTimer)
-        debounceTimer = setTimeout(() => actualizarChipsFiltros(), 400)
+        debounceTimer = setTimeout(() => {
+            actualizarChipsFiltros()
+            actualizarEstadoBotonLimpiar()
+        }, 400)
+    })
+})
+
+// Estado inicial del botón limpiar
+actualizarEstadoBotonLimpiar()
+
+// ===== DROPDOWNS DE ORDEN =====
+const selectOrdenEstado = document.getElementById('selectOrdenEstado')
+const selectOrdenPrecio = document.getElementById('selectOrdenPrecio')
+
+;[selectOrdenEstado, selectOrdenPrecio].forEach(sel => {
+    if (!sel) return
+    sel.addEventListener('change', () => {
+        sel.classList.toggle('activo', sel.value !== '')
+        mostrarSkeleton()
+        clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => {
+            realizarBusqueda(searchInput?.value?.trim() ?? "")
+            actualizarChipsFiltros()
+            actualizarEstadoBotonLimpiar()
+        }, 200)
     })
 })
 

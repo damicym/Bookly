@@ -5,6 +5,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Linq;
+using System.Globalization;
 
 namespace Bookly.Models
 {
@@ -172,26 +175,6 @@ namespace Bookly.Models
             Put($"/usuarios/{Uri.EscapeDataString(dni)}/about", new { about_me = aboutMe });
         }
 
-        /// <summary>POST /api/usuarios/:dni/foto — sube foto de perfil, devuelve URL pública</summary>
-        public static string SubirFotoPerfil(string dni, byte[] bytes, string contentType)
-        {
-            try
-            {
-                using var form = new MultipartFormDataContent();
-                var imgContent = new ByteArrayContent(bytes);
-                imgContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-                form.Add(imgContent, "fotoPerfil", "foto.jpg");
-                var response = _http.PostAsync($"{_apiBase}/usuarios/{Uri.EscapeDataString(dni)}/foto", form)
-                                    .GetAwaiter().GetResult();
-                if (!response.IsSuccessStatusCode) return null;
-                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                var el = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
-                if (el.TryGetProperty("url", out var urlEl)) return urlEl.GetString();
-                return null;
-            }
-            catch { return null; }
-        }
-
         /// <summary>POST /api/usuarios/register</summary>
         public static void registrarse(Usuarios usuario)
         {
@@ -239,7 +222,6 @@ namespace Bookly.Models
             return Get<Libros>($"/libros/{id}");
         }
 
-        /// <summary>
         /// <summary>
         /// Busca un libro por nombre exacto usando GET /api/libros
         /// y filtrando en memoria — evita problemas con el endpoint search.
@@ -305,8 +287,9 @@ namespace Bookly.Models
         }
 
         /// <summary>GET /api/publicaciones/recomendaciones?ano=x</summary>
-        public static List<PublicacionesCompletas> ObtenerRecomendacionesPorAno(int ano)
+        public static List<PublicacionesCompletas> ObtenerRecomendacionesPorAno(int? ano)
         {
+            if (!ano.HasValue) return new List<PublicacionesCompletas>();
             return Get<List<PublicacionesCompletas>>($"/publicaciones/recomendaciones?ano={ano}")
                    ?? new List<PublicacionesCompletas>();
         }
@@ -322,6 +305,41 @@ namespace Bookly.Models
         public static PublicacionesCompletas ObtenerPublicacionCompletaPorId(int id)
         {
             return Get<PublicacionesCompletas>($"/publicaciones/{id}");
+        }
+
+        /// <summary>DELETE /api/usuarios/:dni/foto — elimina foto de perfil (vuelve a default)</summary>
+        public static bool EliminarFotoPerfil(string dni)
+        {
+            try
+            {
+                var response = _http.DeleteAsync($"{_apiBase}/usuarios/{Uri.EscapeDataString(dni)}/foto")
+                                    .GetAwaiter().GetResult();
+                return response.IsSuccessStatusCode;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>PUT /api/usuarios/:dni/foto — sube foto de perfil, devuelve URL pública</summary>
+        public static string SubirFotoPerfil(string dni, IFormFile imagen)
+        {
+            try
+            {
+                using var form = new MultipartFormDataContent();
+                AddImageToMultipart(form, imagen);
+                var response = _http.PutAsync($"{_apiBase}/usuarios/{Uri.EscapeDataString(dni)}/foto", form)
+                                    .GetAwaiter().GetResult();
+                if (!response.IsSuccessStatusCode) {
+                    throw new Exception();
+                }
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var el = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                if (el.TryGetProperty("url", out var urlEl)) {
+                    return urlEl.GetString();
+                } else {
+                    throw new Exception();
+                }
+            }
+            catch { return null; }
         }
 
         /// <summary>
@@ -350,7 +368,7 @@ namespace Bookly.Models
         }
 
         /// <summary>PUT /api/publicaciones/:id  (multipart/form-data)</summary>
-        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile imagen)
+        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile? imagen)
         {
             using var form = new MultipartFormDataContent();
             int? anoParsed = null;

@@ -17,7 +17,11 @@ router.get('/:dni', usuariosCtrl.getUserInfo)
 // PUT /api/usuarios/:dni/about
 router.put('/:dni/about', usuariosCtrl.updateAbout)
 
-// POST /api/usuarios/:dni/foto
-router.post('/:dni/foto', upload.single('fotoPerfil'), usuariosCtrl.updateFotoPerfil)
+// PUT /api/usuarios/:dni/foto
+// El backend .NET envía el campo como "imagen" en el multipart, mantengo coherencia.
+router.put('/:dni/foto', upload.single('imagen'), usuariosCtrl.updateFotoPerfil)
+
+// DELETE /api/usuarios/:dni/foto
+router.delete('/:dni/foto', usuariosCtrl.deleteFotoPerfil)
 
 export default router

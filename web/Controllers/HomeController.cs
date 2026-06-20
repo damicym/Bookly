@@ -25,16 +25,14 @@ namespace Bookly.Controllers
             var favoritos = user != null
                 ? BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet()
                 : new HashSet<int>();
-            if (user != null)
-            {
-                int anoUsuario = user.ano;
+            int? anoUsuario = user?.ano;
+            if (user != null && anoUsuario.HasValue) {
                 publicaciones = BD.ObtenerRecomendacionesPorAno(anoUsuario)
                     .Where(p => p.idVendedor != user.DNI).Take(20).ToList();
 
                 ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATextoCompleto(anoUsuario)}";
             }
-            else
-            {
+            else {
                 publicaciones = BD.ObtenerPublicacionesCompletasConTope(20);
                 ViewBag.Titulo = "Últimas publicaciones";
             }
@@ -57,7 +55,7 @@ namespace Bookly.Controllers
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             var libros = BD.ObtenerLibros() ?? new List<Libros>();
             ViewBag.materias = libros.Select(l => l.materia).Distinct().ToList();
-            ViewBag.anos = libros.Select(l => l.ano).Distinct().ToList();
+            ViewBag.anos = libros.Select(l => l.ano).Distinct().OrderBy(a => a).ToList();
             ViewBag.editoriales = libros.Select(l => l.editorial).Distinct().ToList();
             ViewBag.query = query;
             // Proveer al layout la info de usuario para mostrar el nombre cuando esté logueado. (esto arregla lo de que no se muestre el nombre de usuario si se está en catalogo)
@@ -74,11 +72,14 @@ namespace Bookly.Controllers
                 return RedirectToAction("Login", "Usuarios");
             }
 
-            // Refrescar aboutMe desde la BD para garantizar que siempre esté actualizado
+            // Refrescar datos desde la BD para garantizar que siempre estén actualizados
             var userFresh = BD.ObtenerUsuarioPorDNI(user.DNI);
             if (userFresh != null)
             {
                 user.aboutMe = userFresh.aboutMe;
+                // Solo pisar fotoPerfil si viene con valor, nunca con null
+                if (!string.IsNullOrWhiteSpace(userFresh.fotoPerfil))
+                    user.fotoPerfil = userFresh.fotoPerfil;
                 HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(user));
             }
 
@@ -116,7 +117,7 @@ namespace Bookly.Controllers
             return View();
         }
         
-        public IActionResult Buscar(string query, string materia, string ano, string estado, string editorial, string precioMin, string precioMax/* , string orden, string direccion */)
+        public IActionResult Buscar(string query, string materia, string ano, string estado, string editorial, string precioMin, string precioMax, string ordenEstado, string ordenPrecio)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             List<PublicacionesCompletas> resultados;
@@ -149,11 +150,36 @@ namespace Bookly.Controllers
 
                 resultados = consulta.ToList();
                 MarcarMasBaratos(resultados);
-                // Los más baratos de su grupo van primero
-                resultados = resultados
-                    .OrderByDescending(p => p.esMasBarato)
-                    .ThenBy(p => p.precio)
-                    .ToList();
+
+                // Aplicar ordenamiento según filtros seleccionados
+                // ordenEstado tiene prioridad sobre ordenPrecio si ambos están activos
+                if (!string.IsNullOrWhiteSpace(ordenEstado))
+                {
+                    // Mapa de estado a valor numérico: a=mejor(1), b=medio(2), d=peor(3)
+                    Func<PublicacionesCompletas, int> estadoOrden = p => {
+                        var e = RemoveTildes(NormalizarEstado(p.estadoLibro ?? "")).ToLower();
+                        if (e == "como nuevo" || e == "a") return 1;
+                        if (e == "pocas anotaciones" || e == "b") return 2;
+                        return 3;
+                    };
+                    resultados = ordenEstado == "asc"
+                        ? resultados.OrderBy(estadoOrden).ThenBy(p => p.precio).ToList()
+                        : resultados.OrderByDescending(estadoOrden).ThenBy(p => p.precio).ToList();
+                }
+                else if (!string.IsNullOrWhiteSpace(ordenPrecio))
+                {
+                    resultados = ordenPrecio == "asc"
+                        ? resultados.OrderBy(p => p.precio).ToList()
+                        : resultados.OrderByDescending(p => p.precio).ToList();
+                }
+                else
+                {
+                    // Orden por defecto: más baratos de su grupo primero
+                    resultados = resultados
+                        .OrderByDescending(p => p.esMasBarato)
+                        .ThenBy(p => p.precio)
+                        .ToList();
+                }
 
                 // Marcar cuáles ya están en favoritos
                 foreach (var r in resultados)

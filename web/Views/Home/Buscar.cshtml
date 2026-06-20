@@ -133,7 +133,27 @@
     @* ===== RESULTADOS ===== *@
     <div class="catalogo-resultados">
         <div class="catalogo-resultados-header">
-            <h2 class="busqueda-titulo">Catálogo</h2>
+            <div class="catalogo-titulo-row">
+                <h2 class="busqueda-titulo">Catálogo</h2>
+                <div class="orden-dropdowns">
+                    <div class="orden-dropdown-wrap">
+                        <label class="orden-label" for="selectOrdenEstado">Ordenar por</label>
+                        <select id="selectOrdenEstado" class="orden-select">
+                            <option value="">Estado</option>
+                            <option value="asc">Mejor estado primero</option>
+                            <option value="desc">Peor estado primero</option>
+                        </select>
+                    </div>
+                    <div class="orden-dropdown-wrap">
+                        <label class="orden-label" for="selectOrdenPrecio">Ordenar por</label>
+                        <select id="selectOrdenPrecio" class="orden-select">
+                            <option value="">Precio</option>
+                            <option value="asc">Menor precio primero</option>
+                            <option value="desc">Mayor precio primero</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div class="filtros-activos-chips" id="filtrosActivosChips"></div>
         </div>
         <section class="publicaciones">
