@@ -142,6 +142,11 @@
         if (onsubmit.includes('confirm(')) return;
         var action = form.getAttribute('action') || '';
         if (!action || action === '#') return;
+
+        // Solo mostrar el loader si el form es válido
+        // (checkValidity() devuelve false cuando hay campos con restricciones no cumplidas)
+        if (!form.checkValidity()) return;
+
         mostrarLoader();
     }, true);
 

@@ -188,11 +188,11 @@ namespace Bookly.Controllers
 
         // Endpoint para autocomplete de nombres de libros
         [HttpGet]
-        public IActionResult AutocompleteNombres(string q)
+        public IActionResult ObtenerTodosLosLibros()
         {
             try
             {
-                var resultados = BD.BuscarNombresLibros(q ?? string.Empty);
+                var resultados = BD.ObtenerLibros();
                 return Json(resultados);
             }
             catch (Exception ex)

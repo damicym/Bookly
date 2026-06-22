@@ -115,6 +115,7 @@
         // Precio: entre 1 y 999999
         if (precio && (parseFloat(precio.value) < 1 || parseFloat(precio.value) > 999999)) {
             e.preventDefault();
+            if (typeof ocultarPageLoader === 'function') ocultarPageLoader();
             precio.setCustomValidity('El precio debe estar entre $1 y $999.999');
             precio.reportValidity();
             return;
@@ -127,6 +128,7 @@
             var val = nombre.value.trim();
             if (val.length < 2) {
                 e.preventDefault();
+                if (typeof ocultarPageLoader === 'function') ocultarPageLoader();
                 nombre.setCustomValidity('El nombre debe tener al menos 2 caracteres');
                 nombre.reportValidity();
                 return;
