@@ -136,21 +136,46 @@
             <div class="catalogo-titulo-row">
                 <h2 class="busqueda-titulo">Catálogo</h2>
                 <div class="orden-dropdowns">
+                    <!-- Hidden selects para compatibilidad con buscar.js -->
+                    <select id="selectOrdenEstado" style="display:none">
+                        <option value="">Estado</option>
+                        <option value="asc">Mejor estado</option>
+                        <option value="desc">Peor estado</option>
+                    </select>
+                    <select id="selectOrdenPrecio" style="display:none">
+                        <option value="">Precio</option>
+                        <option value="asc">Menor precio</option>
+                        <option value="desc">Mayor precio</option>
+                    </select>
+
                     <div class="orden-dropdown-wrap">
-                        <label class="orden-label" for="selectOrdenEstado">Ordenar por</label>
-                        <select id="selectOrdenEstado" class="orden-select">
-                            <option value="">Estado</option>
-                            <option value="asc">Mejor estado primero</option>
-                            <option value="desc">Peor estado primero</option>
-                        </select>
+                        <span class="orden-label">Ordenar por</span>
+                        <div class="orden-custom-dropdown" data-select="selectOrdenEstado">
+                            <button type="button" class="orden-custom-btn" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="orden-custom-text">Estado</span>
+                                <svg class="orden-custom-chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+                            </button>
+                            <ul class="orden-custom-list" role="listbox">
+                                <li class="orden-custom-option" data-value="" role="option">Estado</li>
+                                <li class="orden-custom-option" data-value="asc" role="option">Mejor estado</li>
+                                <li class="orden-custom-option" data-value="desc" role="option">Peor estado</li>
+                            </ul>
+                        </div>
                     </div>
+
                     <div class="orden-dropdown-wrap">
-                        <label class="orden-label" for="selectOrdenPrecio">Ordenar por</label>
-                        <select id="selectOrdenPrecio" class="orden-select">
-                            <option value="">Precio</option>
-                            <option value="asc">Menor precio primero</option>
-                            <option value="desc">Mayor precio primero</option>
-                        </select>
+                        <span class="orden-label">Ordenar por</span>
+                        <div class="orden-custom-dropdown" data-select="selectOrdenPrecio">
+                            <button type="button" class="orden-custom-btn" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="orden-custom-text">Precio</span>
+                                <svg class="orden-custom-chevron" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+                            </button>
+                            <ul class="orden-custom-list" role="listbox">
+                                <li class="orden-custom-option" data-value="" role="option">Precio</li>
+                                <li class="orden-custom-option" data-value="asc" role="option">Menor precio</li>
+                                <li class="orden-custom-option" data-value="desc" role="option">Mayor precio</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

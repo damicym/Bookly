@@ -72,6 +72,10 @@ async function realizarBusqueda(query, esCargaInicial) {
                     const hayOrden = ordenEstado !== '' || ordenPrecio !== ''
                     let anteriorFueProtagonista = data.publicaciones[0]?.esMasBarato ?? false
                     let huboCambio = false
+                    const hayProtagonistas = !hayOrden && data.publicaciones.some(l => l.esMasBarato)
+                    if (hayProtagonistas) {
+                        html += `<h3 class="catalogo-seccion-titulo">Mejores precios</h3>`
+                    }
                     data.publicaciones.forEach(libro => {
                         const imgSrc = libro.imagen ? libro.imagen : '/img/book-placeholder.webp'
                         const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Mejor precio</span>` : ''
@@ -108,7 +112,7 @@ async function realizarBusqueda(query, esCargaInicial) {
                                         }
                                     </div>
                                 </div>
-                                <div class="nombreYMateriaContainer">
+                                <div class="nombreContainer">
                                     <h1>${toUpperPrimeraLetra(libro.nombre)}</h1>
                                 </div>
                                 <div class="libro-footer">
@@ -309,6 +313,16 @@ function actualizarChipsFiltros() {
         chip.addEventListener('click', () => {
             sel.value = ''
             sel.classList.remove('activo')
+            // Resetear el dropdown custom asociado
+            const customDropdown = document.querySelector(`.orden-custom-dropdown[data-select="${id}"]`)
+            if (customDropdown) {
+                const textEl = customDropdown.querySelector('.orden-custom-text')
+                const btn = customDropdown.querySelector('.orden-custom-btn')
+                const firstOpt = customDropdown.querySelector('.orden-custom-option[data-value=""]')
+                if (textEl && firstOpt) textEl.textContent = firstOpt.textContent
+                btn?.classList.remove('activo')
+                customDropdown.querySelectorAll('.orden-custom-option').forEach(o => o.classList.remove('selected'))
+            }
             clearTimeout(debounceTimer)
             debounceTimer = setTimeout(() => {
                 realizarBusqueda(searchInput?.value?.trim() ?? "")
@@ -366,6 +380,7 @@ if (btnLimpiar) {
         const selP = document.getElementById('selectOrdenPrecio')
         if (selE) { selE.value = ''; selE.classList.remove('activo') }
         if (selP) { selP.value = ''; selP.classList.remove('activo') }
+        resetCustomDropdowns()
         const minEl = document.getElementById('filtroPrecioMin')
         const maxEl = document.getElementById('filtroPrecioMax')
         if (minEl) minEl.value = ''
@@ -410,6 +425,68 @@ const selectOrdenPrecio = document.getElementById('selectOrdenPrecio')
         }, 200)
     })
 })
+
+// ===== CUSTOM DROPDOWNS (UI) =====
+document.querySelectorAll('.orden-custom-dropdown').forEach(dropdown => {
+    const btn = dropdown.querySelector('.orden-custom-btn')
+    const list = dropdown.querySelector('.orden-custom-list')
+    const textEl = dropdown.querySelector('.orden-custom-text')
+    const selectId = dropdown.dataset.select
+    const hiddenSelect = document.getElementById(selectId)
+
+    // Abrir / cerrar
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const isOpen = dropdown.classList.contains('open')
+        // Cerrar todos
+        document.querySelectorAll('.orden-custom-dropdown.open').forEach(d => d.classList.remove('open'))
+        document.querySelectorAll('.orden-custom-btn').forEach(b => b.setAttribute('aria-expanded', 'false'))
+        if (!isOpen) {
+            dropdown.classList.add('open')
+            btn.setAttribute('aria-expanded', 'true')
+        }
+    })
+
+    // Seleccionar opción
+    list.querySelectorAll('.orden-custom-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            const value = opt.dataset.value
+            const label = opt.textContent
+
+            // Actualizar UI
+            textEl.textContent = label
+            list.querySelectorAll('.orden-custom-option').forEach(o => o.classList.remove('selected'))
+            opt.classList.add('selected')
+            btn.classList.toggle('activo', value !== '')
+            dropdown.classList.remove('open')
+            btn.setAttribute('aria-expanded', 'false')
+
+            // Sincronizar hidden select y disparar change
+            if (hiddenSelect) {
+                hiddenSelect.value = value
+                hiddenSelect.dispatchEvent(new Event('change'))
+            }
+        })
+    })
+})
+
+// Cerrar dropdowns al hacer click fuera
+document.addEventListener('click', () => {
+    document.querySelectorAll('.orden-custom-dropdown.open').forEach(d => d.classList.remove('open'))
+    document.querySelectorAll('.orden-custom-btn').forEach(b => b.setAttribute('aria-expanded', 'false'))
+})
+
+// Sincronizar custom dropdowns cuando se limpia desde el botón limpiar
+function resetCustomDropdowns() {
+    document.querySelectorAll('.orden-custom-dropdown').forEach(dropdown => {
+        const textEl = dropdown.querySelector('.orden-custom-text')
+        const btn = dropdown.querySelector('.orden-custom-btn')
+        const firstOpt = dropdown.querySelector('.orden-custom-option[data-value=""]')
+        if (textEl && firstOpt) textEl.textContent = firstOpt.textContent
+        btn?.classList.remove('activo')
+        dropdown.querySelectorAll('.orden-custom-option').forEach(o => o.classList.remove('selected'))
+    })
+}
 
 // ===== TOGGLE SIDEBAR FILTROS =====
 const btnToggleFiltros = document.getElementById('btnToggleFiltros')

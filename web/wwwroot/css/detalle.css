@@ -462,6 +462,45 @@
   flex-shrink: 0;
   border: 3px solid rgba(151,216,196,0.55);
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.det-vendedor-avatar:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.38);
+}
+
+/* ── Modal imagen avatar ── */
+.avatar-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  cursor: zoom-out;
+}
+
+.avatar-modal-overlay.open {
+  display: flex;
+}
+
+.avatar-modal-img {
+  width: min(600px, 90vw);
+  height: min(600px, 90vw);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.55);
+  animation: avatarModalIn 0.22s ease;
+}
+
+@keyframes avatarModalIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
 }
 
 .det-vendedor-nombre {
