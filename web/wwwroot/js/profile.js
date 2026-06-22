@@ -16,6 +16,10 @@ function editarAboutMe() {
     // Ocultar la fila de texto + botón editar
     if (aboutMeBioView) aboutMeBioView.style.display = 'none'
 
+    // Mostrar botón eliminar foto si existe
+    const btnEliminarFoto = document.getElementById('btnEliminarFoto')
+    if (btnEliminarFoto) btnEliminarFoto.style.display = 'flex'
+
     // Inyectar textarea, botón guardar y cancelar
     aboutMeEditable.innerHTML = `
         <div class="profile-bio-edit-wrap">
@@ -54,6 +58,10 @@ function editarAboutMe() {
 function cancelarAboutMe() {
     aboutMeEditable.innerHTML = ''
     if (aboutMeBioView) aboutMeBioView.style.display = 'flex'
+
+    // Ocultar botón eliminar foto
+    const btnEliminarFoto = document.getElementById('btnEliminarFoto')
+    if (btnEliminarFoto) btnEliminarFoto.style.display = 'none'
 }
 
 // Solo letras en curso

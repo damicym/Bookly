@@ -46,6 +46,8 @@ namespace Bookly.Controllers
         public IActionResult Detalle(int id)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+                return RedirectToAction("Login", "Usuarios", new { returnView = "Catalogo" });
             PublicacionesCompletas libro = BD.ObtenerPublicacionCompletaPorId(id);
             Usuarios vendedor = BD.ObtenerUsuarioPorDNI(libro.idVendedor);
             if (libro == null)
