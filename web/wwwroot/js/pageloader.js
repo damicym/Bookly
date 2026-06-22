@@ -156,36 +156,31 @@
         if (!esCatalogo) ocultarLoader();
     }
 
-    // DOMContentLoaded: el HTML está listo, no esperamos imágenes ni recursos externos
-    document.addEventListener('DOMContentLoaded', function() {
+    // window.load: espera a que todo (imágenes, CSS externos) esté descargado
+    // Es el momento correcto — el usuario ya ve la página completa
+    if (document.readyState === 'complete') {
+        // Ya cargó todo (ej: navegación con bfcache)
+        setTimeout(ocultarLoaderAlCargar, 80);
+    } else {
+        window.addEventListener('load', function() {
+            esCatalogo = document.getElementById('resultados') !== null;
+            ocultarLoaderAlCargar();
+        });
+    }
+
+    // pageshow cubre navegación con bfcache (botón atrás/adelante del browser)
+    window.addEventListener('pageshow', function(e) {
         esCatalogo = document.getElementById('resultados') !== null;
         ocultarLoaderAlCargar();
     });
 
-    // pageshow cubre navegación con bfcache (botón atrás/adelante del browser)
-    window.addEventListener('pageshow', ocultarLoaderAlCargar);
+    // Fallback: si por alguna razón load no se dispara, ocultar a los 5s
+    setTimeout(function() {
+        var el = document.getElementById('pageLoader');
+        if (el && el.style.display !== 'none') ocultarLoader();
+    }, 5000);
 
     window.mostrarPageLoader = mostrarLoader;
     window.ocultarPageLoader = ocultarLoader;
-
-    // ── Interceptar fetch global ──
-    var _fetchOriginal = window.fetch;
-    var _fetchActivo = 0;
-    window.fetch = function(url) {
-        // No mostrar loader para búsquedas en tiempo real (se disparan con cada tecla)
-        var urlStr = (url || '').toString();
-        var esBusqueda = urlStr.includes('/Home/Buscar') || urlStr.includes('/Home/Catalogo') || urlStr.includes('/Book/AutocompleteNombres');
-        if (esBusqueda) return _fetchOriginal.apply(this, arguments);
-
-        _fetchActivo++;
-        mostrarLoader();
-        return _fetchOriginal.apply(this, arguments).finally(function() {
-            _fetchActivo--;
-            if (_fetchActivo <= 0) {
-                _fetchActivo = 0;
-                ocultarLoader();
-            }
-        });
-    };
 
 })();

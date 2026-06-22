@@ -347,20 +347,226 @@ header .searchNFilter {
   border: none;
 }
 
-@media (max-width: 450px) {
-  .logoSvg {
-    width: 52px;
-    height: 52px;
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE — Header
+   Estrategia:
+   > 560px  → layout normal, search visible
+   ≤ 768px  → search flex:1, nombre usuario oculto
+   ≤ 560px  → lupa + hamburguesa, search como panel fijo
+   ≤ 400px  → ajustes mínimos
+═══════════════════════════════════════════════════ */
+
+/* Base: botón lupa y hamburguesa siempre ocultos en desktop */
+.header-search-btn,
+.header-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  color: rgba(239,242,241,0.75);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s, color 0.18s;
+}
+
+.header-search-btn:hover,
+.header-hamburger:hover,
+.header-hamburger.is-open,
+header.search-open .header-search-btn {
+  background: rgba(255,255,255,0.12);
+  color: var(--light);
+}
+
+/* Hamburguesa menu: en desktop los items aparecen normalmente en el flujo */
+.header-hamburger-menu {
+  display: contents;
+}
+
+/* ── ≤ 768px: tablet ── */
+@media (max-width: 768px) {
+  header {
+    gap: 12px;
+    padding: 0 16px;
   }
-  .search input[type=text] {
-    font-size: 0.8rem;
+
+  header .searchNFilter {
+    width: auto;
+    max-width: none;
+    flex: 1;
+    min-width: 0;
   }
+
   .profileBtn p {
     display: none;
   }
+
+  .navSections {
+    gap: 2px;
+    flex-shrink: 0;
+  }
+}
+
+/* ── ≤ 560px: mobile ── */
+@media (max-width: 560px) {
+  header {
+    height: 64px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .primerElemento {
+    margin-top: 64px !important;
+  }
+
+  .logoSvg {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  /* Search visible, compacto */
+  header .searchNFilter {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    max-width: none;
+  }
+
+  .search input[type=text] {
+    height: 32px;
+    font-size: 0.78rem;
+    padding: 0 34px 0 12px;
+    border-radius: 16px;
+  }
+
+  .search-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Lupa oculta — el search es siempre visible */
+  .header-search-btn {
+    display: none !important;
+  }
+
+  /* Hamburguesa visible */
+  .header-hamburger {
+    display: flex;
+  }
+
   .favBtn {
     width: 34px;
     height: 34px;
+    margin-right: 0;
+  }
+
+  .favBtn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Sin login: ocultar search en mobile */
+  header.header--guest .searchNFilter {
+    display: none !important;
+  }
+
+  /* Botones auth: compactos con texto visible */
+  .nav-auth-btn {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    gap: 5px;
+    border-radius: 8px;
+  }
+
+  .nav-auth-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .nav-auth-btn--secondary {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .navSections {
+    gap: 0;
+    flex-shrink: 0;
+    margin-left: 0;
+  }
+
+  /* Hamburguesa menu: dropdown */
+  .header-hamburger-menu {
+    display: block;
+    position: fixed;
+    top: 64px;
+    right: 12px;
+    background: var(--dark);
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(6,26,64,0.35);
+    border: 1px solid rgba(255,255,255,0.08);
+    z-index: 1001;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px) scale(0.97);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    min-width: 160px;
+  }
+
+  .header-hamburger-menu.is-open {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+  }
+
+  .header-hamburger-menu .favBtn {
+    display: flex;
+    width: 100%;
+    height: auto;
+    border-radius: 9px;
+    padding: 10px 14px;
+    gap: 10px;
+    color: rgba(239,242,241,0.75);
+    justify-content: flex-start;
+    margin: 0;
+  }
+
+  .header-hamburger-menu .favBtn::after {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: rgba(239,242,241,0.75);
+  }
+
+  #chatBtnHeader.favBtn::after { content: "Mensajes"; }
+  #favBtnHeader.favBtn::after  { content: "Favoritos"; }
+
+  .header-hamburger-menu .favBtn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--light);
+  }
+
+  .header-hamburger-menu .favBtn:hover::after {
+    color: var(--light);
+  }
+
+  #chatBtnHeader,
+  #favBtnHeader { display: flex; }
+}
+
+/* ── ≤ 400px: pantallas muy chicas ── */
+@media (max-width: 400px) {
+  header {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .logoSvg {
+    width: 38px;
+    height: 38px;
   }
 }
 

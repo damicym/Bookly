@@ -53,6 +53,8 @@ namespace Bookly.Controllers
         public IActionResult Catalogo(string query)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+                return RedirectToAction("Login", "Usuarios", new { returnView = "Catalogo" });
             var libros = BD.ObtenerLibros() ?? new List<Libros>();
             ViewBag.materias = libros.Select(l => l.materia).Distinct().ToList();
             ViewBag.anos = libros.Select(l => l.ano).Distinct().OrderBy(a => a).ToList();

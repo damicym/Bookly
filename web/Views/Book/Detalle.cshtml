@@ -63,6 +63,16 @@
                         Mejor precio
                     </span>
                 }
+                @{
+                    var libFavCheck = (List<PublicacionesCompletas>)(ViewBag.VendedorLibrosFavoritos ?? new List<PublicacionesCompletas>());
+                }
+                @if (libFavCheck.Count > 0)
+                {
+                    <button class="det-btn-intercambio" id="btnConsultarPublicacion" title="Ver opciones de intercambio">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/></svg>
+                        Ver opciones de intercambio
+                    </button>
+                }
             </div>
         </div>
 
@@ -176,43 +186,41 @@
                 </div>
             </div>
 
-            @* ── Barra de nivel de ventas ── *@
-            @{
-                var ventas = vendedorCerradas;
-                // Niveles: 0=Nuevo, 1-4=Principiante, 5-14=Regular, 15-29=Bueno, 30+=Experto
-                string nivelLabel;
-                int nivelIdx;
-                if      (ventas == 0)  { nivelLabel = "Nuevo";       nivelIdx = 0; }
-                else if (ventas < 5)   { nivelLabel = "Principiante"; nivelIdx = 1; }
-                else if (ventas < 15)  { nivelLabel = "Regular";      nivelIdx = 2; }
-                else if (ventas < 30)  { nivelLabel = "Bueno";        nivelIdx = 3; }
-                else                   { nivelLabel = "Experto";      nivelIdx = 4; }
-                // Porcentaje dentro del nivel actual para la barra
-                int pct = nivelIdx switch {
-                    0 => (int)Math.Min(ventas * 20, 100),          // 0-4 → 0-80%
-                    1 => (int)Math.Min((ventas / 4.0) * 100, 100), // 1-4
-                    2 => (int)Math.Min(((ventas - 5) / 9.0) * 100, 100),  // 5-13
-                    3 => (int)Math.Min(((ventas - 15) / 14.0) * 100, 100), // 15-28
-                    _ => 100
-                };
-            }
-            <div class="det-vendedor-nivel">
-                <div class="det-vendedor-nivel-header">
-                    <span class="det-vendedor-nivel-titulo">Reputación del vendedor</span>
-                    <span class="det-vendedor-nivel-badge nivel-@nivelIdx">@nivelLabel</span>
+            @* ── Widget de stats del vendedor ── *@
+            @{ var ventas = vendedorCerradas; }
+            <div class="det-vendedor-stats-widget">
+                <div class="det-rep-barra-segmentada">
+                    <div class="det-rep-seg det-rep-seg-1"></div>
+                    <div class="det-rep-seg det-rep-seg-2"></div>
+                    <div class="det-rep-seg det-rep-seg-3"></div>
+                    <div class="det-rep-seg det-rep-seg-4"></div>
+                    <div class="det-rep-seg det-rep-seg-5 det-rep-seg--activo"></div>
                 </div>
-                <div class="det-vendedor-nivel-barra-wrap">
-                    <div class="det-vendedor-nivel-barra">
-                        <div class="det-vendedor-nivel-fill nivel-fill-@nivelIdx" style="width: @pct%"></div>
+                <div class="det-rep-stats-row">
+                    <div class="det-rep-stat det-rep-stat--ventas">
+                        <span class="det-rep-stat-num">+@ventas</span>
+                        <span class="det-rep-stat-desc">ventas</span>
                     </div>
-                    <span class="det-vendedor-nivel-ventas">@ventas venta@(ventas == 1 ? "" : "s")</span>
-                </div>
-                <div class="det-vendedor-nivel-steps">
-                    <span class="@(nivelIdx >= 0 ? "step-active" : "")">Nuevo</span>
-                    <span class="@(nivelIdx >= 1 ? "step-active" : "")">Principiante</span>
-                    <span class="@(nivelIdx >= 2 ? "step-active" : "")">Regular</span>
-                    <span class="@(nivelIdx >= 3 ? "step-active" : "")">Bueno</span>
-                    <span class="@(nivelIdx >= 4 ? "step-active" : "")">Experto</span>
+                    <div class="det-rep-divider"></div>
+                    <div class="det-rep-stat">
+                        <div class="det-rep-stat-icon-wrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
+                            <span class="det-rep-check">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"/></svg>
+                            </span>
+                        </div>
+                        <span class="det-rep-stat-desc">Buena atención</span>
+                    </div>
+                    <div class="det-rep-divider"></div>
+                    <div class="det-rep-stat">
+                        <div class="det-rep-stat-icon-wrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9"/><path d="M12 7v5l2.5 2.5"/></svg>
+                            <span class="det-rep-check">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"/></svg>
+                            </span>
+                        </div>
+                        <span class="det-rep-stat-desc">Entrega a tiempo</span>
+                    </div>
                 </div>
             </div>
 
@@ -246,40 +254,10 @@
                 </div>
             }
 
-            @* ── Favoritos del vendedor ── *@
+            @* ── Favoritos del vendedor — se muestran en el modal de intercambio ── *@
             @{
                 var libFav = (List<PublicacionesCompletas>)(ViewBag.VendedorLibrosFavoritos ?? new List<PublicacionesCompletas>());
             }
-            <div class="det-vendedor-favs">
-                <span class="det-otras-label">
-                    Favoritos
-                    @if (libFav.Count > 0) { <span class="det-otras-count">(@libFav.Count)</span> }
-                </span>
-                @if (libFav.Count == 0)
-                {
-                    <div class="det-favs-empty">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/>
-                        </svg>
-                        <span>Sin favoritos aún</span>
-                    </div>
-                }
-                else
-                {
-                    <div class="det-favs-grid">
-                        @foreach (var fav in libFav)
-                        {
-                            var favImg = string.IsNullOrWhiteSpace(fav.imagen)
-                                ? Url.Content("~/img/book-placeholder.webp")
-                                : fav.imagen;
-                            <div class="det-fav-libro" title="@fav.nombre">
-                                <img src="@favImg" alt="@fav.nombre" />
-                                <span class="det-fav-libro-nombre">@fav.nombre</span>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
 
         </div>
 
@@ -288,42 +266,129 @@
 </div>
 </div>
 
+@* ── Modal: Opciones de intercambio ── *@
+<div class="intercambio-overlay" id="intercambioOverlay" aria-hidden="true">
+    <div class="intercambio-modal" role="dialog" aria-modal="true" aria-labelledby="intercambioTitulo">
+        <div class="intercambio-modal-header">
+            <div class="intercambio-modal-title-row">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/></svg>
+                <h2 class="intercambio-modal-titulo" id="intercambioTitulo">Opciones de intercambio</h2>
+            </div>
+            <button class="intercambio-modal-close" id="intercambioClose" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <p class="intercambio-modal-desc">
+            A <strong>@vendedor.nombreComp</strong> le interesan estos libros. Si tenés alguno, podés contactarlo para proponerle un intercambio.
+        </p>
+
+        <div class="intercambio-lista">
+            @if (libFav.Count == 0)
+            {
+                <div class="intercambio-empty">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>
+                    <span>Este vendedor no tiene favoritos aún.</span>
+                </div>
+            }
+            else
+            {
+                @foreach (var fav in libFav)
+                {
+                    var favImg = string.IsNullOrWhiteSpace(fav.imagen)
+                        ? Url.Content("~/img/book-placeholder.webp")
+                        : fav.imagen;
+                    <button class="intercambio-item" type="button" data-nombre="@fav.nombre">
+                        <img src="@favImg" alt="@fav.nombre" class="intercambio-item-img" />
+                        <span class="intercambio-item-nombre">@fav.nombre</span>
+                        <span class="intercambio-item-check">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l9 -9"/></svg>
+                        </span>
+                    </button>
+                }
+            }
+        </div>
+
+        <button class="intercambio-cta-btn" id="intercambioCta" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
+            Proponer intercambio a @vendedor.nombreComp.Split(' ')[0]
+        </button>
+    </div>
+</div>
+
 @section Scripts {
 <script>
 (function() {
+    // ── Favorito toggle ──
     var svgFilled = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/></svg>';
     var svgOutline = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/></svg>';
 
     var btnVisible = document.getElementById('btnFavoritoVisible');
     var form = document.querySelector('.det-fav-form');
-    if (!btnVisible || !form) return;
-    var btnOculto = form.querySelector('button');
-
-    btnVisible.addEventListener('click', async function() {
-        if (btnVisible.disabled) return;
-        btnVisible.disabled = true;
-        var esDeseado = btnOculto.classList.contains('deseado');
-        var formData = new FormData(form);
-        formData.set('esDeseado', esDeseado ? 'true' : 'false');
-        var token = form.querySelector('input[name="__RequestVerificationToken"]').value;
-        try {
-            var res = await fetch(form.getAttribute('action'), { method: 'POST', body: formData, headers: { 'RequestVerificationToken': token } });
-            var data = await res.json();
-            if (data && data.success) {
-                if (!esDeseado) {
-                    btnOculto.classList.add('deseado'); btnOculto.innerHTML = svgFilled;
-                    btnVisible.classList.add('det-btn-favorito--activo');
-                    btnVisible.innerHTML = svgFilled + '<span>Quitar de favoritos</span>';
-                    form.querySelector('input[name="esDeseado"]').value = 'true';
-                } else {
-                    btnOculto.classList.remove('deseado'); btnOculto.innerHTML = svgOutline;
-                    btnVisible.classList.remove('det-btn-favorito--activo');
-                    btnVisible.innerHTML = svgOutline + '<span>Agregar a favoritos</span>';
-                    form.querySelector('input[name="esDeseado"]').value = 'false';
+    if (btnVisible && form) {
+        var btnOculto = form.querySelector('button');
+        btnVisible.addEventListener('click', async function() {
+            if (btnVisible.disabled) return;
+            btnVisible.disabled = true;
+            var esDeseado = btnOculto.classList.contains('deseado');
+            var formData = new FormData(form);
+            formData.set('esDeseado', esDeseado ? 'true' : 'false');
+            var token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+            try {
+                var res = await fetch(form.getAttribute('action'), { method: 'POST', body: formData, headers: { 'RequestVerificationToken': token } });
+                var data = await res.json();
+                if (data && data.success) {
+                    if (!esDeseado) {
+                        btnOculto.classList.add('deseado'); btnOculto.innerHTML = svgFilled;
+                        btnVisible.classList.add('det-btn-favorito--activo');
+                        btnVisible.innerHTML = svgFilled + '<span>Quitar de favoritos</span>';
+                        form.querySelector('input[name="esDeseado"]').value = 'true';
+                    } else {
+                        btnOculto.classList.remove('deseado'); btnOculto.innerHTML = svgOutline;
+                        btnVisible.classList.remove('det-btn-favorito--activo');
+                        btnVisible.innerHTML = svgOutline + '<span>Agregar a favoritos</span>';
+                        form.querySelector('input[name="esDeseado"]').value = 'false';
+                    }
                 }
-            }
-        } catch(e) { console.error(e); }
-        finally { btnVisible.disabled = false; }
+            } catch(e) { console.error(e); }
+            finally { btnVisible.disabled = false; }
+        });
+    }
+
+    // ── Modal intercambio ──
+    var overlay  = document.getElementById('intercambioOverlay');
+    var btnAbrir = document.getElementById('btnConsultarPublicacion');
+    var btnCerrar = document.getElementById('intercambioClose');
+
+    function abrirModal() {
+        overlay.classList.add('intercambio-overlay--visible');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModal() {
+        overlay.classList.remove('intercambio-overlay--visible');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    if (btnAbrir) btnAbrir.addEventListener('click', abrirModal);
+    if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
+    if (overlay) overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) cerrarModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') cerrarModal();
+    });
+
+    // ── Selección de libros para intercambio ──
+    var ctaBtn = document.getElementById('intercambioCta');
+
+    document.querySelectorAll('.intercambio-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            item.classList.toggle('intercambio-item--seleccionado');
+            var haySeleccionado = document.querySelectorAll('.intercambio-item--seleccionado').length > 0;
+            ctaBtn.disabled = !haySeleccionado;
+        });
     });
 })();
 </script>
