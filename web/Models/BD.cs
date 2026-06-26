@@ -368,7 +368,7 @@ namespace Bookly.Models
         }
 
         /// <summary>PUT /api/publicaciones/:id  (multipart/form-data)</summary>
-        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile? imagen)
+        public static void EditarPublicacionCompleta(int idPublicacion, string nombre, string materia, string ano, string editorial, decimal precio, string estadoLibro, string descripcion, IFormFile? imagen, bool isImgDeleted)
         {
             using var form = new MultipartFormDataContent();
             int? anoParsed = null;
@@ -385,7 +385,7 @@ namespace Bookly.Models
             form.Add(new StringContent(precio.ToString(System.Globalization.CultureInfo.InvariantCulture)), "precio");
             form.Add(new StringContent(estadoLibro  ?? ""), "estado_libro");
             form.Add(new StringContent(descripcion  ?? ""), "descripcion");
-
+            form.Add(new StringContent(isImgDeleted.ToString().ToLower()), "isImgDeleted");
             AddImageToMultipart(form, imagen);
 
             // PUT con multipart requiere un HttpRequestMessage manual
