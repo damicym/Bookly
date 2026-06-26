@@ -69,7 +69,11 @@ export async function createPublication(publication, dniVendedor) {
  * no le llega nada del libro, la web no te deja editar eso desde la publicacion
  * returnea true pero porque sí, creo q no se usa
  */
-export async function updatePublication(idPublicacion, precio, estadoLibro, descripcion, imagen, imageFile = null) {
+export async function updatePublication(idPublicacion, precio, estadoLibro, descripcion, imagen, imageFile = null, isImgDeleted = false) {
+	if (typeof isImgDeleted === 'string') {
+		isImgDeleted = isImgDeleted.toLowerCase() === 'true'
+	}
+
 	const { data: pub } = await supabase
 		.from('publicaciones')
 		.select('id_libro, imagen')
@@ -80,14 +84,18 @@ export async function updatePublication(idPublicacion, precio, estadoLibro, desc
 	const idLibro = pub.id_libro
 	if (!idLibro) throw new Error('La publicación no tiene un libro asociado')
 	
-	let imagenUrl = imagen ? imagen : null
-	if (imageFile) {
+	let imagenUrl = pub.imagen
+	if (isImgDeleted) {
+		imagenUrl = null
+	} else if (imageFile) {
 		try {
 			imagenUrl = await uploadPublicationImage(imageFile, PERFILES_BUCKET)
 		} catch (err) {
 			console.error('Error al subir la imagen optimizada:', err)
 			throw new Error('No se pudo procesar la imagen proporcionada')
 		}
+	} else if (imagen) {
+		imagenUrl = imagen
 	}
 
 	const { error } = await supabase

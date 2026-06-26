@@ -19,7 +19,6 @@ export async function createPublication(req, res) {
     const { libro, precio, estado_libro, descripcion } = req.body
     const libroParsed = parseLibroField(libro)
     const imagenBody = typeof req.body.imagen === 'string' ? req.body.imagen : null
-    const imagenEliminada = req.body.imagen_eliminada === 'true' || req.body.imagen_eliminada === true
     const imageFile = req.file || null
     
     if (!precio || !libroParsed) {
@@ -39,8 +38,12 @@ export async function createPublication(req, res) {
 export async function updatePublication(req, res) {
   try {
     const { id } = req.params
-    const { libro, precio, estado_libro, descripcion } = req.body
-    const libroParsed = parseLibroField(libro)
+    const { /* libro, */ precio, estado_libro, descripcion } = req.body
+    let isImgDeleted = req.body.isImgDeleted
+    if (typeof isImgDeleted === 'string') {
+      isImgDeleted = isImgDeleted.toLowerCase() === 'true'
+    }
+    // const libroParsed = parseLibroField(libro)
     const imagenBody = typeof req.body.imagen === 'string' ? req.body.imagen : null
     const imageFile = req.file || null
     
@@ -50,7 +53,8 @@ export async function updatePublication(req, res) {
       estado_libro,
       descripcion,
       imagenBody,
-      imageFile
+      imageFile,
+      isImgDeleted
     )
     res.json({ success: true, message: 'Publicación actualizada' })
   } catch (err) {

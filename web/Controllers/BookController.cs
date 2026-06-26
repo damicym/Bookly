@@ -263,7 +263,7 @@ namespace Bookly.Controllers
             }
 
             // Actualizar en base de datos
-            BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenFile);
+            BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenFile, imagenEliminada == "true");
 
             return RedirectToAction("Profile", "Home");
         }
