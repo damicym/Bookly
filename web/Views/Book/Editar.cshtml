@@ -7,32 +7,10 @@
 @* La view de Editar no renderiza contenido propio.
    El modal vive en _Layout y se abre automáticamente con los datos del modelo. *@
 
-@section Scripts {
-<script>
-    document.addEventListener('DOMContentLoaded', async function() {
-        if (typeof abrirEditarModal === 'function') {
-            await abrirEditarModal(@Model.id);
-        }
+<div id="editarPageConfig" hidden
+     data-publicacion-id="@Model.id"
+     data-profile-url="@Url.Action("Profile", "Home")"></div>
 
-        // Al cerrar el modal, volver al perfil en lugar de quedarse en /Book/Editar
-        var modal = document.getElementById('editarModal');
-        if (modal) {
-            var originalCerrar = window.cerrarEditarModal;
-            window.cerrarEditarModal = function(e) {
-                if (e && e.target !== modal) return;
-                modal.classList.remove('login-modal-overlay--visible');
-                document.body.style.overflow = '';
-                window.location.href = '@Url.Action("Profile", "Home")';
-            };
-            var closeBtn = modal.querySelector('.login-modal-close');
-            if (closeBtn) {
-                closeBtn.onclick = function() {
-                    modal.classList.remove('login-modal-overlay--visible');
-                    document.body.style.overflow = '';
-                    window.location.href = '@Url.Action("Profile", "Home")';
-                };
-            }
-        }
-    });
-</script>
+@section Scripts {
+    <script src="~/js/editar.js" asp-append-version="true"></script>
 }

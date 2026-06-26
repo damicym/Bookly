@@ -108,6 +108,7 @@ namespace Bookly.Controllers
             // Otras publicaciones del mismo libro (incluyendo la actual), ordenadas por precio
             var otrasOpciones = mismoLibro
                 .OrderBy(p => p.precio)
+                .Where(p => p.id != id && p.status == 1 && p.idVendedor != user.DNI)
                 .Take(5)
                 .ToList();
             ViewBag.OtrasOpciones = otrasOpciones;

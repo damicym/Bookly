@@ -353,3 +353,47 @@ if (document.readyState === 'loading') {
 } else {
     initAutocompleteV2();
 }
+
+// Validación del formulario de publicar (página /Book/Publicar)
+(function () {
+    var form = document.querySelector('.publicar-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+        var nombre = document.getElementById('nombre');
+        var precio = document.getElementById('precio');
+
+        if (precio && (parseFloat(precio.value) < 1 || parseFloat(precio.value) > 999999)) {
+            e.preventDefault();
+            if (typeof ocultarPageLoader === 'function') ocultarPageLoader();
+            precio.setCustomValidity('El precio debe estar entre $1 y $999.999');
+            precio.reportValidity();
+            return;
+        } else if (precio) {
+            precio.setCustomValidity('');
+        }
+
+        if (nombre) {
+            var val = nombre.value.trim();
+            if (val.length < 2) {
+                e.preventDefault();
+                if (typeof ocultarPageLoader === 'function') ocultarPageLoader();
+                nombre.setCustomValidity('El nombre debe tener al menos 2 caracteres');
+                nombre.reportValidity();
+                return;
+            }
+            if (val.length > 50) {
+                nombre.value = val.substring(0, 50);
+            }
+            nombre.setCustomValidity('');
+        }
+
+        var btn = document.getElementById('publicarSubmitBtn');
+        if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+    });
+
+    ['nombre', 'precio', 'descripcion'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', function () { this.setCustomValidity(''); });
+    });
+})();

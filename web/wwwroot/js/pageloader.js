@@ -135,7 +135,7 @@
     document.addEventListener('submit', function (e) {
         var form = e.target;
         if (!form) return;
-        if (form.dataset.noLoader) return;
+        if ('noLoader' in form.dataset) return;
         if (form.classList.contains('desearBtnForm')) return;
         var onsubmit = form.getAttribute('onsubmit') || '';
         if (onsubmit.includes('desearLibro') || onsubmit.includes('quitarFavorito')) return;
