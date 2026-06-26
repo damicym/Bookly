@@ -42,8 +42,9 @@
             <text class="cls-2" transform="translate(37 595.77) scale(.96 1)"><tspan x="0" y="0">Book</tspan><tspan class="cls-3" x="369.84" y="0">l</tspan><tspan x="402.62" y="0">y</tspan></text>
         </svg></a>
         @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
+        @if (usuario != null) {
         <section class="searchNFilter">            <div class="search">
-                <input id="searchInput" name="query" type="text" placeholder="Buscar nombre de un libro" class="busqueda-input" value="@(ViewData["Title"]?.ToString() == "Resultados de búsqueda" ? ViewBag.query : "")" />
+                <input id="searchInput" name="query" type="text" placeholder="Buscar un libro..." class="busqueda-input" value="@(ViewData["Title"]?.ToString() == "Resultados de búsqueda" ? ViewBag.query : "")" />
                 <div class="search-icon">
                     <svg id="searchInputIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -56,13 +57,14 @@
                 </div>
             </div>
         </section>
+        }
         <nav class="navSections">
 
             @if (usuario != null) {
             <button class="header-search-btn" id="headerSearchBtn" aria-label="Buscar" aria-expanded="false">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path d="M21 21l-6 -6"/></svg>
             </button>
-            <button class="header-hamburger" id="headerHamburger" aria-label="Más opciones" aria-expanded="false">
+            <button class="header-hamburger" id="headerHamburger" aria-label="Más opciones">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></svg>
             </button>
             <div class="header-hamburger-menu" id="headerHamburgerMenu">
@@ -196,31 +198,55 @@
         })();
 
         // Hamburguesa mobile (chat + fav)
+        // Hamburguesa mobile (chat + fav)
         (function() {
             var btn  = document.getElementById('headerHamburger');
             var menu = document.getElementById('headerHamburgerMenu');
+            var profileWrap = document.getElementById('profileDropdownWrap');
             if (!btn || !menu) return;
 
-            function toggle() {
-                var open = menu.classList.toggle('is-open');
-                btn.classList.toggle('is-open', open);
-                btn.setAttribute('aria-expanded', open);
+            var closeTimer;
+
+            function open() {
+                clearTimeout(closeTimer);
+                menu.classList.add('is-open');
+                btn.classList.add('is-open');
+                if (profileWrap) profileWrap.classList.remove('dropdown-open');
             }
 
             function close() {
                 menu.classList.remove('is-open');
                 btn.classList.remove('is-open');
-                btn.setAttribute('aria-expanded', 'false');
             }
 
+            function scheduleClose() {
+                closeTimer = setTimeout(close, 300);
+            }
+
+            // Touch/mobile: click toggle
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                toggle();
+                menu.classList.contains('is-open') ? close() : open();
             });
 
+            // Desktop: hover
+            btn.addEventListener('mouseenter', open);
+            btn.addEventListener('mouseleave', scheduleClose);
+            menu.addEventListener('mouseenter', function() { clearTimeout(closeTimer); });
+            menu.addEventListener('mouseleave', scheduleClose);
+
+            // Cerrar al clickear fuera
             document.addEventListener('click', function(e) {
                 if (!menu.contains(e.target) && e.target !== btn) close();
             });
+
+            // Cerrar al abrir perfil
+            if (profileWrap) {
+                profileWrap.addEventListener('mouseenter', function() {
+                    clearTimeout(closeTimer);
+                    close();
+                });
+            }
 
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') close();
