@@ -20,7 +20,7 @@ namespace Bookly.Controllers
 
         public IActionResult Index()
         {   
-            List<PublicacionesCompletas> publicaciones;
+            List<PublicacionesCompletas>? publicaciones = null;
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             var favoritos = user != null
                 ? BD.ObtenerDeseadosPorUsuario(user.DNI).ToHashSet()
@@ -32,7 +32,7 @@ namespace Bookly.Controllers
 
                 ViewBag.Titulo = $"Recomendaciones para {HtmlHelpers.PasarAñoATextoCompleto(anoUsuario)}";
             }
-            else {
+            if (user == null || !anoUsuario.HasValue || publicaciones == null || publicaciones.Count == 0) {
                 publicaciones = BD.ObtenerPublicacionesCompletasConTope(20);
                 ViewBag.Titulo = "Últimas publicaciones";
             }

@@ -485,12 +485,31 @@
 }
 
 .catalogo-seccion-titulo {
+  width: calc(100% - 60px);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+  opacity: 0.9;
+}
+
+.catalogo-seccion-titulo span{
   width: 100%;
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--dark);
   margin: 0;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .catalogo-resultados .cardsPublicadas {
@@ -623,6 +642,20 @@
   height: 22px;
   width: 40%;
   margin-top: auto;
+}
+
+.skeleton-seccion-titulo {
+  width: 100%;
+  background: none;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.skeleton-subtitulo {
+  height: 20px;
+  width: 180px;
+  border-radius: 8px;
 }
 
 /* ===== NO RESULT ===== */

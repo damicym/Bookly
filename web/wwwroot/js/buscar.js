@@ -23,7 +23,8 @@ function mostrarSkeleton(cantidad = 10) {
             <div class="skeleton-block skeleton-materia"></div>
             <div class="skeleton-block skeleton-precio"></div>
         </div>`
-    container.innerHTML = skeletonCard.repeat(cantidad)
+    const skeletonSubtitulo = `<h3 class="catalogo-seccion-titulo skeleton-seccion-titulo"><span class="skeleton-block skeleton-subtitulo"></span></h3>`
+    container.innerHTML = skeletonSubtitulo + skeletonCard.repeat(cantidad)
 }
 
 async function realizarBusqueda(query, esCargaInicial) {
@@ -74,7 +75,7 @@ async function realizarBusqueda(query, esCargaInicial) {
                     let huboCambio = false
                     const hayProtagonistas = !hayOrden && data.publicaciones.some(l => l.esMasBarato)
                     if (hayProtagonistas) {
-                        html += `<h3 class="catalogo-seccion-titulo">Mejores precios</h3>`
+                        html += `<h3 class="catalogo-seccion-titulo"><span>Mejores precios</span></h3>`
                     }
                     data.publicaciones.forEach(libro => {
                         const imgSrc = libro.imagen ? libro.imagen : '/img/book-placeholder.webp'
