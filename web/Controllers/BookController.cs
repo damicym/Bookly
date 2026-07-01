@@ -46,6 +46,8 @@ namespace Bookly.Controllers
         public IActionResult Detalle(int id)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null)
+                return RedirectToAction("Login", "Usuarios", new { returnView = "Catalogo" });
             PublicacionesCompletas libro = BD.ObtenerPublicacionCompletaPorId(id);
             Usuarios vendedor = BD.ObtenerUsuarioPorDNI(libro.idVendedor);
             if (libro == null)
@@ -106,6 +108,7 @@ namespace Bookly.Controllers
             // Otras publicaciones del mismo libro (incluyendo la actual), ordenadas por precio
             var otrasOpciones = mismoLibro
                 .OrderBy(p => p.precio)
+                .Where(p => p.id != id && p.status == 1 && p.idVendedor != user.DNI)
                 .Take(5)
                 .ToList();
             ViewBag.OtrasOpciones = otrasOpciones;
@@ -186,11 +189,11 @@ namespace Bookly.Controllers
 
         // Endpoint para autocomplete de nombres de libros
         [HttpGet]
-        public IActionResult AutocompleteNombres(string q)
+        public IActionResult ObtenerTodosLosLibros()
         {
             try
             {
-                var resultados = BD.BuscarNombresLibros(q ?? string.Empty);
+                var resultados = BD.ObtenerLibros();
                 return Json(resultados);
             }
             catch (Exception ex)
@@ -261,7 +264,7 @@ namespace Bookly.Controllers
             }
 
             // Actualizar en base de datos
-            BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenFile);
+            BD.EditarPublicacionCompleta(id, nombre, materia, ano, editorial, precio, estadoLibro, descripcion, imagenFile, imagenEliminada == "true");
 
             return RedirectToAction("Profile", "Home");
         }

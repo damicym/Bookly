@@ -189,6 +189,10 @@ header .searchNFilter {
   font-size: 0.92rem;
   letter-spacing: 0.02em;
   color: var(--light);
+  white-space: nowrap;        /* nunca rompe en dos líneas */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;           /* evita que un nombre muy largo rompa el layout */
 }
 
 /* Estado activo */
@@ -347,20 +351,198 @@ header .searchNFilter {
   border: none;
 }
 
-@media (max-width: 450px) {
-  .logoSvg {
-    width: 52px;
-    height: 52px;
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE — Header
+   Estrategia:
+   > 900px  → desktop completo: nombre + avatar, search con max-width fijo
+   ≤ 900px  → nombre oculto, solo avatar; search flex:1
+   ≤ 600px  → hamburguesa para mensajes+favoritos; search sigue inline flex:1
+   ≤ 400px  → gap/padding mínimo, logo un poco más chico
+═══════════════════════════════════════════════════ */
+
+/* Lupa standalone: nunca visible */
+.header-search-btn {
+  display: none !important;
+}
+
+/* Hamburguesa: oculta en desktop */
+.header-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: none;
+  border: none !important;
+  color: rgba(239,242,241,0.75);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s, color 0.18s;
+}
+
+.header-hamburger:hover,
+.header-hamburger.is-open {
+  background: rgba(255,255,255,0.12);
+  color: var(--light);
+}
+
+/* En desktop los favBtns van inline en el flujo */
+.header-hamburger-menu {
+  display: contents;
+}
+
+/* ── ≤ 900px: nombre oculto, solo avatar; search se estira ── */
+@media (max-width: 900px) {
+  header {
+    gap: 16px;
+    padding: 0 20px;
   }
+
+  header .searchNFilter {
+    width: auto;
+    max-width: none;
+    flex: 1;
+    min-width: 0;
+  }
+
   .search input[type=text] {
-    font-size: 0.8rem;
+    height: 36px;
+    font-size: 0.85rem;
   }
+
+  /* Ocultar nombre, mostrar solo foto/icono */
   .profileBtn p {
     display: none;
   }
-  .favBtn {
-    width: 34px;
+
+  .navSections {
+    gap: 2px;
+    flex-shrink: 0;
+  }
+}
+
+/* ── ≤ 600px: hamburguesa para mensajes+favoritos ── */
+@media (max-width: 600px) {
+  header {
+    gap: 10px;
+    padding: 0 14px;
+  }
+
+  header .searchNFilter {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .search input[type=text] {
     height: 34px;
+    font-size: 0.8rem;
+    padding: 0 36px 0 12px;
+    border-radius: 17px;
+  }
+
+  .search-icon {
+    right: 10px;
+  }
+
+  .search-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Hamburguesa visible */
+  .header-hamburger {
+    display: flex;
+  }
+
+  /* Menú: fixed debajo del header, pegado a la derecha, oculto por defecto */
+  .header-hamburger-menu {
+    display: block;
+    position: fixed;
+    top: 90px;
+    right: 14px;
+    background: var(--light);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(6,26,64,0.18);
+    z-index: 1002;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    min-width: 150px;
+  }
+
+  /* Abierto via JS */
+  .header-hamburger-menu.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Ítems */
+  .header-hamburger-menu .favBtn {
+    display: flex;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    padding: 9px 14px;
+    gap: 10px;
+    color: var(--dark);
+    justify-content: flex-start;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .header-hamburger-menu .favBtn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--dark);
+  }
+
+  .header-hamburger-menu .favBtn::after {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--dark);
+  }
+
+  #chatBtnHeader.favBtn::after { content: "Mensajes"; }
+  #favBtnHeader.favBtn::after  { content: "Favoritos"; }
+
+  /* Separador */
+  #favBtnHeader {
+    border-top: 1px solid rgba(6,26,64,0.1);
+    margin-top: 2px;
+    padding-top: 10px;
+  }
+
+  .header-hamburger-menu .favBtn:hover {
+    background: rgba(6,26,64,0.08);
+    color: var(--dark);
+  }
+
+  .header-hamburger-menu .favBtn:hover::after {
+    color: var(--dark);
+  }
+
+  /* Ocultar favBtns del flujo normal — van al dropdown */
+  .navSections > .favBtn {
+    display: none;
+  }
+}
+
+/* ── ≤ 400px: ajustes mínimos ── */
+@media (max-width: 400px) {
+  header {
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  .logoSvg {
+    width: 48px;
+    height: 48px;
   }
 }
 

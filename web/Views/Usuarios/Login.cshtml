@@ -11,19 +11,5 @@
 }
 
 @section Scripts {
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mostrar error del servidor si lo hay
-        var errEl = document.getElementById('loginServerError');
-        if (errEl) {
-            var modalErr = document.getElementById('loginModalError');
-            if (modalErr) {
-                modalErr.textContent = errEl.textContent;
-                modalErr.style.display = 'block';
-            }
-        }
-        // Abrir el modal
-        if (typeof abrirLoginModal === 'function') abrirLoginModal();
-    });
-</script>
+    <script src="~/js/login-page.js" asp-append-version="true"></script>
 }

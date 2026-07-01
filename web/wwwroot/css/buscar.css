@@ -358,7 +358,7 @@
   color: var(--dark);
   white-space: nowrap;
   pointer-events: none;
-  margin-right: 4px;
+  margin-right: 8px;
 }
 
 /* El select parece texto azul con chevron, sin caja */
@@ -397,13 +397,119 @@
   font-weight: 600;
 }
 
+/* ===== DROPDOWN CUSTOM DE ORDEN ===== */
+.orden-custom-dropdown {
+  position: relative;
+}
+
+.orden-custom-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--main);
+  white-space: nowrap;
+}
+
+.orden-custom-btn:hover {
+  opacity: 0.8;
+}
+
+.orden-custom-text {
+  /* el texto se ajusta solo, sin width fijo */
+}
+
+.orden-custom-chevron {
+  stroke: var(--main);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.orden-custom-dropdown.open .orden-custom-chevron {
+  transform: rotate(180deg);
+}
+
+.orden-custom-btn.activo {
+  font-weight: 600;
+}
+
+.orden-custom-list {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  min-width: max-content;
+  z-index: 100;
+}
+
+.orden-custom-dropdown.open .orden-custom-list {
+  display: block;
+}
+
+.orden-custom-option {
+  padding: 7px 16px;
+  font-size: 0.85rem;
+  color: var(--dark);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.orden-custom-option:hover {
+  background: #f1f5f9;
+}
+
+.orden-custom-option.selected {
+  color: var(--main);
+  font-weight: 600;
+}
+
 .busqueda-titulo {
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--dark);
   margin: 0;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   padding: 0;
+}
+
+.catalogo-seccion-titulo {
+  width: calc(100% - 60px);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+  opacity: 0.9;
+}
+
+.catalogo-seccion-titulo span{
+  width: 100%;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .catalogo-resultados .cardsPublicadas {
@@ -536,6 +642,20 @@
   height: 22px;
   width: 40%;
   margin-top: auto;
+}
+
+.skeleton-seccion-titulo {
+  width: 100%;
+  background: none;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.skeleton-subtitulo {
+  height: 20px;
+  width: 180px;
+  border-radius: 8px;
 }
 
 /* ===== NO RESULT ===== */

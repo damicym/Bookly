@@ -9,7 +9,7 @@
   flex-direction: column;
   gap: 8px;
   width: 230px;
-  height: 390px;
+  min-width: 160px;   /* nunca más chica que esto */
   cursor: pointer;
   position: relative;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
@@ -147,6 +147,7 @@ button.desearBtnForm.editar:hover svg {
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.25;
+  min-height: calc(1.2rem * 1.25 * 2);
 }
 
 .libro h2 {
@@ -162,13 +163,13 @@ button.desearBtnForm.editar:hover svg {
   flex-shrink: 0;
 }
 
-.nombreYMateriaContainer {
+.nombreContainer {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-height: 0;
   overflow: hidden;
-  flex: 1;
+  flex-grow: 0;
 }
 
 .libro-footer {
@@ -176,7 +177,7 @@ button.desearBtnForm.editar:hover svg {
   align-items: flex-end;
   justify-content: space-between;
   gap: 8px;
-  margin-top: auto;
+  margin-top: 0;
   padding-top: 2px;
 }
 
@@ -388,9 +389,16 @@ button.desearBtnForm.editar:hover svg {
   border: 2px dashed var(--secondary2) !important;
   cursor: pointer;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
+  height: 100%;
+  min-height: 357px;
   transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.publicarCard .publicarCardInner {
+  flex: 1;
+  justify-content: center;
 }
 
 .publicarCard:hover {
@@ -489,5 +497,28 @@ button.desearBtnForm.editar:hover svg {
 @media (max-width: 450px) {
   .cardsPublicadas {
     justify-content: center;
+  }
+}
+
+/* ── Cards responsivas en el carrusel ── */
+@media (max-width: 400px) {
+  .libro.carrusel-card {
+    width: 185px;
+  }
+
+  .libro.carrusel-card .libro h1,
+  .libro.carrusel-card h1 {
+    font-size: 1rem;
+  }
+
+  .libro.carrusel-card .libro h3,
+  .libro.carrusel-card h3 {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .libro.carrusel-card {
+    width: 160px;
   }
 }
