@@ -528,6 +528,23 @@
   animation: avatarModalIn 0.22s ease;
 }
 
+.avatar-modal-img--portada {
+  width: auto;
+  height: auto;
+  height: min(600px, 90vw);
+  max-height: 85vh;
+  border-radius: 16px;
+  object-fit: contain;
+}
+
+.det-portada-expandible:hover  {
+  cursor: pointer;
+}
+
+.det-portada-expandible {
+  cursor: zoom-in;
+}
+
 @keyframes avatarModalIn {
   from { transform: scale(0.85); opacity: 0; }
   to   { transform: scale(1);    opacity: 1; }

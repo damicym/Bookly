@@ -8,6 +8,7 @@
     if (avatar && modal) {
         avatar.addEventListener('click', function () {
             modalImg.src = avatar.src;
+            modalImg.classList.remove('avatar-modal-img--portada');
             modal.classList.add('open');
         });
         modal.addEventListener('click', function () {
@@ -15,6 +16,15 @@
         });
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') modal.classList.remove('open');
+        });
+    }
+
+    var portada = document.getElementById('portadaLibro');
+    if (portada && modal) {
+        portada.addEventListener('click', function () {
+            modalImg.src = portada.src;
+            modalImg.classList.add('avatar-modal-img--portada');
+            modal.classList.add('open');
         });
     }
 
