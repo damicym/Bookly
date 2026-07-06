@@ -17,7 +17,7 @@
          data-login-url="@Url.Action("Login", "Usuarios")"
          @if (ViewBag.usuario == null) { <text>data-publicar-login-url="@Url.Action("Login", "Usuarios", new { returnView = "Publicar" })"</text> }
          @if (TempData["ModalError"] != null) {
-             <text>data-modal-error="@System.Net.WebUtility.HtmlEncode(TempData["ModalError"]?.ToString() ?? "")" data-modal-error-target="@(TempData["ModalErrorTarget"]?.ToString() ?? "login")"</text>
+             <text>data-modal-error="@(TempData["ModalError"]?.ToString() ?? "")" data-modal-error-target="@(TempData["ModalErrorTarget"]?.ToString() ?? "login")"</text>
          }></div>
     @* ── Page Loader — al inicio del body para que esté disponible inmediatamente ── *@
     <div id="pageLoader" role="status" aria-label="Cargando">
