@@ -1,0 +1,187 @@
+@using Bookly.Helpers
+
+@{
+    ViewData["Title"] = "Chat";
+    var vendedor = (Bookly.Models.Usuarios)ViewBag.Vendedor;
+    var vendedorCerradas = (int)(ViewBag.VendedorVentasCerradas ?? 0);
+
+    var avatarVendedor = !string.IsNullOrWhiteSpace(vendedor.fotoPerfil)
+        ? vendedor.fotoPerfil
+        : Url.Content("~/img/default.webp");
+}
+
+<link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" />
+
+<div class="chat-page-wrapper primerElemento">
+
+    <a class="det-volver" href="javascript:history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+        Volver
+    </a>
+
+    <div class="chat-page">
+
+        @* ── COL 1: Conversaciones ── *@
+        <aside class="chat-col-conversations">
+            <div class="chat-conv-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
+                <h2>Mensajes</h2>
+            </div>
+            <div class="chat-conv-list">
+                @* Conversación activa (placeholder) *@
+                <div class="chat-conv-item chat-conv-item--active">
+                    <img class="chat-conv-avatar" src="@avatarVendedor" alt="@vendedor.nombreComp" />
+                    <div class="chat-conv-meta">
+                        <span class="chat-conv-nombre">@vendedor.nombreComp</span>
+                        <span class="chat-conv-preview">Hola, ¿el libro sigue disponible?</span>
+                    </div>
+                    <div class="chat-conv-aside">
+                        <span class="chat-conv-hora">Ahora</span>
+                        <span class="chat-conv-badge">1</span>
+                    </div>
+                </div>
+                @* Placeholder extra para mostrar la estructura *@
+                <div class="chat-conv-item">
+                    <div class="chat-conv-avatar chat-conv-avatar--placeholder"></div>
+                    <div class="chat-conv-meta">
+                        <span class="chat-conv-nombre chat-skeleton chat-skeleton--sm"></span>
+                        <span class="chat-conv-preview chat-skeleton chat-skeleton--lg"></span>
+                    </div>
+                </div>
+                <div class="chat-conv-item">
+                    <div class="chat-conv-avatar chat-conv-avatar--placeholder"></div>
+                    <div class="chat-conv-meta">
+                        <span class="chat-conv-nombre chat-skeleton chat-skeleton--sm"></span>
+                        <span class="chat-conv-preview chat-skeleton chat-skeleton--lg"></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        @* ── COL 2: Ventana de chat ── *@
+        <main class="chat-col-messages">
+            <div class="chat-messages-header">
+                <img class="chat-conv-avatar" src="@avatarVendedor" alt="@vendedor.nombreComp" />
+                <div>
+                    <p class="chat-messages-nombre">@vendedor.nombreComp</p>
+                    <p class="chat-messages-sub">
+                        @if (vendedor.ano.HasValue)
+                        {
+                            @HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano.Value)
+                            if (!string.IsNullOrWhiteSpace(vendedor.especialidad))
+                            {
+                                <text> · @vendedor.especialidad</text>
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(vendedor.especialidad))
+                        {
+                            @vendedor.especialidad
+                        }
+                    </p>
+                </div>
+            </div>
+
+            <div class="chat-messages-body" id="chatMessagesBody">
+                @* Mensajes placeholder *@
+                <div class="chat-msg chat-msg--incoming">
+                    <p class="chat-msg-bubble">Hola, ¿el libro sigue disponible?</p>
+                    <span class="chat-msg-time">10:42</span>
+                </div>
+                <div class="chat-msg chat-msg--outgoing">
+                    <p class="chat-msg-bubble">Sí, todavía lo tengo. ¿Te interesa?</p>
+                    <span class="chat-msg-time">10:44</span>
+                </div>
+                <div class="chat-msg chat-msg--incoming">
+                    <p class="chat-msg-bubble">Perfecto, ¿en qué estado está?</p>
+                    <span class="chat-msg-time">10:45</span>
+                </div>
+            </div>
+
+            <div class="chat-messages-input-wrap">
+                <div class="chat-messages-input-row">
+                    <textarea
+                        class="chat-input"
+                        id="chatInput"
+                        placeholder="Escribí un mensaje..."
+                        rows="1"
+                        aria-label="Escribir mensaje"></textarea>
+                    <button class="chat-send-btn" id="chatSendBtn" aria-label="Enviar mensaje">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M10 14l11 -11"/>
+                            <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        @* ── COL 3: Info del vendedor (igual que en Detalle) ── *@
+        <aside class="det-col-vendedor chat-col-vendedor">
+
+            <div class="det-vendedor-card">
+                <div class="det-vendedor-top">
+                    <img src="@avatarVendedor" alt="perfil" class="det-vendedor-avatar" />
+                    <div>
+                        <span class="det-vendedor-pill">Vendedor</span>
+                        <p class="det-vendedor-nombre">@vendedor.nombreComp</p>
+                        <p class="det-vendedor-sub">
+                            @if (vendedor.ano.HasValue)
+                            {
+                                @HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano.Value)
+                                if (!string.IsNullOrWhiteSpace(vendedor.especialidad) || !string.IsNullOrWhiteSpace(vendedor.curso))
+                                {
+                                    <text> · </text>
+                                }
+                            }
+                            @vendedor.especialidad @vendedor.curso
+                        </p>
+                        @if (!string.IsNullOrWhiteSpace(vendedor.aboutMe))
+                        {
+                            <p class="det-vendedor-about">@vendedor.aboutMe</p>
+                        }
+                    </div>
+                </div>
+
+                @* Widget de stats *@
+                <div class="det-vendedor-stats-widget">
+                    <div class="det-rep-barra-segmentada">
+                        <div class="det-rep-seg det-rep-seg-1"></div>
+                        <div class="det-rep-seg det-rep-seg-2"></div>
+                        <div class="det-rep-seg det-rep-seg-3"></div>
+                        <div class="det-rep-seg det-rep-seg-4"></div>
+                        <div class="det-rep-seg det-rep-seg-5 det-rep-seg--activo"></div>
+                    </div>
+                    <div class="det-rep-stats-row">
+                        <div class="det-rep-stat det-rep-stat--ventas">
+                            <span class="det-rep-stat-num">+@vendedorCerradas</span>
+                            <span class="det-rep-stat-desc">ventas</span>
+                        </div>
+                        <div class="det-rep-divider"></div>
+                        <div class="det-rep-stat">
+                            <div class="det-rep-stat-icon-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
+                                <span class="det-rep-check">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"/></svg>
+                                </span>
+                            </div>
+                            <span class="det-rep-stat-desc">Buena atención</span>
+                        </div>
+                        <div class="det-rep-divider"></div>
+                        <div class="det-rep-stat">
+                            <div class="det-rep-stat-icon-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9"/><path d="M12 7v5l2.5 2.5"/></svg>
+                                <span class="det-rep-check">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"/></svg>
+                                </span>
+                            </div>
+                            <span class="det-rep-stat-desc">Entrega a tiempo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+</div>

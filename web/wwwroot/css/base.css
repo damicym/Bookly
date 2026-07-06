@@ -37,10 +37,10 @@ input[type=text] {
   color: var(--dark);
 }
 
-a,
+/* a,
 a:visited {
   color: var(--light);
-}
+} */
 
 .primerElemento {
   margin-top: 90px !important;

@@ -68,20 +68,20 @@
                 }
                 @if (libFavCheck.Count > 0)
                 {
-                    <button class="det-btn-intercambio" id="btnConsultarPublicacion" title="Ver opciones de intercambio">
+                    <a href="@Url.Action("Chat", "Chat")" class="det-btn-intercambio" id="btnConsultarPublicacion" title="Ver opciones de intercambio">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/></svg>
                         Ver opciones de intercambio
-                    </button>
+                    </a>
                 }
             </div>
         </div>
 
         @* Botones de acción — mismo grid que la ficha *@
         <div class="det-acciones">
-            <button class="det-btn-accion det-btn-consultar mainBtn">
+            <a href="@Url.Action("Chat", "Chat")" class="det-btn-accion det-btn-consultar mainBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
                 Consultar publicación
-            </button>
+           </a>
             <button class="det-btn-accion det-btn-favorito @(Model.esDeseado ? "det-btn-favorito--activo" : "")" id="btnFavoritoVisible">
                 @if (Model.esDeseado)
                 {
@@ -225,10 +225,10 @@
             </div>
 
             <div class="det-vendedor-cta-wrap">
-                <button class="det-vendedor-cta-btn">
+                <a href="@Url.Action("Chat", "Chat")" class="det-vendedor-cta-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
                     Contactar vendedor
-                </button>
+                 </a>
             </div>
 
             @* ── Más publicaciones ── *@
