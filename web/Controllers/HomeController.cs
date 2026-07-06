@@ -57,7 +57,7 @@ namespace Bookly.Controllers
                 return RedirectToAction("Login", "Usuarios", new { returnView = "Catalogo" });
             var libros = BD.ObtenerLibros() ?? new List<Libros>();
             ViewBag.materias = libros.Select(l => l.materia).Distinct().ToList();
-            ViewBag.anos = libros.Select(l => l.ano).Distinct().OrderBy(a => a).ToList();
+            ViewBag.anos = libros.Select(l => l.ano).Where(a => a.HasValue).Select(a => a.Value).Distinct().OrderBy(a => a).ToList();
             ViewBag.editoriales = libros.Select(l => l.editorial).Distinct().ToList();
             ViewBag.query = query;
             // Proveer al layout la info de usuario para mostrar el nombre cuando esté logueado. (esto arregla lo de que no se muestre el nombre de usuario si se está en catalogo)
