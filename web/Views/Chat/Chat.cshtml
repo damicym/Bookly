@@ -53,20 +53,6 @@
                         <img class="chat-conv-avatar" src="@avatarVendedor" alt="@vendedor.nombreComp" />
                         <div class="chat-conv-meta">
                             <span class="chat-conv-nombre">@vendedor.nombreComp</span>
-                            <span class="chat-conv-preview">
-                                @if (publicacionConsulta != null)
-                                {
-                                    <text>Consulta sobre @publicacionConsulta.nombre</text>
-                                }
-                                else
-                                {
-                                    <text>Hola, ¿el libro sigue disponible?</text>
-                                }
-                            </span>
-                        </div>
-                        <div class="chat-conv-aside">
-                            <span class="chat-conv-hora">Ahora</span>
-                            <span class="chat-conv-badge">1</span>
                         </div>
                     </div>
                 }
@@ -153,7 +139,7 @@
                         aria-multiline="true"
                         aria-label="Escribir mensaje"
                         data-placeholder="Escribí un mensaje...">@if (publicacionConsulta != null)
-                        {<text>Hola! Estoy interesado/a en tu publicación del libro <a class="chat-msg-publi-link" href="@Url.Action("Detalle", "Book", new { id = publicacionConsulta.id })" target="_blank" contenteditable="false">@publicacionConsulta.nombre</a> 📚</text>}</div>
+                        {<text>Hola! Estoy interesado/a en tu publicación del libro <a class="chat-msg-publi-link" href="@Url.Action("Detalle", "Book", new { id = publicacionConsulta.id })" target="_blank" contenteditable="false">@publicacionConsulta.nombre</a>.</text>}</div>
                     <button class="chat-send-btn" id="chatSendBtn" aria-label="Enviar mensaje">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -242,28 +228,38 @@
 <div id="chatNuevoModal" hidden role="dialog" aria-modal="true" aria-labelledby="chatNuevoTitulo">
     <div class="chat-nuevo-overlay" id="chatNuevoOverlay"></div>
     <div class="chat-nuevo-dialog">
+
+        @* Header limpio *@
         <div class="chat-nuevo-dialog-header">
-            <h2 class="chat-nuevo-dialog-titulo" id="chatNuevoTitulo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
-                Nueva conversación
-            </h2>
+            <div class="chat-nuevo-dialog-header-text">
+                <h2 class="chat-nuevo-dialog-titulo" id="chatNuevoTitulo">Nueva conversación</h2>
+                <p class="chat-nuevo-dialog-desc">Buscá un usuario por nombre</p>
+            </div>
             <button class="chat-nuevo-dialog-close" id="chatNuevoClose" aria-label="Cerrar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
             </button>
         </div>
-        <p class="chat-nuevo-dialog-desc">Buscá un usuario por nombre para iniciar una conversación.</p>
+
+        @* Buscador *@
         <div class="chat-nuevo-search-wrap">
-            <svg class="chat-search-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <svg class="chat-nuevo-search-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             <input
                 type="search"
-                class="chat-search-input"
+                class="chat-nuevo-search-input"
                 id="chatNuevoSearchInput"
-                placeholder="Buscar por nombre..."
-                aria-label="Buscar usuario" />
+                placeholder="Escribí un nombre..."
+                aria-label="Buscar usuario"
+                autocomplete="off" />
         </div>
+
+        @* Resultados *@
         <div class="chat-nuevo-results" id="chatNuevoResults">
-            <p class="chat-nuevo-hint">Escribí al menos 2 caracteres para buscar.</p>
+            <div class="chat-nuevo-hint">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <span>Escribí al menos 2 caracteres para buscar</span>
+            </div>
         </div>
+
     </div>
 </div>
 <script>
@@ -320,25 +316,107 @@
     }
 
     // ── Botón nueva conversación ─────────────────────────
-    const btnNuevo = document.getElementById('chatNuevoBtn');
-    const modalNuevo = document.getElementById('chatNuevoModal');
+    const btnNuevo    = document.getElementById('chatNuevoBtn');
+    const modalNuevo  = document.getElementById('chatNuevoModal');
     const modalOverlay = document.getElementById('chatNuevoOverlay');
-    const modalClose = document.getElementById('chatNuevoClose');
-    const modalInput = document.getElementById('chatNuevoSearchInput');
+    const modalClose  = document.getElementById('chatNuevoClose');
+    const modalInput  = document.getElementById('chatNuevoSearchInput');
+    const modalResults = document.getElementById('chatNuevoResults');
+
+    const HINT_HTML = '<div class="chat-nuevo-hint">'
+        + '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
+        + '<span>Escribí al menos 2 caracteres para buscar</span>'
+        + '</div>';
+
+    const EMPTY_HTML = '<div class="chat-nuevo-hint">'
+        + '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9"/><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M9.5 15.25a3.5 3.5 0 0 1 5 0"/></svg>'
+        + '<span>Sin resultados para esa búsqueda</span>'
+        + '</div>';
 
     function abrirModalNuevo() {
-        if (modalNuevo) {
-            modalNuevo.removeAttribute('hidden');
-            if (modalInput) { modalInput.value = ''; modalInput.focus(); }
-        }
-    }
-    function cerrarModalNuevo() {
-        if (modalNuevo) modalNuevo.setAttribute('hidden', '');
+        if (!modalNuevo) return;
+        modalNuevo.removeAttribute('hidden');
+        if (modalResults) modalResults.innerHTML = HINT_HTML;
+        if (modalInput)   { modalInput.value = ''; modalInput.focus(); }
     }
 
-    if (btnNuevo)     btnNuevo.addEventListener('click', abrirModalNuevo);
-    if (modalClose)   modalClose.addEventListener('click', cerrarModalNuevo);
-    if (modalOverlay) modalOverlay.addEventListener('click', cerrarModalNuevo);
+    function cerrarModalNuevo() {
+        if (!modalNuevo) return;
+        const dialog  = modalNuevo.querySelector('.chat-nuevo-dialog');
+        const overlay = modalNuevo.querySelector('.chat-nuevo-overlay');
+        if (dialog)  dialog.style.animation  = 'chatDialogOut 0.18s cubic-bezier(0.4,0,1,1) forwards';
+        if (overlay) overlay.style.animation = 'chatOverlayOut 0.18s ease forwards';
+        setTimeout(function () {
+            modalNuevo.setAttribute('hidden', '');
+            if (dialog)  dialog.style.animation  = '';
+            if (overlay) overlay.style.animation = '';
+        }, 170);
+    }
+
+    // ── Renderizar un resultado ──────────────────────────
+    function buildResultItem(u) {
+        const avatar = u.fotoPerfil
+            ? `<img class="chat-nuevo-result-avatar" src="${u.fotoPerfil}" alt="${u.nombre}" />`
+            : `<div class="chat-nuevo-result-avatar chat-nuevo-result-avatar--default"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`;
+
+        let sub = '';
+        if (u.ano)         sub += u.ano + '° año';
+        if (u.especialidad) sub += (sub ? ' · ' : '') + u.especialidad;
+
+        const item = document.createElement('a');
+        item.className  = 'chat-nuevo-result-item';
+        item.href       = `/Chat/Chat?vendedorDNI=${encodeURIComponent(u.dni)}`;
+        item.innerHTML  = avatar
+            + `<div class="chat-nuevo-result-info">`
+            +   `<div class="chat-nuevo-result-nombre">${u.nombre}</div>`
+            +   (sub ? `<div class="chat-nuevo-result-sub">${sub}</div>` : '')
+            + `</div>`
+            + `<svg class="chat-nuevo-result-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>`;
+        return item;
+    }
+
+    // ── Búsqueda con debounce ────────────────────────────
+    let debounceTimer = null;
+
+    function buscarUsuarios(q) {
+        clearTimeout(debounceTimer);
+        if (q.length < 2) {
+            modalResults.innerHTML = HINT_HTML;
+            return;
+        }
+        // Skeleton de carga
+        modalResults.innerHTML = '<div class="chat-nuevo-hint chat-nuevo-hint--loading">'
+            + '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chat-nuevo-spinner"><path d="M12 3a9 9 0 1 0 9 9"/></svg>'
+            + '</div>';
+
+        debounceTimer = setTimeout(function () {
+            fetch('/Chat/BuscarUsuarios?q=' + encodeURIComponent(q))
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (!data || data.length === 0) {
+                        modalResults.innerHTML = EMPTY_HTML;
+                        return;
+                    }
+                    modalResults.innerHTML = '';
+                    data.forEach(function (u) {
+                        modalResults.appendChild(buildResultItem(u));
+                    });
+                })
+                .catch(function () {
+                    modalResults.innerHTML = EMPTY_HTML;
+                });
+        }, 280);
+    }
+
+    if (modalInput) {
+        modalInput.addEventListener('input', function () {
+            buscarUsuarios(this.value.trim());
+        });
+    }
+
+    if (btnNuevo)      btnNuevo.addEventListener('click', abrirModalNuevo);
+    if (modalClose)    modalClose.addEventListener('click', cerrarModalNuevo);
+    if (modalOverlay)  modalOverlay.addEventListener('click', cerrarModalNuevo);
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') cerrarModalNuevo();
     });

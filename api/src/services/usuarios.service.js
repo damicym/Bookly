@@ -82,3 +82,13 @@ export async function updateAboutMe(dni, about_me) {
 	if (error) throw error
 	return true
 }
+
+export async function searchUsers(q) {
+	const { data, error } = await supabase
+		.from('usuarios')
+		.select('dni, nombre_comp, ano, especialidad, curso, foto_perfil')
+		.ilike('nombre_comp', `%${q}%`)
+		.limit(10)
+	if (error) throw error
+	return data ?? []
+}

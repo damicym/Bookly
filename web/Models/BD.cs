@@ -201,6 +201,14 @@ namespace Bookly.Models
             return response.IsSuccessStatusCode;
         }
 
+        /// <summary>GET /api/usuarios/buscar?q=texto — devuelve hasta 10 usuarios</summary>
+        public static List<Usuarios> BuscarUsuarios(string q)
+        {
+            if (string.IsNullOrWhiteSpace(q) || q.Trim().Length < 2) return new List<Usuarios>();
+            return Get<List<Usuarios>>($"/usuarios/buscar?q={Uri.EscapeDataString(q.Trim())}")
+                   ?? new List<Usuarios>();
+        }
+
         /// <summary>GET /api/usuarios/:dni</summary>
         public static Usuarios ObtenerUsuarioPorDNI(string dni)
         {

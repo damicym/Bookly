@@ -59,5 +59,35 @@ namespace Bookly.Controllers
 
             return View();
         }
+
+        /// <summary>
+        /// GET /Chat/BuscarUsuarios?q=texto
+        /// Devuelve JSON con lista de usuarios que coinciden con el query.
+        /// Excluye al usuario logueado de los resultados.
+        /// </summary>
+        [HttpGet]
+        public IActionResult BuscarUsuarios(string q)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(q) || q.Trim().Length < 2)
+                return Json(new List<object>());
+
+            var resultados = BD.BuscarUsuarios(q)
+                .Where(u => u.DNI != user.DNI)
+                .Select(u => new
+                {
+                    dni        = u.DNI,
+                    nombre     = u.nombreComp,
+                    especialidad = u.especialidad,
+                    curso      = u.curso,
+                    ano        = u.ano,
+                    fotoPerfil = u.fotoPerfil
+                })
+                .ToList();
+
+            return Json(resultados);
+        }
     }
 }
