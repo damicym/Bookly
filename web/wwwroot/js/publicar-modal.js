@@ -63,6 +63,8 @@ async function abrirEditarModal(id) {
         };
         editarModalNewFileSelected = false;
         editarModalImageRemoved = false;
+        var submitBtn = document.getElementById('editarModalSubmitBtn');
+        if (submitBtn) submitBtn.disabled = true;
         document.getElementById('editModalImgPreview').src = data.imagenSrc;
         document.getElementById('editarModalImgEliminada').value = 'false';
         document.getElementById('editModalEliminarImgBtn').style.display = data.tieneImagen ? 'flex' : 'none';
@@ -87,6 +89,7 @@ function cerrarEditarModal(e) {
     modal.classList.remove('login-modal-overlay--visible');
     document.body.style.overflow = '';
     var btn = document.getElementById('editarModalSubmitBtn');
+    if (btn) btn.disabled = false;
     if (typeof setButtonLoading === 'function') setButtonLoading(btn, false);
     editarModalOriginalData = null;
     editarModalNewFileSelected = false;
@@ -103,6 +106,7 @@ function editarModalEliminarImagen() {
     document.getElementById('editModalFileInput').value = '';
     editarModalImageRemoved = true;
     editarModalNewFileSelected = false;
+    editarModalActualizarSubmitBtn();
 }
 
 function editarModalPrecioIgual(a, b) {
@@ -123,6 +127,12 @@ function editarModalHasChanges() {
     if (editarModalNewFileSelected) return true;
     if (editarModalImageRemoved) return true;
     return false;
+}
+
+function editarModalActualizarSubmitBtn() {
+    var btn = document.getElementById('editarModalSubmitBtn');
+    if (!btn) return;
+    btn.disabled = !editarModalHasChanges();
 }
 
 function initAutocompleteModal(inputId, materiaId, anoId, editorialId, libroIdId, indicatorId) {
@@ -247,6 +257,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (typeof mostrarPageLoader === 'function') mostrarPageLoader();
             if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
         });
+
+        // Actualizar estado del botón al cambiar cualquier campo
+        ['editModalEstado', 'editModalPrecio', 'editModalDesc'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('input', editarModalActualizarSubmitBtn);
+            if (el) el.addEventListener('change', editarModalActualizarSubmitBtn);
+        });
     }
 
     var efi = document.getElementById('editModalFileInput');
@@ -258,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('editarModalImgEliminada').value = 'false';
             editarModalNewFileSelected = true;
             editarModalImageRemoved = false;
+            editarModalActualizarSubmitBtn();
             var reader = new FileReader();
             reader.onload = function (e) { document.getElementById('editModalImgPreview').src = e.target.result; };
             reader.readAsDataURL(file);

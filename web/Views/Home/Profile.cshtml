@@ -132,7 +132,7 @@
             {
                 foreach (PublicacionesCompletas libro in Model)
                 {
-                    <div class="libro inProfile">
+                    <div class="libro inProfile" onclick="abrirEditarModal(@libro.id)">
                         <div class="imgContainer">
                             <div class="libroImgContainer">
                                 <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" loading="lazy" />

@@ -38,7 +38,52 @@
 }
 
 .libro.inProfile {
-  cursor: auto !important;
+  cursor: pointer !important;
+}
+
+/* Inner shadow permanente de arriba hacia abajo para contraste con los botones */
+.libro.inProfile .libroImgContainer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(6,26,64,0.38) 0%, transparent 45%);
+  z-index: 1;
+}
+
+/* Los botones deben quedar por encima del overlay */
+.libro.inProfile .libroActionsContainer {
+  z-index: 2;
+}
+
+.libro.inProfile:hover {
+  /* Sin escala ni sombra — efecto solo en los botones */
+  transform: none;
+  box-shadow: none;
+}
+
+/* Al hacer hover en la card del perfil, resaltar el botón de editar */
+.libro.inProfile:hover button.desearBtnForm.editar,
+.libro.inProfile:hover .desearBtnForm.editar button {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(244, 185, 66, 0.4);
+}
+
+.libro.inProfile:hover button.desearBtnForm.editar svg,
+.libro.inProfile:hover .desearBtnForm.editar button svg {
+  color: var(--dark);
+}
+
+/* Al hacer hover sobre el botón de eliminar, desactivar el amarillo del editar */
+.libro.inProfile:has(.desearBtnForm.eliminar:hover) button.desearBtnForm.editar,
+.libro.inProfile:has(.desearBtnForm.eliminar button:hover) button.desearBtnForm.editar,
+.libro.inProfile:has(.desearBtnForm.eliminar:hover) .desearBtnForm.editar button,
+.libro.inProfile:has(.desearBtnForm.eliminar button:hover) .desearBtnForm.editar button {
+  background: rgba(239, 242, 241, 0.88) !important;
+  border-color: rgba(239, 242, 241, 0.6) !important;
+  box-shadow: 0 2px 8px rgba(6, 26, 64, 0.25) !important;
 }
 
 .libroActionsContainer {
@@ -206,9 +251,6 @@ button.desearBtnForm.editar:hover svg {
   opacity: 0.6;
 }
 
-.libro.inProfile:hover .libroImgContainer img {
-  transform: scale(1) !important;
-}
 
 .imgContainer {
   display: flex;
