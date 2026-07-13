@@ -4,30 +4,49 @@ using Bookly.Models;
 
 namespace Bookly.Controllers
 {
-    /// <summary>
-    /// Controlador base. Antes de cada acción carga ViewBag.Notificaciones
-    /// con la lista de notificaciones del usuario logueado.
-    ///
-    /// Para agregar notificaciones desde cualquier action:
-    ///   AgregarNotificacion("Título", "Subtítulo", "/ruta/opcional");
-    ///
-    /// O directamente asignar la lista completa:
-    ///   ViewBag.Notificaciones = new List&lt;Notificacion&gt; { ... };
-    /// </summary>
     public abstract class BaseController : Controller
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
 
-            // Inicializar siempre la lista para que el layout nunca reciba null
-            if (ViewBag.Notificaciones == null)
-                ViewBag.Notificaciones = new List<Notificacion>();
+            var notifs = new List<Notificacion>();
+
+            // Cargar reseñas pendientes del usuario logueado
+            var user = obj.StringToObject<Usuarios>(
+                context.HttpContext.Session.GetString("usuarioLogueado"));
+
+            if (user != null)
+            {
+                try
+                {
+                    var resenas = BD.ObtenerResenasPorRedactor(user.DNI);
+
+                    foreach (var resena in resenas.Where(r => r.fechaRespuesta == null))
+                    {
+                        var nombreVendedor = !string.IsNullOrWhiteSpace(resena.nombreReceptor)
+                            ? resena.nombreReceptor
+                            : "el vendedor";
+
+                        notifs.Add(new Notificacion(
+                            titulo:    $"Cuando recibas tu libro, calificá a {nombreVendedor}",
+                            subtitulo: "Tocá para dejar tu reseña",
+                            vinculo:   null   // se puede agregar la URL de la reseña cuando exista la pantalla
+                        ));
+                    }
+                }
+                catch
+                {
+                    // Si la API no responde, las notificaciones quedan vacías — no rompe la página
+                }
+            }
+
+            ViewBag.Notificaciones = notifs;
         }
 
         /// <summary>
-        /// Agrega una notificación a la lista que se renderiza en el panel del header.
-        /// Llamar después de que OnActionExecuting haya corrido (es decir, dentro de cualquier action).
+        /// Agrega una notificación extra a la lista ya inicializada por OnActionExecuting.
+        /// Llamar dentro de cualquier action, después del base.
         /// </summary>
         protected void AgregarNotificacion(string titulo, string subtitulo, string? vinculo = null, string? iconoSvg = null)
         {

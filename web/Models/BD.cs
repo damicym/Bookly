@@ -434,8 +434,27 @@ namespace Bookly.Models
         public static List<int> ObtenerDeseadosPorUsuario(string dni)
         {
             if (string.IsNullOrWhiteSpace(dni)) return new List<int>();
-            return Get<List<int>>($"/deseados/{Uri.EscapeDataString(dni)}/ids")
-                   ?? new List<int>();
+            try
+            {
+                var fullUrl = $"{_apiBase}/deseados/{Uri.EscapeDataString(dni)}/ids";
+                var response = _http.GetAsync(fullUrl).GetAwaiter().GetResult();
+                if (!response.IsSuccessStatusCode) return new List<int>();
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                // La API puede devolver el array directo [...] o envuelto { wishlist_ids: [...] }
+                var root = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                if (root.ValueKind == JsonValueKind.Array)
+                    return JsonSerializer.Deserialize<List<int>>(json, _jsonOpts) ?? new List<int>();
+                if (root.ValueKind == JsonValueKind.Object &&
+                    root.TryGetProperty("wishlist_ids", out var arr))
+                    return JsonSerializer.Deserialize<List<int>>(arr.GetRawText(), _jsonOpts) ?? new List<int>();
+                return new List<int>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[BD.ObtenerDeseadosPorUsuario] Error: {ex.Message}");
+                return new List<int>();
+            }
         }
 
         /// <summary>GET /api/deseados/:dni/favoritos</summary>
@@ -444,6 +463,16 @@ namespace Bookly.Models
             if (string.IsNullOrWhiteSpace(dni)) return new List<PublicacionesCompletas>();
             return Get<List<PublicacionesCompletas>>($"/deseados/{Uri.EscapeDataString(dni)}/favoritos")
                    ?? new List<PublicacionesCompletas>();
+        }
+
+        // ── RESEÑAS ──────────────────────────────────────────────────────────
+
+        /// <summary>GET /api/resenas/redactor/:dni — reseñas pendientes del redactor</summary>
+        public static List<Resena> ObtenerResenasPorRedactor(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return new List<Resena>();
+            return Get<List<Resena>>($"/resenas/redactor/{Uri.EscapeDataString(dni)}")
+                   ?? new List<Resena>();
         }
 
         // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────
