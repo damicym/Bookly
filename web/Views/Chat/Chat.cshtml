@@ -83,6 +83,10 @@
         @* ── COL 2: Ventana de chat ── *@
         <main class="chat-col-messages">
             <div class="chat-messages-header">
+                @* Botón volver — solo visible en móvil (≤600px) via CSS *@
+                <button class="chat-back-btn" id="chatBackBtn" aria-label="Volver a conversaciones">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+                </button>
                 @if (tieneVendedor)
                 {
                     <img class="chat-conv-avatar" src="@avatarVendedor" alt="@vendedor.nombreComp" />
@@ -419,6 +423,44 @@
     if (modalOverlay)  modalOverlay.addEventListener('click', cerrarModalNuevo);
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') cerrarModalNuevo();
+    });
+
+    // ── Navegación por paneles (móvil ≤600px) ────────────
+    const chatPage       = document.querySelector('.chat-page');
+    const backBtn        = document.getElementById('chatBackBtn');
+    const MOBILE_BP      = 600;
+
+    function esMobil() { return window.innerWidth <= MOBILE_BP; }
+
+    // Si ya hay vendedor cargado al entrar, mostrar panel chat en móvil
+    if (esMobil() && @(tieneVendedor ? "true" : "false")) {
+        chatPage && chatPage.classList.add('chat-page--panel-chat');
+    }
+
+    // Al tocar un ítem de la lista de conversaciones
+    if (convList) {
+        convList.addEventListener('click', function (e) {
+            if (!esMobil()) return;
+            const item = e.target.closest('.chat-conv-item');
+            if (!item) return;
+            // Solo navegar si el ítem tiene href (conversación real)
+            // Los items actuales son divs, así que solo activamos el panel
+            chatPage && chatPage.classList.add('chat-page--panel-chat');
+        });
+    }
+
+    // Botón volver
+    if (backBtn) {
+        backBtn.addEventListener('click', function () {
+            chatPage && chatPage.classList.remove('chat-page--panel-chat');
+        });
+    }
+
+    // Al redimensionar de móvil a desktop, quitar el override de display
+    window.addEventListener('resize', function () {
+        if (!esMobil()) {
+            chatPage && chatPage.classList.remove('chat-page--panel-chat');
+        }
     });
 
     // ── Scroll al fondo del chat ──────────────────────────
