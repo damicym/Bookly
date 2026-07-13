@@ -13,8 +13,11 @@
 </form>
 
 <div class="catalogo-layout">
+    @* Overlay móvil — FUERA del sidebar para no ser clippeado por overflow:hidden *@
+    <div class="filtros-mobile-overlay" id="filtrosMobileOverlay" aria-hidden="true"></div>
+
     @* filtros sidebar *@
-    <aside class="filtros-sidebar">
+    <aside class="filtros-sidebar" id="filtrosSidebar">
         <div class="filtros-header">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg>
             <span>Filtros</span>
@@ -135,6 +138,12 @@
         <div class="catalogo-resultados-header">
             <div class="catalogo-titulo-row">
                 <h2 class="busqueda-titulo">Catálogo</h2>
+                @* Botón "Filtros" — solo visible en móvil (≤900px) *@
+                <button class="filtros-mobile-btn" id="btnFiltrosMobile" type="button" aria-expanded="false" aria-controls="filtrosSidebar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg>
+                    <span>Filtros</span>
+                    <span class="filtros-mobile-badge" id="filtrosMobileBadge" hidden></span>
+                </button>
                 <div class="orden-dropdowns">
                     <!-- Hidden selects para compatibilidad con buscar.js -->
                     <select id="selectOrdenEstado" style="display:none">

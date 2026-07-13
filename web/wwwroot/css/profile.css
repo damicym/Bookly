@@ -477,3 +477,53 @@
   justify-content: center;
   border-radius: 8px;
 }
+
+/* ===================================================
+   GRID DE CARDS — Perfil (publicaciones y favoritos)
+   =================================================== */
+
+/* Desktop: auto-fill con columnas de 230px */
+.profile-tab-panel .cardsPublicadas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 230px);
+  gap: 32px;
+  max-width: calc(6 * 230px + 5 * 32px);
+  width: 100%;
+  margin-inline: auto;
+  margin-bottom: 4%;
+}
+
+/* Estado vacío ocupa todo el ancho */
+.profile-tab-panel .cardsPublicadas .no-result {
+  grid-column: 1 / -1;
+  justify-self: center;
+  padding: 60px 24px;
+}
+
+/* ≤900px: grilla adaptativa — en ~630px caben 3 cols, en ~400px 2 */
+@media (max-width: 900px) {
+  .profile-tab-panel {
+    padding: 16px 12px 60px;
+  }
+
+  .profile-tab-panel .cardsPublicadas {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    max-width: 100%;
+    margin-inline: 0;
+  }
+
+  .profile-tab-panel .cardsPublicadas .publicarCard {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-tab-panel {
+    padding: 12px 8px 60px;
+  }
+
+  .profile-tab-panel .cardsPublicadas {
+    gap: 8px;
+  }
+}

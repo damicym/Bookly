@@ -5,6 +5,10 @@
   align-items: flex-start;
   min-height: calc(100vh - 90px);
   padding-bottom: 32px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ===== SIDEBAR: sticky — se queda fija al scrollear pero termina con el contenedor, antes del footer ===== */
@@ -125,20 +129,16 @@
 
 /* Centrar resultados cuando el sidebar está colapsado */
 .catalogo-layout.sidebar-collapsed {
-  display: block; /* salir de flex para que margin:auto funcione en el hijo */
+  display: block;
 }
 
 .catalogo-layout.sidebar-collapsed .catalogo-resultados {
   display: block;
   width: 100%;
-  max-width: 1620px; /* 6 cols × 230px + 5 gaps × 32px + 2 × 40px padding */
+  max-width: 1620px;
   margin: 0 auto;
   padding-left: 40px;
   padding-right: 40px;
-}
-
-.catalogo-layout.sidebar-collapsed .catalogo-resultados .cardsPublicadas {
-  justify-content: flex-start;
 }
 
 /* Área scrolleable — solo esto se mueve */
@@ -514,25 +514,40 @@
 
 .catalogo-resultados .cardsPublicadas {
   /*
-    Grid de exactamente 5 columnas fijas de 230px.
-    El gap entre columnas se calcula automáticamente para llenar
-    todo el espacio disponible (justify-content: space-between).
-    El padding del contenedor (.catalogo-resultados) controla
-    el margen derecho (85px) y el espacio con la sidebar (40px).
+    Grid adaptativo: auto-fill llena siempre todo el ancho disponible.
+    Las cards crecen para llenar la fila sin dejar espacio vacío.
   */
-  display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
   width: 100%;
   margin-inline: 0;
   margin-bottom: 4%;
-  align-items: flex-start;
+  align-items: start;
 }
 
-.catalogo-resultados .cardsPublicadas .separador-cards {
+.catalogo-resultados .cardsPublicadas .separador-cards,
+.catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo,
+.catalogo-resultados .cardsPublicadas .no-result {
   grid-column: 1 / -1;
   width: 100%;
+}
+
+/* El título de sección siempre centrado */
+.catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo {
+  text-align: center;
+}
+
+/* Las cards se adaptan al ancho de su celda del grid */
+.catalogo-resultados .cardsPublicadas .libro,
+.catalogo-resultados .cardsPublicadas .libro-skeleton {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Limitar la imagen para que no crezca demasiado en celdas anchas */
+.catalogo-resultados .cardsPublicadas .libro .libroImgContainer {
+  max-height: 300px;
 }
 
 /* ===== CHIPS DE FILTROS ACTIVOS ===== */
@@ -703,50 +718,230 @@
   line-height: 1.5;
 }
 
+/* ===== BOTÓN FILTROS MÓVIL (oculto en desktop) ===== */
+.filtros-mobile-btn {
+  display: none;
+}
+
+/* ===== OVERLAY MÓVIL ===== */
+/* Siempre fuera del flujo, oculto en desktop */
+.filtros-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 26, 64, 0.45);
+  z-index: 499;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  display: none;           /* solo visible en móvil */
+}
+
 /* ===== RESPONSIVE ===== */
+
+/* ── Tablet ancho (≤1100px): reducir padding lateral ── */
+@media (max-width: 1100px) {
+  .catalogo-resultados {
+    padding: 24px 24px 60px 24px;
+  }
+}
+
+/* ── Móvil (≤900px): drawer desde arriba, grilla 2 columnas ── */
 @media (max-width: 900px) {
+
+  /* ── 1. El layout deja de ser flex lateral ── */
   .catalogo-layout {
     flex-direction: column;
+    padding-bottom: 0;
+    min-height: unset;
   }
 
+  /* ── 2. El sidebar desaparece del flujo y se convierte en panel fixed ── */
   .filtros-sidebar {
-    position: static;
+    /* Fuera del flujo: no ocupa espacio lateral */
+    position: fixed;
+    top: 90px;
+    left: 0;
+    right: 0;
     width: 100%;
-    max-height: none;
-    border-right: none;
-    border-bottom: 1px solid rgba(6, 26, 64, 0.1);
+    z-index: 500;
+    /* Cerrado: altura 0, contenido invisible */
+    max-height: 0;
+    overflow: hidden;
+    /* Anular estilos de sidebar desktop */
     align-self: auto;
+    flex-shrink: unset;
+    border-right: none;
+    box-shadow: 0 4px 20px rgba(6, 26, 64, 0.2);
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .filtros-scroll {
-    overflow-y: visible;
+  /* Estado collapsed del desktop no interfiere en móvil */
+  .filtros-sidebar.collapsed {
+    position: fixed;
+    width: 100%;
+    max-height: 0;
+    border-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .filtros-sidebar.collapsed .filtros-scroll {
+    /* en móvil el scroll siempre puede existir */
+    display: flex;
   }
 
+  /* Panel abierto */
+  .filtros-sidebar.mobile-open {
+    max-height: calc(100dvh - 90px);
+    overflow: hidden;
+  }
+  .filtros-sidebar.mobile-open .filtros-scroll {
+    overflow-y: auto;
+    max-height: calc(100dvh - 90px - 52px); /* 52px = filtros-header */
+  }
+
+  /* ── 3. Overlay visible en móvil ── */
+  .filtros-mobile-overlay {
+    display: block;     /* activar en móvil */
+    top: 90px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .filtros-mobile-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ── 4. Resultados: ancho completo ── */
   .catalogo-resultados {
-    padding: 16px 20px 60px;
+    padding: 0;
+    width: 100%;
+    min-width: 0;
+    flex: none;           /* no crecer como flex item */
+    box-sizing: border-box;
+  }
+
+  /* ── 5. Header sticky con botón filtros ── */
+  .catalogo-resultados-header {
+    position: sticky;
+    top: 90px;
+    z-index: 400;
+    background: var(--light);
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid rgba(6, 26, 64, 0.08);
+    box-shadow: 0 2px 8px rgba(6, 26, 64, 0.06);
+    margin-bottom: 0;
+    box-sizing: border-box;
+  }
+
+  /* ── 6. Fila título + botón filtros ── */
+  .catalogo-titulo-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .busqueda-titulo {
+    font-size: 1.25rem;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  /* ── 7. Botón Filtros visible ── */
+  .filtros-mobile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: var(--main);
+    color: var(--light);
+    border: none;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: filter 0.15s;
+  }
+  .filtros-mobile-btn:hover  { filter: brightness(1.1); }
+  .filtros-mobile-btn:active { opacity: 0.85; }
+
+  .filtros-mobile-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 50%;
+    background: var(--accent, #f4b942);
+    color: var(--dark);
+    font-size: 0.65rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* ── 8. Dropdowns de orden ── */
+  .orden-dropdowns {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-right: 0;
+  }
+  .orden-dropdown-wrap { flex: 1; }
+  .orden-label         { display: none; }
+  .orden-custom-btn {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    background: rgba(6, 26, 64, 0.05);
+    border: 1px solid rgba(6, 26, 64, 0.12);
+    border-radius: 8px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* ── 9. Grilla adaptativa: auto-fill con mínimo 140px por card ──
+     En 631px (sin sidebar) caben ~3 columnas.
+     En 400px caben 2. Se adapta sola.
+  ── */
+  .publicaciones {
+    padding: 12px 12px 60px;
+    box-sizing: border-box;
   }
 
   .catalogo-resultados .cardsPublicadas {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    column-gap: 20px;
-    row-gap: 20px;
-  }
-
-  .catalogo-titulo-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .orden-dropdowns {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
     width: 100%;
-    flex-wrap: wrap;
+    margin-inline: 0;
+    margin-bottom: 0;
   }
 
-  .orden-select {
-    min-width: 0;
-    flex: 1;
+  .catalogo-resultados .cardsPublicadas .separador-cards,
+  .catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo,
+  .catalogo-resultados .cardsPublicadas .no-result {
+    grid-column: 1 / -1;
+  }
+
+  .catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ── ≤480px ── */
+@media (max-width: 480px) {
+  .catalogo-resultados-header {
+    padding: 10px 10px 8px;
+  }
+  .publicaciones {
+    padding: 10px 8px 60px;
+  }
+  .catalogo-resultados .cardsPublicadas {
+    gap: 8px;
+  }
+  .busqueda-titulo {
+    font-size: 1.1rem;
   }
 }

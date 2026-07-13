@@ -489,16 +489,118 @@ function resetCustomDropdowns() {
     })
 }
 
-// ===== TOGGLE SIDEBAR FILTROS =====
+// ===== TOGGLE SIDEBAR FILTROS (DESKTOP — >900px) =====
 const btnToggleFiltros = document.getElementById('btnToggleFiltros')
-const filtrosSidebar = document.querySelector('.filtros-sidebar')
-const catalogoLayout = document.querySelector('.catalogo-layout')
+const filtrosSidebar   = document.querySelector('.filtros-sidebar')
+const catalogoLayout   = document.querySelector('.catalogo-layout')
 
 if (btnToggleFiltros && filtrosSidebar) {
     btnToggleFiltros.addEventListener('click', () => {
+        // Solo funciona en desktop
+        if (window.innerWidth <= 900) return
         const isCollapsed = filtrosSidebar.classList.toggle('collapsed')
         catalogoLayout?.classList.toggle('sidebar-collapsed', isCollapsed)
         btnToggleFiltros.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true')
-        btnToggleFiltros.setAttribute('aria-label', isCollapsed ? 'Expandir filtros' : 'Colapsar filtros')
+        btnToggleFiltros.setAttribute('aria-label',   isCollapsed ? 'Expandir filtros' : 'Colapsar filtros')
     })
 }
+
+// ===== TOGGLE PANEL FILTROS MÓVIL (≤900px) =====
+const btnFiltrosMobile     = document.getElementById('btnFiltrosMobile')
+const filtrosMobileOverlay = document.getElementById('filtrosMobileOverlay')
+
+function esMobil() { return window.innerWidth <= 900 }
+
+function abrirFiltrosMobile() {
+    if (!filtrosSidebar) return
+    // Limpiar clases del desktop que puedan interferir
+    filtrosSidebar.classList.remove('collapsed')
+    catalogoLayout?.classList.remove('sidebar-collapsed')
+
+    filtrosSidebar.classList.add('mobile-open')
+    filtrosMobileOverlay?.classList.add('active')
+    btnFiltrosMobile?.setAttribute('aria-expanded', 'true')
+    document.body.style.overflow = 'hidden'
+}
+
+function cerrarFiltrosMobile() {
+    if (!filtrosSidebar) return
+    filtrosSidebar.classList.remove('mobile-open')
+    filtrosMobileOverlay?.classList.remove('active')
+    btnFiltrosMobile?.setAttribute('aria-expanded', 'false')
+    document.body.style.overflow = ''
+}
+
+if (btnFiltrosMobile) {
+    btnFiltrosMobile.addEventListener('click', () => {
+        filtrosSidebar?.classList.contains('mobile-open')
+            ? cerrarFiltrosMobile()
+            : abrirFiltrosMobile()
+    })
+}
+
+if (filtrosMobileOverlay) {
+    filtrosMobileOverlay.addEventListener('click', cerrarFiltrosMobile)
+}
+
+// Cerrar al seleccionar un filtro en móvil
+if (radioFiltros.length > 0) {
+    radioFiltros.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (esMobil()) setTimeout(cerrarFiltrosMobile, 200)
+        })
+    })
+}
+
+// Al redimensionar entre desktop y móvil: limpiar estado
+window.addEventListener('resize', () => {
+    if (!esMobil()) {
+        // Pasar a desktop: limpiar estado móvil
+        filtrosSidebar?.classList.remove('mobile-open')
+        filtrosMobileOverlay?.classList.remove('active')
+        document.body.style.overflow = ''
+        btnFiltrosMobile?.setAttribute('aria-expanded', 'false')
+    } else {
+        // Pasar a móvil: limpiar estado desktop
+        filtrosSidebar?.classList.remove('collapsed')
+        catalogoLayout?.classList.remove('sidebar-collapsed')
+    }
+})
+
+// ===== BADGE FILTROS ACTIVOS EN BOTÓN MÓVIL =====
+const badge = document.getElementById('filtrosMobileBadge')
+
+function actualizarBadgeMobile() {
+    if (!badge) return
+    let count = 0
+    // Radios activos
+    ;['filtroMateria', 'filtroAno', 'filtroEstado', 'filtroEditoriales'].forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`)
+        if (checked && checked.value !== '') count++
+    })
+    // Precio
+    const precioMin = limpiarPrecio(document.getElementById('filtroPrecioMin')?.value ?? '')
+    const precioMax = limpiarPrecio(document.getElementById('filtroPrecioMax')?.value ?? '')
+    if (precioMin || precioMax) count++
+    // Orden
+    if ((document.getElementById('selectOrdenEstado')?.value ?? '') !== '') count++
+    if ((document.getElementById('selectOrdenPrecio')?.value ?? '') !== '') count++
+
+    if (count > 0) {
+        badge.textContent = count
+        badge.removeAttribute('hidden')
+    } else {
+        badge.setAttribute('hidden', '')
+    }
+}
+
+// Actualizar badge cuando cambia cualquier filtro
+radioFiltros.forEach(r => r.addEventListener('change', actualizarBadgeMobile))
+precioInputs.forEach(i => i.addEventListener('input', () => setTimeout(actualizarBadgeMobile, 420)))
+;[document.getElementById('selectOrdenEstado'), document.getElementById('selectOrdenPrecio')]
+    .filter(Boolean)
+    .forEach(s => s.addEventListener('change', actualizarBadgeMobile))
+if (btnLimpiar) btnLimpiar.addEventListener('click', () => setTimeout(actualizarBadgeMobile, 250))
+
+// Estado inicial del badge
+actualizarBadgeMobile()
