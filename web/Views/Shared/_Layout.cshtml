@@ -74,6 +74,20 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></svg>
             </button>
             <div class="header-hamburger-menu" id="headerHamburgerMenu">
+            <button class="favBtn" id="notifBtnHeader" title="Notificaciones" aria-label="Notificaciones" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+                    <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+                </svg>
+                @{
+                    var notifCount = (ViewBag.Notificaciones as List<Bookly.Models.Notificacion>)?.Count ?? 0;
+                }
+                @if (notifCount > 0)
+                {
+                    <span class="notif-badge">@(notifCount > 9 ? "9+" : notifCount.ToString())</span>
+                }
+            </button>
             <a class="favBtn" id="chatBtnHeader" href="@Url.Action("Chat", "Chat")" title="Mensajes">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -143,6 +157,95 @@
         </nav>
         }
     </header>
+
+    @* ── Panel de notificaciones ── *@
+    @if (usuario != null)
+    {
+        var notifs = ViewBag.Notificaciones as List<Bookly.Models.Notificacion> ?? new List<Bookly.Models.Notificacion>();
+        <div class="notif-panel" id="notifPanel" aria-label="Notificaciones" hidden>
+            <div class="notif-panel-header">
+                <span class="notif-panel-titulo">Notificaciones</span>
+                @if (notifs.Count > 0)
+                {
+                    <span class="notif-panel-count">@notifs.Count</span>
+                }
+            </div>
+            <div class="notif-panel-lista">
+                @if (notifs.Count == 0)
+                {
+                    <div class="notif-panel-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+                            <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+                        </svg>
+                        <p>No tenés ninguna notificación todavía :)</p>
+                    </div>
+                }
+                else
+                {
+                    foreach (var notif in notifs)
+                    {
+                        if (!string.IsNullOrWhiteSpace(notif.Vinculo))
+                        {
+                            <a class="notif-item notif-item--link" href="@notif.Vinculo">
+                                <div class="notif-item-icono">
+                                    @if (!string.IsNullOrWhiteSpace(notif.IconoSvg))
+                                    {
+                                        @Html.Raw(notif.IconoSvg)
+                                    }
+                                    else
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+                                            <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+                                        </svg>
+                                    }
+                                </div>
+                                <div class="notif-item-texto">
+                                    <span class="notif-item-titulo">@notif.Titulo</span>
+                                    @if (!string.IsNullOrWhiteSpace(notif.Subtitulo))
+                                    {
+                                        <span class="notif-item-subtitulo">@notif.Subtitulo</span>
+                                    }
+                                </div>
+                                <svg class="notif-item-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 6l6 6l-6 6"/>
+                                </svg>
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="notif-item">
+                                <div class="notif-item-icono">
+                                    @if (!string.IsNullOrWhiteSpace(notif.IconoSvg))
+                                    {
+                                        @Html.Raw(notif.IconoSvg)
+                                    }
+                                    else
+                                    {
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+                                            <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+                                        </svg>
+                                    }
+                                </div>
+                                <div class="notif-item-texto">
+                                    <span class="notif-item-titulo">@notif.Titulo</span>
+                                    @if (!string.IsNullOrWhiteSpace(notif.Subtitulo))
+                                    {
+                                        <span class="notif-item-subtitulo">@notif.Subtitulo</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    }
     <main role="main">
         @RenderBody()
     </main>

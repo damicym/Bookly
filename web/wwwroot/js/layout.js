@@ -120,3 +120,56 @@
         });
     }
 })();
+
+// ===== NOTIFICACIONES =====
+(function () {
+    var btn   = document.getElementById('notifBtnHeader');
+    var panel = document.getElementById('notifPanel');
+    if (!btn || !panel) return;
+
+    var isOpen = false;
+
+    function openPanel() {
+        // Quitar hidden la primera vez (permite la transición CSS)
+        panel.removeAttribute('hidden');
+        // Forzar reflow para que la transición arranque desde el estado inicial
+        panel.getBoundingClientRect();
+        panel.classList.add('notif-panel--visible');
+        btn.setAttribute('aria-expanded', 'true');
+        btn.classList.add('activeNavBtn');
+        isOpen = true;
+
+        // Cerrar hamburguesa si está abierta
+        var hamburgerMenu = document.getElementById('headerHamburgerMenu');
+        var hamburgerBtn  = document.getElementById('headerHamburger');
+        if (hamburgerMenu) hamburgerMenu.classList.remove('is-open');
+        if (hamburgerBtn)  hamburgerBtn.classList.remove('is-open');
+
+        // Cerrar dropdown de perfil si está abierto
+        var profileWrap = document.getElementById('profileDropdownWrap');
+        if (profileWrap) profileWrap.classList.remove('dropdown-open');
+    }
+
+    function closePanel() {
+        panel.classList.remove('notif-panel--visible');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.classList.remove('activeNavBtn');
+        isOpen = false;
+    }
+
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        isOpen ? closePanel() : openPanel();
+    });
+
+    // Click fuera cierra el panel
+    document.addEventListener('click', function (e) {
+        if (!isOpen) return;
+        if (!panel.contains(e.target) && e.target !== btn) closePanel();
+    });
+
+    // Escape cierra el panel
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isOpen) closePanel();
+    });
+})();

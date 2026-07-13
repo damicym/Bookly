@@ -3,7 +3,7 @@ using Bookly.Models;
 
 namespace Bookly.Controllers
 {
-    public class ChatController : Controller
+    public class ChatController : BaseController
     {
         public IActionResult Chat(string? vendedorDNI, int? idPublicacion)
         {
