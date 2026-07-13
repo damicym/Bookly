@@ -4,9 +4,7 @@
     var btn = document.getElementById('favBtnHeader');
     if (btn) {
         var isProfile = document.querySelector('.profile-tabs') !== null;
-        if (isProfile && window.location.hash === '#favoritos') {
-            btn.classList.add('activeNavBtn');
-        }
+
         if (isProfile) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -15,6 +13,7 @@
                 btn.classList.add('activeNavBtn');
             });
         }
+
         document.querySelectorAll('.profile-tab').forEach(function (tab) {
             tab.addEventListener('click', function () {
                 if (tab.dataset.tab === 'favoritos') {

@@ -113,6 +113,9 @@ if (document.querySelector('.profile-page')) {
 
     if (window.location.hash === '#favoritos') {
         activarTab('favoritos')
+        // Marcar el botón del header como activo antes de limpiar el hash
+        var favBtnHeader = document.getElementById('favBtnHeader');
+        if (favBtnHeader) favBtnHeader.classList.add('activeNavBtn');
         history.replaceState(null, '', window.location.pathname)
     }
 }

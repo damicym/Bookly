@@ -299,6 +299,7 @@ header .searchNFilter {
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
   margin-right: 4px;
+  border: none !important;
 }
 
 .favBtn:hover {
@@ -788,8 +789,6 @@ a.notif-item--link:hover .notif-item-arrow {
   flex-shrink: 0;
   width: 34px;
   height: 34px;
-  border-radius: 50%;
-  background: rgba(64, 89, 173, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -816,9 +815,10 @@ a.notif-item--link:hover .notif-item-arrow {
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--dark);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.35;
 }
 
 .notif-item-subtitulo {
