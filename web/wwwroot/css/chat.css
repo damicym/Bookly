@@ -19,7 +19,7 @@
   align-items: start;
   box-sizing: border-box;
   /* Altura fija para que la ventana de chat no empuje el layout */
-  height: calc(100vh - 180px);
+  height: calc(100dvh - 180px);
   min-height: 520px;
 }
 
@@ -391,30 +391,190 @@
 /* ══════════════════════════════
    Responsive
 ══════════════════════════════ */
+
+/* ── Tablet ancho (≤1100px): ocultar columna vendedor ── */
 @media (max-width: 1100px) {
+  .chat-page-wrapper {
+    width: min(1100px, 100vw - 32px);
+  }
+
   .chat-page {
-    grid-template-columns: 240px 1fr 260px;
+    grid-template-columns: 260px 1fr;
     gap: 16px;
-  }
-}
-
-@media (max-width: 860px) {
-  .chat-page {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    height: auto;
-  }
-
-  .chat-col-conversations {
-    height: 220px;
-  }
-
-  .chat-col-messages {
-    height: 420px;
   }
 
   .chat-col-vendedor {
-    position: static;
+    display: none;
+  }
+}
+
+/* ── Tablet chico (≤860px): lista más angosta, alturas equilibradas ── */
+@media (max-width: 860px) {
+  .chat-page-wrapper {
+    width: min(860px, 100vw - 24px);
+    padding: 16px 0 40px;
+  }
+
+  .chat-page {
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+    height: calc(100dvh - 160px);
+    min-height: 460px;
+  }
+}
+
+/* ── Móvil (≤600px): una columna, navegación por paneles ── */
+@media (max-width: 600px) {
+  .chat-page-wrapper {
+    width: 100%;
+    padding: 0;           /* sin padding: la lista ocupa todo el ancho */
+  }
+
+  /* Ocultar el enlace "Volver" global, lo reemplaza el botón inline en el header */
+  .chat-page-wrapper > .det-volver {
+    display: none;
+  }
+
+  .chat-page {
+    display: block;          /* no grid */
+    height: auto;
+    min-height: unset;
+  }
+
+  /* Lista de conversaciones ocupa toda la pantalla debajo del navbar */
+  .chat-col-conversations {
+    height: calc(100dvh - 90px); /* 90px = altura del navbar fijo */
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    box-shadow: none;
+    /* visible por defecto */
+    display: flex;
+  }
+
+  /* Ventana del chat: oculta hasta que el usuario selecciona una conv */
+  .chat-col-messages {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 90px;
+    bottom: 0;
+    height: auto;           /* dejar que top+bottom definan la altura */
+    z-index: 1100;          /* por encima del footer (z:1000) y navbar (z:1000) */
+    border-radius: 0;
+    box-shadow: none;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--light);
+    /* deslizar hacia la derecha para ocultarlo */
+    transform: translateX(100%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    /* display: flex siempre — position:fixed no ocupa espacio en el flujo */
+    display: flex;
+  }
+
+  /* Ocultar footer cuando el panel de chat está abierto */
+  body:has(.chat-page--panel-chat) .footer {
+    display: none;
+  }
+
+  /* Cuando el usuario abre una conversación */
+  .chat-page--panel-chat .chat-col-conversations {
+    display: none;
+  }
+
+  .chat-page--panel-chat .chat-col-messages {
+    transform: translateX(0);
+  }
+
+  /* Botón de volver dentro del header del chat (solo móvil) */
+  .chat-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: var(--main);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s;
+    margin-right: 4px;
+  }
+
+  .chat-back-btn:hover {
+    background: rgba(64, 89, 173, 0.08);
+  }
+
+  /* El nombre en el header ocupa el espacio restante */
+  .chat-messages-header {
+    padding: 10px 14px;
+  }
+
+  /* Input area toca el fondo de la pantalla */
+  .chat-messages-input-wrap {
+    padding: 10px 12px 12px;
+    /* Respeta el safe-area en iPhones con notch inferior */
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    flex-shrink: 0;
+  }
+
+  /* min-height: 0 evita que el body de mensajes desborde el flex fijo */
+  .chat-messages-body {
+    min-height: 0;
+  }
+
+  /* Burbujas un poco más anchas en pantallas pequeñas */
+  .chat-msg {
+    max-width: 85%;
+  }
+}
+
+/* ── Móvil muy chico (≤480px): ajustes de texto y padding ── */
+@media (max-width: 480px) {
+  .chat-messages-body {
+    padding: 14px 12px 8px;
+    gap: 8px;
+  }
+
+  .chat-msg-bubble {
+    font-size: 0.85rem;
+    padding: 9px 12px;
+  }
+
+  .chat-messages-input-row {
+    gap: 8px;
+  }
+
+  .chat-input {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+    min-height: 42px;
+  }
+
+  .chat-send-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .chat-conv-item {
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
+  .chat-conv-nombre {
+    font-size: 0.83rem;
+  }
+}
+
+/* En desktop: botón de volver al panel lista oculto siempre */
+@media (min-width: 601px) {
+  .chat-back-btn {
+    display: none;
   }
 }
 

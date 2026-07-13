@@ -66,6 +66,19 @@ export async function updateFotoPerfil(req, res) {
   }
 }
 
+export async function searchUsers(req, res) {
+  try {
+    const { q } = req.query
+    if (!q || q.trim().length < 2) {
+      return res.json([])
+    }
+    const users = await usuariosService.searchUsers(q.trim())
+    res.json(users)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
 export async function deleteFotoPerfil(req, res) {
   try {
     const { dni } = req.params
