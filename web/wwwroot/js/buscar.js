@@ -103,12 +103,12 @@ async function realizarBusqueda(query, esCargaInicial) {
                                         </section>
                                     </div>
                                     <div class="pillContainer">
-                                        ${libro.estado_libro 
-                                            ? `<span class="pill" style="background-color:${getColor(libro.estado_libro)}">${libro.estado_libro}</span>`
-                                            : ''
-                                        }
                                         ${pasarAnoATexto(libro.ano)
                                             ? `<span class="pill">${pasarAnoATexto(libro.ano)}</span>`
+                                            : ''
+                                        }
+                                        ${libro.estado_libro 
+                                            ? `<span class="pill" style="background-color:${getColor(libro.estado_libro)}">${libro.estado_libro}</span>`
                                             : ''
                                         }
                                     </div>

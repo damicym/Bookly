@@ -105,14 +105,14 @@
                                 </section>
                             </div>
                             <div class="pillContainer">
-                                @if (libro.estadoLibro != null) {
-                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                                }
                                 @if (libro.ano.HasValue) {
                                     var añoTexto = HtmlHelpers.PasarAñoATexto(libro.ano.Value);
                                     if (añoTexto != null) {
                                         <span class="pill">@añoTexto</span>
                                     }
+                                }
+                                @if (libro.estadoLibro != null) {
+                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
                                 }
                             </div>
                         </div>

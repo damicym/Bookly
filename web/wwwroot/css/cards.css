@@ -543,25 +543,72 @@ button.desearBtnForm.editar:hover svg {
 }
 
 /* ── Cards responsivas en el carrusel ── */
-@media (max-width: 400px) {
-  .libro.carrusel-card {
-    width: 185px;
+@media (max-width: 600px) {
+  .libro.carrusel-card,
+  .cardsPublicadas .libro {
+    width: 195px;
   }
 
-  .libro.carrusel-card .libro h1,
-  .libro.carrusel-card h1 {
+  .libro.carrusel-card .libroImgContainer,
+  .cardsPublicadas .libro .libroImgContainer {
+    max-height: 180px;
+  }
+
+  .libro.carrusel-card .pillContainer,
+  .cardsPublicadas .libro .pillContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  .libro.carrusel-card .pill,
+  .cardsPublicadas .libro .pill {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+
+  .libro.carrusel-card .tag-masbarato,
+  .cardsPublicadas .libro .tag-masbarato {
+    font-size: 0.65rem;
+    padding: 4px 9px 4px 8px;
+  }
+
+  .libro.carrusel-card .tag-rayo,
+  .cardsPublicadas .libro .tag-rayo {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+@media (max-width: 400px) {
+  .libro.carrusel-card {
+    width: 170px;
+  }
+
+  .libro.carrusel-card .libroImgContainer,
+  .cardsPublicadas .libro .libroImgContainer {
+    max-height: 160px;
+  }
+
+  .libro.carrusel-card h1,
+  .cardsPublicadas .libro h1 {
     font-size: 1rem;
   }
 
-  .libro.carrusel-card .libro h3,
-  .libro.carrusel-card h3 {
+  .libro.carrusel-card h3,
+  .cardsPublicadas .libro h3 {
     font-size: 0.95rem;
   }
 }
 
 @media (max-width: 320px) {
   .libro.carrusel-card {
-    width: 160px;
+    width: 148px;
+  }
+
+  .libro.carrusel-card .libroImgContainer,
+  .cardsPublicadas .libro .libroImgContainer {
+    max-height: 140px;
   }
 }
 

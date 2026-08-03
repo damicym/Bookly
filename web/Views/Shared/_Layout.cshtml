@@ -104,7 +104,7 @@
             </a>
             </div>
             <div class="profileBtn@(ViewData["Title"]?.ToString() == "Perfil" ? " activeNavBtn" : "")" id="profileDropdownWrap">
-                <a href="@Url.Action("Profile", "Home")">
+                <a href="@Url.Action("Profile", "Home")" id="profileNavLink">
                     <p>@HtmlHelpers.ToUpperPrimeraLetra(nombreMostrable)</p>
                     @{
                         var fotoNav = usuario?.fotoPerfil as string;

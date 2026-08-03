@@ -126,7 +126,7 @@ header .searchNFilter {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
   width: fit-content;
   margin-left: auto;
   color: var(--light);
@@ -418,7 +418,7 @@ header .searchNFilter {
   }
 
   .navSections {
-    gap: 2px;
+    gap: 6px;
     flex-shrink: 0;
   }
 }
@@ -629,6 +629,28 @@ header .searchNFilter {
   filter: brightness(1.07);
   box-shadow: 0 4px 14px rgba(151, 216, 196, 0.45);
   color: var(--dark);
+}
+
+@media (max-width: 600px) {
+  .nav-auth-btn {
+    padding: 6px 11px;
+    font-size: 0.78rem !important;
+    gap: 5px;
+    border-radius: 8px;
+  }
+
+  .nav-auth-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-auth-btn {
+    padding: 5px 9px;
+    font-size: 0.72rem !important;
+    gap: 4px;
+  }
 }
 
 /* ── Foto de perfil en el nav ── */
@@ -856,5 +878,21 @@ a.notif-item--link:hover .notif-item-arrow {
     top: 6px;
     right: auto;
     left: 26px;
+  }
+}
+
+/* ── Dropdown del perfil en mobile: activado por click (no hover) ── */
+@media (max-width: 600px) {
+  .profileBtn:hover .profile-dropdown,
+  .profileBtn:focus-within .profile-dropdown {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+  }
+
+  .profileBtn.dropdown-open .profile-dropdown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
   }
 }
