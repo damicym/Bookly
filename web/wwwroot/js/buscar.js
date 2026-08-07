@@ -445,6 +445,23 @@ document.querySelectorAll('.orden-custom-dropdown').forEach(dropdown => {
         if (!isOpen) {
             dropdown.classList.add('open')
             btn.setAttribute('aria-expanded', 'true')
+
+            // En mobile: posicionar la lista con fixed para escapar del stacking context
+            if (window.innerWidth <= 900) {
+                const btnRect = btn.getBoundingClientRect()
+                const listWidth = Math.max(list.offsetWidth || 140, 140)
+                // Calcular si cabe a la derecha, si no abrir a la izquierda
+                let leftPos = btnRect.left
+                if (leftPos + listWidth > window.innerWidth - 12) {
+                    leftPos = btnRect.right - listWidth
+                }
+                leftPos = Math.max(12, leftPos)
+                list.style.top  = (btnRect.bottom + 6) + 'px'
+                list.style.left = leftPos + 'px'
+            } else {
+                list.style.top  = ''
+                list.style.left = ''
+            }
         }
     })
 
@@ -517,6 +534,13 @@ function abrirFiltrosMobile() {
     filtrosSidebar.classList.remove('collapsed')
     catalogoLayout?.classList.remove('sidebar-collapsed')
 
+    // Posicionar el overlay debajo del header del catálogo, no del header global
+    const catalogoHeader = document.querySelector('.catalogo-resultados-header')
+    if (filtrosMobileOverlay && catalogoHeader) {
+        const rect = catalogoHeader.getBoundingClientRect()
+        filtrosMobileOverlay.style.top = (rect.bottom) + 'px'
+    }
+
     filtrosSidebar.classList.add('mobile-open')
     filtrosMobileOverlay?.classList.add('active')
     btnFiltrosMobile?.setAttribute('aria-expanded', 'true')
@@ -532,7 +556,22 @@ function cerrarFiltrosMobile() {
 }
 
 if (btnFiltrosMobile) {
-    btnFiltrosMobile.addEventListener('click', () => {
+    // Usar tanto touchend como click para garantizar respuesta en mobile
+    let touchHandled = false
+
+    btnFiltrosMobile.addEventListener('touchend', (e) => {
+        e.preventDefault()      // evita el click sintético posterior
+        e.stopPropagation()
+        touchHandled = true
+        filtrosSidebar?.classList.contains('mobile-open')
+            ? cerrarFiltrosMobile()
+            : abrirFiltrosMobile()
+        setTimeout(() => { touchHandled = false }, 400)
+    })
+
+    btnFiltrosMobile.addEventListener('click', (e) => {
+        e.stopPropagation()
+        if (touchHandled) return   // ya procesado por touchend
         filtrosSidebar?.classList.contains('mobile-open')
             ? cerrarFiltrosMobile()
             : abrirFiltrosMobile()
@@ -540,6 +579,10 @@ if (btnFiltrosMobile) {
 }
 
 if (filtrosMobileOverlay) {
+    filtrosMobileOverlay.addEventListener('touchend', (e) => {
+        e.preventDefault()
+        cerrarFiltrosMobile()
+    })
     filtrosMobileOverlay.addEventListener('click', cerrarFiltrosMobile)
 }
 

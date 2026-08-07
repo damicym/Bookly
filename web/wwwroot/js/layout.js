@@ -46,8 +46,12 @@
         var dropWrap = document.getElementById('profileDropdownWrap');
         if (!link || !dropWrap) return;
 
+        // En la página de perfil no hace falta el dropdown — el avatar navega directo
+        var isProfilePage = document.querySelector('.profile-tabs') !== null;
+
         link.addEventListener('click', function (e) {
             if (window.innerWidth > 600) return; // desktop: navega normalmente
+            if (isProfilePage) return;           // ya estamos en perfil: navegar directo
             e.preventDefault();
             e.stopPropagation();
             dropWrap.classList.toggle('dropdown-open');
@@ -92,10 +96,13 @@
             menu.classList.contains('is-open') ? closeHamburger() : openHamburger();
         });
 
-        hamburgerBtn.addEventListener('mouseenter', openHamburger);
-        hamburgerBtn.addEventListener('mouseleave', scheduleHamburgerClose);
-        menu.addEventListener('mouseenter', function () { clearTimeout(hamburgerCloseTimer); });
-        menu.addEventListener('mouseleave', scheduleHamburgerClose);
+        // mouseenter/mouseleave solo en dispositivos con puntero real (no touch)
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            hamburgerBtn.addEventListener('mouseenter', openHamburger);
+            hamburgerBtn.addEventListener('mouseleave', scheduleHamburgerClose);
+            menu.addEventListener('mouseenter', function () { clearTimeout(hamburgerCloseTimer); });
+            menu.addEventListener('mouseleave', scheduleHamburgerClose);
+        }
 
         document.addEventListener('click', function (e) {
             if (!menu.contains(e.target) && e.target !== hamburgerBtn) closeHamburger();

@@ -8,7 +8,6 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow-x: hidden;
 }
 
 /* ===== SIDEBAR: sticky — se queda fija al scrollear pero termina con el contenedor, antes del footer ===== */
@@ -451,7 +450,7 @@
   margin: 0;
   padding: 4px 0;
   min-width: max-content;
-  z-index: 100;
+  z-index: 600;
 }
 
 .orden-custom-dropdown.open .orden-custom-list {
@@ -485,40 +484,46 @@
 }
 
 .catalogo-seccion-titulo {
-  width: calc(100% - 60px);
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--dark);
-  margin: 0;
-  padding: 0;
+  width: 100%;
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 40px;
-  background: linear-gradient(to right, transparent, var(--accent), transparent);
-  opacity: 0.9;
+  gap: 10px;
+  padding: 10px 18px;
+  margin: 4px 0 8px;
+  background: var(--main);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(6, 26, 64, 0.18);
+  position: relative;
+  z-index: 101;
 }
 
-.catalogo-seccion-titulo span{
-  width: 100%;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--dark);
-  margin: 0;
-  padding: 0;
+.catalogo-seccion-titulo span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--secondary2);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  gap: 7px;
+}
+
+.catalogo-seccion-titulo span::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='%2397D8C4' stroke='none'%3E%3Cpath d='M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .catalogo-resultados .cardsPublicadas {
-  /*
-    Grid adaptativo: auto-fill llena siempre todo el ancho disponible.
-    Las cards crecen para llenar la fila sin dejar espacio vacío.
-  */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, 230px);
+  justify-content: start;
   gap: 24px;
   width: 100%;
   margin-inline: 0;
@@ -538,17 +543,13 @@
   text-align: center;
 }
 
-/* Las cards se adaptan al ancho de su celda del grid */
-.catalogo-resultados .cardsPublicadas .libro,
+/* Las cards mantienen su ancho fijo de 230px (igual que perfil y landing) */
 .catalogo-resultados .cardsPublicadas .libro-skeleton {
   width: 100%;
   min-width: 0;
 }
 
-/* Limitar la imagen para que no crezca demasiado en celdas anchas */
-.catalogo-resultados .cardsPublicadas .libro .libroImgContainer {
-  max-height: 300px;
-}
+/* La imagen no necesita límite extra con cards de 230px fijo */
 
 /* ===== CHIPS DE FILTROS ACTIVOS ===== */
 .filtros-activos-chips {
@@ -804,10 +805,18 @@
     top: 90px;
     opacity: 0;
     pointer-events: none;
+    /* El overlay queda debajo del botón de filtros */
+    z-index: 499;
   }
   .filtros-mobile-overlay.active {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* El botón de filtros queda siempre por encima del overlay */
+  .filtros-mobile-btn {
+    position: relative;
+    z-index: 501;
   }
 
   /* ── 4. Resultados: ancho completo ── */
@@ -823,7 +832,7 @@
   .catalogo-resultados-header {
     position: sticky;
     top: 90px;
-    z-index: 400;
+    z-index: 502;
     background: var(--light);
     padding: 12px 16px 10px;
     border-bottom: 1px solid rgba(6, 26, 64, 0.08);
@@ -832,27 +841,42 @@
     box-sizing: border-box;
   }
 
-  /* ── 6. Fila título + botón filtros ── */
+  /* ── 6. Dos filas: Catálogo arriba, Filtros+dropdowns abajo ── */
   .catalogo-titulo-row {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
+    display: flex;
+    flex-direction: column;
     gap: 8px;
+    width: 100%;
   }
 
   .busqueda-titulo {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     margin: 0;
-    white-space: nowrap;
   }
 
-  /* ── 7. Botón Filtros visible ── */
+  /* Fila 2: Filtros | Estado | Precio — 3 columnas iguales */
+  .catalogo-titulo-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 6px 8px;
+    align-items: center;
+  }
+
+  .busqueda-titulo {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  /* Filtros: col 1, fila 2 — mismos estilos de siempre, solo se reposiciona */
   .filtros-mobile-btn {
+    grid-column: 1;
+    grid-row: 2;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 7px 14px;
+    padding: 7px 10px;
     background: var(--main);
     color: var(--light);
     border: none;
@@ -860,8 +884,11 @@
     font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
-    flex-shrink: 0;
+    box-sizing: border-box;
     transition: filter 0.15s;
+    position: relative;
+    z-index: 501;
+    white-space: nowrap;
   }
   .filtros-mobile-btn:hover  { filter: brightness(1.1); }
   .filtros-mobile-btn:active { opacity: 0.85; }
@@ -881,23 +908,47 @@
     line-height: 1;
   }
 
-  /* ── 8. Dropdowns de orden ── */
+  /* orden-dropdowns: display:contents para que sus hijos vayan a col 2 y col 3 */
   .orden-dropdowns {
-    width: 100%;
-    flex-wrap: nowrap;
-    gap: 8px;
-    margin-right: 0;
+    display: contents;
   }
-  .orden-dropdown-wrap { flex: 1; }
-  .orden-label         { display: none; }
+
+  /* Cada dropdown-wrap ocupa 1fr — col 2 y col 3, fila 2 */
+  .orden-dropdown-wrap {
+    grid-row: 2;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .orden-label { display: none; }
+
   .orden-custom-btn {
     font-size: 0.8rem;
-    padding: 6px 10px;
+    padding: 7px 10px;
     background: rgba(6, 26, 64, 0.05);
     border: 1px solid rgba(6, 26, 64, 0.12);
     border-radius: 8px;
     width: 100%;
     justify-content: space-between;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  .orden-custom-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  /* Dropdown abierto: fixed para salir del stacking context del header sticky */
+  .orden-custom-dropdown.open .orden-custom-list {
+    position: fixed;
+    top: auto;
+    left: auto;
+    right: auto;
+    min-width: 140px;
+    max-width: calc(100vw - 24px);
+    z-index: 9999;
   }
 
   /* ── 9. Grilla adaptativa: auto-fill con mínimo 140px por card ──
@@ -926,7 +977,13 @@
 
   .catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo {
     width: 100%;
-    text-align: center;
+    padding: 8px 14px;
+    border-radius: 10px;
+    margin: 2px 0 4px;
+  }
+
+  .catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo span {
+    font-size: 0.85rem;
   }
 }
 

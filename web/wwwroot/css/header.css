@@ -302,9 +302,11 @@ header .searchNFilter {
   border: none !important;
 }
 
-.favBtn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--light);
+@media (hover: hover) {
+  .favBtn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--light);
+  }
 }
 
 .favBtn.activeNavBtn {
@@ -367,6 +369,11 @@ header .searchNFilter {
 }
 
 /* Hamburguesa: oculta en desktop */
+/* El botón de cerrar sesión del hamburguesa solo existe en mobile */
+.hamburger-logout-btn {
+  display: none;
+}
+
 .header-hamburger {
   display: none;
   align-items: center;
@@ -382,10 +389,16 @@ header .searchNFilter {
   transition: background 0.18s, color 0.18s;
 }
 
-.header-hamburger:hover,
 .header-hamburger.is-open {
   background: rgba(255,255,255,0.12);
   color: var(--light);
+}
+
+@media (hover: hover) {
+  .header-hamburger:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--light);
+  }
 }
 
 /* En desktop los favBtns van inline en el flujo */
@@ -519,18 +532,47 @@ header .searchNFilter {
     padding-top: 10px;
   }
 
-  .header-hamburger-menu .favBtn:hover {
-    background: rgba(6,26,64,0.08);
-    color: var(--dark);
+  /* Cerrar sesión — solo visible en mobile dentro del hamburguesa */
+  .hamburger-logout-btn {
+    border-top: 1px solid rgba(6,26,64,0.1);
+    margin-top: 2px;
+    padding-top: 10px;
+    color: #c0392b !important;
+  }
+  .hamburger-logout-btn svg {
+    color: #c0392b !important;
+  }
+  .hamburger-logout-btn::after {
+    content: "Cerrar sesión";
+    color: #c0392b !important;
+  }
+  .hamburger-logout-btn:hover {
+    background: rgba(192,57,43,0.07) !important;
   }
 
-  .header-hamburger-menu .favBtn:hover::after {
-    color: var(--dark);
+  @media (hover: hover) {
+    .header-hamburger-menu .favBtn:hover {
+      background: rgba(6,26,64,0.08);
+      color: var(--dark);
+    }
+
+    .header-hamburger-menu .favBtn:hover::after {
+      color: var(--dark);
+    }
+
+    .hamburger-logout-btn:hover {
+      background: rgba(192,57,43,0.07) !important;
+    }
   }
 
   /* Ocultar favBtns del flujo normal — van al dropdown */
   .navSections > .favBtn {
     display: none;
+  }
+
+  /* Mostrar el botón de cerrar sesión dentro del hamburguesa */
+  .hamburger-logout-btn {
+    display: flex;
   }
 }
 
