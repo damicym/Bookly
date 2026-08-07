@@ -1044,11 +1044,11 @@
 }
 
 /* Colores de la paleta, de menor a mayor reputación */
-.det-rep-seg-1 { background: rgba(215, 38, 61, 0.55); }   /* rojo apagado — Nuevo */
-.det-rep-seg-2 { background: var(--accent); }              /* amarillo — Principiante */
-.det-rep-seg-3 { background: var(--secondary); }           /* azul medio — Regular */
-.det-rep-seg-4 { background: var(--secondary2); }          /* verde — Bueno */
-.det-rep-seg-5 { background: var(--secondary2); }          /* verde — Experto */
+.det-rep-seg-1 { background: rgba(215, 38, 61, 0.5); }
+.det-rep-seg-2 { background: rgba(245, 158, 11, 0.5); }
+.det-rep-seg-3 { background: rgba(99, 102, 241, 0.5); }
+.det-rep-seg-4 { background: rgba(34, 197, 94, 0.5); }
+.det-rep-seg-5 { background: rgba(34, 197, 94, 0.5); }
 
 /* El segmento activo es opaco y un poco más alto */
 .det-rep-seg--activo {
@@ -1056,6 +1056,13 @@
   height: 10px;
   margin-top: -1px;
 }
+
+/* Colores vibrantes cuando el segmento está activo */
+.det-rep-seg-1.det-rep-seg--activo { background: #d7263d; }
+.det-rep-seg-2.det-rep-seg--activo { background: #f59e0b; }
+.det-rep-seg-3.det-rep-seg--activo { background: #6366f1; }
+.det-rep-seg-4.det-rep-seg--activo { background: #22c55e; }
+.det-rep-seg-5.det-rep-seg--activo { background: #16a34a; }
 
 /* ── Fila de 3 stats ── */
 .det-rep-stats-row {
