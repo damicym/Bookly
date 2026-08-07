@@ -79,6 +79,7 @@ namespace Bookly.Controllers
             if (userFresh != null)
             {
                 user.aboutMe = userFresh.aboutMe;
+                user.ventasCerradas = userFresh.ventasCerradas;
                 // Solo pisar fotoPerfil si viene con valor, nunca con null
                 if (!string.IsNullOrWhiteSpace(userFresh.fotoPerfil))
                     user.fotoPerfil = userFresh.fotoPerfil;

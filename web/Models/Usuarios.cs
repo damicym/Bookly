@@ -27,5 +27,8 @@ namespace Bookly.Models
 
         [JsonPropertyName("foto_perfil")]
         public string fotoPerfil { get; set; }
+
+        [JsonPropertyName("ventas_cerradas")]
+        public int ventasCerradas { get; set; }
     }
 }

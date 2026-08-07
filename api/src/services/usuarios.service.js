@@ -34,7 +34,7 @@ export async function deleteFotoPerfil(dni) {
 export async function login(dni, password) {
 	const { data, error } = await supabase
 		.from('usuarios')
-		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil')
+		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil, ventas_cerradas')
 		.eq('dni', dni)
 		.eq('password', password)
 		.maybeSingle()
@@ -67,7 +67,7 @@ export async function register(user) {
 export async function getUserByDni(dni) {
 	const { data, error } = await supabase
 		.from('usuarios')
-		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil')
+		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil, ventas_cerradas')
 		.eq('dni', dni)
 		.maybeSingle()
 	if (error) throw error

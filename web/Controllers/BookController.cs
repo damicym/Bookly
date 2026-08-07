@@ -94,8 +94,21 @@ namespace Bookly.Controllers
 
             // Estadísticas del vendedor para la tarjeta
             ViewBag.VendedorPublicacionesActivas = todasDelVendedor.Count(p => p.status == 1);
-            ViewBag.VendedorVentasCerradas = todasDelVendedor.Count(p => p.status == 0);
+            ViewBag.VendedorVentasCerradas = vendedor?.ventasCerradas ?? 0;
             ViewBag.VendedorTotalPublicaciones = todasDelVendedor.Count;
+
+            // Reseñas del vendedor — promedios de atención y entrega
+            var resenasVendedor = BD.ObtenerResenasPorReceptor(libro.idVendedor);
+            var resenasCompletadas = resenasVendedor
+                .Where(r => r.atencion.HasValue && r.entrega.HasValue)
+                .ToList();
+            ViewBag.VendedorResenaCount = resenasCompletadas.Count;
+            ViewBag.VendedorPromedioAtencion = resenasCompletadas.Count > 0
+                ? resenasCompletadas.Average(r => (double)r.atencion.Value)
+                : (double?)null;
+            ViewBag.VendedorPromedioEntrega = resenasCompletadas.Count > 0
+                ? resenasCompletadas.Average(r => (double)r.entrega.Value)
+                : (double?)null;
 
             // Libros favoritos del vendedor — deduplicados por nombre de libro
             var favoritasVendedor = BD.ObtenerPublicacionesFavoritasPorUsuario(libro.idVendedor);

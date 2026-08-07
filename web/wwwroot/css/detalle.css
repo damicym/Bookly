@@ -1020,6 +1020,16 @@
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
+.det-rep-resena-count {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-align: center;
+  color: var(--light);
+  margin: 0;
+  margin-bottom: 6px;
+}
+
 .det-rep-barra-segmentada {
   display: flex;
   gap: 4px;
