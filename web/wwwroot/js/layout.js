@@ -46,19 +46,55 @@
         var dropWrap = document.getElementById('profileDropdownWrap');
         if (!link || !dropWrap) return;
 
+<<<<<<< HEAD
         // En la página de perfil no hace falta el dropdown — el avatar navega directo
         var isProfilePage = document.querySelector('.profile-tabs') !== null;
 
         link.addEventListener('click', function (e) {
             if (window.innerWidth > 600) return; // desktop: navega normalmente
             if (isProfilePage) return;           // ya estamos en perfil: navegar directo
+=======
+        var profileHref = link.getAttribute('href');
+
+        function isMobile() {
+            return window.innerWidth <= 600;
+        }
+
+        function applyMobileMode() {
+            if (isMobile()) {
+                link.removeAttribute('href');
+            } else {
+                if (!link.getAttribute('href')) link.setAttribute('href', profileHref);
+            }
+        }
+
+        applyMobileMode();
+        window.addEventListener('resize', applyMobileMode);
+
+        link.addEventListener('touchstart', function (e) {
+            if (!isMobile()) return;
+            e.preventDefault();
+            e.stopPropagation();
+            dropWrap.classList.toggle('dropdown-open');
+        }, { passive: false });
+
+        link.addEventListener('click', function (e) {
+            if (!isMobile()) return;
+>>>>>>> cf49a0f7c3d3b0901b1949b0716e3dcc6b80399b
             e.preventDefault();
             e.stopPropagation();
             dropWrap.classList.toggle('dropdown-open');
         });
 
+        document.addEventListener('touchstart', function (e) {
+            if (!isMobile()) return;
+            if (!dropWrap.contains(e.target)) {
+                dropWrap.classList.remove('dropdown-open');
+            }
+        }, { passive: true });
+
         document.addEventListener('click', function (e) {
-            if (window.innerWidth > 600) return;
+            if (!isMobile()) return;
             if (!dropWrap.contains(e.target)) {
                 dropWrap.classList.remove('dropdown-open');
             }

@@ -475,6 +475,14 @@ namespace Bookly.Models
                    ?? new List<Resena>();
         }
 
+        /// <summary>GET /api/resenas/receptor/:dni — reseñas completadas recibidas por el vendedor</summary>
+        public static List<Resena> ObtenerResenasPorReceptor(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return new List<Resena>();
+            return Get<List<Resena>>($"/resenas/receptor/{Uri.EscapeDataString(dni)}")
+                   ?? new List<Resena>();
+        }
+
         // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────
 
         /// <summary>

@@ -1,6 +1,23 @@
 import supabase from '../db/supabase.js'
 
 /**
+ * Devuelve todas las reseñas completadas donde id_receptor = dni.
+ * Solo incluye filas con atencion y entrega no nulos.
+ */
+export async function getResenasByReceptor(dni) {
+  const { data: resenas, error } = await supabase
+    .from('resenas')
+    .select('id, id_redactor, id_receptor, atencion, entrega, fecha_respuesta, created_at')
+    .eq('id_receptor', dni)
+    .not('atencion', 'is', null)
+    .not('entrega', 'is', null)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return resenas ?? []
+}
+
+/**
  * Devuelve todas las reseñas donde id_redactor = dni.
  * Enriquece cada fila con nombre_comp del receptor (join manual).
  */
