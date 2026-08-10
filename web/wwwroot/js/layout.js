@@ -46,14 +46,6 @@
         var dropWrap = document.getElementById('profileDropdownWrap');
         if (!link || !dropWrap) return;
 
-<<<<<<< HEAD
-        // En la página de perfil no hace falta el dropdown — el avatar navega directo
-        var isProfilePage = document.querySelector('.profile-tabs') !== null;
-
-        link.addEventListener('click', function (e) {
-            if (window.innerWidth > 600) return; // desktop: navega normalmente
-            if (isProfilePage) return;           // ya estamos en perfil: navegar directo
-=======
         var profileHref = link.getAttribute('href');
 
         function isMobile() {
@@ -80,7 +72,6 @@
 
         link.addEventListener('click', function (e) {
             if (!isMobile()) return;
->>>>>>> cf49a0f7c3d3b0901b1949b0716e3dcc6b80399b
             e.preventDefault();
             e.stopPropagation();
             dropWrap.classList.toggle('dropdown-open');
