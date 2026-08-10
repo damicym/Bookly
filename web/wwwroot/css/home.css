@@ -388,9 +388,8 @@
 /* ---- CARRUSEL DE RECOMENDACIONES ---- */
 .carrusel-wrapper {
   position: relative;
-  width: min(1690px, calc(100vw - 120px)); /* 60px por lado, igual que .bienvenida y .bienvenidaGuia */
-  margin: 0 auto 40px;
-  padding: 0 60px;
+  width: auto;
+  margin: 0 130px 40px 130px;
   overflow-x: clip;
   overflow-y: visible;
 }
@@ -514,6 +513,14 @@
   pointer-events: none;
 }
 
+@media (max-width: 1100px) {
+  .carrusel-wrapper { margin-inline: 80px; }
+}
+
+@media (max-width: 900px) {
+  .carrusel-wrapper { margin-inline: 40px; }
+}
+
 @media (max-width: 700px) {
   /* Botones más chicos pero siempre visibles */
   .carrusel-btn {
@@ -530,13 +537,18 @@
   .carrusel-btn-prev { left: 2px; }
   .carrusel-btn-next { right: 2px; }
 
-  /* padding lateral = ancho del botón + 8px de aire */
+  /* En mobile reducir márgenes laterales para que entren más libros */
+  .carrusel-wrapper {
+    margin-inline: 16px; /* 16px por lado en ≤700px */
+  }
+
+  /* padding del scroll: deja espacio para los botones (32px) + 8px de aire */
   .carrusel-scroll { padding: 16px 44px; }
   .carrusel-track  { gap: 16px; }
 }
 
 @media (max-width: 400px) {
-  .carrusel-wrapper { width: calc(100vw - 24px); } /* 12px por lado, igual que .bienvenida en ≤400px */
+  .carrusel-wrapper { margin-inline: 12px; } /* 12px por lado */
 
   .carrusel-btn {
     width: 28px;
@@ -554,7 +566,7 @@
 }
 
 @media (max-width: 320px) {
-  .carrusel-wrapper { width: calc(100vw - 20px); } /* 10px por lado, igual que .bienvenida en ≤320px */
+  .carrusel-wrapper { margin-inline: 10px; } /* 10px por lado */
   .carrusel-scroll { padding: 10px 34px; }
   .carrusel-track  { gap: 10px; }
 }
@@ -567,9 +579,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin: 0 90px 60px 90px;
+  margin: 0 auto 60px;
   padding: 22px 32px;
-  /* width: min(1690px, calc(100vw - 120px)); */
+  width: min(1690px, calc(100vw - 120px)); /* 60px por lado — igual que carrusel y bienvenida */
   background: var(--light);
   border: 1.5px solid rgba(64, 89, 173, 0.15);
   border-radius: 16px;
@@ -642,7 +654,7 @@
     align-items: flex-start;
     padding: 18px 16px;
     gap: 14px;
-    width: calc(100vw - 32px);
+    width: calc(100vw - 32px); /* 16px por lado */
     margin-bottom: 36px;
   }
   .catalogo-cta-btn {
@@ -654,7 +666,7 @@
 
 @media (max-width: 400px) {
   .catalogo-cta {
-    width: calc(100vw - 24px);
+    width: calc(100vw - 24px); /* 12px por lado */
     padding: 14px 12px;
     border-radius: 12px;
     gap: 10px;
@@ -675,7 +687,7 @@
 
 @media (max-width: 320px) {
   .catalogo-cta {
-    width: calc(100vw - 20px);
+    width: calc(100vw - 20px); /* 10px por lado */
     padding: 12px 10px;
     border-radius: 10px;
     margin-bottom: 20px;
