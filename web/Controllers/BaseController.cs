@@ -31,7 +31,7 @@ namespace Bookly.Controllers
                         notifs.Add(new Notificacion(
                             titulo:    $"Cuando recibas tu libro, calificá a {nombreVendedor}",
                             subtitulo: "Tocá para dejar tu reseña",
-                            vinculo:   null   // se puede agregar la URL de la reseña cuando exista la pantalla
+                            vinculo:   "https://trello.com/b/nuIpWLWk/bookly"   // se puede agregar la URL de la reseña cuando exista la pantalla
                         ));
                     }
                 }
