@@ -337,6 +337,7 @@
   margin-top: 60px;
   overflow-wrap: break-word;
   word-break: break-word;
+  margin-bottom: 32px;
 }
 
 @media (max-width: 900px) {
@@ -387,8 +388,9 @@
 /* ---- CARRUSEL DE RECOMENDACIONES ---- */
 .carrusel-wrapper {
   position: relative;
-  width: min(1690px, calc(100vw - 40px));
+  width: min(1690px, calc(100vw - 120px)); /* 60px por lado, igual que .bienvenida y .bienvenidaGuia */
   margin: 0 auto 40px;
+  padding: 0 60px;
   overflow-x: clip;
   overflow-y: visible;
 }
@@ -429,7 +431,6 @@
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 30px 10px;
   scroll-padding-left: 10px;
 }
 
@@ -535,7 +536,7 @@
 }
 
 @media (max-width: 400px) {
-  .carrusel-wrapper { width: 100vw; }
+  .carrusel-wrapper { width: calc(100vw - 24px); } /* 12px por lado, igual que .bienvenida en ≤400px */
 
   .carrusel-btn {
     width: 28px;
@@ -553,6 +554,7 @@
 }
 
 @media (max-width: 320px) {
+  .carrusel-wrapper { width: calc(100vw - 20px); } /* 10px por lado, igual que .bienvenida en ≤320px */
   .carrusel-scroll { padding: 10px 34px; }
   .carrusel-track  { gap: 10px; }
 }

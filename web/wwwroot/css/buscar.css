@@ -614,9 +614,9 @@
   padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;  /* igual que .libro */
   width: 230px;
-  height: 420px;
+  height: auto; /* la altura la determinan los bloques internos, igual que la card real */
   flex-shrink: 0;
   opacity: 0.55;
 }
@@ -636,42 +636,56 @@
 .skeleton-img {
   width: 100%;
   aspect-ratio: 3 / 4;
+  max-height: 250px; /* igual que .libroImgContainer */
   border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .skeleton-titulo {
-  height: 20px;
+  height: 18px; /* aproxima min-height del h1 (1 línea) */
   width: 85%;
 }
 
 .skeleton-titulo-2 {
-  height: 20px;
+  height: 18px;
   width: 60%;
 }
 
 .skeleton-materia {
-  height: 14px;
+  height: 13px; /* aproxima .libro-footer-materia */
   width: 55%;
 }
 
 .skeleton-precio {
-  height: 22px;
+  height: 20px; /* aproxima h3 */
   width: 40%;
   margin-top: auto;
 }
 
 .skeleton-seccion-titulo {
-  width: 100%;
-  background: none;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 8px;
+  /* Hereda todos los estilos de .catalogo-seccion-titulo (fondo azul, border-radius, etc.) */
+  justify-content: center; /* centra el bloque shimmer */
+  pointer-events: none;
+}
+
+/* El span en el skeleton ES el bloque shimmer.
+   Anular estilos de .catalogo-seccion-titulo span que no aplican aquí */
+.skeleton-seccion-titulo span {
+  display: block;    /* quitar el display:flex que pondría el ::before junto al shimmer */
+  font-size: 0;      /* sin texto */
+  gap: 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.skeleton-seccion-titulo span::before {
+  display: none;     /* ocultar el ícono de rayo */
 }
 
 .skeleton-subtitulo {
-  height: 20px;
-  width: 180px;
-  border-radius: 8px;
+  height: 16px;
+  width: 160px;
+  border-radius: 6px;
 }
 
 /* ===== NO RESULT ===== */
