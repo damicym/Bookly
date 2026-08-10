@@ -854,29 +854,21 @@
     margin: 0;
   }
 
-  /* Fila 2: Filtros | Estado | Precio — 3 columnas iguales */
-  .catalogo-titulo-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 6px 8px;
+  /* Fila 2: wrapper flex con los 3 controles en línea */
+  .catalogo-controles-row {
+    display: flex;
     align-items: center;
+    gap: 8px;
+    width: 100%;
   }
 
-  .busqueda-titulo {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-
-  /* Filtros: col 1, fila 2 — mismos estilos de siempre, solo se reposiciona */
+  /* Filtros: flex-shrink 0 para que no se comprima */
   .filtros-mobile-btn {
-    grid-column: 1;
-    grid-row: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 7px 10px;
+    padding: 7px 14px;
     background: var(--main);
     color: var(--light);
     border: none;
@@ -889,6 +881,7 @@
     position: relative;
     z-index: 501;
     white-space: nowrap;
+    flex-shrink: 0;
   }
   .filtros-mobile-btn:hover  { filter: brightness(1.1); }
   .filtros-mobile-btn:active { opacity: 0.85; }
@@ -908,14 +901,16 @@
     line-height: 1;
   }
 
-  /* orden-dropdowns: display:contents para que sus hijos vayan a col 2 y col 3 */
+  /* orden-dropdowns: flex row, los botones toman su ancho natural */
   .orden-dropdowns {
-    display: contents;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
   }
 
-  /* Cada dropdown-wrap ocupa 1fr — col 2 y col 3, fila 2 */
+  /* Cada dropdown-wrap: ancho automático */
   .orden-dropdown-wrap {
-    grid-row: 2;
     min-width: 0;
     overflow: visible;
   }
@@ -924,12 +919,12 @@
 
   .orden-custom-btn {
     font-size: 0.8rem;
-    padding: 7px 10px;
+    padding: 7px 12px;
     background: rgba(6, 26, 64, 0.05);
     border: 1px solid rgba(6, 26, 64, 0.12);
     border-radius: 8px;
-    width: 100%;
-    justify-content: space-between;
+    width: auto;
+    justify-content: center;
     white-space: nowrap;
     box-sizing: border-box;
   }
