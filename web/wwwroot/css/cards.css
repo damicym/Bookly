@@ -22,19 +22,18 @@
 }
 
 .libro.protagonista {
-  box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(0,0,0,0.35);
+  box-shadow: 0 0 0 2px var(--accent);
   transform: scale(1.03);
 }
 
 .libro.protagonista:hover {
   transform: scale(1.06);
-  box-shadow: 0 0 0 2px var(--accent), 0 12px 32px rgba(0,0,0,0.45);
 }
 
 /* Hover para todas las cards que no sean protagonista ni inProfile */
 .libro:not(.protagonista):not(.inProfile):hover {
   transform: scale(1.03);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  /* box-shadow: 0 8px 24px rgba(0,0,0,0.35); */
 }
 
 .libro.inProfile {

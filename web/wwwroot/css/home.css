@@ -337,7 +337,7 @@
   margin-top: 60px;
   overflow-wrap: break-word;
   word-break: break-word;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
 }
 
 @media (max-width: 900px) {
@@ -443,6 +443,7 @@
   flex-direction: row;
   flex-wrap: nowrap;
   gap: 32px;
+  padding: 20px;
   align-items: flex-start;
   justify-content: flex-start;
   width: max-content;
@@ -455,7 +456,6 @@
 }
 
 .carrusel-track .libro.carrusel-card.protagonista {
-  box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(0,0,0,0.35);
   transform: none !important;
 }
 
@@ -482,8 +482,8 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.carrusel-btn-prev { left: 0; }
-.carrusel-btn-next { right: 0; }
+.carrusel-btn-prev { left: 15px; }
+.carrusel-btn-next { right: 15px; }
 
 .carrusel-btn:hover:not(:disabled) {
   background: var(--main);
@@ -567,9 +567,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  margin: 0 auto 60px;
+  margin: 0 90px 60px 90px;
   padding: 22px 32px;
-  width: min(1690px, calc(100vw - 120px));
+  /* width: min(1690px, calc(100vw - 120px)); */
   background: var(--light);
   border: 1.5px solid rgba(64, 89, 173, 0.15);
   border-radius: 16px;
