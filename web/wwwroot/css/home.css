@@ -169,10 +169,12 @@
     gap: 20px;
   }
 
-  /* Imagen arriba, centrada, ancho acotado */
+  /* Imagen arriba, centrada, ancho acotado — más horizontal en mobile */
   .bienvenida img {
     order: -1;
-    width: clamp(180px, 55vw, 380px);
+    width: clamp(220px, 70vw, 420px);
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
     margin: 0 auto;
   }
 
@@ -209,7 +211,7 @@
   }
 
   .bienvenida img {
-    width: clamp(160px, 60vw, 300px);
+    width: clamp(200px, 72vw, 360px);
   }
 
   .bienvenidaBtnContainer {
@@ -259,7 +261,7 @@
   }
 
   .bienvenida img {
-    width: clamp(140px, 65vw, 260px);
+    width: clamp(180px, 75vw, 320px);
   }
 
   .bienvenidaGuia {
@@ -285,7 +287,7 @@
   }
 
   .bienvenida img {
-    width: min(55vw, 180px);
+    width: min(78vw, 280px);
   }
 
   .bienvenida h1 {
@@ -543,7 +545,7 @@
   }
 
   /* padding del scroll: deja espacio para los botones (32px) + 8px de aire */
-  .carrusel-scroll { padding: 16px 44px; }
+  .carrusel-scroll { padding: 0px 44px; }
   .carrusel-track  { gap: 16px; }
 }
 
@@ -561,13 +563,13 @@
   }
 
   /* padding lateral = ancho del botón + 6px de aire */
-  .carrusel-scroll { padding: 12px 38px; }
+  .carrusel-scroll { padding: 0px 38px; }
   .carrusel-track  { gap: 12px; }
 }
 
 @media (max-width: 320px) {
   .carrusel-wrapper { margin-inline: 10px; } /* 10px por lado */
-  .carrusel-scroll { padding: 10px 34px; }
+  .carrusel-scroll { padding: 0px 34px; }
   .carrusel-track  { gap: 10px; }
 }
 

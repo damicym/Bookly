@@ -1022,7 +1022,7 @@
 
 .chat-nuevo-result-item:hover .chat-nuevo-result-arrow {
   color: var(--main);
-  transform: translateX(2px);
+  transform: scale(1.15);
 }
 
 /* Sección "Sugeridos" */
