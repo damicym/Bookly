@@ -126,7 +126,7 @@ header .searchNFilter {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
   width: fit-content;
   margin-left: auto;
   color: var(--light);
@@ -299,11 +299,14 @@ header .searchNFilter {
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
   margin-right: 4px;
+  border: none !important;
 }
 
-.favBtn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--light);
+@media (hover: hover) {
+  .favBtn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--light);
+  }
 }
 
 .favBtn.activeNavBtn {
@@ -366,6 +369,11 @@ header .searchNFilter {
 }
 
 /* Hamburguesa: oculta en desktop */
+/* El botón de cerrar sesión del hamburguesa solo existe en mobile */
+.hamburger-logout-btn {
+  display: none;
+}
+
 .header-hamburger {
   display: none;
   align-items: center;
@@ -381,10 +389,16 @@ header .searchNFilter {
   transition: background 0.18s, color 0.18s;
 }
 
-.header-hamburger:hover,
 .header-hamburger.is-open {
   background: rgba(255,255,255,0.12);
   color: var(--light);
+}
+
+@media (hover: hover) {
+  .header-hamburger:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--light);
+  }
 }
 
 /* En desktop los favBtns van inline en el flujo */
@@ -417,7 +431,7 @@ header .searchNFilter {
   }
 
   .navSections {
-    gap: 2px;
+    gap: 6px;
     flex-shrink: 0;
   }
 }
@@ -518,18 +532,47 @@ header .searchNFilter {
     padding-top: 10px;
   }
 
-  .header-hamburger-menu .favBtn:hover {
-    background: rgba(6,26,64,0.08);
-    color: var(--dark);
+  /* Cerrar sesión — solo visible en mobile dentro del hamburguesa */
+  .hamburger-logout-btn {
+    border-top: 1px solid rgba(6,26,64,0.1);
+    margin-top: 2px;
+    padding-top: 10px;
+    color: #c0392b !important;
+  }
+  .hamburger-logout-btn svg {
+    color: #c0392b !important;
+  }
+  .hamburger-logout-btn::after {
+    content: "Cerrar sesión";
+    color: #c0392b !important;
+  }
+  .hamburger-logout-btn:hover {
+    background: rgba(192,57,43,0.07) !important;
   }
 
-  .header-hamburger-menu .favBtn:hover::after {
-    color: var(--dark);
+  @media (hover: hover) {
+    .header-hamburger-menu .favBtn:hover {
+      background: rgba(6,26,64,0.08);
+      color: var(--dark);
+    }
+
+    .header-hamburger-menu .favBtn:hover::after {
+      color: var(--dark);
+    }
+
+    .hamburger-logout-btn:hover {
+      background: rgba(192,57,43,0.07) !important;
+    }
   }
 
   /* Ocultar favBtns del flujo normal — van al dropdown */
   .navSections > .favBtn {
     display: none;
+  }
+
+  /* Mostrar el botón de cerrar sesión dentro del hamburguesa */
+  .hamburger-logout-btn {
+    display: flex;
   }
 }
 
@@ -630,6 +673,28 @@ header .searchNFilter {
   color: var(--dark);
 }
 
+@media (max-width: 600px) {
+  .nav-auth-btn {
+    padding: 6px 11px;
+    font-size: 0.78rem !important;
+    gap: 5px;
+    border-radius: 8px;
+  }
+
+  .nav-auth-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-auth-btn {
+    padding: 5px 9px;
+    font-size: 0.72rem !important;
+    gap: 4px;
+  }
+}
+
 /* ── Foto de perfil en el nav ── */
 .nav-avatar {
   width: 32px;
@@ -644,4 +709,232 @@ header .searchNFilter {
 
 .profileBtn a:hover .nav-avatar {
   border-color: var(--secondary2);
+}
+
+/* ═══════════════════════════════════════════════════
+   NOTIFICACIONES — botón + badge + panel
+═══════════════════════════════════════════════════ */
+
+/* Wrapper del botón — necesario para posicionar el badge */
+#notifBtnHeader {
+  position: relative;
+}
+
+/* Badge de cantidad */
+.notif-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--dark);
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(6, 26, 64, 0.3);
+}
+
+/* Panel desplegable */
+.notif-panel {
+  position: fixed;
+  top: 90px;
+  right: 72px;       /* alineado con el botón; ajustar si cambia el layout */
+  width: 320px;
+  max-width: calc(100vw - 28px);
+  background: var(--light);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(6, 26, 64, 0.18);
+  z-index: 1100;
+  overflow: hidden;
+  /* entrada */
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+}
+
+.notif-panel.notif-panel--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* Cabecera del panel */
+.notif-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(6, 26, 64, 0.08);
+}
+
+.notif-panel-titulo {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dark);
+  flex: 1;
+}
+
+.notif-panel-count {
+  background: var(--accent);
+  color: var(--dark);
+  font-size: 0.7rem;
+  font-weight: 800;
+  border-radius: 10px;
+  padding: 1px 7px;
+  line-height: 1.6;
+}
+
+/* Lista de notificaciones */
+.notif-panel-lista {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(6,26,64,0.15) transparent;
+}
+
+/* Estado vacío */
+.notif-panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 16px 24px;
+  color: rgba(6, 26, 64, 0.4);
+  text-align: center;
+}
+
+.notif-panel-empty svg {
+  opacity: 0.35;
+  flex-shrink: 0;
+}
+
+.notif-panel-empty p {
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin: 0;
+  color: rgba(6, 26, 64, 0.5);
+}
+
+/* Ítem base */
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: background 0.15s;
+  text-decoration: none !important;
+  color: var(--dark) !important;
+}
+
+/* Ítem clickeable */
+a.notif-item--link {
+  cursor: pointer;
+}
+
+a.notif-item--link:hover {
+  background: rgba(6, 26, 64, 0.06);
+}
+
+a.notif-item--link:hover .notif-item-arrow {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+/* Ícono */
+.notif-item-icono {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--main);
+  margin-top: 1px;
+}
+
+.notif-item-icono svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+/* Texto */
+.notif-item-texto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notif-item-titulo {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dark);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.35;
+}
+
+.notif-item-subtitulo {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: rgba(6, 26, 64, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Flecha de navegación */
+.notif-item-arrow {
+  flex-shrink: 0;
+  align-self: center;
+  color: rgba(6, 26, 64, 0.3);
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+/* Responsive ≤ 600px: panel ocupa más ancho y se reposiciona */
+@media (max-width: 600px) {
+  .notif-panel {
+    right: 14px;
+    width: calc(100vw - 28px);
+  }
+}
+
+/* Dentro del menú hamburguesa (≤ 600px) el botón sigue el mismo patrón que chat/favoritos */
+@media (max-width: 600px) {
+  #notifBtnHeader.favBtn::after { content: "Notificaciones"; }
+
+  /* El badge queda en la esquina del ícono dentro del menú */
+  .header-hamburger-menu #notifBtnHeader .notif-badge {
+    top: 6px;
+    right: auto;
+    left: 26px;
+  }
+}
+
+/* ── Dropdown del perfil en mobile: activado por click (no hover) ── */
+@media (max-width: 600px) {
+  .profileBtn:hover .profile-dropdown,
+  .profileBtn:focus-within .profile-dropdown {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+  }
+
+  .profileBtn.dropdown-open .profile-dropdown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
 }

@@ -56,7 +56,7 @@
         </div>
 
         <div class="profile-meta">
-            <div class="profile-name-row">
+            <div class="profile-name-meta">
                 <h1 class="profile-name">@HtmlHelpers.ToUpperPrimeraLetra(ViewBag.usuario.nombreComp)</h1>
                 <div class="profile-stats-row">
                     <div class="profile-stat">
@@ -64,7 +64,7 @@
                         <span class="profile-stat-label">publicaciones</span>
                     </div>
                     <div class="profile-stat">
-                        <span class="profile-stat-num">0</span>
+                        <span class="profile-stat-num">@ViewBag.usuario.ventasCerradas</span>
                         <span class="profile-stat-label">ventas cerradas</span>
                     </div>
                     @{
@@ -132,7 +132,7 @@
             {
                 foreach (PublicacionesCompletas libro in Model)
                 {
-                    <div class="libro inProfile">
+                    <div class="libro inProfile" onclick="abrirEditarModal(@libro.id)">
                         <div class="imgContainer">
                             <div class="libroImgContainer">
                                 <img src="@(string.IsNullOrWhiteSpace(libro.imagen) ? Url.Content("~/img/book-placeholder.webp") : libro.imagen)" alt="imagen del libro" loading="lazy" />
@@ -149,14 +149,14 @@
                                 </section>
                             </div>
                             <div class="pillContainer">
-                                @if (libro.estadoLibro != null) {
-                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                                }
                                 @if (libro.ano.HasValue) {
                                     var añoTexto = HtmlHelpers.PasarAñoATexto(libro.ano.Value);
                                     if (añoTexto != null) {
                                         <span class="pill">@añoTexto</span>
                                     }
+                                }
+                                @if (libro.estadoLibro != null) {
+                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
                                 }
                             </div>
                         </div>
@@ -206,14 +206,14 @@
                                 </section>
                             </div>
                             <div class="pillContainer">
-                                @if (libro.estadoLibro != null) {
-                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
-                                }
                                 @if (libro.ano.HasValue) {
                                     var añoTexto2 = HtmlHelpers.PasarAñoATexto(libro.ano.Value);
                                     if (añoTexto2 != null) {
                                         <span class="pill">@añoTexto2</span>
                                     }
+                                }
+                                @if (libro.estadoLibro != null) {
+                                    <span class="pill" style="background-color:@HtmlHelpers.GetColor(libro.estadoLibro);">@libro.estadoLibro</span>
                                 }
                             </div>
                         </div>

@@ -30,7 +30,7 @@ export async function getWishlist(req, res) {
   try {
     const { dni } = req.params
     const ids = await deseadosService.getWishlistIds(dni)
-    res.json({ wishlist_ids: ids })
+    res.json(ids)
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

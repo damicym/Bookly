@@ -3,10 +3,10 @@
   padding: 15px;
 }
 
-.tituloPublicaciones {
+.publicarPage .tituloPublicaciones {
   margin: 70px auto 0;
   justify-self: center;
-  font-size: 2rem;
+  /* font-size: clamp(1.2rem, 2.8vw, 2rem); */
   text-align: center;
   color: var(--dark);
 }

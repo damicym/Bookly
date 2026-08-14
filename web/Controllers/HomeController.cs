@@ -9,7 +9,7 @@ using Bookly.Helpers;
 
 namespace Bookly.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         public HomeController(ILogger<HomeController> logger)
@@ -79,6 +79,7 @@ namespace Bookly.Controllers
             if (userFresh != null)
             {
                 user.aboutMe = userFresh.aboutMe;
+                user.ventasCerradas = userFresh.ventasCerradas;
                 // Solo pisar fotoPerfil si viene con valor, nunca con null
                 if (!string.IsNullOrWhiteSpace(userFresh.fotoPerfil))
                     user.fotoPerfil = userFresh.fotoPerfil;

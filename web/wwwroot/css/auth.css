@@ -67,13 +67,14 @@
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 2000;
   padding: 24px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.22s ease;
+  overflow-y: auto;
 }
 
 .login-modal-overlay--visible {
@@ -84,13 +85,14 @@
 .login-modal-card {
   position: relative;
   background: var(--main);
-  border-radius: 20px;
-  padding: 40px;
+  border-radius: 24px;
+  padding: 36px 32px 32px;
   width: 100%;
-  max-width: 520px;
+  max-width: 420px;
+  margin: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   box-shadow: 0 24px 64px rgba(6,26,64,0.45);
   transform: translateY(20px) scale(0.97);
   transition: transform 0.25s ease;
@@ -124,18 +126,35 @@
 
 /* Modal de registro — más ancho */
 .register-modal-card {
-  max-width: 640px !important;
-  padding: 40px 44px !important;
+  max-width: 560px !important;
+  padding: 36px 32px 32px !important;
+}
+
+/* En pantallas donde el modal de registro es estrecho, 1 columna */
+@media (max-width: 560px) {
+  .register-modal-card {
+    max-width: 100% !important;
+    padding: 28px 18px 24px !important;
+  }
+  .register-modal-card .publicar-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .register-modal-card .campo input,
+  .register-modal-card .campo select {
+    height: 40px !important;
+    font-size: 0.92rem !important;
+  }
 }
 
 .register-modal-form {
-  gap: 20px;
+  gap: 16px;
 }
 
 .register-modal-seccion {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .register-modal-seccion-titulo {
@@ -147,7 +166,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(239,242,241,0.45);
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
@@ -241,9 +260,10 @@
 }
 
 .auth-header h1 {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   color: var(--light);
   margin: 0;
+  white-space: nowrap;
 }
 
 .auth-header p {
@@ -813,5 +833,26 @@
 @media (max-width: 450px) {
   .formSection {
     width: auto;
+  }
+  .login-modal-overlay {
+    padding: 16px;
+    align-items: center;
+  }
+  .login-modal-card {
+    border-radius: 20px;
+    padding: 28px 20px 24px;
+    gap: 16px;
+  }
+  .register-modal-card {
+    border-radius: 20px !important;
+    padding: 28px 20px 24px !important;
+  }
+  .auth-header h1 {
+    font-size: 1.35rem;
+    white-space: nowrap;
+  }
+  .auth-icon {
+    width: 48px;
+    height: 48px;
   }
 }

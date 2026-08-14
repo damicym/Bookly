@@ -96,4 +96,11 @@
             if (ctaBtn) ctaBtn.disabled = !haySeleccionado;
         });
     });
+
+    if (ctaBtn) {
+        ctaBtn.addEventListener('click', function () {
+            var chatUrl = ctaBtn.dataset.chatUrl;
+            if (chatUrl) window.location.href = chatUrl;
+        });
+    }
 })();

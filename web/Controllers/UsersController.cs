@@ -3,7 +3,7 @@ using Bookly.Models;
 
 namespace Bookly.Controllers
 {
-    public class UsuariosController : Controller
+    public class UsuariosController : BaseController
     {
         public IActionResult Login(string returnView = "Index")
         { 

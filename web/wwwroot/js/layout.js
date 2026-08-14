@@ -4,9 +4,7 @@
     var btn = document.getElementById('favBtnHeader');
     if (btn) {
         var isProfile = document.querySelector('.profile-tabs') !== null;
-        if (isProfile && window.location.hash === '#favoritos') {
-            btn.classList.add('activeNavBtn');
-        }
+
         if (isProfile) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -15,6 +13,7 @@
                 btn.classList.add('activeNavBtn');
             });
         }
+
         document.querySelectorAll('.profile-tab').forEach(function (tab) {
             tab.addEventListener('click', function () {
                 if (tab.dataset.tab === 'favoritos') {
@@ -30,6 +29,7 @@
     if (wrap) {
         var closeTimer;
         wrap.addEventListener('mouseenter', function () {
+            if (window.innerWidth <= 600) return;
             clearTimeout(closeTimer);
             wrap.classList.add('dropdown-open');
         });
@@ -39,6 +39,62 @@
             }, 400);
         });
     }
+
+    // ── Mobile: click en el avatar abre el dropdown (sin navegar) ──
+    (function () {
+        var link = document.getElementById('profileNavLink');
+        var dropWrap = document.getElementById('profileDropdownWrap');
+        if (!link || !dropWrap) return;
+
+        var profileHref = link.getAttribute('href');
+
+        function isMobile() {
+            return window.innerWidth <= 600;
+        }
+
+        function applyMobileMode() {
+            if (isMobile()) {
+                link.removeAttribute('href');
+            } else {
+                if (!link.getAttribute('href')) link.setAttribute('href', profileHref);
+            }
+        }
+
+        applyMobileMode();
+        window.addEventListener('resize', applyMobileMode);
+
+        link.addEventListener('touchstart', function (e) {
+            if (!isMobile()) return;
+            e.preventDefault();
+            e.stopPropagation();
+            dropWrap.classList.toggle('dropdown-open');
+        }, { passive: false });
+
+        link.addEventListener('click', function (e) {
+            if (!isMobile()) return;
+            e.preventDefault();
+            e.stopPropagation();
+            dropWrap.classList.toggle('dropdown-open');
+        });
+
+        document.addEventListener('touchstart', function (e) {
+            if (!isMobile()) return;
+            if (!dropWrap.contains(e.target)) {
+                dropWrap.classList.remove('dropdown-open');
+            }
+        }, { passive: true });
+
+        document.addEventListener('click', function (e) {
+            if (!isMobile()) return;
+            if (!dropWrap.contains(e.target)) {
+                dropWrap.classList.remove('dropdown-open');
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') dropWrap.classList.remove('dropdown-open');
+        });
+    }());
 
     var hamburgerBtn = document.getElementById('headerHamburger');
     var menu = document.getElementById('headerHamburgerMenu');
@@ -67,10 +123,13 @@
             menu.classList.contains('is-open') ? closeHamburger() : openHamburger();
         });
 
-        hamburgerBtn.addEventListener('mouseenter', openHamburger);
-        hamburgerBtn.addEventListener('mouseleave', scheduleHamburgerClose);
-        menu.addEventListener('mouseenter', function () { clearTimeout(hamburgerCloseTimer); });
-        menu.addEventListener('mouseleave', scheduleHamburgerClose);
+        // mouseenter/mouseleave solo en dispositivos con puntero real (no touch)
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            hamburgerBtn.addEventListener('mouseenter', openHamburger);
+            hamburgerBtn.addEventListener('mouseleave', scheduleHamburgerClose);
+            menu.addEventListener('mouseenter', function () { clearTimeout(hamburgerCloseTimer); });
+            menu.addEventListener('mouseleave', scheduleHamburgerClose);
+        }
 
         document.addEventListener('click', function (e) {
             if (!menu.contains(e.target) && e.target !== hamburgerBtn) closeHamburger();
@@ -119,4 +178,57 @@
             if (e.key === 'Escape') closeSearch();
         });
     }
+})();
+
+// ===== NOTIFICACIONES =====
+(function () {
+    var btn   = document.getElementById('notifBtnHeader');
+    var panel = document.getElementById('notifPanel');
+    if (!btn || !panel) return;
+
+    var isOpen = false;
+
+    function openPanel() {
+        // Quitar hidden la primera vez (permite la transición CSS)
+        panel.removeAttribute('hidden');
+        // Forzar reflow para que la transición arranque desde el estado inicial
+        panel.getBoundingClientRect();
+        panel.classList.add('notif-panel--visible');
+        btn.setAttribute('aria-expanded', 'true');
+        btn.classList.add('activeNavBtn');
+        isOpen = true;
+
+        // Cerrar hamburguesa si está abierta
+        var hamburgerMenu = document.getElementById('headerHamburgerMenu');
+        var hamburgerBtn  = document.getElementById('headerHamburger');
+        if (hamburgerMenu) hamburgerMenu.classList.remove('is-open');
+        if (hamburgerBtn)  hamburgerBtn.classList.remove('is-open');
+
+        // Cerrar dropdown de perfil si está abierto
+        var profileWrap = document.getElementById('profileDropdownWrap');
+        if (profileWrap) profileWrap.classList.remove('dropdown-open');
+    }
+
+    function closePanel() {
+        panel.classList.remove('notif-panel--visible');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.classList.remove('activeNavBtn');
+        isOpen = false;
+    }
+
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        isOpen ? closePanel() : openPanel();
+    });
+
+    // Click fuera cierra el panel
+    document.addEventListener('click', function (e) {
+        if (!isOpen) return;
+        if (!panel.contains(e.target) && e.target !== btn) closePanel();
+    });
+
+    // Escape cierra el panel
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isOpen) closePanel();
+    });
 })();

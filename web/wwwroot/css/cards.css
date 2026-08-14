@@ -22,23 +22,67 @@
 }
 
 .libro.protagonista {
-  box-shadow: 0 0 0 2px var(--accent), 0 8px 24px rgba(0,0,0,0.35);
+  box-shadow: 0 0 0 2px var(--accent);
   transform: scale(1.03);
 }
 
 .libro.protagonista:hover {
   transform: scale(1.06);
-  box-shadow: 0 0 0 2px var(--accent), 0 12px 32px rgba(0,0,0,0.45);
 }
 
 /* Hover para todas las cards que no sean protagonista ni inProfile */
 .libro:not(.protagonista):not(.inProfile):hover {
   transform: scale(1.03);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  /* box-shadow: 0 8px 24px rgba(0,0,0,0.35); */
 }
 
 .libro.inProfile {
-  cursor: auto !important;
+  cursor: pointer !important;
+}
+
+/* Inner shadow permanente de arriba hacia abajo para contraste con los botones */
+.libro.inProfile .libroImgContainer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(6,26,64,0.38) 0%, transparent 45%);
+  z-index: 1;
+}
+
+/* Los botones deben quedar por encima del overlay */
+.libro.inProfile .libroActionsContainer {
+  z-index: 2;
+}
+
+.libro.inProfile:hover {
+  /* Sin escala ni sombra — efecto solo en los botones */
+  transform: none;
+  box-shadow: none;
+}
+
+/* Al hacer hover en la card del perfil, resaltar el botón de editar */
+.libro.inProfile:hover button.desearBtnForm.editar,
+.libro.inProfile:hover .desearBtnForm.editar button {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(244, 185, 66, 0.4);
+}
+
+.libro.inProfile:hover button.desearBtnForm.editar svg,
+.libro.inProfile:hover .desearBtnForm.editar button svg {
+  color: var(--dark);
+}
+
+/* Al hacer hover sobre el botón de eliminar, desactivar el amarillo del editar */
+.libro.inProfile:has(.desearBtnForm.eliminar:hover) button.desearBtnForm.editar,
+.libro.inProfile:has(.desearBtnForm.eliminar button:hover) button.desearBtnForm.editar,
+.libro.inProfile:has(.desearBtnForm.eliminar:hover) .desearBtnForm.editar button,
+.libro.inProfile:has(.desearBtnForm.eliminar button:hover) .desearBtnForm.editar button {
+  background: rgba(239, 242, 241, 0.88) !important;
+  border-color: rgba(239, 242, 241, 0.6) !important;
+  box-shadow: 0 2px 8px rgba(6, 26, 64, 0.25) !important;
 }
 
 .libroActionsContainer {
@@ -206,9 +250,6 @@ button.desearBtnForm.editar:hover svg {
   opacity: 0.6;
 }
 
-.libro.inProfile:hover .libroImgContainer img {
-  transform: scale(1) !important;
-}
 
 .imgContainer {
   display: flex;
@@ -501,24 +542,187 @@ button.desearBtnForm.editar:hover svg {
 }
 
 /* ── Cards responsivas en el carrusel ── */
-@media (max-width: 400px) {
-  .libro.carrusel-card {
-    width: 185px;
+@media (max-width: 600px) {
+  .libro.carrusel-card,
+  .cardsPublicadas .libro {
+    width: 195px;
   }
 
-  .libro.carrusel-card .libro h1,
-  .libro.carrusel-card h1 {
+  .libro.carrusel-card .libroImgContainer,
+  .cardsPublicadas .libro .libroImgContainer {
+    max-height: 180px;
+  }
+
+  /* Skeleton: imagen capeada igual que la card real */
+  .cardsPublicadas .libro-skeleton .skeleton-img {
+    max-height: 180px;
+  }
+
+  .libro.carrusel-card .pillContainer,
+  .cardsPublicadas .libro .pillContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  .libro.carrusel-card .pill,
+  .cardsPublicadas .libro .pill {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+
+  .libro.carrusel-card .tag-masbarato,
+  .cardsPublicadas .libro .tag-masbarato {
+    font-size: 0.65rem;
+    padding: 4px 9px 4px 8px;
+  }
+
+  .libro.carrusel-card .tag-rayo,
+  .cardsPublicadas .libro .tag-rayo {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+@media (max-width: 400px) {
+  .libro.carrusel-card {
+    width: 170px;
+  }
+
+  .libro.carrusel-card .libroImgContainer,
+  .cardsPublicadas .libro .libroImgContainer {
+    max-height: 160px;
+  }
+
+  /* Skeleton: imagen capeada igual que la card real */
+  .cardsPublicadas .libro-skeleton .skeleton-img {
+    max-height: 160px;
+  }
+
+  .libro.carrusel-card h1,
+  .cardsPublicadas .libro h1 {
     font-size: 1rem;
   }
 
-  .libro.carrusel-card .libro h3,
-  .libro.carrusel-card h3 {
+  .libro.carrusel-card h3,
+  .cardsPublicadas .libro h3 {
     font-size: 0.95rem;
   }
 }
 
 @media (max-width: 320px) {
   .libro.carrusel-card {
-    width: 160px;
+    width: 148px;
+  }
+
+  .libro.carrusel-card .libroImgContainer,
+  .cardsPublicadas .libro .libroImgContainer {
+    max-height: 140px;
+  }
+
+  /* Skeleton: imagen capeada igual que la card real */
+  .cardsPublicadas .libro-skeleton .skeleton-img {
+    max-height: 140px;
+  }
+}
+
+/* ===== RESPONSIVE: grilla de 2 columnas en ≤900px =====
+   Aplica a cualquier .cardsPublicadas que esté dentro de
+   un contenedor responsivo (catálogo, perfil, favoritos).
+   El grid lo define el contenedor padre en buscar.css / profile.css.
+   Aquí solo controlamos el tamaño y tipografía de la card.
+===== */
+@media (max-width: 900px) {
+
+  /* La card ocupa todo el ancho de su celda del grid */
+  .cardsPublicadas .libro {
+    width: 100%;
+    min-width: 0;   /* permitir que el grid controle el ancho */
+  }
+
+  /* Skeleton adaptado — mismo comportamiento que la card real */
+  .cardsPublicadas .libro-skeleton {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    /* Sin aspect-ratio fijo: la imagen interna (3/4 + max-height) + bloques de texto
+       determinan la altura, igual que en la card real */
+  }
+
+  /* Los bloques de texto del skeleton se reducen igual que los de la card real */
+  .cardsPublicadas .libro-skeleton .skeleton-titulo,
+  .cardsPublicadas .libro-skeleton .skeleton-titulo-2 {
+    height: 13px; /* aprox. h1 a 0.85rem */
+  }
+
+  .cardsPublicadas .libro-skeleton .skeleton-materia {
+    height: 10px;
+  }
+
+  .cardsPublicadas .libro-skeleton .skeleton-precio {
+    height: 15px; /* aprox. h3 a 0.9rem */
+  }
+
+  /* Nombre más compacto */
+  .cardsPublicadas .libro .nombreContainer h1,
+  .cardsPublicadas .libro h1 {
+    font-size: 0.85rem;
+    line-height: 1.3;
+    min-height: unset;
+  }
+
+  /* Precio más compacto */
+  .cardsPublicadas .libro .libro-footer h3,
+  .cardsPublicadas .libro h3 {
+    font-size: 0.9rem;
+  }
+
+  /* Pills más compactas */
+  .cardsPublicadas .libro .pill {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+  }
+
+  /* Sin escala en protagonistas: evita superposición en grid apretado */
+  .cardsPublicadas .libro.protagonista {
+    transform: none;
+    box-shadow: 0 0 0 2px var(--accent), 0 4px 14px rgba(0,0,0,0.22);
+  }
+
+  .cardsPublicadas .libro.protagonista:hover {
+    transform: none;
+    box-shadow: 0 0 0 2.5px var(--accent), 0 6px 18px rgba(0,0,0,0.3);
+  }
+
+  /* Sin escala en hover para cualquier card (touch no tiene hover real) */
+  .cardsPublicadas .libro:not(.protagonista):not(.inProfile):hover {
+    transform: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  }
+}
+
+@media (max-width: 480px) {
+  .cardsPublicadas .libro h1,
+  .cardsPublicadas .libro .nombreContainer h1 {
+    font-size: 0.78rem;
+  }
+
+  .cardsPublicadas .libro h3,
+  .cardsPublicadas .libro .libro-footer h3 {
+    font-size: 0.82rem;
+  }
+
+  /* Skeleton aún más compacto en mobile chico */
+  .cardsPublicadas .libro-skeleton .skeleton-titulo,
+  .cardsPublicadas .libro-skeleton .skeleton-titulo-2 {
+    height: 11px; /* aprox. h1 a 0.78rem */
+  }
+
+  .cardsPublicadas .libro-skeleton .skeleton-materia {
+    height: 9px;
+  }
+
+  .cardsPublicadas .libro-skeleton .skeleton-precio {
+    height: 13px; /* aprox. h3 a 0.82rem */
   }
 }

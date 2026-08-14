@@ -469,7 +469,7 @@
 .det-vendedor-card {
   background: var(--main);
   border-radius: 18px;
-  overflow: hidden;
+  overflow: clip;  /* recorta visualmente sin afectar sticky/z-index */
   box-shadow: 0 8px 32px rgba(6,26,64,0.2);
   display: flex;
   flex-direction: column;
@@ -483,6 +483,7 @@
   padding: 28px 20px 22px;
   background: rgba(0,0,0,0.18);
   border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px 18px 0 0;  /* esquinas superiores redondeadas igual que la card */
   text-align: center;
 }
 
@@ -621,6 +622,7 @@
   gap: 12px;
   padding: 20px 16px 22px;
   flex: 1;
+  border-radius: 0 0 18px 18px; /* esquinas inferiores de la card */
 }
 
 .det-otras-label {
@@ -1020,6 +1022,16 @@
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
+.det-rep-resena-count {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-align: center;
+  color: var(--light);
+  margin: 0;
+  margin-bottom: 6px;
+}
+
 .det-rep-barra-segmentada {
   display: flex;
   gap: 4px;
@@ -1034,11 +1046,11 @@
 }
 
 /* Colores de la paleta, de menor a mayor reputación */
-.det-rep-seg-1 { background: rgba(215, 38, 61, 0.55); }   /* rojo apagado — Nuevo */
-.det-rep-seg-2 { background: var(--accent); }              /* amarillo — Principiante */
-.det-rep-seg-3 { background: var(--secondary); }           /* azul medio — Regular */
-.det-rep-seg-4 { background: var(--secondary2); }          /* verde — Bueno */
-.det-rep-seg-5 { background: var(--secondary2); }          /* verde — Experto */
+.det-rep-seg-1 { background: rgba(215, 38, 61, 0.5); }
+.det-rep-seg-2 { background: rgba(245, 158, 11, 0.5); }
+.det-rep-seg-3 { background: rgba(99, 102, 241, 0.5); }
+.det-rep-seg-4 { background: rgba(34, 197, 94, 0.5); }
+.det-rep-seg-5 { background: rgba(34, 197, 94, 0.5); }
 
 /* El segmento activo es opaco y un poco más alto */
 .det-rep-seg--activo {
@@ -1046,6 +1058,13 @@
   height: 10px;
   margin-top: -1px;
 }
+
+/* Colores vibrantes cuando el segmento está activo */
+.det-rep-seg-1.det-rep-seg--activo { background: #d7263d; }
+.det-rep-seg-2.det-rep-seg--activo { background: #f59e0b; }
+.det-rep-seg-3.det-rep-seg--activo { background: #6366f1; }
+.det-rep-seg-4.det-rep-seg--activo { background: #22c55e; }
+.det-rep-seg-5.det-rep-seg--activo { background: #16a34a; }
 
 /* ── Fila de 3 stats ── */
 .det-rep-stats-row {
@@ -1114,31 +1133,437 @@
 /* ══════════════════════════════
    Responsive
 ══════════════════════════════ */
+
+/* ── Tablet (720px – 960px): 2 columnas portada+info, vendedor abajo ── */
 @media (max-width: 960px) {
-  .det-page-wrapper { width: min(1400px, 100vw - 40px); }
+  .det-page-wrapper {
+    width: min(1400px, 100vw - 32px);
+    padding-bottom: 48px;
+  }
 
   .det-page {
-    grid-template-columns: 220px 1fr;
+    grid-template-columns: 180px 1fr;
+    grid-template-rows: auto auto;
     grid-template-areas:
       "portada info"
-      "vendedor info";
-    justify-content: start;
+      "vendedor vendedor";
+    gap: 28px 24px;
+    align-items: start;
+  }
+
+  .det-col-portada {
+    grid-area: portada;
+    position: static;   /* sin sticky en tablet — evita solapamiento con el vendedor */
+    align-self: start;
+  }
+
+  .det-col-info {
+    grid-area: info;
+    align-self: start;
+  }
+
+  .det-col-vendedor {
+    grid-area: vendedor;
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .det-vendedor-card {
+    border-radius: 16px;
+    overflow: visible;  /* evita que el contenido se corte en tablet */
+  }
+
+  .det-vendedor-top {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: 16px;
+    padding: 22px 24px;
+  }
+
+  .det-vendedor-top > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .det-vendedor-avatar {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+  }
+
+  .det-vendedor-pill {
+    margin-bottom: 4px;
+  }
+
+  /* Título un poco más chico para que quepa */
+  .det-titulo {
+    font-size: 1.9rem;
   }
 
   .det-separador { display: none; }
-  .det-col-portada { grid-area: portada; }
-  .det-col-info { grid-area: info; }
-  .det-col-vendedor { grid-area: vendedor; position: static; padding-top: 0; }
 }
 
-@media (max-width: 680px) {
-  .det-page-wrapper { width: 100%; padding: 20px 16px 40px; }
+/* ── Tablet chica (≤720px): ya una columna, con portada y vendedor compactos ── */
+@media (max-width: 720px) {
+  .det-page-wrapper {
+    width: 100%;
+    padding: 16px 16px 52px;
+    box-sizing: border-box;
+  }
+
+  .det-volver {
+    margin-bottom: 14px;
+  }
 
   .det-page {
     grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-areas:
+      "portada"
+      "info"
+      "vendedor";
+    gap: 24px;
   }
 
-  .det-col-portada { position: static; width: 160px; margin: 0 auto; }
-  .det-acciones { grid-template-columns: 1fr; }
+  /* ── Portada ── */
+  .det-col-portada {
+    grid-area: portada;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    top: auto;
+    align-self: auto;
+  }
+
+  .det-portada {
+    width: 200px;
+    border-radius: 14px;
+  }
+
+  /* Corazón: chip circular sobre la imagen, esquina sup-derecha */
+  .det-fav-form {
+    display: flex !important;
+    position: absolute;
+    top: 10px;
+    right: calc(50% - 100px + 10px);
+    z-index: 2;
+    width: auto !important;
+  }
+
+  .det-fav-form button {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: rgba(239, 242, 241, 0.88);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(239, 242, 241, 0.6);
+    box-shadow: 0 2px 8px rgba(6, 26, 64, 0.25);
+    filter: drop-shadow(0 2px 6px rgba(6, 26, 64, 0.35));
+    padding: 0;
+  }
+
+  .det-fav-form button svg {
+    width: 18px;
+    height: 18px;
+    color: var(--dark);
+    fill: none;
+    stroke-width: 2.2px;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+  }
+
+  .det-fav-form button.deseado {
+    background: rgba(239, 242, 241, 0.92);
+    border-color: rgba(239, 242, 241, 0.7);
+  }
+
+  .det-fav-form button.deseado svg {
+    fill: var(--dark);
+    stroke: var(--dark);
+    color: var(--dark);
+  }
+
+  .det-fav-form button:hover {
+    background: var(--secondary2);
+    border-color: var(--secondary2);
+  }
+
+  .det-fav-form button:hover svg {
+    color: var(--dark);
+  }
+
+  /* ── Info del libro ── */
+  .det-col-info {
+    grid-area: info;
+    gap: 16px;
+  }
+
+  .det-breadcrumb {
+    font-size: 0.72rem;
+  }
+
+  .det-titulo {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .det-precio {
+    font-size: 1.65rem;
+    margin-top: 2px;
+  }
+
+  /* Solo el botón principal; el favorito está en la imagen */
+  .det-acciones {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .det-btn-favorito {
+    display: none;
+  }
+
+  .det-btn-consultar {
+    padding: 14px 16px !important;
+    font-size: 0.9rem !important;
+    border-radius: 12px !important;
+  }
+
+  .det-btn-intercambio {
+    font-size: 0.83rem;
+  }
+
+  /* Ficha técnica: 2 cols */
+  .det-ficha {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .det-ficha-item {
+    padding: 12px 14px;
+  }
+
+  .det-ficha-label {
+    font-size: 0.58rem;
+  }
+
+  .det-ficha-valor {
+    font-size: 0.88rem;
+  }
+
+  /* ── Vendedor: fondo claro, integrado con la UI ── */
+  .det-col-vendedor {
+    grid-area: vendedor;
+    position: static;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .det-vendedor-card {
+    background: var(--light);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(6, 26, 64, 0.08);
+    border: 1px solid rgba(6, 26, 64, 0.07);
+    overflow: visible;  /* el contenido no debe cortarse */
+  }
+
+  .det-vendedor-top {
+    background: #fff;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(6, 26, 64, 0.07);
+    border-radius: 14px 14px 0 0;
+  }
+
+  .det-vendedor-top > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .det-vendedor-avatar {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    border: 2px solid rgba(6, 26, 64, 0.1);
+    box-shadow: 0 2px 8px rgba(6, 26, 64, 0.12);
+  }
+
+  .det-vendedor-pill {
+    background: rgba(64, 89, 173, 0.1);
+    color: var(--main);
+    font-size: 0.65rem;
+    margin-bottom: 3px;
+  }
+
+  .det-vendedor-nombre {
+    font-size: 0.92rem;
+    color: var(--dark);
+  }
+
+  .det-vendedor-sub {
+    font-size: 0.78rem;
+    color: rgba(6, 26, 64, 0.5);
+  }
+
+  .det-vendedor-about {
+    display: none;
+  }
+
+  /* Stats: colores para fondo claro */
+  .det-vendedor-stats-widget {
+    padding: 14px 18px 16px;
+    border-bottom: 1px solid rgba(6, 26, 64, 0.07);
+  }
+
+  .det-rep-resena-count {
+    color: rgba(6, 26, 64, 0.45) !important;
+  }
+
+  .det-rep-stat-desc {
+    color: rgba(6, 26, 64, 0.5) !important;
+  }
+
+  .det-rep-stat-num {
+    color: var(--dark) !important;
+  }
+
+  .det-rep-divider {
+    background: rgba(6, 26, 64, 0.1) !important;
+  }
+
+  .det-rep-stat-icon-wrap {
+    color: rgba(6, 26, 64, 0.45) !important;
+  }
+
+  .det-rep-check {
+    background: #fff !important;
+  }
+
+  /* CTA vendedor */
+  .det-vendedor-cta-wrap {
+    padding: 0 16px 16px;
+  }
+
+  .det-vendedor-cta-btn {
+    background: var(--main);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(64, 89, 173, 0.25);
+    margin-bottom: 0;
+  }
+
+  .det-vendedor-cta-btn:hover {
+    filter: brightness(1.08);
+    color: #fff;
+  }
+
+  /* Publicaciones: 2 cols sobre fondo claro */
+  .det-otras {
+    padding: 16px 16px 18px;
+    border-top: 1px solid rgba(6, 26, 64, 0.07);
+  }
+
+  .det-otras-label {
+    color: rgba(6, 26, 64, 0.4);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .det-otras-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .det-otras-thumb {
+    flex-direction: column;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid rgba(6, 26, 64, 0.08);
+  }
+
+  .det-otras-thumb:hover {
+    background: var(--lightDarker);
+    border-color: rgba(64, 89, 173, 0.2);
+    transform: none;
+  }
+
+  .det-otras-thumb img {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 9px 9px 0 0;
+  }
+
+  .det-otras-thumb-info {
+    padding: 8px 10px;
+  }
+
+  .det-otras-thumb-nombre {
+    color: var(--dark);
+    font-size: 0.78rem;
+  }
+
+  .det-otras-thumb-precio {
+    color: var(--main);
+    font-size: 0.8rem;
+  }
+
+  /* Otras opciones de compra */
+  .det-opcion-row {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .det-opcion-portada {
+    width: 34px;
+    height: 46px;
+  }
+}
+
+/* ── Mobile chico (≤400px): ajustes extra para pantallas muy pequeñas ── */
+@media (max-width: 400px) {
+  .det-page-wrapper {
+    padding: 12px 12px 48px;
+  }
+
+  .det-portada {
+    width: 160px;
+  }
+
+  .det-fav-form {
+    right: calc(50% - 80px + 8px);
+  }
+
+  .det-titulo {
+    font-size: 1.3rem;
+  }
+
+  .det-precio {
+    font-size: 1.45rem;
+  }
+
+  .det-ficha {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .det-otras-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .det-otras-thumb img {
+    height: 75px;
+  }
 }

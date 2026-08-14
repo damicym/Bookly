@@ -97,11 +97,11 @@
 }
 
 /* Nombre solo en su fila */
-.profile-name-row {
+.profile-name-row,
+.profile-name-meta {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .profile-name {
@@ -372,10 +372,87 @@
 /* ---- RESPONSIVE ---- */
 @media (max-width: 700px) {
   .profile-header-section {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    column-gap: 14px;
+    row-gap: 10px;
+    align-items: center;
+    padding: 24px 16px 20px;
+  }
+
+  /* avatar: col 1, fila 1 */
+  .profile-avatar-wrap {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  /* profile-meta desaparece como caja — sus hijos participan en el grid padre */
+  .profile-meta {
+    display: contents;
+  }
+
+  /* nombre+stats: col 2, fila 1 */
+  .profile-name-meta {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    align-self: center;
+  }
+
+  /* división: fila 2, span completo */
+  .profile-sub {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* bio: fila 3, span completo */
+  .profile-bio-form {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .profile-avatar-container {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+  }
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-name {
+    font-size: clamp(0.95rem, 4.5vw, 1.25rem);
+    line-height: 1.2;
+    margin: 0;
+    word-break: break-word;
+  }
+
+  .profile-stats-row {
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+
+  .profile-stat {
+    padding: 0 10px 0 0;
+    margin-right: 10px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 20px;
-    padding: 32px 20px 28px;
+    gap: 1px;
+    border-right: none;
+  }
+
+  .profile-stat-num {
+    font-size: 0.92rem;
+  }
+
+  .profile-stat-label {
+    font-size: 0.72rem;
   }
 
   .profile-tabs {
@@ -383,36 +460,11 @@
   }
 
   .profile-tab-panel {
-    padding: 24px 20px 40px;
+    padding: 24px 16px 40px;
   }
 
-  .profile-avatar-container {
-    width: 72px;
-    height: 72px;
-  }
-
-  .profile-avatar {
-    width: 72px;
-    height: 72px;
-  }
-
-  .profile-name {
-    font-size: 1.4rem;
-  }
-
-  .profile-name-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .profile-stats-row {
-    gap: 0;
-  }
-
-  .profile-stat {
-    padding: 0 16px 0 0;
-    margin-right: 16px;
+  .profile-bio-form .aboutMe {
+    width: 200px;
   }
 }
 
@@ -476,4 +528,54 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
+}
+
+/* ===================================================
+   GRID DE CARDS — Perfil (publicaciones y favoritos)
+   =================================================== */
+
+/* Desktop: auto-fill con columnas de 230px */
+.profile-tab-panel .cardsPublicadas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 230px);
+  gap: 32px;
+  max-width: calc(6 * 230px + 5 * 32px);
+  width: 100%;
+  margin-inline: auto;
+  margin-bottom: 4%;
+}
+
+/* Estado vacío ocupa todo el ancho */
+.profile-tab-panel .cardsPublicadas .no-result {
+  grid-column: 1 / -1;
+  justify-self: center;
+  padding: 60px 24px;
+}
+
+/* ≤900px: grilla adaptativa — en ~630px caben 3 cols, en ~400px 2 */
+@media (max-width: 900px) {
+  .profile-tab-panel {
+    padding: 16px 12px 60px;
+  }
+
+  .profile-tab-panel .cardsPublicadas {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    max-width: 100%;
+    margin-inline: 0;
+  }
+
+  .profile-tab-panel .cardsPublicadas .publicarCard {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-tab-panel {
+    padding: 12px 8px 60px;
+  }
+
+  .profile-tab-panel .cardsPublicadas {
+    gap: 8px;
+  }
 }

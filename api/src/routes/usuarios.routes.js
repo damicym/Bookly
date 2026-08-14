@@ -11,6 +11,9 @@ router.post('/login', usuariosCtrl.loginUser)
 // POST /api/usuarios/register
 router.post('/register', usuariosCtrl.registerUser)
 
+// GET /api/usuarios/buscar?q=texto  — debe ir ANTES de /:dni
+router.get('/buscar', usuariosCtrl.searchUsers)
+
 // GET /api/usuarios/:dni
 router.get('/:dni', usuariosCtrl.getUserInfo)
 
