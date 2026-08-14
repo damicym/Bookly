@@ -1034,3 +1034,118 @@
   color: rgba(6, 26, 64, 0.3);
   padding: 12px 18px 4px;
 }
+
+/* ══════════════════════════════
+   Botón "Ver perfil" en el header del chat
+   Solo visible en mobile (≤1100px) donde la col vendedor está oculta
+══════════════════════════════ */
+.chat-ver-perfil-btn {
+  display: none; /* oculto en desktop donde la col vendedor ya es visible */
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 6px 11px;
+  border: none;
+  border-radius: 20px;
+  background: var(--main);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: filter 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(6, 26, 64, 0.18);
+}
+
+.chat-ver-perfil-btn:hover {
+  filter: brightness(1.12);
+}
+
+/* Mostrar solo cuando la col vendedor está oculta */
+@media (max-width: 1100px) {
+  .chat-ver-perfil-btn {
+    display: flex;
+  }
+}
+
+/* En mobile el header entero es clickeable → cursor pointer */
+@media (max-width: 600px) {
+  .chat-messages-header--clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(64, 89, 173, 0.08);
+  }
+
+  .chat-messages-header--clickable:active {
+    background: rgba(64, 89, 173, 0.04);
+  }
+}
+
+/* ══════════════════════════════
+   Drawer del vendedor (mobile)
+   Panel que sube desde abajo al tocar el header
+══════════════════════════════ */
+.chat-vendedor-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 26, 64, 0.45);
+  z-index: 1200;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.chat-vendedor-overlay--visible {
+  display: block;
+}
+
+.chat-vendedor-overlay--animado {
+  opacity: 1;
+}
+
+.chat-vendedor-drawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1201;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: transparent; /* la card ya tiene su propio fondo */
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+  /* safe-area para iPhones con notch inferior */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.chat-vendedor-drawer--visible {
+  transform: translateY(0);
+}
+
+/* Handle visual arriba del drawer */
+.chat-vendedor-drawer-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 10px auto 0;
+}
+
+/* Ajuste: la card dentro del drawer no tiene sticky ni overflow:clip */
+.chat-vendedor-drawer .det-vendedor-card {
+  /* border-radius: 0 !important; */
+  overflow: visible !important;
+}
+
+/* El modal de avatar necesita estar por encima del panel de chat (z:1100) y el drawer (z:1201) */
+#chatAvatarModal {
+  z-index: 1300;
+}

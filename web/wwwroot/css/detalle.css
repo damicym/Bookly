@@ -1172,7 +1172,7 @@
 
   .det-vendedor-card {
     border-radius: 16px;
-    overflow: visible;  /* evita que el contenido se corte en tablet */
+    overflow: clip;
   }
 
   .det-vendedor-top {
@@ -1361,7 +1361,7 @@
     font-size: 0.88rem;
   }
 
-  /* ── Vendedor: fondo claro, integrado con la UI ── */
+  /* ── Vendedor: mantiene colores oscuros en mobile ── */
   .det-col-vendedor {
     grid-area: vendedor;
     position: static;
@@ -1370,21 +1370,16 @@
   }
 
   .det-vendedor-card {
-    background: var(--light);
     border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(6, 26, 64, 0.08);
-    border: 1px solid rgba(6, 26, 64, 0.07);
-    overflow: visible;  /* el contenido no debe cortarse */
+    overflow: clip;
   }
 
   .det-vendedor-top {
-    background: #fff;
     flex-direction: row;
     align-items: center;
     text-align: left;
     gap: 14px;
     padding: 16px 18px;
-    border-bottom: 1px solid rgba(6, 26, 64, 0.07);
     border-radius: 14px 14px 0 0;
   }
 
@@ -1397,86 +1392,43 @@
     width: 50px;
     height: 50px;
     flex-shrink: 0;
-    border: 2px solid rgba(6, 26, 64, 0.1);
-    box-shadow: 0 2px 8px rgba(6, 26, 64, 0.12);
   }
 
   .det-vendedor-pill {
-    background: rgba(64, 89, 173, 0.1);
-    color: var(--main);
     font-size: 0.65rem;
     margin-bottom: 3px;
   }
 
   .det-vendedor-nombre {
     font-size: 0.92rem;
-    color: var(--dark);
   }
 
   .det-vendedor-sub {
     font-size: 0.78rem;
-    color: rgba(6, 26, 64, 0.5);
   }
 
   .det-vendedor-about {
     display: none;
   }
 
-  /* Stats: colores para fondo claro */
   .det-vendedor-stats-widget {
-    padding: 14px 18px 16px;
-    border-bottom: 1px solid rgba(6, 26, 64, 0.07);
+    padding: 14px 4px 16px;
+    margin: 0 16px 4px;
   }
 
-  .det-rep-resena-count {
-    color: rgba(6, 26, 64, 0.45) !important;
-  }
-
-  .det-rep-stat-desc {
-    color: rgba(6, 26, 64, 0.5) !important;
-  }
-
-  .det-rep-stat-num {
-    color: var(--dark) !important;
-  }
-
-  .det-rep-divider {
-    background: rgba(6, 26, 64, 0.1) !important;
-  }
-
-  .det-rep-stat-icon-wrap {
-    color: rgba(6, 26, 64, 0.45) !important;
-  }
-
-  .det-rep-check {
-    background: #fff !important;
-  }
-
-  /* CTA vendedor */
-  .det-vendedor-cta-wrap {
-    padding: 0 16px 16px;
-  }
-
-  .det-vendedor-cta-btn {
-    background: var(--main);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(64, 89, 173, 0.25);
-    margin-bottom: 0;
-  }
-
-  .det-vendedor-cta-btn:hover {
-    filter: brightness(1.08);
-    color: #fff;
-  }
-
-  /* Publicaciones: 2 cols sobre fondo claro */
+  /* Publicaciones: 2 cols */
   .det-otras {
     padding: 16px 16px 18px;
-    border-top: 1px solid rgba(6, 26, 64, 0.07);
+    border-radius: 0 0 14px 14px; /* esquinas inferiores coinciden con la card */
+  }
+
+  /* Si no hay publicaciones, el cta-wrap es el último elemento */
+  .det-vendedor-cta-wrap {
+    padding: 0 16px 16px;
+    border-radius: 0 0 14px 14px;
   }
 
   .det-otras-label {
-    color: rgba(6, 26, 64, 0.4);
     margin-bottom: 10px;
     display: block;
   }
@@ -1490,14 +1442,6 @@
   .det-otras-thumb {
     flex-direction: column;
     border-radius: 10px;
-    background: #fff;
-    border: 1px solid rgba(6, 26, 64, 0.08);
-  }
-
-  .det-otras-thumb:hover {
-    background: var(--lightDarker);
-    border-color: rgba(64, 89, 173, 0.2);
-    transform: none;
   }
 
   .det-otras-thumb img {
@@ -1512,12 +1456,10 @@
   }
 
   .det-otras-thumb-nombre {
-    color: var(--dark);
     font-size: 0.78rem;
   }
 
   .det-otras-thumb-precio {
-    color: var(--main);
     font-size: 0.8rem;
   }
 

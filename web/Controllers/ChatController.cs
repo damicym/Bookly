@@ -42,12 +42,34 @@ namespace Bookly.Controllers
             // Estadísticas del vendedor
             if (!string.IsNullOrWhiteSpace(vendedor.DNI))
             {
+                ViewBag.VendedorVentasCerradas = vendedor?.ventasCerradas ?? 0;
+
+                // Publicaciones activas del vendedor (para la grilla en el widget)
                 var pubsVendedor = BD.ObtenerPublicacionesCompletasPorUsuario(vendedor.DNI);
-                ViewBag.VendedorVentasCerradas = pubsVendedor.Count(p => p.status == 0);
+                ViewBag.VendedorPublicaciones = pubsVendedor.Where(p => p.status == 1).ToList();
+                ViewBag.VendedorPublicacionesActivas = pubsVendedor.Count(p => p.status == 1);
+
+                // Reseñas del vendedor — promedios de atención y entrega
+                var resenasVendedor = BD.ObtenerResenasPorReceptor(vendedor.DNI);
+                var resenasCompletadas = resenasVendedor
+                    .Where(r => r.atencion.HasValue && r.entrega.HasValue)
+                    .ToList();
+                ViewBag.VendedorResenaCount = resenasCompletadas.Count;
+                ViewBag.VendedorPromedioAtencion = resenasCompletadas.Count > 0
+                    ? resenasCompletadas.Average(r => (double)r.atencion.Value)
+                    : (double?)null;
+                ViewBag.VendedorPromedioEntrega = resenasCompletadas.Count > 0
+                    ? resenasCompletadas.Average(r => (double)r.entrega.Value)
+                    : (double?)null;
             }
             else
             {
                 ViewBag.VendedorVentasCerradas = 0;
+                ViewBag.VendedorPublicaciones = new List<PublicacionesCompletas>();
+                ViewBag.VendedorPublicacionesActivas = 0;
+                ViewBag.VendedorResenaCount = 0;
+                ViewBag.VendedorPromedioAtencion = (double?)null;
+                ViewBag.VendedorPromedioEntrega = (double?)null;
             }
 
             // Si viene desde "Consultar publicación", pasar los datos de la publi
