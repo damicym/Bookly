@@ -41,10 +41,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 18px;
+  padding: 16px 16px 16px 6px;
   border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
   background: var(--lightDarker);
   flex-shrink: 0;
+}
+
+/* Botón volver en el header de la lista — oculto en desktop */
+.chat-conv-back-btn {
+  display: none;
 }
 
 .chat-conv-header svg {
@@ -81,9 +86,12 @@
   text-decoration: none;
 }
 
-.chat-conv-item:last-child {
-  border-bottom: none;
+/* Placeholder de conversación — no interactuable */
+.chat-conv-item:has(.chat-conv-avatar--placeholder) {
+  cursor: default;
+  pointer-events: none;
 }
+
 
 .chat-conv-item:hover {
   background: var(--lightDarker);
@@ -111,6 +119,21 @@
 .chat-conv-avatar--placeholder {
   background: var(--lightDarker);
   border: 2px solid rgba(6, 26, 64, 0.06);
+}
+
+/* Skeleton: sin cursor pointer, sin hover */
+.chat-conv-item--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Loader de mensajes */
+.chat-mensajes-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  opacity: 0.4;
 }
 
 .chat-conv-meta {
@@ -461,7 +484,7 @@
     top: 90px;
     bottom: 0;
     height: auto;           /* dejar que top+bottom definan la altura */
-    z-index: 1100;          /* por encima del footer (z:1000) y navbar (z:1000) */
+    z-index: 990;           /* por debajo del navbar (z:1000) — sus dropdowns deben quedar visibles */
     border-radius: 0;
     box-shadow: none;
     flex-direction: column;
@@ -531,6 +554,25 @@
   /* Burbujas un poco más anchas en pantallas pequeñas */
   .chat-msg {
     max-width: 85%;
+  }
+
+  /* Botón volver en el header de la lista — visible solo en móvil */
+  .chat-conv-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    color: var(--main);
+    transition: background 0.15s;
+    margin-right: -4px;
+  }
+
+  .chat-conv-back-btn:hover,
+  .chat-conv-back-btn:active {
+    background: rgba(64, 89, 173, 0.08);
   }
 }
 
@@ -1093,7 +1135,7 @@
   position: fixed;
   inset: 0;
   background: rgba(6, 26, 64, 0.45);
-  z-index: 1200;
+  z-index: 991;
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   opacity: 0;
@@ -1113,7 +1155,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1201;
+  z-index: 992;
   max-height: 88dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -1145,7 +1187,7 @@
   overflow: visible !important;
 }
 
-/* El modal de avatar necesita estar por encima del panel de chat (z:1100) y el drawer (z:1201) */
+/* El modal de avatar necesita estar por encima del panel de chat (z:990) y el drawer (z:992) */
 #chatAvatarModal {
-  z-index: 1300;
+  z-index: 993;
 }
