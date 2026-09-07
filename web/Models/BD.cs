@@ -483,6 +483,78 @@ namespace Bookly.Models
                    ?? new List<Resena>();
         }
 
+        // ── CHATS ────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// POST /api/chats/upsert
+        /// Registra o actualiza el chat en el historial del usuario.
+        /// Se llama cada vez que el usuario abre una conversación.
+        /// </summary>
+        public static void UpsertChat(string idUsuario, string idContacto)
+        {
+            if (string.IsNullOrWhiteSpace(idUsuario) || string.IsNullOrWhiteSpace(idContacto)) return;
+            Post("/chats/upsert", new { id_usuario = idUsuario, id_contacto = idContacto });
+        }
+
+        /// <summary>
+        /// GET /api/chats/:dniUsuario
+        /// Devuelve el historial de chats del usuario ordenado por última visita.
+        /// </summary>
+        public static List<Chat> ObtenerChats(string dniUsuario)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario)) return new List<Chat>();
+            return Get<List<Chat>>($"/chats/{Uri.EscapeDataString(dniUsuario)}")
+                   ?? new List<Chat>();
+        }
+
+        /// <summary>
+        /// GET /api/chats/:dniUsuario/mensajes?limite=20
+        /// Devuelve todos los mensajes de los últimos N chats del usuario,
+        /// agrupados por DNI del contacto. { "dni1": [...], "dni2": [...] }
+        /// </summary>
+        public static Dictionary<string, List<Mensaje>> ObtenerMensajesDeChats(string dniUsuario, int limite = 20)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario)) return new Dictionary<string, List<Mensaje>>();
+            return Get<Dictionary<string, List<Mensaje>>>(
+                $"/chats/{Uri.EscapeDataString(dniUsuario)}/mensajes?limite={limite}")
+                   ?? new Dictionary<string, List<Mensaje>>();
+        }
+
+        /// <summary>
+        /// GET /api/mensajes/:dniUsuario/:dniContacto
+        /// Devuelve la conversación entre dos usuarios ordenada por fecha.
+        /// También marca como leídos los mensajes recibidos.
+        /// </summary>
+        public static List<Mensaje> ObtenerMensajes(string dniUsuario, string dniContacto)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario) || string.IsNullOrWhiteSpace(dniContacto))
+                return new List<Mensaje>();
+            return Get<List<Mensaje>>(
+                $"/mensajes/{Uri.EscapeDataString(dniUsuario)}/{Uri.EscapeDataString(dniContacto)}")
+                   ?? new List<Mensaje>();
+        }
+
+        /// <summary>
+        /// POST /api/mensajes
+        /// Envía un mensaje nuevo. Devuelve el mensaje guardado o null si falla.
+        /// </summary>
+        public static Mensaje EnviarMensaje(string idEmisor, string idReceptor, string contenido)
+        {
+            if (string.IsNullOrWhiteSpace(idEmisor) ||
+                string.IsNullOrWhiteSpace(idReceptor) ||
+                string.IsNullOrWhiteSpace(contenido)) return null;
+
+            var response = Post("/mensajes", new
+            {
+                id_emisor   = idEmisor,
+                id_receptor = idReceptor,
+                contenido   = contenido
+            });
+            if (response == null || !response.IsSuccessStatusCode) return null;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
+        }
+
         // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────
 
         /// <summary>

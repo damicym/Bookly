@@ -113,6 +113,21 @@
   border: 2px solid rgba(6, 26, 64, 0.06);
 }
 
+/* Skeleton: sin cursor pointer, sin hover */
+.chat-conv-item--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Loader de mensajes */
+.chat-mensajes-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  opacity: 0.4;
+}
+
 .chat-conv-meta {
   flex: 1;
   min-width: 0;
