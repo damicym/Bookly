@@ -7,6 +7,8 @@ import librosRoutes from "./src/routes/libros.routes.js"
 import publicacionesRoutes from "./src/routes/publicaciones.routes.js"
 import deseadosRoutes from "./src/routes/deseados.routes.js"
 import resenasRoutes from "./src/routes/resenas.routes.js"
+import chatsRoutes from "./src/routes/chats.routes.js"
+import mensajesRoutes from "./src/routes/mensajes.routes.js"
 
 const app = express()
 
@@ -36,6 +38,8 @@ app.use('/api/libros', librosRoutes)
 app.use('/api/publicaciones', publicacionesRoutes)
 app.use('/api/deseados', deseadosRoutes)
 app.use('/api/resenas', resenasRoutes)
+app.use('/api/chats', chatsRoutes)
+app.use('/api/mensajes', mensajesRoutes)
 
 // 404 handler
 app.use((req, res) => {
