@@ -216,6 +216,80 @@ namespace Bookly.Controllers
         }
 
         /// <summary>
+        /// GET /Chat/ObtenerWidgetContacto?dniContacto=xxx
+        /// Devuelve el HTML del widget de contacto (partial view _VendedorCard)
+        /// para el contacto indicado. Lo consume el JS al cambiar de conversación.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerWidgetContacto(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniContacto))
+                return Content("", "text/html");
+
+            var contacto = BD.ObtenerUsuarioPorDNI(dniContacto);
+            if (contacto == null)
+                return Content("", "text/html");
+
+            var pubs = BD.ObtenerPublicacionesCompletasPorUsuario(dniContacto)
+                           .Where(p => p.status == 1).ToList();
+
+            var resenas = BD.ObtenerResenasPorReceptor(dniContacto)
+                            .Where(r => r.atencion.HasValue && r.entrega.HasValue).ToList();
+
+            var vm = new VendedorCardViewModel
+            {
+                DNI                  = contacto.DNI,
+                NombreComp           = contacto.nombreComp,
+                Ano                  = contacto.ano,
+                Especialidad         = contacto.especialidad,
+                Curso                = contacto.curso,
+                AboutMe              = contacto.aboutMe,
+                FotoPerfil           = contacto.fotoPerfil,
+                Pill                 = "Contacto",
+                VentasCerradas       = contacto.ventasCerradas,
+                ResenaCount          = resenas.Count,
+                PromedioAtencion     = resenas.Count > 0 ? resenas.Average(r => (double)r.atencion.Value) : (double?)null,
+                PromedioEntrega      = resenas.Count > 0 ? resenas.Average(r => (double)r.entrega.Value)  : (double?)null,
+                PublicacionesActivas = pubs.Count,
+                Publicaciones        = pubs,
+            };
+
+            return PartialView("_VendedorCard", vm);
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerPublicacionesChat?dniContacto=xxx
+        /// Devuelve las publicaciones activas del usuario logueado y del contacto,
+        /// separadas por sección. Lo consume el picker "+" del input de chat.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerPublicacionesChat(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            var misPublicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI)
+                .Where(p => p.status == 1)
+                .Select(p => new { id = p.id, nombre = p.nombre, precio = p.precio, imagen = p.imagen })
+                .ToList();
+
+            var pubsContacto = new List<object>();
+            if (!string.IsNullOrWhiteSpace(dniContacto))
+            {
+                pubsContacto = BD.ObtenerPublicacionesCompletasPorUsuario(dniContacto)
+                    .Where(p => p.status == 1)
+                    .Select(p => new { id = p.id, nombre = p.nombre, precio = p.precio, imagen = p.imagen })
+                    .Cast<object>()
+                    .ToList();
+            }
+
+            return Json(new { mias = misPublicaciones, contacto = pubsContacto });
+        }
+
+        /// <summary>
         /// POST /Chat/UpsertChat
         /// Body: { dniContacto }
         /// Registra o actualiza el chat en el historial del usuario logueado.

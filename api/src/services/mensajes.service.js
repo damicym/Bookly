@@ -1,34 +1,77 @@
 import supabase from '../db/supabase.js'
 
 /**
- * Guarda un mensaje nuevo y actualiza ultimo_mensaje en ambas filas de chats
- * (la del emisor y la del receptor) en paralelo.
+ * Guarda un mensaje nuevo y garantiza que ambas filas de chats existan
+ * (la del emisor y la del receptor), actualizando ultimo_mensaje en paralelo.
+ * Esto asegura que el receptor vea la conversación en su sidebar aunque
+ * nunca haya iniciado el chat desde su lado.
  */
 export async function enviarMensaje(idEmisor, idReceptor, contenido) {
 	const ahora = new Date().toISOString()
 
-	// Insertar el mensaje y actualizar ultimo_mensaje en los chats en paralelo
-	const [{ data, error }, { error: errChats }] = await Promise.all([
-		supabase
-			.from('mensajes')
-			.insert({ id_emisor: idEmisor, id_receptor: idReceptor, contenido, fecha_envio: ahora, leido: false })
-			.select()
-			.maybeSingle(),
-
-		// Actualiza el campo en las filas de ambos participantes (si existen)
-		supabase
-			.from('chats')
-			.update({ ultimo_mensaje: ahora })
-			.or(
-				`and(id_usuario.eq.${idEmisor},id_contacto.eq.${idReceptor}),` +
-				`and(id_usuario.eq.${idReceptor},id_contacto.eq.${idEmisor})`
-			)
-	])
+	// 1. Insertar el mensaje
+	const { data, error } = await supabase
+		.from('mensajes')
+		.insert({ id_emisor: idEmisor, id_receptor: idReceptor, contenido, fecha_envio: ahora, leido: false })
+		.select()
+		.maybeSingle()
 
 	if (error) throw error
-	if (errChats) console.error('[mensajes] Error actualizando ultimo_mensaje:', errChats.message)
+
+	// 2. Garantizar filas de chat para ambos lados en paralelo.
+	//    Usamos el RPC de Supabase con raw SQL vía rpc o insertamos manualmente:
+	//    - Si la fila no existe → INSERT (created_at = now(), ultimo_mensaje = ahora)
+	//    - Si ya existe → UPDATE solo ultimo_mensaje
+	await Promise.all([
+		_upsertChatRow(idEmisor, idReceptor, ahora),
+		_upsertChatRow(idReceptor, idEmisor, ahora)
+	])
 
 	return data
+}
+
+/**
+ * Inserta la fila (id_usuario, id_contacto) en chats si no existe,
+ * o actualiza ultimo_mensaje si ya existe.
+ * Se hace en dos pasos separados para evitar problemas con el constraint
+ * UNIQUE y el manejo de id serial en el upsert de Supabase.
+ */
+async function _upsertChatRow(idUsuario, idContacto, ultimoMensaje) {
+	console.log(`[chats] _upsertChatRow START: ${idUsuario} → ${idContacto}`)
+
+	// Intentar actualizar primero (caso más común: la fila ya existe)
+	// .select() al final hace que Supabase devuelva las filas afectadas
+	const { data: updated, error: errUpdate } = await supabase
+		.from('chats')
+		.update({ ultimo_mensaje: ultimoMensaje })
+		.eq('id_usuario', idUsuario)
+		.eq('id_contacto', idContacto)
+		.select('id')
+
+	console.log(`[chats] update result (${idUsuario}→${idContacto}):`, { updated, errUpdate })
+
+	if (errUpdate) {
+		console.error(`[chats] Error update (${idUsuario}→${idContacto}):`, errUpdate.message)
+		return
+	}
+
+	// Si el update no afectó ninguna fila (array vacío), la fila no existía → insertar
+	if (!updated || updated.length === 0) {
+		console.log(`[chats] fila no existe, insertando (${idUsuario}→${idContacto})`)
+		const { data: inserted, error: errInsert } = await supabase
+			.from('chats')
+			.insert({ id_usuario: idUsuario, id_contacto: idContacto, ultimo_mensaje: ultimoMensaje })
+			.select('id')
+
+		console.log(`[chats] insert result (${idUsuario}→${idContacto}):`, { inserted, errInsert })
+
+		if (errInsert && errInsert.code !== '23505') {
+			// 23505 = unique_violation: otra request ganó la carrera, no es error real
+			console.error(`[chats] Error insert (${idUsuario}→${idContacto}):`, errInsert.message)
+		}
+	} else {
+		console.log(`[chats] fila existía, actualizada (${idUsuario}→${idContacto}), id: ${updated[0]?.id}`)
+	}
 }
 
 /**

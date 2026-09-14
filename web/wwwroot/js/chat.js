@@ -13,11 +13,33 @@
     // Cache de mensajes prefetcheados: { [dniContacto]: Mensaje[] }
     let cacheMensajes = {};
 
+    // Borradores por chat: { [dniContacto]: innerHTML }
+    // Se guarda el contenido del input al cambiar de conversación
+    // y se restaura al volver a esa conversación.
+    const borradores = {};
+
     // AbortController del fetch de mensajes en curso
     let abortControllerMensajes = null;
 
     // ── contenteditable: placeholder y foco ──────────────
     const input = document.getElementById('chatInput');
+
+    // Devuelve true si el contenteditable está vacío (solo espacios/saltos/brs)
+    function inputEsVacio() {
+        if (!input) return true;
+        // Clonar para limpiar sin afectar el DOM
+        const clone = input.cloneNode(true);
+        // Reemplazar <br> por nada para que no cuenten como contenido
+        clone.querySelectorAll('br').forEach(function (br) { br.remove(); });
+        // Cubrir &nbsp; (U+00A0), zero-width space (U+200B) y BOM (U+FEFF)
+        return clone.textContent.replace(/[\u00A0\u200B\uFEFF]/g, ' ').trim() === '';
+    }
+
+    function togglePlaceholder() {
+        if (!input) return;
+        input.classList.toggle('chat-input--empty', inputEsVacio());
+    }
+
     if (input) {
         const range = document.createRange();
         const sel   = window.getSelection();
@@ -27,9 +49,6 @@
         sel.addRange(range);
         input.focus();
 
-        function togglePlaceholder() {
-            input.classList.toggle('chat-input--empty', input.textContent.trim() === '');
-        }
         input.addEventListener('input', togglePlaceholder);
         togglePlaceholder();
     }
@@ -70,6 +89,30 @@
             +   `<span class="chat-conv-nombre">${chat.nombreComp || ''}</span>`
             + `</div>`;
         return div;
+    }
+
+    // Muestra u oculta la línea de borrador debajo del nombre en el sidebar.
+    // textoPlano: contenido del borrador (sin HTML), o null para ocultar.
+    function actualizarBorradorEnSidebar(dniContacto, textoPlano) {
+        if (!convList) return;
+        const item = convList.querySelector(`.chat-conv-item[data-dni="${dniContacto}"]`);
+        if (!item) return;
+        const meta = item.querySelector('.chat-conv-meta');
+        if (!meta) return;
+
+        // Quitar preview anterior si existe
+        const prevPreview = meta.querySelector('.chat-conv-preview');
+        if (prevPreview) prevPreview.remove();
+
+        if (textoPlano && textoPlano.trim() !== '') {
+            const preview = document.createElement('span');
+            preview.className = 'chat-conv-preview chat-conv-preview--borrador';
+            // Escapar para evitar XSS — solo texto plano
+            preview.innerHTML =
+                `<span class="chat-conv-draft-label">Borrador:</span> `
+                + escapeHtml(textoPlano.trim());
+            meta.appendChild(preview);
+        }
     }
 
     function buildMensajeEl(msg) {
@@ -203,7 +246,33 @@
 
     // ── Abrir una conversación ────────────────────────────
     function abrirConversacion(dniContacto, nombreContacto, fotoContacto) {
+        // Guardar borrador del chat actual antes de cambiar
+        if (input && dniContactoActivo) {
+            // Extraer texto plano del borrador (sin HTML, sin <br>, sin &nbsp;)
+            const clone = input.cloneNode(true);
+            clone.querySelectorAll('br').forEach(function (br) { br.remove(); });
+            const textoBorrador = clone.textContent.replace(/\u00A0/g, ' ').trim();
+
+            if (textoBorrador !== '') {
+                borradores[dniContactoActivo] = input.innerHTML;
+                actualizarBorradorEnSidebar(dniContactoActivo, textoBorrador);
+            } else {
+                // Borrador vacío: limpiar
+                delete borradores[dniContactoActivo];
+                actualizarBorradorEnSidebar(dniContactoActivo, null);
+            }
+        }
+
         dniContactoActivo = dniContacto;
+
+        // Al entrar al chat, quitar el indicador de borrador del sidebar
+        actualizarBorradorEnSidebar(dniContacto, null);
+
+        // Cerrar el panel de adjuntos si estaba abierto
+        cerrarAttachPanel();
+
+        // Actualizar widget de contacto en la columna derecha
+        actualizarWidgetContacto(dniContacto);
 
         // Marcar activo en el sidebar
         if (convList) {
@@ -240,9 +309,22 @@
         if (emptyTitle) emptyTitle.textContent = 'Iniciá la conversación';
         if (emptySub)   emptySub.innerHTML = `Todavía no hay mensajes con <strong>${nombreContacto || ''}</strong>.<br/>¡Mandá el primero!`;
 
-        // Mostrar input
+        // Mostrar input y restaurar borrador (si hay uno guardado para este chat)
         const inputWrap = document.getElementById('chatInputWrap');
         if (inputWrap) inputWrap.style.display = '';
+        if (input) {
+            const borrador = borradores[dniContacto];
+            input.innerHTML = borrador !== undefined ? borrador : '';
+            // Mover cursor al final
+            const sel   = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(input);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            // Sincronizar placeholder con la nueva función centralizada
+            togglePlaceholder();
+        }
 
         // Cargar mensajes (con cache + loader si hace falta)
         cargarMensajes(dniContacto);
@@ -260,7 +342,7 @@
     function enviarMensaje() {
         if (!dniContactoActivo || !input) return;
         const contenido = input.textContent.trim();
-        if (!contenido) return;
+        if (!contenido || inputEsVacio()) return;
 
         const body       = document.getElementById('chatMessagesBody');
         const emptyState = document.getElementById('chatEmptyState');
@@ -277,6 +359,9 @@
 
         input.innerHTML = '';
         input.classList.add('chat-input--empty');
+        // Limpiar borrador al enviar exitosamente
+        delete borradores[dniContactoActivo];
+        actualizarBorradorEnSidebar(dniContactoActivo, null);
 
         fetch('/Chat/EnviarMensaje', {
             method:  'POST',
@@ -500,6 +585,266 @@
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') avatarModal.classList.remove('open');
         });
+    }
+
+    // ── Botón "+" adjuntar publicación ──────────────────
+    const attachBtn    = document.getElementById('chatAttachBtn');
+    const attachPanel  = document.getElementById('chatAttachPanel');
+    const attachClose  = document.getElementById('chatAttachClose');
+    const attachBody   = document.getElementById('chatAttachBody');
+    const attachLoad   = document.getElementById('chatAttachLoading');
+
+    // Cache de publicaciones para no re-fetchear al abrir el panel varias veces
+    // en la misma conversación: { [dniContacto]: { mias, contacto } }
+    let cacheAttachPubs = {};
+
+    function abrirAttachPanel() {
+        if (!attachPanel || !attachBtn) return;
+        attachPanel.hidden = false;
+        attachBtn.classList.add('chat-attach-btn--active');
+        attachBtn.setAttribute('aria-expanded', 'true');
+        cargarAttachPubs();
+    }
+
+    function cerrarAttachPanel() {
+        if (!attachPanel || !attachBtn) return;
+        attachPanel.hidden = true;
+        attachBtn.classList.remove('chat-attach-btn--active');
+        attachBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleAttachPanel() {
+        if (!attachPanel) return;
+        if (attachPanel.hidden) abrirAttachPanel();
+        else cerrarAttachPanel();
+    }
+
+    function cargarAttachPubs() {
+        if (!attachBody || !attachLoad) return;
+
+        // Si no hay contacto activo todavía, mostrar solo las mías
+        const dni = dniContactoActivo || '';
+
+        // Usar cache si ya tenemos datos para este contacto
+        if (cacheAttachPubs[dni]) {
+            renderAttachPubs(cacheAttachPubs[dni]);
+            return;
+        }
+
+        // Mostrar loading
+        attachLoad.style.display = 'flex';
+        // Limpiar contenido previo salvo el loader
+        Array.from(attachBody.children).forEach(function (el) {
+            if (el !== attachLoad) el.remove();
+        });
+
+        fetch('/Chat/ObtenerPublicacionesChat?dniContacto=' + encodeURIComponent(dni))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                cacheAttachPubs[dni] = data;
+                renderAttachPubs(data);
+            })
+            .catch(function (err) {
+                console.error('[attach] Error cargando publicaciones:', err);
+                attachLoad.style.display = 'none';
+            });
+    }
+
+    function buildAttachItem(pub, detailUrl) {
+        const btn = document.createElement('button');
+        btn.className = 'chat-attach-item';
+        btn.type      = 'button';
+
+        const imgSrc = pub.imagen || '/img/book-placeholder.webp';
+        btn.innerHTML =
+            `<img class="chat-attach-item-img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" loading="lazy" />`
+            + `<div class="chat-attach-item-info">`
+            +   `<span class="chat-attach-item-nombre">${escapeHtml(pub.nombre)}</span>`
+            +   `<span class="chat-attach-item-precio">$${pub.precio}</span>`
+            + `</div>`;
+
+        btn.addEventListener('click', function () {
+            insertarLinkPublicacion(pub, detailUrl);
+            cerrarAttachPanel();
+        });
+        return btn;
+    }
+
+    function renderAttachPubs(data) {
+        if (!attachBody || !attachLoad) return;
+        attachLoad.style.display = 'none';
+
+        // Limpiar secciones previas
+        Array.from(attachBody.children).forEach(function (el) {
+            if (el !== attachLoad) el.remove();
+        });
+
+        const mias     = data.mias     || [];
+        const contacto = data.contacto || [];
+        const hayMias  = mias.length > 0;
+        const hayContacto = contacto.length > 0;
+
+        if (!hayMias && !hayContacto) {
+            const empty = document.createElement('p');
+            empty.className   = 'chat-attach-empty';
+            empty.textContent = 'Ninguno de los dos tiene publicaciones activas.';
+            attachBody.appendChild(empty);
+            return;
+        }
+
+        // Sección: mis publicaciones
+        const labelMias = document.createElement('p');
+        labelMias.className   = 'chat-attach-section-label';
+        labelMias.textContent = 'Mis publicaciones';
+        attachBody.appendChild(labelMias);
+
+        if (hayMias) {
+            mias.forEach(function (pub) {
+                const url = '/Book/Detalle/' + pub.id;
+                attachBody.appendChild(buildAttachItem(pub, url));
+            });
+        } else {
+            const empty = document.createElement('p');
+            empty.className   = 'chat-attach-empty';
+            empty.textContent = 'No tenés publicaciones activas.';
+            attachBody.appendChild(empty);
+        }
+
+        // Sección: publicaciones del contacto (solo si hay contacto activo)
+        if (dniContactoActivo) {
+            const div = document.createElement('div');
+            div.className = 'chat-attach-divider';
+            attachBody.appendChild(div);
+
+            const labelContacto = document.createElement('p');
+            labelContacto.className   = 'chat-attach-section-label';
+            labelContacto.textContent = 'Sus publicaciones';
+            attachBody.appendChild(labelContacto);
+
+            if (hayContacto) {
+                contacto.forEach(function (pub) {
+                    const url = '/Book/Detalle/' + pub.id;
+                    attachBody.appendChild(buildAttachItem(pub, url));
+                });
+            } else {
+                const empty = document.createElement('p');
+                empty.className   = 'chat-attach-empty';
+                empty.textContent = 'No tiene publicaciones activas.';
+                attachBody.appendChild(empty);
+            }
+        }
+    }
+
+    // Inserta el nombre del libro como link en el contenteditable
+    function insertarLinkPublicacion(pub, url) {
+        if (!input) return;
+
+        input.focus();
+
+        // Si el input tiene contenido, agregar espacio antes del link
+        const textoActual = input.textContent.trim();
+
+        const link = document.createElement('a');
+        link.href             = url;
+        link.target           = '_blank';
+        link.rel              = 'noopener noreferrer';
+        link.className        = 'chat-msg-publi-link';
+        link.contentEditable  = 'false';
+        link.textContent      = pub.nombre;
+
+        // Mover cursor al final del input antes de insertar
+        const sel   = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(input);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        // Insertar espacio + link en la posición del cursor
+        if (textoActual.length > 0) {
+            document.execCommand('insertText', false, ' ');
+        }
+        range.collapse(false);
+        range.insertNode(link);
+
+        // Mover cursor después del link
+        range.setStartAfter(link);
+        range.setEndAfter(link);
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        // Insertar espacio después del link para que el cursor quede editable
+        document.execCommand('insertText', false, ' ');
+
+        // Actualizar placeholder
+        input.classList.remove('chat-input--empty');
+    }
+
+    if (attachBtn)   attachBtn.addEventListener('click', toggleAttachPanel);
+    if (attachClose) attachClose.addEventListener('click', cerrarAttachPanel);
+
+    // Cerrar panel al presionar Escape o al hacer click fuera
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && attachPanel && !attachPanel.hidden) cerrarAttachPanel();
+    });
+    document.addEventListener('click', function (e) {
+        if (!attachPanel || attachPanel.hidden) return;
+        if (!attachPanel.contains(e.target) && e.target !== attachBtn && !attachBtn.contains(e.target)) {
+            cerrarAttachPanel();
+        }
+    });
+
+    // Cerrar panel y limpiar cache al cambiar de conversación
+    // (el cierre real está en abrirConversacion directamente)
+
+    // ── Widget del contacto (columna derecha) ───────────
+    const colVendedor = document.getElementById('chatColVendedor');
+    // Cache de HTML del widget por contacto para no re-fetchear
+    const cacheWidget = {};
+
+    function actualizarWidgetContacto(dniContacto) {
+        if (!colVendedor) return;
+
+        // Si ya tenemos el HTML en cache, volcar directamente
+        if (cacheWidget[dniContacto] !== undefined) {
+            colVendedor.innerHTML = cacheWidget[dniContacto];
+            rewireAvatarModal();
+            return;
+        }
+
+        // Mostrar skeleton mientras carga
+        colVendedor.innerHTML = '<div class="chat-widget-loading">'
+            + '<svg class="chat-attach-spinner" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>'
+            + '</div>';
+
+        fetch('/Chat/ObtenerWidgetContacto?dniContacto=' + encodeURIComponent(dniContacto))
+            .then(function (r) { return r.text(); })
+            .then(function (html) {
+                cacheWidget[dniContacto] = html;
+                // Solo aplicar si este contacto sigue siendo el activo
+                if (dniContacto === dniContactoActivo) {
+                    colVendedor.innerHTML = html;
+                    rewireAvatarModal();
+                }
+            })
+            .catch(function (err) {
+                console.error('[widget] Error:', err);
+                colVendedor.innerHTML = '';
+            });
+    }
+
+    // Reconecta el modal de avatar después de inyectar HTML dinámico
+    function rewireAvatarModal() {
+        const avatarImg  = document.getElementById('avatarVendedorChat');
+        const modalEl    = document.getElementById('chatAvatarModal');
+        const modalImgEl = document.getElementById('chatAvatarModalImg');
+        if (avatarImg && modalEl && modalImgEl) {
+            avatarImg.onclick = function (e) {
+                e.stopPropagation();
+                modalImgEl.src = avatarImg.src;
+                modalEl.classList.add('open');
+            };
+        }
     }
 
     // ── Inicialización ────────────────────────────────────
