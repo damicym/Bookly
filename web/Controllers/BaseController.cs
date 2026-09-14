@@ -28,10 +28,13 @@ namespace Bookly.Controllers
                             ? resena.nombreReceptor
                             : "el vendedor";
 
+                        // Escapar comillas simples para uso seguro en el atributo onclick
+                        var nombreEscapado = nombreVendedor.Replace("'", "\\'");
+
                         notifs.Add(new Notificacion(
-                            titulo:    $"Cuando recibas tu libro, calificá a {nombreVendedor}",
+                            titulo:    $"Calificá a {nombreVendedor}",
                             subtitulo: "Tocá para dejar tu reseña",
-                            vinculo:   "https://trello.com/b/nuIpWLWk/bookly"   // se puede agregar la URL de la reseña cuando exista la pantalla
+                            vinculo:   $"javascript:abrirResenaModal({resena.id},'{nombreEscapado}','')"
                         ));
                     }
                 }
