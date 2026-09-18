@@ -131,6 +131,25 @@ namespace Bookly.Models
             }
         }
 
+        private static HttpResponseMessage Patch(string path, object body)
+        {
+            try
+            {
+                var json    = JsonSerializer.Serialize(body);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(HttpMethod.Patch, $"{_apiBase}{path}") { Content = content };
+                return _http.SendAsync(request).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         private static HttpResponseMessage Delete(string path)
         {
             try
@@ -481,6 +500,49 @@ namespace Bookly.Models
             if (string.IsNullOrWhiteSpace(dni)) return new List<Resena>();
             return Get<List<Resena>>($"/resenas/receptor/{Uri.EscapeDataString(dni)}")
                    ?? new List<Resena>();
+        }
+
+        /// <summary>
+        /// PATCH /api/resenas/:id
+        /// Completa una reseña pendiente con las puntuaciones individuales,
+        /// los promedios calculados y los textos opcionales.
+        /// Retorna true si la operación fue exitosa.
+        /// </summary>
+        public static bool EnviarResena(
+            int    id,
+            short  p1Atencion,
+            short  p2Entrega,
+            short? p3Entrega,
+            short? p4Experiencia,
+            short  atencion,
+            short  entrega,
+            string comentario,
+            string problema)
+        {
+            var response = Patch($"/resenas/{id}", new
+            {
+                p1_atencion    = p1Atencion,
+                p2_entrega     = p2Entrega,
+                p3_entrega     = (object?)p3Entrega,
+                p4_experiencia = (object?)p4Experiencia,
+                atencion       = atencion,
+                entrega        = entrega,
+                comentario     = comentario ?? "",
+                problema       = problema   ?? "",
+            });
+
+            if (response == null || !response.IsSuccessStatusCode) return false;
+
+            try
+            {
+                var json    = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var result  = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                return result.TryGetProperty("success", out var s) && s.GetBoolean();
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         // ── CHATS ────────────────────────────────────────────────────────────
