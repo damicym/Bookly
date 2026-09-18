@@ -23,15 +23,18 @@ export async function enviarMensaje(req, res) {
 
 /**
  * GET /api/mensajes/:dniUsuario/:dniContacto
+ * Query params: ?antes=ISO8601 (opcional, para lazy loading)
  * Devuelve la conversación entre dos usuarios, ordenada por fecha_envio asc.
  * También marca como leídos los mensajes recibidos por dniUsuario.
  */
 export async function getMensajes(req, res) {
 	try {
 		const { dniUsuario, dniContacto } = req.params
+		const antes = req.query.antes || null
+		
 		// Primero marca como leídos los mensajes que le envió el contacto al usuario
 		await mensajesService.marcarLeidos(dniUsuario, dniContacto)
-		const mensajes = await mensajesService.getMensajes(dniUsuario, dniContacto)
+		const mensajes = await mensajesService.getMensajes(dniUsuario, dniContacto, antes)
 		res.json(mensajes)
 	} catch (err) {
 		res.status(500).json({ error: err.message })

@@ -57,6 +57,7 @@ export async function getChatsByUsuario(idUsuario) {
 /**
  * Devuelve todos los mensajes de los últimos `limite` chats del usuario,
  * agrupados por dni del contacto. Se usa para el prefetch al cargar la página.
+ * Cada conversación devuelve máximo los últimos 50 mensajes.
  */
 export async function getMensajesDeChats(idUsuario, limite = 20) {
 	// 1. Obtener los últimos N contactos
@@ -72,25 +73,18 @@ export async function getMensajesDeChats(idUsuario, limite = 20) {
 
 	const contactos = chats.map(c => c.id_contacto)
 
-	// 2. Traer todos los mensajes de esas conversaciones en una sola query
-	const { data: mensajes, error: errMsg } = await supabase
-		.from('mensajes')
-		.select('id, id_emisor, id_receptor, contenido, fecha_envio, leido')
-		.or(
-			contactos.map(dni =>
-				`and(id_emisor.eq.${idUsuario},id_receptor.eq.${dni}),` +
-				`and(id_emisor.eq.${dni},id_receptor.eq.${idUsuario})`
-			).join(',')
-		)
-		.order('fecha_envio', { ascending: true })
-	if (errMsg) throw errMsg
-
-	// 3. Agrupar por contacto
+	// 2. Para cada contacto, traer solo los últimos 50 mensajes
 	const resultado = {}
-	for (const dni of contactos) resultado[dni] = []
-	for (const msg of (mensajes ?? [])) {
-		const contacto = msg.id_emisor === idUsuario ? msg.id_receptor : msg.id_emisor
-		if (resultado[contacto]) resultado[contacto].push(msg)
+	for (const dni of contactos) {
+		const { data: mensajes, error: errMsg } = await supabase
+			.from('mensajes')
+			.select('id, id_emisor, id_receptor, contenido, fecha_envio, leido')
+			.or(`and(id_emisor.eq.${idUsuario},id_receptor.eq.${dni}),and(id_emisor.eq.${dni},id_receptor.eq.${idUsuario})`)
+			.order('fecha_envio', { ascending: false })
+			.limit(50)
+		if (errMsg) throw errMsg
+		// Invertir para que queden en orden cronológico ascendente
+		resultado[dni] = (mensajes ?? []).reverse()
 	}
 	return resultado
 }

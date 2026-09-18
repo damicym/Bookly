@@ -77,18 +77,33 @@ async function _upsertChatRow(idUsuario, idContacto, ultimoMensaje) {
 /**
  * Devuelve todos los mensajes entre dos usuarios, ordenados por fecha_envio asc.
  * La conversación es bidireccional: trae tanto los enviados como los recibidos.
+ * Si se especifica 'antes', trae solo mensajes anteriores a esa fecha (para lazy loading).
  */
-export async function getMensajes(dniUsuario, dniContacto) {
-	const { data, error } = await supabase
+export async function getMensajes(dniUsuario, dniContacto, antes = null, limite = 50) {
+	let query = supabase
 		.from('mensajes')
 		.select('id, id_emisor, id_receptor, contenido, fecha_envio, leido')
 		.or(
 			`and(id_emisor.eq.${dniUsuario},id_receptor.eq.${dniContacto}),` +
 			`and(id_emisor.eq.${dniContacto},id_receptor.eq.${dniUsuario})`
 		)
-		.order('fecha_envio', { ascending: true })
+	
+	if (antes) {
+		// Cargar mensajes anteriores (lazy loading hacia arriba)
+		query = query.lt('fecha_envio', antes)
+			.order('fecha_envio', { ascending: false })
+			.limit(limite)
+	} else {
+		// Carga inicial: últimos 50 mensajes
+		query = query.order('fecha_envio', { ascending: false })
+			.limit(limite)
+	}
+	
+	const { data, error } = await query
 	if (error) throw error
-	return data ?? []
+	
+	// Invertir para orden cronológico ascendente
+	return (data ?? []).reverse()
 }
 
 /**

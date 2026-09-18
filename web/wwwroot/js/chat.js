@@ -13,6 +13,9 @@
     // Cache de mensajes prefetcheados: { [dniContacto]: Mensaje[] }
     let cacheMensajes = {};
 
+    // Estado de lazy loading por contacto: { [dniContacto]: { cargando: bool, hayMas: bool } }
+    let estadoLazyLoad = {};
+
     // Borradores por chat: { [dniContacto]: innerHTML }
     // Se guarda el contenido del input al cambiar de conversación
     // y se restaura al volver a esa conversación.
@@ -119,8 +122,51 @@
         const esMio = msg.idEmisor === DNI_USUARIO;
         const div = document.createElement('div');
         div.className = 'chat-msg ' + (esMio ? 'chat-msg--outgoing' : 'chat-msg--incoming');
-        div.innerHTML = `<div class="chat-msg-bubble">${escapeHtml(msg.contenido)}</div>`;
+        div.innerHTML = `<div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}</div>`;
         return div;
+    }
+
+    // Extrae contenido del input preservando links de publicaciones
+    function extraerContenidoConLinks(inputElement) {
+        const clone = inputElement.cloneNode(true);
+        
+        // Reemplazar <br> por saltos de línea
+        clone.querySelectorAll('br').forEach(function (br) {
+            br.replaceWith('\n');
+        });
+        
+        // Procesar nodos para preservar links
+        let resultado = '';
+        
+        function procesarNodo(nodo) {
+            if (nodo.nodeType === Node.TEXT_NODE) {
+                resultado += nodo.textContent;
+            } else if (nodo.nodeType === Node.ELEMENT_NODE) {
+                if (nodo.tagName === 'A' && nodo.classList.contains('chat-msg-publi-link')) {
+                    // Preservar link de publicación con formato especial usando ||| como separador
+                    resultado += `[PUBLINK|||${nodo.href}|||${nodo.textContent}]`;
+                } else {
+                    // Procesar hijos de otros elementos
+                    nodo.childNodes.forEach(procesarNodo);
+                }
+            }
+        }
+        
+        clone.childNodes.forEach(procesarNodo);
+        return resultado.trim();
+    }
+
+    // Procesa contenido de mensaje para renderizar (convierte formato especial a HTML)
+    function procesarContenidoMensaje(contenido) {
+        // Escapar HTML primero
+        let resultado = escapeHtml(contenido);
+        
+        // Convertir formato especial [PUBLINK|||url|||texto] a links HTML
+        resultado = resultado.replace(/\[PUBLINK\|\|\|(.*?)\|\|\|(.*?)\]/g, function (match, url, texto) {
+            return `<a href="${escapeHtml(url)}" class="chat-msg-publi-link" target="_blank" rel="noopener noreferrer">${escapeHtml(texto)}</a>`;
+        });
+        
+        return resultado;
     }
 
     function escapeHtml(str) {
@@ -159,15 +205,23 @@
             });
     }
 
-    // ── Prefetch: mensajes de los últimos 20 chats ────────
-    // Se dispara al cargar la página. Llena la cache para que
-    // al abrir cualquier chat los mensajes aparezcan instantáneamente.
+    // ── Prefetch: mensajes de los últimos 10 chats ────────
+    // Se dispara al cargar la página (no bloquea la carga).
+    // Llena la cache para que al abrir cualquier chat los mensajes aparezcan instantáneamente.
     function prefetchMensajes() {
         fetch('/Chat/PrefetchMensajes')
             .then(r => r.json())
             .then(function (data) {
                 // data es { "dniContacto": [...mensajes] }
                 cacheMensajes = data || {};
+
+                // Inicializar estado de lazy load para cada contacto
+                Object.keys(cacheMensajes).forEach(function (dni) {
+                    estadoLazyLoad[dni] = {
+                        cargando: false,
+                        hayMas: cacheMensajes[dni].length >= 50  // Si trajo 50, probablemente hay más
+                    };
+                });
 
                 // Si ya hay un chat activo al entrar (vendedorDNI por query string),
                 // renderizarlo ahora que tenemos los datos
@@ -181,7 +235,7 @@
     }
 
     // ── Renderizar mensajes en el body ────────────────────
-    function renderizarMensajes(dniContacto, mensajes) {
+    function renderizarMensajes(dniContacto, mensajes, anteponer = false) {
         // Solo aplicar si el contacto sigue siendo el activo
         if (dniContacto !== dniContactoActivo) return;
 
@@ -190,19 +244,90 @@
         const loader     = document.getElementById('chatMensajesLoader');
         if (!body) return;
 
-        if (loader) loader.remove();
-        Array.from(body.querySelectorAll('.chat-msg')).forEach(el => el.remove());
+        // Verificar si hay un fetch en curso ANTES de ocultar el loader
+        const estabaConLoader = loader && loader.style.display === 'flex';
+
+        // Ocultar loader
+        if (loader) loader.style.display = 'none';
+
+        if (!anteponer) {
+            // Carga inicial: limpiar todo
+            Array.from(body.querySelectorAll('.chat-msg')).forEach(el => el.remove());
+        }
 
         if (!mensajes || mensajes.length === 0) {
-            if (emptyState) emptyState.style.display = '';
+            // Solo mostrar el empty state si este render viene del fetch definitivo
+            // (no del prefetch que llega mientras el loader sigue activo)
+            if (!anteponer && emptyState && !estabaConLoader) emptyState.style.display = '';
             return;
         }
 
         if (emptyState) emptyState.style.display = 'none';
         const frag = document.createDocumentFragment();
         mensajes.forEach(function (msg) { frag.appendChild(buildMensajeEl(msg)); });
-        body.appendChild(frag);
-        body.scrollTop = body.scrollHeight;
+        
+        if (anteponer) {
+            // Lazy loading: insertar al principio
+            const scrollAltura = body.scrollHeight;
+            body.insertBefore(frag, body.firstChild);
+            // Mantener la posición de scroll relativa
+            body.scrollTop = body.scrollHeight - scrollAltura;
+        } else {
+            // Carga inicial: agregar al final y scroll al bottom
+            body.appendChild(frag);
+            body.scrollTop = body.scrollHeight;
+        }
+    }
+
+    // ── Cargar mensajes más antiguos (lazy loading) ───────
+    function cargarMensajesAntiguos(dniContacto) {
+        const estado = estadoLazyLoad[dniContacto];
+        if (!estado || estado.cargando || !estado.hayMas) return;
+
+        const mensajesActuales = cacheMensajes[dniContacto];
+        if (!mensajesActuales || mensajesActuales.length === 0) return;
+
+        // Obtener fecha del mensaje más antiguo
+        const mensajeMasAntiguo = mensajesActuales[0];
+        const antes = mensajeMasAntiguo.fechaEnvio;
+
+        estado.cargando = true;
+
+        // Mostrar indicador de carga temporal (este sí se puede eliminar)
+        const body = document.getElementById('chatMessagesBody');
+        const tempLoader = document.createElement('div');
+        tempLoader.className = 'chat-load-more-spinner';
+        tempLoader.id = 'chatTempLoader';
+        tempLoader.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chat-spinner-icon"><path d="M12 3a9 9 0 1 0 9 9"/></svg><span>Cargando mensajes anteriores...</span>';
+        body.insertBefore(tempLoader, body.firstChild);
+
+        fetch('/Chat/ObtenerMensajes?dniContacto=' + encodeURIComponent(dniContacto) + '&antes=' + encodeURIComponent(antes))
+            .then(r => r.json())
+            .then(function (mensajesNuevos) {
+                tempLoader.remove();
+                estado.cargando = false;
+
+                if (!mensajesNuevos || mensajesNuevos.length === 0) {
+                    estado.hayMas = false;
+                    return;
+                }
+
+                // Si trajo menos de 50, no hay más
+                if (mensajesNuevos.length < 50) {
+                    estado.hayMas = false;
+                }
+
+                // Agregar al inicio del cache
+                cacheMensajes[dniContacto] = mensajesNuevos.concat(cacheMensajes[dniContacto]);
+
+                // Renderizar anteponiendo
+                renderizarMensajes(dniContacto, mensajesNuevos, true);
+            })
+            .catch(function (err) {
+                console.error('[lazy-load] Error:', err);
+                tempLoader.remove();
+                estado.cargando = false;
+            });
     }
 
     // ── Cargar mensajes de una conversación (con cache) ──
@@ -210,8 +335,9 @@
     // 2. Siempre hace fetch en background para actualizar con mensajes nuevos.
     // 3. Cancela el fetch anterior si se cambia de chat antes de que termine.
     function cargarMensajes(dniContacto) {
-        const body   = document.getElementById('chatMessagesBody');
-        const loader = document.getElementById('chatMensajesLoader');
+        const body       = document.getElementById('chatMessagesBody');
+        const loader     = document.getElementById('chatMensajesLoader');
+        const emptyState = document.getElementById('chatEmptyState');
         if (!body) return;
 
         // Cancelar fetch anterior
@@ -225,8 +351,9 @@
         if (cacheMensajes[dniContacto] !== undefined) {
             renderizarMensajes(dniContacto, cacheMensajes[dniContacto]);
         } else {
-            // Sin cache: mostrar loader
+            // Sin cache: mostrar loader y ocultar empty-state
             Array.from(body.querySelectorAll('.chat-msg')).forEach(el => el.remove());
+            if (emptyState) emptyState.style.display = 'none';
             if (loader) loader.style.display = 'flex';
         }
 
@@ -235,6 +362,15 @@
             .then(r => r.json())
             .then(function (mensajes) {
                 cacheMensajes[dniContacto] = mensajes;
+                
+                // Inicializar estado de lazy load
+                if (!estadoLazyLoad[dniContacto]) {
+                    estadoLazyLoad[dniContacto] = {
+                        cargando: false,
+                        hayMas: mensajes.length >= 50  // Si trajo 50, probablemente hay más
+                    };
+                }
+                
                 renderizarMensajes(dniContacto, mensajes);
             })
             .catch(function (err) {
@@ -306,9 +442,13 @@
         // Actualizar empty state
         const emptyTitle = document.querySelector('#chatEmptyState .chat-empty-title');
         const emptySub   = document.querySelector('#chatEmptyState .chat-empty-sub');
+        const emptyBtn   = document.getElementById('chatEmptyNuevoBtn');
+        
         if (emptyTitle) emptyTitle.textContent = 'Iniciá la conversación';
         if (emptySub)   emptySub.innerHTML = `Todavía no hay mensajes con <strong>${nombreContacto || ''}</strong>.<br/>¡Mandá el primero!`;
-
+        
+        // Ocultar botón "Nuevo chat" cuando hay un chat seleccionado
+        if (emptyBtn) emptyBtn.style.display = 'none';
         // Mostrar input y restaurar borrador (si hay uno guardado para este chat)
         const inputWrap = document.getElementById('chatInputWrap');
         if (inputWrap) inputWrap.style.display = '';
@@ -341,12 +481,16 @@
 
     function enviarMensaje() {
         if (!dniContactoActivo || !input) return;
-        const contenido = input.textContent.trim();
-        if (!contenido || inputEsVacio()) return;
+        
+        // Extraer contenido preservando links
+        const contenidoHtml = extraerContenidoConLinks(input);
+        const contenidoTexto = input.textContent.trim();
+        
+        if (!contenidoTexto || inputEsVacio()) return;
 
         const body       = document.getElementById('chatMessagesBody');
         const emptyState = document.getElementById('chatEmptyState');
-        const nuevoMsg   = { idEmisor: DNI_USUARIO, idReceptor: dniContactoActivo, contenido };
+        const nuevoMsg   = { idEmisor: DNI_USUARIO, idReceptor: dniContactoActivo, contenido: contenidoHtml };
         const msgTemp    = buildMensajeEl(nuevoMsg);
 
         if (emptyState) emptyState.style.display = 'none';
@@ -366,7 +510,7 @@
         fetch('/Chat/EnviarMensaje', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ dniReceptor: dniContactoActivo, contenido })
+            body:    JSON.stringify({ dniReceptor: dniContactoActivo, contenido: contenidoHtml })
         })
         .then(r => {
             if (!r.ok) throw new Error('Error al enviar');
@@ -504,7 +648,10 @@
     if (btnNuevo)     btnNuevo.addEventListener('click', abrirModalNuevo);
     if (modalClose)   modalClose.addEventListener('click', cerrarModalNuevo);
     if (modalOverlay) modalOverlay.addEventListener('click', cerrarModalNuevo);
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarModalNuevo(); });
+    
+    // Botón "Nuevo chat" en el empty state
+    const btnEmptyNuevo = document.getElementById('chatEmptyNuevoBtn');
+    if (btnEmptyNuevo) btnEmptyNuevo.addEventListener('click', abrirModalNuevo);
 
     // ── Navegación por paneles (móvil ≤600px) ────────────
     const chatPage = document.querySelector('.chat-page');
@@ -579,18 +726,36 @@
         if (avatarModal) avatarModal.classList.remove('open');
     }
 
-    if (avatarChat && avatarModal) {
+    // Configurar listeners de cierre del modal UNA VEZ (siempre activos)
+    if (avatarModal) {
+        // Cerrar al hacer click en el overlay (fuera de la imagen)
+        avatarModal.addEventListener('click', function (e) {
+            if (e.target === avatarModal) cerrarAvatarModal();
+        });
+    }
+
+    // Si hay un avatar inicial (vendedor por URL), conectarlo
+    if (avatarChat && avatarModal && avatarModalImg) {
         avatarChat.addEventListener('click', function (e) {
             e.stopPropagation();
             avatarModalImg.src = avatarChat.src;
             avatarModal.classList.add('open');
         });
-        // Cerrar al hacer click en el overlay (fuera de la imagen)
-        avatarModal.addEventListener('click', function (e) {
-            if (e.target === avatarModal) cerrarAvatarModal();
-        });
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') cerrarAvatarModal();
+    }
+
+    // ── Listener de scroll para lazy loading ──────────────
+    const chatBody = document.getElementById('chatMessagesBody');
+    if (chatBody) {
+        let scrollTimeout = null;
+        chatBody.addEventListener('scroll', function () {
+            // Debounce para no ejecutar en cada pixel de scroll
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(function () {
+                // Si está cerca del top (menos de 100px), cargar más
+                if (chatBody.scrollTop < 100 && dniContactoActivo) {
+                    cargarMensajesAntiguos(dniContactoActivo);
+                }
+            }, 150);
         });
     }
 
@@ -835,10 +1000,10 @@
             +     '<div class="vsk-barra-seg vsk-shimmer"></div>'
             +     '<div class="vsk-barra-seg vsk-shimmer"></div>'
             +   '</div>'
-            +   '<div class="vsk-stats-row">'
-            +     '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--sm vsk-shimmer"></div></div>'
-            +     '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--lg vsk-shimmer"></div></div>'
-            +     '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--md vsk-shimmer"></div></div>'
+            +   '<div class="vsk-stats-row vsk-stats-row--skeleton">'
+            +     '<div class="vsk-stat-icon vsk-stat-icon--large vsk-shimmer"></div>'
+            +     '<div class="vsk-stat-icon vsk-stat-icon--large vsk-shimmer"></div>'
+            +     '<div class="vsk-stat-icon vsk-stat-icon--large vsk-shimmer"></div>'
             +   '</div>'
             + '</div>'
             // pubs skeleton
@@ -876,7 +1041,7 @@
         return '<div class="det-vendedor-top">'
             + `<img src="${escapeHtml(avatar)}" alt="perfil" class="det-vendedor-avatar" id="avatarVendedorChat" style="cursor:pointer" title="Ver foto" />`
             + '<div>'
-            +   '<span class="det-vendedor-pill">Contacto</span>'
+            /* +   '<span class="det-vendedor-pill">Contacto</span>' */
             +   `<p class="det-vendedor-nombre">${nombre}</p>`
             +   `<p class="det-vendedor-sub">${sub}</p>`
             +   (about ? `<p class="det-vendedor-about">${about}</p>` : '')
@@ -890,10 +1055,10 @@
             + '<div class="vsk-barra">'
             + '<div class="vsk-barra-seg vsk-shimmer"></div>'.repeat(5)
             + '</div>'
-            + '<div class="vsk-stats-row">'
-            + '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--sm vsk-shimmer"></div></div>'
-            + '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--lg vsk-shimmer"></div></div>'
-            + '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--md vsk-shimmer"></div></div>'
+            + '<div class="vsk-stats-row vsk-stats-row--skeleton">'
+            + '<div class="vsk-stat-icon vsk-stat-icon--large vsk-shimmer"></div>'
+            + '<div class="vsk-stat-icon vsk-stat-icon--large vsk-shimmer"></div>'
+            + '<div class="vsk-stat-icon vsk-stat-icon--large vsk-shimmer"></div>'
             + '</div>';
     }
 
@@ -957,6 +1122,7 @@
         }
 
         const countLabel = count === 1 ? '1 reseña' : count + ' reseñas';
+        const countText = count === 0 ? 'No ha recibido reseñas todavía' : `En base a ${countLabel}`;
 
         let statsRowExtra = '';
         if (count > 0) {
@@ -973,7 +1139,7 @@
                 + '</div>';
         }
 
-        return `<span class="det-rep-resena-count">(${countLabel})</span>`
+        return `<span class="det-rep-resena-count">${countText}</span>`
             + '<div class="det-rep-barra-segmentada">'
             +   `<div class="det-rep-seg det-rep-seg-1 ${segClass(1)}"></div>`
             +   `<div class="det-rep-seg det-rep-seg-2 ${segClass(2)}"></div>`
@@ -1049,12 +1215,14 @@
 
         const enc = encodeURIComponent(dniContacto);
 
+        // Inicializar cache para este contacto
+        if (!cacheWidget[dniContacto]) cacheWidget[dniContacto] = {};
+
         // ── PASO 1: info básica ────────────────────────────
         fetch('/Chat/ObtenerInfoContacto?dniContacto=' + enc)
             .then(function (r) { return r.json(); })
             .then(function (info) {
                 if (!info || dniContacto !== dniContactoActivo) return;
-                if (!cacheWidget[dniContacto]) cacheWidget[dniContacto] = {};
                 cacheWidget[dniContacto].info = info;
 
                 // Reemplazar sección top con datos reales, mantener stats+pubs skeleton
@@ -1062,34 +1230,69 @@
                 if (!card) return;
                 const vskTop = card.querySelector('.vsk-top');
                 if (vskTop) vskTop.outerHTML = buildWidgetTop(info);
+
+                // Si las reseñas ya llegaron mientras esperábamos info, renderizarlas ahora
+                const resenasCache = cacheWidget[dniContacto].resenas;
+                if (resenasCache) {
+                    const statsWrap = colVendedor.querySelector('.vsk-stats');
+                    if (statsWrap) {
+                        statsWrap.className = 'det-vendedor-stats-widget';
+                        statsWrap.innerHTML = buildWidgetStats(info, resenasCache);
+                    }
+                }
             })
-            .catch(function (err) { console.error('[widget/info]', err); });
+            .catch(function (err) {
+                console.error('[widget/info]', err);
+                // Fallback: mostrar algo genérico si falla
+                if (dniContacto === dniContactoActivo) {
+                    const card = colVendedor.querySelector('.det-vendedor-card');
+                    if (card) {
+                        const vskTop = card.querySelector('.vsk-top');
+                        if (vskTop) {
+                            vskTop.outerHTML = '<div class="det-vendedor-top"><p style="color:rgba(255,255,255,0.5);text-align:center;padding:20px">Error al cargar información</p></div>';
+                        }
+                    }
+                }
+            });
 
         // ── PASO 2: reseñas ────────────────────────────────
         fetch('/Chat/ObtenerResenasContacto?dniContacto=' + enc)
             .then(function (r) { return r.json(); })
             .then(function (resenas) {
                 if (!resenas || dniContacto !== dniContactoActivo) return;
-                if (!cacheWidget[dniContacto]) cacheWidget[dniContacto] = {};
                 cacheWidget[dniContacto].resenas = resenas;
 
+                // Solo renderizar si ya tenemos info
                 const infoActual = cacheWidget[dniContacto].info;
-                if (!infoActual) return; // info aún no llegó — se resolverá cuando llegue
-
-                const statsWrap = colVendedor.querySelector('.vsk-stats');
-                if (statsWrap) {
-                    statsWrap.className = 'det-vendedor-stats-widget';
-                    statsWrap.innerHTML = buildWidgetStats(infoActual, resenas);
+                if (infoActual) {
+                    const statsWrap = colVendedor.querySelector('.vsk-stats');
+                    if (statsWrap) {
+                        statsWrap.className = 'det-vendedor-stats-widget';
+                        statsWrap.innerHTML = buildWidgetStats(infoActual, resenas);
+                    }
                 }
+                // Si info no llegó aún, se renderizará cuando llegue (ver arriba)
             })
-            .catch(function (err) { console.error('[widget/resenas]', err); });
+            .catch(function (err) {
+                console.error('[widget/resenas]', err);
+                // Fallback: mostrar stats vacíos si falla
+                if (dniContacto === dniContactoActivo) {
+                    const infoActual = cacheWidget[dniContacto].info;
+                    if (infoActual) {
+                        const statsWrap = colVendedor.querySelector('.vsk-stats');
+                        if (statsWrap) {
+                            statsWrap.className = 'det-vendedor-stats-widget';
+                            statsWrap.innerHTML = buildWidgetStats(infoActual, { resenaCount: 0 });
+                        }
+                    }
+                }
+            });
 
         // ── PASO 3: publicaciones ──────────────────────────
         fetch('/Chat/ObtenerPublicacionesContacto?dniContacto=' + enc)
             .then(function (r) { return r.json(); })
             .then(function (pubs) {
                 if (!pubs || dniContacto !== dniContactoActivo) return;
-                if (!cacheWidget[dniContacto]) cacheWidget[dniContacto] = {};
                 cacheWidget[dniContacto].pubs = pubs;
 
                 const pubsWrap = colVendedor.querySelector('.vsk-pubs');
@@ -1098,7 +1301,17 @@
                     pubsWrap.innerHTML = buildWidgetPubs(pubs);
                 }
             })
-            .catch(function (err) { console.error('[widget/pubs]', err); });
+            .catch(function (err) {
+                console.error('[widget/pubs]', err);
+                // Fallback: mostrar mensaje de error
+                if (dniContacto === dniContactoActivo) {
+                    const pubsWrap = colVendedor.querySelector('.vsk-pubs');
+                    if (pubsWrap) {
+                        pubsWrap.className = 'det-otras';
+                        pubsWrap.innerHTML = '<p class="det-otras-empty">Error al cargar publicaciones</p>';
+                    }
+                }
+            });
 
         // Una vez que info llega y el DOM fue actualizado, rewire el avatar modal
         // lo hacemos con un MutationObserver ligero sobre el top del widget
@@ -1144,12 +1357,21 @@
     cargarSidebar();
     prefetchMensajes();
 
-    // Si hay vendedor activo al entrar, disparar la carga progresiva del widget
+    // Si hay vendedor activo al entrar, cargar mensajes y widget
     if (dniContactoActivo) {
-        const body = document.getElementById('chatMessagesBody');
-        const loader = document.getElementById('chatMensajesLoader');
-        if (body && loader) loader.style.display = 'flex';
+        const emptyState = document.getElementById('chatEmptyState');
+        if (emptyState) emptyState.style.display = 'none';
+        cargarMensajes(dniContactoActivo);
         actualizarWidgetContacto(dniContactoActivo);
     }
+
+    // ── Listener global para Escape (cierra todos los modales/drawers) ───
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            cerrarAvatarModal();
+            cerrarModalNuevo();
+            cerrarDrawerVendedor();
+        }
+    });
 
 })();

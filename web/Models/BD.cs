@@ -583,17 +583,23 @@ namespace Bookly.Models
         }
 
         /// <summary>
-        /// GET /api/mensajes/:dniUsuario/:dniContacto
+        /// GET /api/mensajes/:dniUsuario/:dniContacto?antes=ISO8601
         /// Devuelve la conversación entre dos usuarios ordenada por fecha.
+        /// Si se proporciona 'antes', devuelve solo mensajes anteriores (lazy loading).
         /// También marca como leídos los mensajes recibidos.
         /// </summary>
-        public static List<Mensaje> ObtenerMensajes(string dniUsuario, string dniContacto)
+        public static List<Mensaje> ObtenerMensajes(string dniUsuario, string dniContacto, string antes = null)
         {
             if (string.IsNullOrWhiteSpace(dniUsuario) || string.IsNullOrWhiteSpace(dniContacto))
                 return new List<Mensaje>();
-            return Get<List<Mensaje>>(
-                $"/mensajes/{Uri.EscapeDataString(dniUsuario)}/{Uri.EscapeDataString(dniContacto)}")
-                   ?? new List<Mensaje>();
+            
+            string url = $"/mensajes/{Uri.EscapeDataString(dniUsuario)}/{Uri.EscapeDataString(dniContacto)}";
+            if (!string.IsNullOrWhiteSpace(antes))
+            {
+                url += $"?antes={Uri.EscapeDataString(antes)}";
+            }
+            
+            return Get<List<Mensaje>>(url) ?? new List<Mensaje>();
         }
 
         /// <summary>

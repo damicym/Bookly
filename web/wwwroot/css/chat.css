@@ -6,20 +6,29 @@
 .chat-page-wrapper {
   width: min(1400px, 100vw - 48px);
   margin: 0 auto;
-  padding: 20px 0 60px;
+  padding: 20px 0 0;
   box-sizing: border-box;
+}
+
+/* Cuando estamos en la página de chat: sin scroll en la página, sin footer */
+body:has(.chat-page-wrapper) {
+  overflow: hidden;
+}
+
+body:has(.chat-page-wrapper) .footer {
+  display: none;
 }
 
 /* Grid principal */
 .chat-page {
+  --chat-height: calc(100dvh - 170px);  /* navbar (~80px) + padding top (20px) + volver (40px) + 10px extra*/
   display: grid;
   grid-template-columns: 280px 1fr 290px;
+  grid-template-rows: var(--chat-height);
   gap: 24px;
   width: 100%;
   align-items: start;
   box-sizing: border-box;
-  /* Altura fija para que la ventana de chat no empuje el layout */
-  height: calc(100dvh - 180px);
   min-height: 520px;
 }
 
@@ -41,10 +50,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 16px 16px 6px;
+  padding: 16px;
   border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
   background: var(--lightDarker);
   flex-shrink: 0;
+  min-height: 63px;
 }
 
 /* Botón volver en el header de la lista — oculto en desktop */
@@ -70,6 +80,7 @@
 .chat-conv-list {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -133,7 +144,16 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  opacity: 0.4;
+}
+
+.chat-mensajes-spinner {
+  color: #3b82f6; /* Azul */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .chat-conv-meta {
@@ -235,6 +255,7 @@
   border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
   background: var(--lightDarker);
   flex-shrink: 0;
+  min-height: 63px;
 }
 
 .chat-messages-nombre {
@@ -254,6 +275,7 @@
 .chat-messages-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px 20px 10px;
   display: flex;
   flex-direction: column;
@@ -296,7 +318,7 @@
 }
 
 .chat-msg--outgoing .chat-msg-bubble {
-  background: var(--main);
+  background: var(--secondary2Darker);
   color: #fff;
   border-bottom-right-radius: 4px;
   box-shadow: 0 2px 10px rgba(64, 89, 173, 0.25);
@@ -330,7 +352,7 @@
 .chat-input {
   flex: 1;
   resize: none;
-  border: 1.5px solid rgba(6, 26, 64, 0.12);
+  border: 1.5px solid rgba(6, 26, 64, 0.2);
   border-radius: 14px;
   padding: 11px 14px;
   font-family: inherit;
@@ -348,7 +370,7 @@
 }
 
 .chat-input:focus {
-  border-color: var(--main);
+  border-color: var(--secondary2Darker);
   box-shadow: 0 0 0 3px rgba(64, 89, 173, 0.1);
 }
 
@@ -363,7 +385,7 @@
 .chat-input--empty::before,
 .chat-input:not(:focus):empty::before {
   content: attr(data-placeholder);
-  color: rgba(6, 26, 64, 0.3);
+  color: rgba(6, 26, 64, 0.5);
   pointer-events: none;
   position: absolute;
   top: 11px;
@@ -379,14 +401,19 @@
   color: var(--main);
   font-weight: 700;
   text-decoration: none;
-  border-bottom: 1.5px solid rgba(64, 89, 173, 0.4);
+  border-bottom: 1.5px solid var(--main);
   cursor: pointer;
   transition: opacity 0.15s;
 }
 
 .chat-msg-publi-link:hover {
   opacity: 0.75;
-  border-bottom-color: var(--main);
+}
+
+/* En mensajes propios (fondo azul) el link va en blanco */
+.chat-msg--outgoing .chat-msg-publi-link {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.6);
 }
 
 /* ── Botón "+" adjuntar publicación ── */
@@ -395,7 +422,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1.5px solid rgba(6, 26, 64, 0.15);
+  border: 1.5px solid rgba(6, 26, 64, 0.2);
   background: #fff;
   color: rgba(6, 26, 64, 0.5);
   display: flex;
@@ -406,8 +433,8 @@
 }
 
 .chat-attach-btn:hover {
-  border-color: var(--main);
-  color: var(--main);
+  border-color: var(--secondary2Darker);
+  color: var(--secondary2Darker);
   background: rgba(64, 89, 173, 0.06);
 }
 
@@ -416,8 +443,8 @@
 }
 
 .chat-attach-btn--active {
-  border-color: var(--main);
-  color: var(--main);
+  border-color: var(--secondary2Darker);
+  color: var(--secondary2Darker);
   background: rgba(64, 89, 173, 0.1);
   transform: rotate(45deg);
 }
@@ -578,7 +605,7 @@
   height: 44px;
   border-radius: 50%;
   border: none;
-  background: var(--main);
+  background: var(--secondary2Darker);
   color: #fff;
   display: flex;
   align-items: center;
@@ -604,10 +631,10 @@
    Sólo sobreescribe lo necesario.
 ══════════════════════════════ */
 .chat-col-vendedor {
-  /* Sticky igual que en detalle */
-  position: sticky;
-  top: 120px;
+  /* Se adapta al contenido pero nunca supera la altura del grid */
+  max-height: 100%;
   align-self: start;
+  overflow: hidden;
 }
 
 /* Empty state cuando no hay conversación activa */
@@ -620,6 +647,9 @@
   padding: 40px 20px;
   color: rgba(6, 26, 64, 0.3);
   text-align: center;
+  /* border-top: 2px solid; */
+  border-radius: 18px;
+  box-shadow: 0px 0px 10px inset rgb(212, 213, 219);
 }
 
 .chat-widget-empty p {
@@ -1009,8 +1039,8 @@
 }
 
 .chat-empty-icon {
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: rgba(64, 89, 173, 0.07);
   border: 2px solid rgba(64, 89, 173, 0.12);
@@ -1022,17 +1052,42 @@
 }
 
 .chat-empty-title {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   color: var(--dark);
   margin: 0;
 }
 
 .chat-empty-sub {
-  font-size: 0.83rem;
+  font-size: 0.92rem;
   color: rgba(6, 26, 64, 0.45);
   margin: 0;
   line-height: 1.6;
+  font-weight: 600;
+}
+
+.chat-empty-nuevo-btn {
+  margin-top: 8px;
+  padding: 10px 20px;
+  background: var(--main);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.chat-empty-nuevo-btn:hover {
+  filter: brightness(0.9);
+}
+
+.chat-empty-nuevo-btn:active {
+  transform: scale(0.95);
 }
 
 /* ══════════════════════════════
@@ -1419,7 +1474,102 @@
   overflow: visible !important;
 }
 
+/* ── Col 3: card ocupa toda la altura disponible de la columna ── */
+.chat-col-vendedor .det-vendedor-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Top y stats no scrollean — ocupan lo que necesitan */
+.chat-col-vendedor .det-vendedor-top,
+.chat-col-vendedor .det-vendedor-stats-widget,
+.chat-col-vendedor .det-vendedor-nivel,
+.chat-col-vendedor .vsk-top,
+.chat-col-vendedor .vsk-stats,
+.chat-col-vendedor .det-vendedor-cta-wrap {
+  flex-shrink: 0;
+}
+
+/* La sección de publicaciones absorbe el espacio restante */
+.chat-col-vendedor .det-otras {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Solo el grid de publicaciones scrollea */
+.chat-col-vendedor .det-otras-grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 22px;
+}
+
+/* Los ítems no se encogen — el grid desborda y activa el scroll */
+.chat-col-vendedor .det-otras-thumb {
+  flex-shrink: 0;
+}
+
+/* ── Scrollbars sutiles para los 3 scrolls internos ─────────────── */
+.chat-conv-list,
+.chat-messages-body,
+.chat-col-vendedor .det-otras-grid {
+  scrollbar-width: thin;
+  scrollbar-color: #ECEFEF transparent;
+}
+
+.chat-conv-list::-webkit-scrollbar,
+.chat-messages-body::-webkit-scrollbar,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-conv-list::-webkit-scrollbar-track,
+.chat-messages-body::-webkit-scrollbar-track,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-conv-list::-webkit-scrollbar-thumb,
+.chat-messages-body::-webkit-scrollbar-thumb,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar-thumb {
+  background: #ECEFEF;
+  border-radius: 99px;
+}
+
+.chat-conv-list::-webkit-scrollbar-button,
+.chat-messages-body::-webkit-scrollbar-button,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar-button {
+  display: none;
+}
+
 /* El modal de avatar necesita estar por encima del panel de chat (z:990) y el drawer (z:992) */
 #chatAvatarModal {
   z-index: 993;
+}
+
+/* ── Lazy Loading Spinner ───────────────────────────────────────── */
+.chat-load-more-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  color: #3b82f6; /* Azul */
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chat-spinner-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

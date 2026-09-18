@@ -5,7 +5,7 @@ namespace Bookly.Controllers
 {
     public class ChatController : BaseController
     {
-        public IActionResult Chat(string? vendedorDNI, int? idPublicacion)
+        public IActionResult Index(string? vendedorDNI, int? idPublicacion)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
@@ -52,7 +52,7 @@ namespace Bookly.Controllers
                 ViewBag.PublicacionConsulta = publi;
             }
 
-            return View();
+            return View("Chat");
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Bookly.Controllers
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null) return Unauthorized();
 
-            var datos = BD.ObtenerMensajesDeChats(user.DNI, 20);
+            var datos = BD.ObtenerMensajesDeChats(user.DNI, 10); // LIMITAR CHATS DE PREFETCH A 10
 
             // Proyectar a camelCase para que el JS pueda leer msg.idEmisor / msg.idReceptor
             // (el modelo Mensaje usa [JsonPropertyName("id_emisor")] que produce snake_case
@@ -143,12 +143,13 @@ namespace Bookly.Controllers
         }
 
         /// <summary>
-        /// GET /Chat/ObtenerMensajes?dniContacto=xxx
+        /// GET /Chat/ObtenerMensajes?dniContacto=xxx&antes=ISO8601
         /// Devuelve la conversación entre el usuario logueado y el contacto.
+        /// Si se proporciona 'antes', devuelve solo mensajes anteriores a esa fecha (lazy loading).
         /// También marca como leídos los mensajes recibidos.
         /// </summary>
         [HttpGet]
-        public IActionResult ObtenerMensajes(string dniContacto)
+        public IActionResult ObtenerMensajes(string dniContacto, string antes = null)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null) return Unauthorized();
@@ -156,7 +157,7 @@ namespace Bookly.Controllers
             if (string.IsNullOrWhiteSpace(dniContacto))
                 return Json(new List<object>());
 
-            var mensajes = BD.ObtenerMensajes(user.DNI, dniContacto)
+            var mensajes = BD.ObtenerMensajes(user.DNI, dniContacto, antes)
                 .Select(m => new
                 {
                     id         = m.id,
@@ -256,7 +257,7 @@ namespace Bookly.Controllers
 
         /// <summary>
         /// GET /Chat/ObtenerPublicacionesContacto?dniContacto=xxx
-        /// Paso 3 del widget progresivo: publicaciones activas del contacto (máx 4).
+        /// Paso 3 del widget progresivo: publicaciones activas del contacto.
         /// </summary>
         [HttpGet]
         public IActionResult ObtenerPublicacionesContacto(string dniContacto)
@@ -273,7 +274,7 @@ namespace Bookly.Controllers
             return Json(new
             {
                 activas = pubs.Count,
-                publicaciones = pubs.Take(4).Select(p => new
+                publicaciones = pubs.Select(p => new
                 {
                     id     = p.id,
                     nombre = p.nombre,

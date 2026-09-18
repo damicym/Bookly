@@ -644,13 +644,13 @@
   overflow: hidden;
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.1);
-  transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s;
+  width: 99%;
 }
 
 .det-otras-thumb:hover {
   background: rgba(151,216,196,0.13);
   border-color: rgba(151,216,196,0.3);
-  transform: translateX(4px);
 }
 
 .det-otras-thumb img {
@@ -1608,6 +1608,11 @@
   margin-top: 4px;
 }
 
+.vsk-stats-row--skeleton {
+  padding: 20px 0;
+  gap: 14px;
+}
+
 .vsk-stat {
   display: flex;
   flex-direction: column;
@@ -1619,6 +1624,11 @@
   width: 26px;
   height: 26px;
   border-radius: 6px;
+}
+
+.vsk-stat-icon--large {
+  width: 36px;
+  height: 36px;
 }
 
 .vsk-stat-label {
@@ -1651,6 +1661,7 @@
   border-radius: 12px;
   overflow: hidden;
   padding-right: 12px;
+  width: 99%;
 }
 
 .vsk-pub-img {
@@ -1679,6 +1690,7 @@
 
 /* Estado vacío en la sección de publicaciones del widget */
 .det-otras-empty {
+  text-align: center;
   font-size: 0.82rem;
   color: rgba(239,242,241,0.45);
   font-style: italic;

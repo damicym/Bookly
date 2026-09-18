@@ -92,6 +92,8 @@
             }
 
             var countLabel = count === 1 ? '1 reseña' : count + ' reseñas';
+            var countText = count === 0 ? 'No ha recibido reseñas todavía' : 'En base a ' + countLabel;
+
             var extra = '';
             if (count > 0) {
                 extra = '<div class="det-rep-divider"></div>'
@@ -102,7 +104,7 @@
 
             statsEl.className = 'det-vendedor-stats-widget';
             statsEl.innerHTML =
-                '<span class="det-rep-resena-count">(' + countLabel + ')</span>'
+                '<span class="det-rep-resena-count">' + countText + '</span>'
                 + '<div class="det-rep-barra-segmentada">'
                 +   '<div class="det-rep-seg det-rep-seg-1 ' + segCls(1) + '"></div>'
                 +   '<div class="det-rep-seg det-rep-seg-2 ' + segCls(2) + '"></div>'
