@@ -5,7 +5,7 @@ namespace Bookly.Controllers
 {
     public class ChatController : BaseController
     {
-        public IActionResult Chat(string? vendedorDNI, int? idPublicacion)
+        public IActionResult Index(string? vendedorDNI, int? idPublicacion)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
@@ -22,7 +22,7 @@ namespace Bookly.Controllers
                 vendedor = BD.ObtenerUsuarioPorDNI(vendedorDNI);
             }
 
-            // Fallback mientras no hay un vendedor específico
+            // Fallback cuando no hay vendedor específico
             if (vendedor == null)
             {
                 vendedor = new Usuarios
@@ -39,15 +39,10 @@ namespace Bookly.Controllers
 
             ViewBag.Vendedor = vendedor;
 
-            // Estadísticas del vendedor
+            // Registrar el chat en el historial del usuario logueado
             if (!string.IsNullOrWhiteSpace(vendedor.DNI))
             {
-                var pubsVendedor = BD.ObtenerPublicacionesCompletasPorUsuario(vendedor.DNI);
-                ViewBag.VendedorVentasCerradas = pubsVendedor.Count(p => p.status == 0);
-            }
-            else
-            {
-                ViewBag.VendedorVentasCerradas = 0;
+                BD.UpsertChat(user.DNI, vendedor.DNI);
             }
 
             // Si viene desde "Consultar publicación", pasar los datos de la publi
@@ -57,7 +52,7 @@ namespace Bookly.Controllers
                 ViewBag.PublicacionConsulta = publi;
             }
 
-            return View();
+            return View("Chat");
         }
 
         /// <summary>
@@ -78,16 +73,276 @@ namespace Bookly.Controllers
                 .Where(u => u.DNI != user.DNI)
                 .Select(u => new
                 {
-                    dni        = u.DNI,
-                    nombre     = u.nombreComp,
+                    dni          = u.DNI,
+                    nombre       = u.nombreComp,
                     especialidad = u.especialidad,
-                    curso      = u.curso,
-                    ano        = u.ano,
-                    fotoPerfil = u.fotoPerfil
+                    curso        = u.curso,
+                    ano          = u.ano,
+                    fotoPerfil   = u.fotoPerfil
                 })
                 .ToList();
 
             return Json(resultados);
         }
+
+        /// <summary>
+        /// GET /Chat/ObtenerChats
+        /// Devuelve el historial de chats del usuario logueado en JSON.
+        /// Lo consume el sidebar via fetch al cargar la página.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerChats()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            var chats = BD.ObtenerChats(user.DNI)
+                .Select(c => new
+                {
+                    idContacto   = c.idContacto,
+                    nombreComp   = c.nombreComp,
+                    ano          = c.ano,
+                    especialidad = c.especialidad,
+                    fotoPerfil   = c.fotoPerfil,
+                    createdAt    = c.createdAt
+                })
+                .ToList();
+
+            return Json(chats);
+        }
+
+        /// <summary>
+        /// GET /Chat/PrefetchMensajes
+        /// Devuelve todos los mensajes de los últimos 20 chats del usuario logueado,
+        /// agrupados por DNI del contacto. Lo consume el JS al cargar la página.
+        /// </summary>
+        [HttpGet]
+        public IActionResult PrefetchMensajes()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            var datos = BD.ObtenerMensajesDeChats(user.DNI, 10); // LIMITAR CHATS DE PREFETCH A 10
+
+            // Proyectar a camelCase para que el JS pueda leer msg.idEmisor / msg.idReceptor
+            // (el modelo Mensaje usa [JsonPropertyName("id_emisor")] que produce snake_case
+            // al serializar directamente, pero el JS espera camelCase).
+            var resultado = datos.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Select(m => new
+                {
+                    id         = m.id,
+                    idEmisor   = m.idEmisor,
+                    idReceptor = m.idReceptor,
+                    contenido  = m.contenido,
+                    fechaEnvio = m.fechaEnvio,
+                    leido      = m.leido
+                }).ToList()
+            );
+            return Json(resultado);
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerMensajes?dniContacto=xxx&antes=ISO8601
+        /// Devuelve la conversación entre el usuario logueado y el contacto.
+        /// Si se proporciona 'antes', devuelve solo mensajes anteriores a esa fecha (lazy loading).
+        /// También marca como leídos los mensajes recibidos.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerMensajes(string dniContacto, string antes = null)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniContacto))
+                return Json(new List<object>());
+
+            var mensajes = BD.ObtenerMensajes(user.DNI, dniContacto, antes)
+                .Select(m => new
+                {
+                    id         = m.id,
+                    idEmisor   = m.idEmisor,
+                    idReceptor = m.idReceptor,
+                    contenido  = m.contenido,
+                    fechaEnvio = m.fechaEnvio,
+                    leido      = m.leido
+                })
+                .ToList();
+
+            return Json(mensajes);
+        }
+
+        /// <summary>
+        /// POST /Chat/EnviarMensaje
+        /// Body: { dniReceptor, contenido }
+        /// Envía un mensaje y devuelve el objeto guardado.
+        /// </summary>
+        [HttpPost]
+        public IActionResult EnviarMensaje([FromBody] EnviarMensajeRequest req)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(req?.DniReceptor) || string.IsNullOrWhiteSpace(req?.Contenido))
+                return BadRequest(new { error = "dniReceptor y contenido son requeridos" });
+
+            var mensaje = BD.EnviarMensaje(user.DNI, req.DniReceptor, req.Contenido);
+            if (mensaje == null)
+                return StatusCode(500, new { error = "No se pudo enviar el mensaje" });
+
+            return Json(new
+            {
+                id         = mensaje.id,
+                idEmisor   = mensaje.idEmisor,
+                idReceptor = mensaje.idReceptor,
+                contenido  = mensaje.contenido,
+                fechaEnvio = mensaje.fechaEnvio,
+                leido      = mensaje.leido
+            });
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerInfoContacto?dniContacto=xxx
+        /// Paso 1 del widget progresivo: datos básicos del contacto (nombre, año, foto, etc.)
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerInfoContacto(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniContacto))
+                return Json(null);
+
+            var contacto = BD.ObtenerUsuarioPorDNI(dniContacto);
+            if (contacto == null) return Json(null);
+
+            return Json(new
+            {
+                dni          = contacto.DNI,
+                nombreComp   = contacto.nombreComp,
+                ano          = contacto.ano,
+                anoTexto     = Helpers.HtmlHelpers.PasarAñoATextoCompleto(contacto.ano),
+                especialidad = contacto.especialidad,
+                curso        = contacto.curso,
+                aboutMe      = contacto.aboutMe,
+                fotoPerfil   = contacto.fotoPerfil,
+                ventasCerradas = contacto.ventasCerradas
+            });
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerResenasContacto?dniContacto=xxx
+        /// Paso 2 del widget progresivo: promedios de reseñas del contacto.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerResenasContacto(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniContacto))
+                return Json(new { resenaCount = 0, promedioAtencion = (double?)null, promedioEntrega = (double?)null });
+
+            var resenas = BD.ObtenerResenasPorReceptor(dniContacto)
+                            .Where(r => r.atencion.HasValue && r.entrega.HasValue).ToList();
+
+            return Json(new
+            {
+                resenaCount      = resenas.Count,
+                promedioAtencion = resenas.Count > 0 ? resenas.Average(r => (double)r.atencion.Value) : (double?)null,
+                promedioEntrega  = resenas.Count > 0 ? resenas.Average(r => (double)r.entrega.Value)  : (double?)null,
+            });
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerPublicacionesContacto?dniContacto=xxx
+        /// Paso 3 del widget progresivo: publicaciones activas del contacto.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerPublicacionesContacto(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniContacto))
+                return Json(new { activas = 0, publicaciones = new List<object>() });
+
+            var pubs = BD.ObtenerPublicacionesCompletasPorUsuario(dniContacto)
+                         .Where(p => p.status == 1).ToList();
+
+            return Json(new
+            {
+                activas = pubs.Count,
+                publicaciones = pubs.Select(p => new
+                {
+                    id     = p.id,
+                    nombre = p.nombre,
+                    precio = p.precio,
+                    imagen = p.imagen
+                }).ToList()
+            });
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerPublicacionesChat?dniContacto=xxx
+        /// Devuelve las publicaciones activas del usuario logueado y del contacto,
+        /// separadas por sección. Lo consume el picker "+" del input de chat.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerPublicacionesChat(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            var misPublicaciones = BD.ObtenerPublicacionesCompletasPorUsuario(user.DNI)
+                .Where(p => p.status == 1)
+                .Select(p => new { id = p.id, nombre = p.nombre, precio = p.precio, imagen = p.imagen })
+                .ToList();
+
+            var pubsContacto = new List<object>();
+            if (!string.IsNullOrWhiteSpace(dniContacto))
+            {
+                pubsContacto = BD.ObtenerPublicacionesCompletasPorUsuario(dniContacto)
+                    .Where(p => p.status == 1)
+                    .Select(p => new { id = p.id, nombre = p.nombre, precio = p.precio, imagen = p.imagen })
+                    .Cast<object>()
+                    .ToList();
+            }
+
+            return Json(new { mias = misPublicaciones, contacto = pubsContacto });
+        }
+
+        /// <summary>
+        /// POST /Chat/UpsertChat
+        /// Body: { dniContacto }
+        /// Registra o actualiza el chat en el historial del usuario logueado.
+        /// Llamado desde el JS del modal de nueva conversación.
+        /// </summary>
+        [HttpPost]
+        public IActionResult UpsertChat([FromBody] UpsertChatRequest req)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(req?.DniContacto))
+                return BadRequest(new { error = "dniContacto es requerido" });
+
+            BD.UpsertChat(user.DNI, req.DniContacto);
+            return Ok();
+        }
+    }
+
+    /// <summary>DTO para el body del POST EnviarMensaje.</summary>
+    public class EnviarMensajeRequest
+    {
+        public string DniReceptor { get; set; }
+        public string Contenido   { get; set; }
+    }
+
+    /// <summary>DTO para el body del POST UpsertChat.</summary>
+    public class UpsertChatRequest
+    {
+        public string DniContacto { get; set; }
     }
 }

@@ -85,32 +85,10 @@ namespace Bookly.Controllers
                 libro.esMasBarato = false;
             }
 
-            var todasDelVendedor = BD.ObtenerPublicacionesCompletasPorUsuario(libro.idVendedor);
-            ViewBag.Publicaciones = todasDelVendedor
-                .Where(p => p.id != id && p.status == 1)
-                .ToList();
             ViewBag.Vendedor = vendedor;
             ViewBag.usuario = user;
 
-            // Estadísticas del vendedor para la tarjeta
-            ViewBag.VendedorPublicacionesActivas = todasDelVendedor.Count(p => p.status == 1);
-            ViewBag.VendedorVentasCerradas = vendedor?.ventasCerradas ?? 0;
-            ViewBag.VendedorTotalPublicaciones = todasDelVendedor.Count;
-
-            // Reseñas del vendedor — promedios de atención y entrega
-            var resenasVendedor = BD.ObtenerResenasPorReceptor(libro.idVendedor);
-            var resenasCompletadas = resenasVendedor
-                .Where(r => r.atencion.HasValue && r.entrega.HasValue)
-                .ToList();
-            ViewBag.VendedorResenaCount = resenasCompletadas.Count;
-            ViewBag.VendedorPromedioAtencion = resenasCompletadas.Count > 0
-                ? resenasCompletadas.Average(r => (double)r.atencion.Value)
-                : (double?)null;
-            ViewBag.VendedorPromedioEntrega = resenasCompletadas.Count > 0
-                ? resenasCompletadas.Average(r => (double)r.entrega.Value)
-                : (double?)null;
-
-            // Libros favoritos del vendedor — deduplicados por nombre de libro
+            // Libros favoritos del vendedor — deduplicados por nombre de libro (para el modal de intercambio)
             var favoritasVendedor = BD.ObtenerPublicacionesFavoritasPorUsuario(libro.idVendedor);
             ViewBag.VendedorLibrosFavoritos = favoritasVendedor
                 .GroupBy(f => f.nombre?.Trim().ToLowerInvariant() ?? "")
@@ -118,7 +96,7 @@ namespace Bookly.Controllers
                 .Take(6)
                 .ToList();
 
-            // Otras publicaciones del mismo libro (incluyendo la actual), ordenadas por precio
+            // Otras publicaciones del mismo libro, ordenadas por precio
             var otrasOpciones = mismoLibro
                 .OrderBy(p => p.precio)
                 .Where(p => p.id != id && p.status == 1 && p.idVendedor != user.DNI)
@@ -134,6 +112,90 @@ namespace Bookly.Controllers
         {
             BD.EliminarPublicacion(id);
             return RedirectToAction("Profile", "Home");
+        }
+
+        /// <summary>
+        /// GET /Book/ObtenerInfoVendedor?dniVendedor=xxx
+        /// Paso 1 del widget progresivo en Detalle: datos básicos del vendedor.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerInfoVendedor(string dniVendedor)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniVendedor)) return Json(null);
+
+            var vendedor = BD.ObtenerUsuarioPorDNI(dniVendedor);
+            if (vendedor == null) return Json(null);
+
+            return Json(new
+            {
+                dni            = vendedor.DNI,
+                nombreComp     = vendedor.nombreComp,
+                ano            = vendedor.ano,
+                anoTexto       = Helpers.HtmlHelpers.PasarAñoATextoCompleto(vendedor.ano),
+                especialidad   = vendedor.especialidad,
+                curso          = vendedor.curso,
+                aboutMe        = vendedor.aboutMe,
+                fotoPerfil     = vendedor.fotoPerfil,
+                ventasCerradas = vendedor.ventasCerradas
+            });
+        }
+
+        /// <summary>
+        /// GET /Book/ObtenerResenasVendedor?dniVendedor=xxx
+        /// Paso 2 del widget progresivo en Detalle: promedios de reseñas.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerResenasVendedor(string dniVendedor)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniVendedor))
+                return Json(new { resenaCount = 0, promedioAtencion = (double?)null, promedioEntrega = (double?)null });
+
+            var resenas = BD.ObtenerResenasPorReceptor(dniVendedor)
+                            .Where(r => r.atencion.HasValue && r.entrega.HasValue).ToList();
+
+            return Json(new
+            {
+                resenaCount      = resenas.Count,
+                promedioAtencion = resenas.Count > 0 ? resenas.Average(r => (double)r.atencion.Value) : (double?)null,
+                promedioEntrega  = resenas.Count > 0 ? resenas.Average(r => (double)r.entrega.Value)  : (double?)null,
+            });
+        }
+
+        /// <summary>
+        /// GET /Book/ObtenerPublicacionesVendedor?dniVendedor=xxx&excluirId=yyy
+        /// Paso 3 del widget progresivo en Detalle: publicaciones activas del vendedor (máx 4,
+        /// excluyendo la publicación que se está viendo).
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerPublicacionesVendedor(string dniVendedor, int? excluirId)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniVendedor))
+                return Json(new { activas = 0, publicaciones = new List<object>() });
+
+            var pubs = BD.ObtenerPublicacionesCompletasPorUsuario(dniVendedor)
+                         .Where(p => p.status == 1 && (!excluirId.HasValue || p.id != excluirId.Value))
+                         .ToList();
+
+            return Json(new
+            {
+                activas = BD.ObtenerPublicacionesCompletasPorUsuario(dniVendedor).Count(p => p.status == 1),
+                publicaciones = pubs.Take(4).Select(p => new
+                {
+                    id     = p.id,
+                    nombre = p.nombre,
+                    precio = p.precio,
+                    imagen = p.imagen
+                }).ToList()
+            });
         }
 
         // Endpoint de desarrollo: recarga las imágenes del seed desde wwwroot/img/libros/

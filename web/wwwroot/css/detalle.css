@@ -529,6 +529,7 @@
   object-fit: cover;
   box-shadow: 0 8px 48px rgba(0,0,0,0.55);
   animation: avatarModalIn 0.22s ease;
+  cursor: zoom-in;
 }
 
 .avatar-modal-img--portada {
@@ -643,13 +644,13 @@
   overflow: hidden;
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.1);
-  transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s;
+  width: 99%;
 }
 
 .det-otras-thumb:hover {
   background: rgba(151,216,196,0.13);
   border-color: rgba(151,216,196,0.3);
-  transform: translateX(4px);
 }
 
 .det-otras-thumb img {
@@ -1172,7 +1173,7 @@
 
   .det-vendedor-card {
     border-radius: 16px;
-    overflow: visible;  /* evita que el contenido se corte en tablet */
+    overflow: clip;
   }
 
   .det-vendedor-top {
@@ -1361,7 +1362,7 @@
     font-size: 0.88rem;
   }
 
-  /* ── Vendedor: fondo claro, integrado con la UI ── */
+  /* ── Vendedor: mantiene colores oscuros en mobile ── */
   .det-col-vendedor {
     grid-area: vendedor;
     position: static;
@@ -1370,21 +1371,16 @@
   }
 
   .det-vendedor-card {
-    background: var(--light);
     border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(6, 26, 64, 0.08);
-    border: 1px solid rgba(6, 26, 64, 0.07);
-    overflow: visible;  /* el contenido no debe cortarse */
+    overflow: clip;
   }
 
   .det-vendedor-top {
-    background: #fff;
     flex-direction: row;
     align-items: center;
     text-align: left;
     gap: 14px;
     padding: 16px 18px;
-    border-bottom: 1px solid rgba(6, 26, 64, 0.07);
     border-radius: 14px 14px 0 0;
   }
 
@@ -1397,86 +1393,43 @@
     width: 50px;
     height: 50px;
     flex-shrink: 0;
-    border: 2px solid rgba(6, 26, 64, 0.1);
-    box-shadow: 0 2px 8px rgba(6, 26, 64, 0.12);
   }
 
   .det-vendedor-pill {
-    background: rgba(64, 89, 173, 0.1);
-    color: var(--main);
     font-size: 0.65rem;
     margin-bottom: 3px;
   }
 
   .det-vendedor-nombre {
     font-size: 0.92rem;
-    color: var(--dark);
   }
 
   .det-vendedor-sub {
     font-size: 0.78rem;
-    color: rgba(6, 26, 64, 0.5);
   }
 
   .det-vendedor-about {
     display: none;
   }
 
-  /* Stats: colores para fondo claro */
   .det-vendedor-stats-widget {
-    padding: 14px 18px 16px;
-    border-bottom: 1px solid rgba(6, 26, 64, 0.07);
+    padding: 14px 4px 16px;
+    margin: 0 16px 4px;
   }
 
-  .det-rep-resena-count {
-    color: rgba(6, 26, 64, 0.45) !important;
-  }
-
-  .det-rep-stat-desc {
-    color: rgba(6, 26, 64, 0.5) !important;
-  }
-
-  .det-rep-stat-num {
-    color: var(--dark) !important;
-  }
-
-  .det-rep-divider {
-    background: rgba(6, 26, 64, 0.1) !important;
-  }
-
-  .det-rep-stat-icon-wrap {
-    color: rgba(6, 26, 64, 0.45) !important;
-  }
-
-  .det-rep-check {
-    background: #fff !important;
-  }
-
-  /* CTA vendedor */
-  .det-vendedor-cta-wrap {
-    padding: 0 16px 16px;
-  }
-
-  .det-vendedor-cta-btn {
-    background: var(--main);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(64, 89, 173, 0.25);
-    margin-bottom: 0;
-  }
-
-  .det-vendedor-cta-btn:hover {
-    filter: brightness(1.08);
-    color: #fff;
-  }
-
-  /* Publicaciones: 2 cols sobre fondo claro */
+  /* Publicaciones: 2 cols */
   .det-otras {
     padding: 16px 16px 18px;
-    border-top: 1px solid rgba(6, 26, 64, 0.07);
+    border-radius: 0 0 14px 14px; /* esquinas inferiores coinciden con la card */
+  }
+
+  /* Si no hay publicaciones, el cta-wrap es el último elemento */
+  .det-vendedor-cta-wrap {
+    padding: 0 16px 16px;
+    border-radius: 0 0 14px 14px;
   }
 
   .det-otras-label {
-    color: rgba(6, 26, 64, 0.4);
     margin-bottom: 10px;
     display: block;
   }
@@ -1490,14 +1443,6 @@
   .det-otras-thumb {
     flex-direction: column;
     border-radius: 10px;
-    background: #fff;
-    border: 1px solid rgba(6, 26, 64, 0.08);
-  }
-
-  .det-otras-thumb:hover {
-    background: var(--lightDarker);
-    border-color: rgba(64, 89, 173, 0.2);
-    transform: none;
   }
 
   .det-otras-thumb img {
@@ -1512,12 +1457,10 @@
   }
 
   .det-otras-thumb-nombre {
-    color: var(--dark);
     font-size: 0.78rem;
   }
 
   .det-otras-thumb-precio {
-    color: var(--main);
     font-size: 0.8rem;
   }
 
@@ -1566,4 +1509,191 @@
   .det-otras-thumb img {
     height: 75px;
   }
+}
+
+/* ══════════════════════════════
+   SKELETON — Widget vendedor
+   (compartido entre Chat y Detalle)
+══════════════════════════════ */
+
+@keyframes vendedorSkeletonShimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.vsk-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.06) 25%,
+    rgba(255,255,255,0.14) 50%,
+    rgba(255,255,255,0.06) 75%
+  );
+  background-size: 800px 100%;
+  animation: vendedorSkeletonShimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+/* ── Sección top (avatar + texto) ── */
+.vsk-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 20px 22px;
+  background: rgba(0,0,0,0.18);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px 18px 0 0;
+}
+
+.vsk-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.vsk-pill {
+  width: 72px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.vsk-nombre {
+  width: 130px;
+  height: 16px;
+}
+
+.vsk-sub {
+  width: 110px;
+  height: 13px;
+}
+
+.vsk-about {
+  width: 150px;
+  height: 11px;
+  margin-top: 2px;
+}
+
+/* ── Sección stats ── */
+.vsk-stats {
+  padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.vsk-resena-count {
+  width: 70px;
+  height: 12px;
+  align-self: center;
+}
+
+.vsk-barra {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.vsk-barra-seg {
+  height: 8px;
+  flex: 1;
+  border-radius: 6px;
+}
+
+.vsk-stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+.vsk-stats-row--skeleton {
+  padding: 20px 0;
+  gap: 14px;
+}
+
+.vsk-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.vsk-stat-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.vsk-stat-icon--large {
+  width: 36px;
+  height: 36px;
+}
+
+.vsk-stat-label {
+  height: 11px;
+  border-radius: 6px;
+}
+
+.vsk-stat-label--sm  { width: 38px; }
+.vsk-stat-label--md  { width: 72px; }
+.vsk-stat-label--lg  { width: 88px; }
+
+/* ── Sección publicaciones ── */
+.vsk-pubs {
+  padding: 20px 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vsk-pubs-label {
+  width: 100px;
+  height: 12px;
+}
+
+.vsk-pub-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 12px;
+  overflow: hidden;
+  padding-right: 12px;
+  width: 99%;
+}
+
+.vsk-pub-img {
+  width: 54px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 0;
+}
+
+.vsk-pub-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.vsk-pub-nombre {
+  height: 12px;
+  width: 80%;
+}
+
+.vsk-pub-precio {
+  height: 11px;
+  width: 40%;
+}
+
+/* Estado vacío en la sección de publicaciones del widget */
+.det-otras-empty {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(239,242,241,0.45);
+  font-style: italic;
+  margin: 4px 0 0;
+  line-height: 1.5;
 }

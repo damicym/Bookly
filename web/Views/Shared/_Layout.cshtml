@@ -11,6 +11,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/resena-modal.css" asp-append-version="true" />
 </head>
 <body>
     <div id="appConfig" hidden
@@ -88,7 +89,7 @@
                     <span class="notif-badge">@(notifCount > 9 ? "9+" : notifCount.ToString())</span>
                 }
             </button>
-            <a class="favBtn" id="chatBtnHeader" href="@Url.Action("Chat", "Chat")" title="Mensajes">
+            <a class="favBtn" id="chatBtnHeader" href="@Url.Action("Index", "Chat")" title="Mensajes">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M8 9h8" />
@@ -266,6 +267,7 @@
     <script src="~/js/layout.js" asp-append-version="true"></script>
     <script src="~/js/auth-modals.js" asp-append-version="true"></script>
     <script src="~/js/publicar-modal.js" asp-append-version="true"></script>
+    <script src="~/js/resena-modal.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     
     @await RenderSectionAsync("Scripts", required: false)
@@ -432,6 +434,164 @@
                 <p class="auth-footer">
                     ¿Ya tenés cuenta? <a href="#" onclick="cerrarRegisterModal(); abrirLoginModal(); return false;">Iniciá sesión</a>
                 </p>
+            </div>
+        </div>
+    }
+
+    @* ── Modal de reseña (solo para usuarios logueados) ── *@
+    @if (ViewBag.usuario != null)
+    {
+        <div class="resena-overlay" id="resenaModal" onclick="cerrarResenaModal(event)" role="dialog" aria-modal="true" aria-label="Dejar reseña">
+            <div class="resena-card">
+
+                <button class="resena-close" onclick="document.getElementById('resenaModal').classList.remove('resena-overlay--visible'); document.body.style.overflow='';" aria-label="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+                </button>
+
+                @* Header: avatar + nombre *@
+                <div class="resena-header">
+                    <img class="resena-header-avatar" src="~/img/default.webp" alt="Vendedor" />
+                    <div class="resena-header-texto">
+                        <span class="resena-header-eyebrow">Calificar vendedor</span>
+                        <p class="resena-header-titulo">Nombre Vendedor</p>
+                        <span class="resena-header-sub">Tu reseña es anónima para otros compradores</span>
+                    </div>
+                </div>
+
+                @* Cuerpo con preguntas y caritas *@
+                <form class="resena-body" id="resenaForm" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="resenaIdInput" name="id" value="" />
+
+                    @* ── Eje Atención (2 preguntas → promedio) ── *@
+                    <div class="resena-eje">
+                        <span class="resena-eje-titulo">Atención</span>
+
+                        <div class="resena-seccion">
+                            <p class="resena-seccion-pregunta">¿Cómo te trató el vendedor durante la compra?</p>
+                            <div class="resena-caritas" role="group" aria-label="Buen trato" data-name="at2">
+                                <input type="radio" id="at2_1" name="at2" value="1" /><label for="at2_1" title="Muy malo">😞</label>
+                                <input type="radio" id="at2_2" name="at2" value="2" /><label for="at2_2" title="Malo">😕</label>
+                                <input type="radio" id="at2_3" name="at2" value="3" /><label for="at2_3" title="Regular">😐</label>
+                                <input type="radio" id="at2_4" name="at2" value="4" /><label for="at2_4" title="Bien">🙂</label>
+                                <input type="radio" id="at2_5" name="at2" value="5" /><label for="at2_5" title="Excelente">😄</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resena-separador"></div>
+
+                    @* ── Eje Entrega (2 preguntas → promedio) ── *@
+                    <div class="resena-eje">
+                        <span class="resena-eje-titulo">Entrega</span>
+
+                        <div class="resena-seccion">
+                            <p class="resena-seccion-pregunta">¿Qué tan confrome estás con el producto entregado?</p>
+                            <div class="resena-caritas" role="group" aria-label="Estado del libro" data-name="en1">
+                                <input type="radio" id="en1_1" name="en1" value="1" /><label for="en1_1" title="Muy malo">😞</label>
+                                <input type="radio" id="en1_2" name="en1" value="2" /><label for="en1_2" title="Malo">😕</label>
+                                <input type="radio" id="en1_3" name="en1" value="3" /><label for="en1_3" title="Regular">😐</label>
+                                <input type="radio" id="en1_4" name="en1" value="4" /><label for="en1_4" title="Bien">🙂</label>
+                                <input type="radio" id="en1_5" name="en1" value="5" /><label for="en1_5" title="Excelente">😄</label>
+                            </div>
+                        </div>
+
+                        <div class="resena-seccion">
+                            <p class="resena-seccion-pregunta">¿Qué tan responsable fue el vendedor a la hora de entregar el producto?</p>
+                            <div class="resena-caritas" role="group" aria-label="Tiempo y lugar" data-name="en2">
+                                <input type="radio" id="en2_1" name="en2" value="1" /><label for="en2_1" title="Muy malo">😞</label>
+                                <input type="radio" id="en2_2" name="en2" value="2" /><label for="en2_2" title="Malo">😕</label>
+                                <input type="radio" id="en2_3" name="en2" value="3" /><label for="en2_3" title="Regular">😐</label>
+                                <input type="radio" id="en2_4" name="en2" value="4" /><label for="en2_4" title="Bien">🙂</label>
+                                <input type="radio" id="en2_5" name="en2" value="5" /><label for="en2_5" title="Excelente">😄</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resena-separador"></div>
+
+                    @* ── Eje Atención (2 preguntas → promedio) ── *@
+                    <div class="resena-eje">
+                        <span class="resena-eje-titulo">Experiencia Bookly</span>
+
+                        <div class="resena-seccion">
+                            <p class="resena-seccion-pregunta">¿Cómo te resultó el proceso de compra utilizando Bookly?</p>
+                            <div class="resena-caritas" role="group" aria-label="Experiencia Bookly" data-name="at3">
+                                <input type="radio" id="at3_1" name="at3" value="1" /><label for="at3_1" title="Muy malo">😞</label>
+                                <input type="radio" id="at3_2" name="at3" value="2" /><label for="at3_2" title="Malo">😕</label>
+                                <input type="radio" id="at3_3" name="at3" value="3" /><label for="at3_3" title="Regular">😐</label>
+                                <input type="radio" id="at3_4" name="at3" value="4" /><label for="at3_4" title="Bien">🙂</label>
+                                <input type="radio" id="at3_5" name="at3" value="5" /><label for="at3_5" title="Excelente">😄</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="resena-separador"></div>
+
+                    @* Problema — acordeón con flecha *@
+                    <div class="resena-seccion">
+                        <button type="button" class="resena-problema-acordeon" id="resenaProblemaToggle" aria-expanded="false">
+                            <span>¿Tuviste algún problema con la transacción?</span>
+                            <svg class="resena-problema-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6-6"/></svg>
+                        </button>
+                        <div class="resena-problema-detalle" id="resenaProblemaDetalle">
+                            <div class="resena-problema-detalle-inner">
+                                <textarea
+                                    id="resenaProblema"
+                                    name="problema"
+                                    class="resena-comentario-textarea"
+                                    rows="3"
+                                    placeholder="Describí brevemente qué ocurrió…"
+                                    maxlength="400"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resena-separador"></div>
+
+                    @* Comentario opcional — acordeón con flecha *@
+                    <div class="resena-seccion">
+                        <button type="button" class="resena-problema-acordeon" id="resenaComentarioToggle" aria-expanded="false">
+                            <span>Comentario <span style="font-weight:400;opacity:0.6;">(opcional)</span></span>
+                            <svg class="resena-problema-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6-6"/></svg>
+                        </button>
+                        <div class="resena-problema-detalle" id="resenaComentarioDetalle">
+                            <div class="resena-problema-detalle-inner">
+                                <textarea
+                                    id="resenaComentario"
+                                    name="comentario"
+                                    class="resena-comentario-textarea"
+                                    rows="3"
+                                    placeholder="Contá tu experiencia en pocas palabras…"
+                                    maxlength="300"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resena-error" id="resenaError"></div>
+
+
+                </form>
+
+                @* Footer con botón *@
+                <div class="resena-footer">
+                    <button type="submit" form="resenaForm" class="resena-submit-btn">Enviar reseña</button>
+                </div>
+
+                @* Estado de éxito *@
+                <div class="resena-success">
+                    <div class="resena-success-confetti" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="resena-success-icono">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10"/></svg>
+                    </div>
+                    <p class="resena-success-titulo">¡Gracias por tu reseña!</p>
+                    <p class="resena-success-sub">Tu opinión ayuda a otros estudiantes a elegir con confianza.</p>
+                </div>
+
             </div>
         </div>
     }

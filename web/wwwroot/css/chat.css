@@ -6,20 +6,29 @@
 .chat-page-wrapper {
   width: min(1400px, 100vw - 48px);
   margin: 0 auto;
-  padding: 20px 0 60px;
+  padding: 20px 0 0;
   box-sizing: border-box;
+}
+
+/* Cuando estamos en la página de chat: sin scroll en la página, sin footer */
+body:has(.chat-page-wrapper) {
+  overflow: hidden;
+}
+
+body:has(.chat-page-wrapper) .footer {
+  display: none;
 }
 
 /* Grid principal */
 .chat-page {
+  --chat-height: calc(100dvh - 170px);  /* navbar (~80px) + padding top (20px) + volver (40px) + 10px extra*/
   display: grid;
   grid-template-columns: 280px 1fr 290px;
+  grid-template-rows: var(--chat-height);
   gap: 24px;
   width: 100%;
   align-items: start;
   box-sizing: border-box;
-  /* Altura fija para que la ventana de chat no empuje el layout */
-  height: calc(100dvh - 180px);
   min-height: 520px;
 }
 
@@ -41,10 +50,16 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 18px;
+  padding: 16px;
   border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
   background: var(--lightDarker);
   flex-shrink: 0;
+  min-height: 63px;
+}
+
+/* Botón volver en el header de la lista — oculto en desktop */
+.chat-conv-back-btn {
+  display: none;
 }
 
 .chat-conv-header svg {
@@ -65,6 +80,7 @@
 .chat-conv-list {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -81,9 +97,12 @@
   text-decoration: none;
 }
 
-.chat-conv-item:last-child {
-  border-bottom: none;
+/* Placeholder de conversación — no interactuable */
+.chat-conv-item:has(.chat-conv-avatar--placeholder) {
+  cursor: default;
+  pointer-events: none;
 }
+
 
 .chat-conv-item:hover {
   background: var(--lightDarker);
@@ -113,6 +132,30 @@
   border: 2px solid rgba(6, 26, 64, 0.06);
 }
 
+/* Skeleton: sin cursor pointer, sin hover */
+.chat-conv-item--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Loader de mensajes */
+.chat-mensajes-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.chat-mensajes-spinner {
+  color: #3b82f6; /* Azul */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .chat-conv-meta {
   flex: 1;
   min-width: 0;
@@ -136,6 +179,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Label "Borrador:" en color accent dentro del preview del sidebar */
+.chat-conv-draft-label {
+  color: var(--main);
+  font-weight: 600;
 }
 
 .chat-conv-aside {
@@ -206,6 +255,7 @@
   border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
   background: var(--lightDarker);
   flex-shrink: 0;
+  min-height: 63px;
 }
 
 .chat-messages-nombre {
@@ -225,6 +275,7 @@
 .chat-messages-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px 20px 10px;
   display: flex;
   flex-direction: column;
@@ -267,7 +318,7 @@
 }
 
 .chat-msg--outgoing .chat-msg-bubble {
-  background: var(--main);
+  background: var(--secondary2Darker);
   color: #fff;
   border-bottom-right-radius: 4px;
   box-shadow: 0 2px 10px rgba(64, 89, 173, 0.25);
@@ -301,7 +352,7 @@
 .chat-input {
   flex: 1;
   resize: none;
-  border: 1.5px solid rgba(6, 26, 64, 0.12);
+  border: 1.5px solid rgba(6, 26, 64, 0.2);
   border-radius: 14px;
   padding: 11px 14px;
   font-family: inherit;
@@ -319,20 +370,30 @@
 }
 
 .chat-input:focus {
-  border-color: var(--main);
+  border-color: var(--secondary2Darker);
   box-shadow: 0 0 0 3px rgba(64, 89, 173, 0.1);
 }
 
-/* Placeholder para contenteditable */
-.chat-input--empty::before {
-  content: attr(data-placeholder);
-  color: rgba(6, 26, 64, 0.3);
-  pointer-events: none;
-  position: absolute;
-}
-
+/* Placeholder para contenteditable.
+   Técnica: position absolute anclado al top-left del padre (position:relative).
+   Solo se muestra cuando la clase .chat-input--empty está presente.
+   El selector :empty cubre el caso en que el browser no haya disparado el input event aún. */
 .chat-input {
   position: relative;
+}
+
+.chat-input--empty::before,
+.chat-input:not(:focus):empty::before {
+  content: attr(data-placeholder);
+  color: rgba(6, 26, 64, 0.5);
+  pointer-events: none;
+  position: absolute;
+  top: 11px;
+  left: 14px;
+  right: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Link dentro del contenteditable */
@@ -340,14 +401,202 @@
   color: var(--main);
   font-weight: 700;
   text-decoration: none;
-  border-bottom: 1.5px solid rgba(64, 89, 173, 0.4);
+  border-bottom: 1.5px solid var(--main);
   cursor: pointer;
   transition: opacity 0.15s;
 }
 
 .chat-msg-publi-link:hover {
   opacity: 0.75;
-  border-bottom-color: var(--main);
+}
+
+/* En mensajes propios (fondo azul) el link va en blanco */
+.chat-msg--outgoing .chat-msg-publi-link {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Botón "+" adjuntar publicación ── */
+.chat-attach-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(6, 26, 64, 0.2);
+  background: #fff;
+  color: rgba(6, 26, 64, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.chat-attach-btn:hover {
+  border-color: var(--secondary2Darker);
+  color: var(--secondary2Darker);
+  background: rgba(64, 89, 173, 0.06);
+}
+
+.chat-attach-btn:active {
+  transform: scale(0.93);
+}
+
+.chat-attach-btn--active {
+  border-color: var(--secondary2Darker);
+  color: var(--secondary2Darker);
+  background: rgba(64, 89, 173, 0.1);
+  transform: rotate(45deg);
+}
+
+/* ── Panel picker de publicaciones ── */
+.chat-attach-panel {
+  background: #fff;
+  border: 1.5px solid rgba(6, 26, 64, 0.09);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(6, 26, 64, 0.13);
+  margin-bottom: 10px;
+  overflow: hidden;
+  animation: chatAttachSlideIn 0.18s ease;
+}
+
+@keyframes chatAttachSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-attach-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
+}
+
+.chat-attach-panel-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(6, 26, 64, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chat-attach-panel-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(6, 26, 64, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chat-attach-panel-close:hover {
+  background: rgba(6, 26, 64, 0.07);
+  color: var(--dark);
+}
+
+.chat-attach-panel-body {
+  padding: 10px 12px 12px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+/* Sección dentro del panel (mis pubs / pubs del contacto) */
+.chat-attach-section-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: rgba(6, 26, 64, 0.38);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 4px 4px;
+}
+
+.chat-attach-empty {
+  font-size: 0.82rem;
+  color: rgba(6, 26, 64, 0.35);
+  padding: 4px 4px 8px;
+  font-style: italic;
+}
+
+/* Cada item de publicación en el picker */
+.chat-attach-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.chat-attach-item:hover {
+  background: rgba(64, 89, 173, 0.07);
+}
+
+.chat-attach-item:active {
+  background: rgba(64, 89, 173, 0.13);
+}
+
+.chat-attach-item-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(6, 26, 64, 0.06);
+}
+
+.chat-attach-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-attach-item-nombre {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.chat-attach-item-precio {
+  font-size: 0.76rem;
+  color: rgba(6, 26, 64, 0.45);
+  display: block;
+}
+
+/* Loading spinner dentro del panel */
+.chat-attach-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.chat-attach-spinner {
+  animation: chatSpinnerRotate 0.8s linear infinite;
+  color: var(--main);
+}
+
+@keyframes chatSpinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Divisor entre secciones */
+.chat-attach-divider {
+  height: 1px;
+  background: rgba(6, 26, 64, 0.07);
+  margin: 8px 0;
 }
 
 .chat-send-btn {
@@ -356,7 +605,7 @@
   height: 44px;
   border-radius: 50%;
   border: none;
-  background: var(--main);
+  background: var(--secondary2Darker);
   color: #fff;
   display: flex;
   align-items: center;
@@ -382,10 +631,41 @@
    Sólo sobreescribe lo necesario.
 ══════════════════════════════ */
 .chat-col-vendedor {
-  /* Sticky igual que en detalle */
-  position: sticky;
-  top: 120px;
+  /* Se adapta al contenido pero nunca supera la altura del grid */
+  max-height: 100%;
   align-self: start;
+  overflow: hidden;
+}
+
+/* Empty state cuando no hay conversación activa */
+.chat-widget-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 40px 20px;
+  color: rgba(6, 26, 64, 0.3);
+  text-align: center;
+  /* border-top: 2px solid; */
+  border-radius: 18px;
+  box-shadow: 0px 0px 10px inset rgb(212, 213, 219);
+}
+
+.chat-widget-empty p {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Spinner de carga del widget */
+.chat-widget-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  color: var(--main);
+  opacity: 0.5;
 }
 
 /* ══════════════════════════════
@@ -461,7 +741,7 @@
     top: 90px;
     bottom: 0;
     height: auto;           /* dejar que top+bottom definan la altura */
-    z-index: 1100;          /* por encima del footer (z:1000) y navbar (z:1000) */
+    z-index: 990;           /* por debajo del navbar (z:1000) — sus dropdowns deben quedar visibles */
     border-radius: 0;
     box-shadow: none;
     flex-direction: column;
@@ -532,6 +812,25 @@
   .chat-msg {
     max-width: 85%;
   }
+
+  /* Botón volver en el header de la lista — visible solo en móvil */
+  .chat-conv-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    color: var(--main);
+    transition: background 0.15s;
+    margin-right: -4px;
+  }
+
+  .chat-conv-back-btn:hover,
+  .chat-conv-back-btn:active {
+    background: rgba(64, 89, 173, 0.08);
+  }
 }
 
 /* ── Móvil muy chico (≤480px): ajustes de texto y padding ── */
@@ -557,6 +856,11 @@
   }
 
   .chat-send-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .chat-attach-btn {
     width: 40px;
     height: 40px;
   }
@@ -735,8 +1039,8 @@
 }
 
 .chat-empty-icon {
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: rgba(64, 89, 173, 0.07);
   border: 2px solid rgba(64, 89, 173, 0.12);
@@ -748,17 +1052,42 @@
 }
 
 .chat-empty-title {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   color: var(--dark);
   margin: 0;
 }
 
 .chat-empty-sub {
-  font-size: 0.83rem;
+  font-size: 0.92rem;
   color: rgba(6, 26, 64, 0.45);
   margin: 0;
   line-height: 1.6;
+  font-weight: 600;
+}
+
+.chat-empty-nuevo-btn {
+  margin-top: 8px;
+  padding: 10px 20px;
+  background: var(--main);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.chat-empty-nuevo-btn:hover {
+  filter: brightness(0.9);
+}
+
+.chat-empty-nuevo-btn:active {
+  transform: scale(0.95);
 }
 
 /* ══════════════════════════════
@@ -1033,4 +1362,214 @@
   text-transform: uppercase;
   color: rgba(6, 26, 64, 0.3);
   padding: 12px 18px 4px;
+}
+
+/* ══════════════════════════════
+   Botón "Ver perfil" en el header del chat
+   Solo visible en mobile (≤1100px) donde la col vendedor está oculta
+══════════════════════════════ */
+.chat-ver-perfil-btn {
+  display: none; /* oculto en desktop donde la col vendedor ya es visible */
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 6px 11px;
+  border: none;
+  border-radius: 20px;
+  background: var(--main);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: filter 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(6, 26, 64, 0.18);
+}
+
+.chat-ver-perfil-btn:hover {
+  filter: brightness(1.12);
+}
+
+/* Mostrar solo cuando la col vendedor está oculta */
+@media (max-width: 1100px) {
+  .chat-ver-perfil-btn {
+    display: flex;
+  }
+}
+
+/* En mobile el header entero es clickeable → cursor pointer */
+@media (max-width: 600px) {
+  .chat-messages-header--clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(64, 89, 173, 0.08);
+  }
+
+  .chat-messages-header--clickable:active {
+    background: rgba(64, 89, 173, 0.04);
+  }
+}
+
+/* ══════════════════════════════
+   Drawer del vendedor (mobile)
+   Panel que sube desde abajo al tocar el header
+══════════════════════════════ */
+.chat-vendedor-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 26, 64, 0.45);
+  z-index: 991;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.chat-vendedor-overlay--visible {
+  display: block;
+}
+
+.chat-vendedor-overlay--animado {
+  opacity: 1;
+}
+
+.chat-vendedor-drawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 992;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: transparent; /* la card ya tiene su propio fondo */
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+  /* safe-area para iPhones con notch inferior */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.chat-vendedor-drawer--visible {
+  transform: translateY(0);
+}
+
+/* Handle visual arriba del drawer */
+.chat-vendedor-drawer-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 10px auto 0;
+}
+
+/* Ajuste: la card dentro del drawer no tiene sticky ni overflow:clip */
+.chat-vendedor-drawer .det-vendedor-card {
+  /* border-radius: 0 !important; */
+  overflow: visible !important;
+}
+
+/* ── Col 3: card ocupa toda la altura disponible de la columna ── */
+.chat-col-vendedor .det-vendedor-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Top y stats no scrollean — ocupan lo que necesitan */
+.chat-col-vendedor .det-vendedor-top,
+.chat-col-vendedor .det-vendedor-stats-widget,
+.chat-col-vendedor .det-vendedor-nivel,
+.chat-col-vendedor .vsk-top,
+.chat-col-vendedor .vsk-stats,
+.chat-col-vendedor .det-vendedor-cta-wrap {
+  flex-shrink: 0;
+}
+
+/* La sección de publicaciones absorbe el espacio restante */
+.chat-col-vendedor .det-otras {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Solo el grid de publicaciones scrollea */
+.chat-col-vendedor .det-otras-grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 22px;
+}
+
+/* Los ítems no se encogen — el grid desborda y activa el scroll */
+.chat-col-vendedor .det-otras-thumb {
+  flex-shrink: 0;
+}
+
+/* ── Scrollbars sutiles para los 3 scrolls internos ─────────────── */
+.chat-conv-list,
+.chat-messages-body,
+.chat-col-vendedor .det-otras-grid {
+  scrollbar-width: thin;
+  scrollbar-color: #ECEFEF transparent;
+}
+
+.chat-conv-list::-webkit-scrollbar,
+.chat-messages-body::-webkit-scrollbar,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-conv-list::-webkit-scrollbar-track,
+.chat-messages-body::-webkit-scrollbar-track,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-conv-list::-webkit-scrollbar-thumb,
+.chat-messages-body::-webkit-scrollbar-thumb,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar-thumb {
+  background: #ECEFEF;
+  border-radius: 99px;
+}
+
+.chat-conv-list::-webkit-scrollbar-button,
+.chat-messages-body::-webkit-scrollbar-button,
+.chat-col-vendedor .det-otras-grid::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* El modal de avatar necesita estar por encima del panel de chat (z:990) y el drawer (z:992) */
+#chatAvatarModal {
+  z-index: 993;
+}
+
+/* ── Lazy Loading Spinner ───────────────────────────────────────── */
+.chat-load-more-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  color: #3b82f6; /* Azul */
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chat-spinner-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

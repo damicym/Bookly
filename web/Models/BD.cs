@@ -131,6 +131,25 @@ namespace Bookly.Models
             }
         }
 
+        private static HttpResponseMessage Patch(string path, object body)
+        {
+            try
+            {
+                var json    = JsonSerializer.Serialize(body);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(HttpMethod.Patch, $"{_apiBase}{path}") { Content = content };
+                return _http.SendAsync(request).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         private static HttpResponseMessage Delete(string path)
         {
             try
@@ -481,6 +500,127 @@ namespace Bookly.Models
             if (string.IsNullOrWhiteSpace(dni)) return new List<Resena>();
             return Get<List<Resena>>($"/resenas/receptor/{Uri.EscapeDataString(dni)}")
                    ?? new List<Resena>();
+        }
+
+        /// <summary>
+        /// PATCH /api/resenas/:id
+        /// Completa una reseña pendiente con las puntuaciones individuales,
+        /// los promedios calculados y los textos opcionales.
+        /// Retorna true si la operación fue exitosa.
+        /// </summary>
+        public static bool EnviarResena(
+            int    id,
+            short  p1Atencion,
+            short  p2Entrega,
+            short? p3Entrega,
+            short? p4Experiencia,
+            short  atencion,
+            short  entrega,
+            string comentario,
+            string problema)
+        {
+            var response = Patch($"/resenas/{id}", new
+            {
+                p1_atencion    = p1Atencion,
+                p2_entrega     = p2Entrega,
+                p3_entrega     = (object?)p3Entrega,
+                p4_experiencia = (object?)p4Experiencia,
+                atencion       = atencion,
+                entrega        = entrega,
+                comentario     = comentario ?? "",
+                problema       = problema   ?? "",
+            });
+
+            if (response == null || !response.IsSuccessStatusCode) return false;
+
+            try
+            {
+                var json    = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var result  = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                return result.TryGetProperty("success", out var s) && s.GetBoolean();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ── CHATS ────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// POST /api/chats/upsert
+        /// Registra o actualiza el chat en el historial del usuario.
+        /// Se llama cada vez que el usuario abre una conversación.
+        /// </summary>
+        public static void UpsertChat(string idUsuario, string idContacto)
+        {
+            if (string.IsNullOrWhiteSpace(idUsuario) || string.IsNullOrWhiteSpace(idContacto)) return;
+            Post("/chats/upsert", new { id_usuario = idUsuario, id_contacto = idContacto });
+        }
+
+        /// <summary>
+        /// GET /api/chats/:dniUsuario
+        /// Devuelve el historial de chats del usuario ordenado por última visita.
+        /// </summary>
+        public static List<Chat> ObtenerChats(string dniUsuario)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario)) return new List<Chat>();
+            return Get<List<Chat>>($"/chats/{Uri.EscapeDataString(dniUsuario)}")
+                   ?? new List<Chat>();
+        }
+
+        /// <summary>
+        /// GET /api/chats/:dniUsuario/mensajes?limite=20
+        /// Devuelve todos los mensajes de los últimos N chats del usuario,
+        /// agrupados por DNI del contacto. { "dni1": [...], "dni2": [...] }
+        /// </summary>
+        public static Dictionary<string, List<Mensaje>> ObtenerMensajesDeChats(string dniUsuario, int limite = 20)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario)) return new Dictionary<string, List<Mensaje>>();
+            return Get<Dictionary<string, List<Mensaje>>>(
+                $"/chats/{Uri.EscapeDataString(dniUsuario)}/mensajes?limite={limite}")
+                   ?? new Dictionary<string, List<Mensaje>>();
+        }
+
+        /// <summary>
+        /// GET /api/mensajes/:dniUsuario/:dniContacto?antes=ISO8601
+        /// Devuelve la conversación entre dos usuarios ordenada por fecha.
+        /// Si se proporciona 'antes', devuelve solo mensajes anteriores (lazy loading).
+        /// También marca como leídos los mensajes recibidos.
+        /// </summary>
+        public static List<Mensaje> ObtenerMensajes(string dniUsuario, string dniContacto, string antes = null)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario) || string.IsNullOrWhiteSpace(dniContacto))
+                return new List<Mensaje>();
+            
+            string url = $"/mensajes/{Uri.EscapeDataString(dniUsuario)}/{Uri.EscapeDataString(dniContacto)}";
+            if (!string.IsNullOrWhiteSpace(antes))
+            {
+                url += $"?antes={Uri.EscapeDataString(antes)}";
+            }
+            
+            return Get<List<Mensaje>>(url) ?? new List<Mensaje>();
+        }
+
+        /// <summary>
+        /// POST /api/mensajes
+        /// Envía un mensaje nuevo. Devuelve el mensaje guardado o null si falla.
+        /// </summary>
+        public static Mensaje EnviarMensaje(string idEmisor, string idReceptor, string contenido)
+        {
+            if (string.IsNullOrWhiteSpace(idEmisor) ||
+                string.IsNullOrWhiteSpace(idReceptor) ||
+                string.IsNullOrWhiteSpace(contenido)) return null;
+
+            var response = Post("/mensajes", new
+            {
+                id_emisor   = idEmisor,
+                id_receptor = idReceptor,
+                contenido   = contenido
+            });
+            if (response == null || !response.IsSuccessStatusCode) return null;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
         }
 
         // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────

@@ -173,6 +173,7 @@ header .searchNFilter {
   border-radius: 50%;
   transition: background-color 0.2s;
   display: block;
+  color: rgba(239, 242, 241, 0.65);
 }
 
 .profileBtn a:hover .simpleBtn {
