@@ -52,10 +52,6 @@
             r.checked = false;
         });
 
-        // Limpiar comentario
-        var comentario = overlay.querySelector('#resenaComentario');
-        if (comentario) comentario.value = '';
-
         // Reset sección problema
         var toggleProblema = overlay.querySelector('#resenaProblemaToggle');
         var detalle = overlay.querySelector('#resenaProblemaDetalle');
@@ -64,14 +60,22 @@
         if (detalle) detalle.classList.remove('resena-problema-detalle--abierto');
         if (taProb) taProb.value = '';
 
-        // Ocultar error
+        // Reset sección comentario
+        var toggleComentario = overlay.querySelector('#resenaComentarioToggle');
+        var detalleComentario = overlay.querySelector('#resenaComentarioDetalle');
+        var taComentario = overlay.querySelector('#resenaComentario');
+        if (toggleComentario) toggleComentario.setAttribute('aria-expanded', 'false');
+        if (detalleComentario) detalleComentario.classList.remove('resena-problema-detalle--abierto');
+        if (taComentario) taComentario.value = '';
         var err = overlay.querySelector('.resena-error');
         if (err) err.classList.remove('resena-error--visible');
 
         // Mostrar form, ocultar éxito
         var form = overlay.querySelector('.resena-body');
+        var resenaFooter = overlay.querySelector('.resena-footer');
         var success = overlay.querySelector('.resena-success');
         if (form) form.style.display = '';
+        if (resenaFooter) resenaFooter.style.display = '';
         if (success) success.classList.remove('resena-success--visible');
 
         // Reset botón
@@ -112,6 +116,29 @@
             });
         }
 
+        // ── Toggle comentario ──────────────────────────────────
+        var toggleComentario = overlay.querySelector('#resenaComentarioToggle');
+        var detalleComentario = overlay.querySelector('#resenaComentarioDetalle');
+
+        if (toggleComentario && detalleComentario) {
+            toggleComentario.addEventListener('click', function () {
+                var abierto = toggleComentario.getAttribute('aria-expanded') === 'true';
+                if (abierto) {
+                    toggleComentario.setAttribute('aria-expanded', 'false');
+                    detalleComentario.classList.remove('resena-problema-detalle--abierto');
+                    var ta = detalleComentario.querySelector('textarea');
+                    if (ta) ta.value = '';
+                } else {
+                    toggleComentario.setAttribute('aria-expanded', 'true');
+                    detalleComentario.classList.add('resena-problema-detalle--abierto');
+                    setTimeout(function () {
+                        var ta = detalleComentario.querySelector('textarea');
+                        if (ta) ta.focus();
+                    }, 50);
+                }
+            });
+        }
+
         // Submit
         var form = overlay.querySelector('#resenaForm');
         if (!form) return;
@@ -120,70 +147,45 @@
             e.preventDefault();
 
             var idResena  = (overlay.querySelector('#resenaIdInput')?.value || '').trim();
-            var at1  = form.querySelector('input[name="at1"]:checked')?.value;
             var at2  = form.querySelector('input[name="at2"]:checked')?.value;
+            var at3  = form.querySelector('input[name="at3"]:checked')?.value;
             var en1  = form.querySelector('input[name="en1"]:checked')?.value;
             var en2  = form.querySelector('input[name="en2"]:checked')?.value;
             var err       = overlay.querySelector('.resena-error');
             var btn       = overlay.querySelector('.resena-submit-btn');
 
-            // Validación — las 4 preguntas son obligatorias
-            if (!at1 || !at2 || !en1 || !en2) {
+            // Validación — solo at2 y en1 son obligatorias; en2 y at3 son opcionales
+            if (!at2 || !en1) {
                 if (err) {
-                    err.textContent = 'Respondé las cuatro preguntas antes de enviar.';
+                    err.textContent = 'Respondé las preguntas de Atención y Entrega antes de enviar.';
                     err.classList.add('resena-error--visible');
                 }
                 return;
             }
 
-            // Calcular promedio redondeado por eje
-            var atencion = Math.round((parseInt(at1) + parseInt(at2)) / 2);
-            var entrega  = Math.round((parseInt(en1) + parseInt(en2)) / 2);
+            // Calcular promedio redondeado por eje (en2 y at3 son opcionales)
+            var atencion = at3
+                ? Math.round((parseInt(at2) + parseInt(at3)) / 2)
+                : parseInt(at2);
+            var entrega = en2
+                ? Math.round((parseInt(en1) + parseInt(en2)) / 2)
+                : parseInt(en1);
 
             if (err) err.classList.remove('resena-error--visible');
             btn.disabled = true;
             btn.textContent = 'Enviando…';
 
-            try {
-                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-                var res = await fetch('/Resenas/Enviar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': token || ''
-                    },
-                    body: JSON.stringify({
-                        id:         parseInt(idResena),
-                        atencion:   atencion,
-                        entrega:    entrega,
-                        comentario: (overlay.querySelector('#resenaComentario')?.value || '').trim(),
-                        problema:   (overlay.querySelector('#resenaProblema')?.value || '').trim()
-                    })
-                });
+            // TODO: conectar con base de datos
+            // Mostrar animación de éxito directamente
+            var formBody = overlay.querySelector('.resena-body');
+            var resenaFooter = overlay.querySelector('.resena-footer');
+            var success  = overlay.querySelector('.resena-success');
+            if (formBody) formBody.style.display = 'none';
+            if (resenaFooter) resenaFooter.style.display = 'none';
+            if (success)  success.classList.add('resena-success--visible');
 
-                var data = await res.json().catch(() => null);
-
-                if (res.ok && data?.success) {
-                    // Mostrar estado de éxito
-                    var formBody = overlay.querySelector('.resena-body');
-                    var success  = overlay.querySelector('.resena-success');
-                    if (formBody) formBody.style.display = 'none';
-                    if (success)  success.classList.add('resena-success--visible');
-
-                    // Cerrar automáticamente después de 2.2s
-                    setTimeout(_cerrar, 2200);
-                } else {
-                    throw new Error(data?.message || 'Error al enviar');
-                }
-            } catch (ex) {
-                btn.disabled = false;
-                btn.textContent = 'Enviar reseña';
-                if (err) {
-                    err.textContent = 'Hubo un error al enviar la reseña. Intentá de nuevo.';
-                    err.classList.add('resena-error--visible');
-                }
-                console.error('Reseña error:', ex);
-            }
+            // Cerrar automáticamente después de 2.8s
+            setTimeout(_cerrar, 2800);
         });
     });
 
