@@ -3,19 +3,7 @@
 @{
     ViewData["Title"] = "Chat";
     var vendedor = (Bookly.Models.Usuarios)ViewBag.Vendedor;
-    var vendedorCerradas = (int)(ViewBag.VendedorVentasCerradas ?? 0);
     var publicacionConsulta = ViewBag.PublicacionConsulta as Bookly.Models.PublicacionesCompletas;
-    var resenaCount      = (int)(ViewBag.VendedorResenaCount ?? 0);
-    var promedioAtencion = ViewBag.VendedorPromedioAtencion as double?;
-    var promedioEntrega  = ViewBag.VendedorPromedioEntrega  as double?;
-    var pubsVendedor     = ViewBag.VendedorPublicaciones as List<Bookly.Models.PublicacionesCompletas> ?? new List<Bookly.Models.PublicacionesCompletas>();
-    var vendedorActivas  = (int)(ViewBag.VendedorPublicacionesActivas ?? 0);
-    var maxPubs          = pubsVendedor.Count < 4 ? pubsVendedor.Count : 4;
-
-    var avatarVendedor = !string.IsNullOrWhiteSpace(vendedor?.fotoPerfil)
-        ? vendedor.fotoPerfil
-        : Url.Content("~/img/default.webp");
-
     var tieneVendedor = !string.IsNullOrWhiteSpace(vendedor?.DNI);
 }
 
@@ -86,7 +74,10 @@
                 </button>
                 @if (tieneVendedor)
                 {
-                    <img class="chat-conv-avatar" src="@avatarVendedor" alt="@vendedor.nombreComp" />
+                    var avatarVendedorSrc = !string.IsNullOrWhiteSpace(vendedor?.fotoPerfil)
+                        ? vendedor.fotoPerfil
+                        : Url.Content("~/img/default.webp");
+                    <img class="chat-conv-avatar" src="@avatarVendedorSrc" alt="@vendedor.nombreComp" />
                     <div class="chat-messages-header-info">
                         <p class="chat-messages-nombre">@vendedor.nombreComp</p>
                         <p class="chat-messages-sub">
@@ -187,30 +178,11 @@
 
         @* ── COL 3: Widget del contacto (se rellena dinámicamente via JS) ── *@
         <aside class="det-col-vendedor chat-col-vendedor" id="chatColVendedor">
-            @* Contenido inicial: si hay vendedor al cargar la página, renderizarlo ya *@
-            @if (tieneVendedor)
+            @* El widget se construye progresivamente por JS (skeleton → info → reseñas → publicaciones).
+               Si no hay contacto activo, el JS muestra el placeholder vacío. *@
+            @if (!tieneVendedor)
             {
-                @await Html.PartialAsync("_VendedorCard", new Bookly.Models.VendedorCardViewModel
-                {
-                    DNI                  = vendedor.DNI,
-                    NombreComp           = vendedor.nombreComp,
-                    Ano                  = vendedor.ano,
-                    Especialidad         = vendedor.especialidad,
-                    Curso                = vendedor.curso,
-                    AboutMe              = vendedor.aboutMe,
-                    FotoPerfil           = vendedor.fotoPerfil,
-                    Pill                 = "Contacto",
-                    VentasCerradas       = vendedorCerradas,
-                    ResenaCount          = resenaCount,
-                    PromedioAtencion     = promedioAtencion,
-                    PromedioEntrega      = promedioEntrega,
-                    PublicacionesActivas = vendedorActivas,
-                    Publicaciones        = pubsVendedor,
-                })
-            }
-            else
-            {
-                @* Placeholder vacío cuando no hay conversación activa *@
+                @* Placeholder cuando no hay conversación activa — el JS lo reemplaza al abrir un chat *@
                 <div class="chat-widget-empty" id="chatWidgetEmpty">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>

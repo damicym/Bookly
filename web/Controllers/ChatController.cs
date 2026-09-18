@@ -45,37 +45,6 @@ namespace Bookly.Controllers
                 BD.UpsertChat(user.DNI, vendedor.DNI);
             }
 
-            // Estadísticas del vendedor
-            if (!string.IsNullOrWhiteSpace(vendedor.DNI))
-            {
-                ViewBag.VendedorVentasCerradas = vendedor?.ventasCerradas ?? 0;
-
-                var pubsVendedor = BD.ObtenerPublicacionesCompletasPorUsuario(vendedor.DNI);
-                ViewBag.VendedorPublicaciones = pubsVendedor.Where(p => p.status == 1).ToList();
-                ViewBag.VendedorPublicacionesActivas = pubsVendedor.Count(p => p.status == 1);
-
-                var resenasVendedor = BD.ObtenerResenasPorReceptor(vendedor.DNI);
-                var resenasCompletadas = resenasVendedor
-                    .Where(r => r.atencion.HasValue && r.entrega.HasValue)
-                    .ToList();
-                ViewBag.VendedorResenaCount = resenasCompletadas.Count;
-                ViewBag.VendedorPromedioAtencion = resenasCompletadas.Count > 0
-                    ? resenasCompletadas.Average(r => (double)r.atencion.Value)
-                    : (double?)null;
-                ViewBag.VendedorPromedioEntrega = resenasCompletadas.Count > 0
-                    ? resenasCompletadas.Average(r => (double)r.entrega.Value)
-                    : (double?)null;
-            }
-            else
-            {
-                ViewBag.VendedorVentasCerradas = 0;
-                ViewBag.VendedorPublicaciones = new List<PublicacionesCompletas>();
-                ViewBag.VendedorPublicacionesActivas = 0;
-                ViewBag.VendedorResenaCount = 0;
-                ViewBag.VendedorPromedioAtencion = (double?)null;
-                ViewBag.VendedorPromedioEntrega = (double?)null;
-            }
-
             // Si viene desde "Consultar publicación", pasar los datos de la publi
             if (idPublicacion.HasValue)
             {
@@ -154,7 +123,23 @@ namespace Bookly.Controllers
             if (user == null) return Unauthorized();
 
             var datos = BD.ObtenerMensajesDeChats(user.DNI, 20);
-            return Json(datos);
+
+            // Proyectar a camelCase para que el JS pueda leer msg.idEmisor / msg.idReceptor
+            // (el modelo Mensaje usa [JsonPropertyName("id_emisor")] que produce snake_case
+            // al serializar directamente, pero el JS espera camelCase).
+            var resultado = datos.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Select(m => new
+                {
+                    id         = m.id,
+                    idEmisor   = m.idEmisor,
+                    idReceptor = m.idReceptor,
+                    contenido  = m.contenido,
+                    fechaEnvio = m.fechaEnvio,
+                    leido      = m.leido
+                }).ToList()
+            );
+            return Json(resultado);
         }
 
         /// <summary>
@@ -216,48 +201,86 @@ namespace Bookly.Controllers
         }
 
         /// <summary>
-        /// GET /Chat/ObtenerWidgetContacto?dniContacto=xxx
-        /// Devuelve el HTML del widget de contacto (partial view _VendedorCard)
-        /// para el contacto indicado. Lo consume el JS al cambiar de conversación.
+        /// GET /Chat/ObtenerInfoContacto?dniContacto=xxx
+        /// Paso 1 del widget progresivo: datos básicos del contacto (nombre, año, foto, etc.)
         /// </summary>
         [HttpGet]
-        public IActionResult ObtenerWidgetContacto(string dniContacto)
+        public IActionResult ObtenerInfoContacto(string dniContacto)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null) return Unauthorized();
 
             if (string.IsNullOrWhiteSpace(dniContacto))
-                return Content("", "text/html");
+                return Json(null);
 
             var contacto = BD.ObtenerUsuarioPorDNI(dniContacto);
-            if (contacto == null)
-                return Content("", "text/html");
+            if (contacto == null) return Json(null);
 
-            var pubs = BD.ObtenerPublicacionesCompletasPorUsuario(dniContacto)
-                           .Where(p => p.status == 1).ToList();
+            return Json(new
+            {
+                dni          = contacto.DNI,
+                nombreComp   = contacto.nombreComp,
+                ano          = contacto.ano,
+                anoTexto     = Helpers.HtmlHelpers.PasarAñoATextoCompleto(contacto.ano),
+                especialidad = contacto.especialidad,
+                curso        = contacto.curso,
+                aboutMe      = contacto.aboutMe,
+                fotoPerfil   = contacto.fotoPerfil,
+                ventasCerradas = contacto.ventasCerradas
+            });
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerResenasContacto?dniContacto=xxx
+        /// Paso 2 del widget progresivo: promedios de reseñas del contacto.
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerResenasContacto(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniContacto))
+                return Json(new { resenaCount = 0, promedioAtencion = (double?)null, promedioEntrega = (double?)null });
 
             var resenas = BD.ObtenerResenasPorReceptor(dniContacto)
                             .Where(r => r.atencion.HasValue && r.entrega.HasValue).ToList();
 
-            var vm = new VendedorCardViewModel
+            return Json(new
             {
-                DNI                  = contacto.DNI,
-                NombreComp           = contacto.nombreComp,
-                Ano                  = contacto.ano,
-                Especialidad         = contacto.especialidad,
-                Curso                = contacto.curso,
-                AboutMe              = contacto.aboutMe,
-                FotoPerfil           = contacto.fotoPerfil,
-                Pill                 = "Contacto",
-                VentasCerradas       = contacto.ventasCerradas,
-                ResenaCount          = resenas.Count,
-                PromedioAtencion     = resenas.Count > 0 ? resenas.Average(r => (double)r.atencion.Value) : (double?)null,
-                PromedioEntrega      = resenas.Count > 0 ? resenas.Average(r => (double)r.entrega.Value)  : (double?)null,
-                PublicacionesActivas = pubs.Count,
-                Publicaciones        = pubs,
-            };
+                resenaCount      = resenas.Count,
+                promedioAtencion = resenas.Count > 0 ? resenas.Average(r => (double)r.atencion.Value) : (double?)null,
+                promedioEntrega  = resenas.Count > 0 ? resenas.Average(r => (double)r.entrega.Value)  : (double?)null,
+            });
+        }
 
-            return PartialView("_VendedorCard", vm);
+        /// <summary>
+        /// GET /Chat/ObtenerPublicacionesContacto?dniContacto=xxx
+        /// Paso 3 del widget progresivo: publicaciones activas del contacto (máx 4).
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerPublicacionesContacto(string dniContacto)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(dniContacto))
+                return Json(new { activas = 0, publicaciones = new List<object>() });
+
+            var pubs = BD.ObtenerPublicacionesCompletasPorUsuario(dniContacto)
+                         .Where(p => p.status == 1).ToList();
+
+            return Json(new
+            {
+                activas = pubs.Count,
+                publicaciones = pubs.Take(4).Select(p => new
+                {
+                    id     = p.id,
+                    nombre = p.nombre,
+                    precio = p.precio,
+                    imagen = p.imagen
+                }).ToList()
+            });
         }
 
         /// <summary>

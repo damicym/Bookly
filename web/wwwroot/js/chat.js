@@ -575,15 +575,22 @@
     const avatarModal    = document.getElementById('chatAvatarModal');
     const avatarModalImg = document.getElementById('chatAvatarModalImg');
 
+    function cerrarAvatarModal() {
+        if (avatarModal) avatarModal.classList.remove('open');
+    }
+
     if (avatarChat && avatarModal) {
         avatarChat.addEventListener('click', function (e) {
             e.stopPropagation();
             avatarModalImg.src = avatarChat.src;
             avatarModal.classList.add('open');
         });
-        avatarModal.addEventListener('click', function () { avatarModal.classList.remove('open'); });
+        // Cerrar al hacer click en el overlay (fuera de la imagen)
+        avatarModal.addEventListener('click', function (e) {
+            if (e.target === avatarModal) cerrarAvatarModal();
+        });
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') avatarModal.classList.remove('open');
+            if (e.key === 'Escape') cerrarAvatarModal();
         });
     }
 
@@ -797,40 +804,326 @@
     // Cerrar panel y limpiar cache al cambiar de conversación
     // (el cierre real está en abrirConversacion directamente)
 
-    // ── Widget del contacto (columna derecha) ───────────
+    // ── Widget del contacto (columna derecha) — carga progresiva ──
     const colVendedor = document.getElementById('chatColVendedor');
-    // Cache de HTML del widget por contacto para no re-fetchear
+
+    // Cache por DNI: { info: {...}, resenas: {...}, pubs: {...} }
     const cacheWidget = {};
 
+    // ── Helpers de construcción del widget ────────────────
+
+    // Esqueleto completo mientras no hay ningún dato
+    function buildWidgetSkeleton() {
+        return '<div class="det-vendedor-card">'
+            // top
+            + '<div class="vsk-top">'
+            +   '<div class="vsk-avatar vsk-shimmer"></div>'
+            +   '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">'
+            +     '<div class="vsk-pill vsk-shimmer"></div>'
+            +     '<div class="vsk-nombre vsk-shimmer"></div>'
+            +     '<div class="vsk-sub vsk-shimmer"></div>'
+            +     '<div class="vsk-about vsk-shimmer"></div>'
+            +   '</div>'
+            + '</div>'
+            // stats skeleton
+            + '<div class="vsk-stats">'
+            +   '<div class="vsk-resena-count vsk-shimmer" style="margin:0 auto"></div>'
+            +   '<div class="vsk-barra">'
+            +     '<div class="vsk-barra-seg vsk-shimmer"></div>'
+            +     '<div class="vsk-barra-seg vsk-shimmer"></div>'
+            +     '<div class="vsk-barra-seg vsk-shimmer"></div>'
+            +     '<div class="vsk-barra-seg vsk-shimmer"></div>'
+            +     '<div class="vsk-barra-seg vsk-shimmer"></div>'
+            +   '</div>'
+            +   '<div class="vsk-stats-row">'
+            +     '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--sm vsk-shimmer"></div></div>'
+            +     '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--lg vsk-shimmer"></div></div>'
+            +     '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--md vsk-shimmer"></div></div>'
+            +   '</div>'
+            + '</div>'
+            // pubs skeleton
+            + '<div class="vsk-pubs">'
+            +   '<div class="vsk-pubs-label vsk-shimmer"></div>'
+            +   buildPubSkeletonRow() + buildPubSkeletonRow() + buildPubSkeletonRow()
+            + '</div>'
+            + '</div>';
+    }
+
+    function buildPubSkeletonRow() {
+        return '<div class="vsk-pub-row">'
+            + '<div class="vsk-pub-img vsk-shimmer"></div>'
+            + '<div class="vsk-pub-info">'
+            +   '<div class="vsk-pub-nombre vsk-shimmer"></div>'
+            +   '<div class="vsk-pub-precio vsk-shimmer"></div>'
+            + '</div>'
+            + '</div>';
+    }
+
+    // Construye el bloque "top" con los datos de info
+    function buildWidgetTop(info) {
+        const avatar  = info.fotoPerfil || DEFAULT_AVATAR;
+        const nombre  = escapeHtml(info.nombreComp  || '');
+        const anoTxt  = info.anoTexto   || '';
+        const espec   = escapeHtml(info.especialidad || '');
+        const curso   = escapeHtml(info.curso        || '');
+        const about   = escapeHtml(info.aboutMe      || '');
+
+        let subParts = [];
+        if (anoTxt)              subParts.push(anoTxt);
+        if (espec || curso)      subParts.push([espec, curso].filter(Boolean).join(' '));
+        const sub = subParts.join(' · ');
+
+        return '<div class="det-vendedor-top">'
+            + `<img src="${escapeHtml(avatar)}" alt="perfil" class="det-vendedor-avatar" id="avatarVendedorChat" style="cursor:pointer" title="Ver foto" />`
+            + '<div>'
+            +   '<span class="det-vendedor-pill">Contacto</span>'
+            +   `<p class="det-vendedor-nombre">${nombre}</p>`
+            +   `<p class="det-vendedor-sub">${sub}</p>`
+            +   (about ? `<p class="det-vendedor-about">${about}</p>` : '')
+            + '</div>'
+            + '</div>';
+    }
+
+    // Esqueleto de stats (usado mientras las reseñas cargan, pero el top ya está)
+    function buildStatsSkeletonInner() {
+        return '<div class="vsk-resena-count vsk-shimmer" style="margin:0 auto"></div>'
+            + '<div class="vsk-barra">'
+            + '<div class="vsk-barra-seg vsk-shimmer"></div>'.repeat(5)
+            + '</div>'
+            + '<div class="vsk-stats-row">'
+            + '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--sm vsk-shimmer"></div></div>'
+            + '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--lg vsk-shimmer"></div></div>'
+            + '<div class="vsk-stat"><div class="vsk-stat-icon vsk-shimmer"></div><div class="vsk-stat-label vsk-stat-label--md vsk-shimmer"></div></div>'
+            + '</div>';
+    }
+
+    // Construye el bloque de stats con datos reales
+    function buildWidgetStats(info, resenas) {
+        const ventasCerradas = info.ventasCerradas || 0;
+        let ventasStr;
+        if (ventasCerradas >= 10) {
+            ventasStr = ((Math.floor(ventasCerradas / 10)) * 10) + '+';
+        } else {
+            ventasStr = String(ventasCerradas);
+        }
+
+        const count   = resenas.resenaCount      || 0;
+        const pAten   = resenas.promedioAtencion;
+        const pEntr   = resenas.promedioEntrega;
+
+        // Segmento activo (promedio global redondeado)
+        let segActivo = 0;
+        if (pAten != null && pEntr != null) {
+            let g = Math.round((pAten + pEntr) / 2);
+            segActivo = Math.max(1, Math.min(5, g));
+        }
+
+        function segClass(n) { return segActivo === n ? 'det-rep-seg--activo' : ''; }
+
+        // Clasificar atención
+        let atenLabel = '', atenIconMain = '', atenBadge = '';
+        if (pAten != null) {
+            if (pAten <= 5/3) {
+                atenLabel = 'Mala atención';
+                atenIconMain = SVG_CHAT;
+                atenBadge = SVG_WARN;
+            } else if (pAten <= 10/3) {
+                atenLabel = 'Atención regular';
+                atenIconMain = SVG_CHAT;
+                atenBadge = SVG_NEUTRAL;
+            } else {
+                atenLabel = 'Buena atención';
+                atenIconMain = SVG_CHAT;
+                atenBadge = SVG_OK;
+            }
+        }
+
+        // Clasificar entrega
+        let entrLabel = '', entrIconMain = '', entrBadge = '';
+        if (pEntr != null) {
+            if (pEntr <= 5/3) {
+                entrLabel = 'No entrega a tiempo';
+                entrIconMain = SVG_CLOCK;
+                entrBadge = SVG_WARN;
+            } else if (pEntr <= 10/3) {
+                entrLabel = 'Entrega irregular';
+                entrIconMain = SVG_CLOCK;
+                entrBadge = SVG_NEUTRAL;
+            } else {
+                entrLabel = 'Entrega a tiempo';
+                entrIconMain = SVG_CLOCK;
+                entrBadge = SVG_OK;
+            }
+        }
+
+        const countLabel = count === 1 ? '1 reseña' : count + ' reseñas';
+
+        let statsRowExtra = '';
+        if (count > 0) {
+            statsRowExtra =
+                '<div class="det-rep-divider"></div>'
+                + '<div class="det-rep-stat">'
+                +   '<div class="det-rep-stat-icon-wrap">' + atenIconMain + '<span class="det-rep-check">' + atenBadge + '</span></div>'
+                +   `<span class="det-rep-stat-desc">${atenLabel}</span>`
+                + '</div>'
+                + '<div class="det-rep-divider"></div>'
+                + '<div class="det-rep-stat">'
+                +   '<div class="det-rep-stat-icon-wrap">' + entrIconMain + '<span class="det-rep-check">' + entrBadge + '</span></div>'
+                +   `<span class="det-rep-stat-desc">${entrLabel}</span>`
+                + '</div>';
+        }
+
+        return `<span class="det-rep-resena-count">(${countLabel})</span>`
+            + '<div class="det-rep-barra-segmentada">'
+            +   `<div class="det-rep-seg det-rep-seg-1 ${segClass(1)}"></div>`
+            +   `<div class="det-rep-seg det-rep-seg-2 ${segClass(2)}"></div>`
+            +   `<div class="det-rep-seg det-rep-seg-3 ${segClass(3)}"></div>`
+            +   `<div class="det-rep-seg det-rep-seg-4 ${segClass(4)}"></div>`
+            +   `<div class="det-rep-seg det-rep-seg-5 ${segClass(5)}"></div>`
+            + '</div>'
+            + '<div class="det-rep-stats-row">'
+            +   `<div class="det-rep-stat det-rep-stat--ventas"><span class="det-rep-stat-num">${ventasStr}</span><span class="det-rep-stat-desc">ventas</span></div>`
+            +   statsRowExtra
+            + '</div>';
+    }
+
+    // Esqueleto de publicaciones (usado mientras cargan)
+    function buildPubsSkeletonInner() {
+        return '<div class="vsk-pubs-label vsk-shimmer" style="width:100px;height:12px;border-radius:6px"></div>'
+            + buildPubSkeletonRow() + buildPubSkeletonRow() + buildPubSkeletonRow();
+    }
+
+    // Construye el bloque de publicaciones con datos reales
+    function buildWidgetPubs(pubsData) {
+        const activas = pubsData.activas || 0;
+        const lista   = pubsData.publicaciones || [];
+
+        const labelCount = activas > 0
+            ? `Publicaciones <span class="det-otras-count">(${activas})</span>`
+            : 'Publicaciones';
+
+        let grid = '';
+        if (lista.length === 0) {
+            grid = '<p class="det-otras-empty">Este usuario no publicó ningún libro todavía.</p>';
+        } else {
+            lista.forEach(function (p) {
+                const img  = escapeHtml(p.imagen || '/img/book-placeholder.webp');
+                const nom  = escapeHtml(p.nombre || '');
+                const prec = escapeHtml(String(p.precio || ''));
+                grid += `<a class="det-otras-thumb" href="/Book/Detalle/${p.id}">`
+                    + `<img src="${img}" alt="${nom}" loading="lazy" />`
+                    + '<div class="det-otras-thumb-info">'
+                    +   `<span class="det-otras-thumb-nombre">${nom}</span>`
+                    +   `<span class="det-otras-thumb-precio">$${prec}</span>`
+                    + '</div>'
+                    + '</a>';
+            });
+        }
+
+        return `<span class="det-otras-label">${labelCount}</span>`
+            + `<div class="det-otras-grid">${grid}</div>`;
+    }
+
+    // SVG inline compartidos
+    const SVG_CHAT    = "<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M8 9h8'/><path d='M8 13h6'/><path d='M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z'/></svg>";
+    const SVG_CLOCK   = "<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><circle cx='12' cy='12' r='9'/><path d='M12 7v5l2.5 2.5'/></svg>";
+    const SVG_OK      = "<svg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='#22c55e' stroke='none'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z'/></svg>";
+    const SVG_NEUTRAL = "<svg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='#64748b' stroke='none'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336z'/><rect x='7' y='10.75' width='10' height='2.5' rx='1.25' fill='white'/></svg>";
+    const SVG_WARN    = "<svg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='#f59e0b' stroke='none'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M12 1.67c.955 0 1.845 .467 2.39 1.247l.105 .16l8.114 13.548a2.928 2.928 0 0 1 -2.307 4.363l-.195 .008h-16.225a2.928 2.928 0 0 1 -2.582 -4.2l.099 -.185l8.11 -13.539a2.928 2.928 0 0 1 2.491 -1.402zm0 10.33a1 1 0 0 0 -1 1v2a1 1 0 0 0 2 0v-2a1 1 0 0 0 -1 -1zm0 -4a1 1 0 0 0 0 2a1 1 0 0 0 0 -2z'/></svg>";
+
+    // ── Carga progresiva del widget ───────────────────────
     function actualizarWidgetContacto(dniContacto) {
         if (!colVendedor) return;
 
-        // Si ya tenemos el HTML en cache, volcar directamente
-        if (cacheWidget[dniContacto] !== undefined) {
-            colVendedor.innerHTML = cacheWidget[dniContacto];
+        const cache = cacheWidget[dniContacto];
+
+        // Si tenemos todo en cache, volcar directamente y salir
+        if (cache && cache.info && cache.resenas && cache.pubs) {
+            renderWidgetCompleto(dniContacto, cache.info, cache.resenas, cache.pubs);
             rewireAvatarModal();
             return;
         }
 
-        // Mostrar skeleton mientras carga
-        colVendedor.innerHTML = '<div class="chat-widget-loading">'
-            + '<svg class="chat-attach-spinner" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>'
-            + '</div>';
+        // ── PASO 0: skeleton completo ──────────────────────
+        colVendedor.innerHTML = buildWidgetSkeleton();
 
-        fetch('/Chat/ObtenerWidgetContacto?dniContacto=' + encodeURIComponent(dniContacto))
-            .then(function (r) { return r.text(); })
-            .then(function (html) {
-                cacheWidget[dniContacto] = html;
-                // Solo aplicar si este contacto sigue siendo el activo
-                if (dniContacto === dniContactoActivo) {
-                    colVendedor.innerHTML = html;
-                    rewireAvatarModal();
+        const enc = encodeURIComponent(dniContacto);
+
+        // ── PASO 1: info básica ────────────────────────────
+        fetch('/Chat/ObtenerInfoContacto?dniContacto=' + enc)
+            .then(function (r) { return r.json(); })
+            .then(function (info) {
+                if (!info || dniContacto !== dniContactoActivo) return;
+                if (!cacheWidget[dniContacto]) cacheWidget[dniContacto] = {};
+                cacheWidget[dniContacto].info = info;
+
+                // Reemplazar sección top con datos reales, mantener stats+pubs skeleton
+                const card = colVendedor.querySelector('.det-vendedor-card');
+                if (!card) return;
+                const vskTop = card.querySelector('.vsk-top');
+                if (vskTop) vskTop.outerHTML = buildWidgetTop(info);
+            })
+            .catch(function (err) { console.error('[widget/info]', err); });
+
+        // ── PASO 2: reseñas ────────────────────────────────
+        fetch('/Chat/ObtenerResenasContacto?dniContacto=' + enc)
+            .then(function (r) { return r.json(); })
+            .then(function (resenas) {
+                if (!resenas || dniContacto !== dniContactoActivo) return;
+                if (!cacheWidget[dniContacto]) cacheWidget[dniContacto] = {};
+                cacheWidget[dniContacto].resenas = resenas;
+
+                const infoActual = cacheWidget[dniContacto].info;
+                if (!infoActual) return; // info aún no llegó — se resolverá cuando llegue
+
+                const statsWrap = colVendedor.querySelector('.vsk-stats');
+                if (statsWrap) {
+                    statsWrap.className = 'det-vendedor-stats-widget';
+                    statsWrap.innerHTML = buildWidgetStats(infoActual, resenas);
                 }
             })
-            .catch(function (err) {
-                console.error('[widget] Error:', err);
-                colVendedor.innerHTML = '';
-            });
+            .catch(function (err) { console.error('[widget/resenas]', err); });
+
+        // ── PASO 3: publicaciones ──────────────────────────
+        fetch('/Chat/ObtenerPublicacionesContacto?dniContacto=' + enc)
+            .then(function (r) { return r.json(); })
+            .then(function (pubs) {
+                if (!pubs || dniContacto !== dniContactoActivo) return;
+                if (!cacheWidget[dniContacto]) cacheWidget[dniContacto] = {};
+                cacheWidget[dniContacto].pubs = pubs;
+
+                const pubsWrap = colVendedor.querySelector('.vsk-pubs');
+                if (pubsWrap) {
+                    pubsWrap.className = 'det-otras';
+                    pubsWrap.innerHTML = buildWidgetPubs(pubs);
+                }
+            })
+            .catch(function (err) { console.error('[widget/pubs]', err); });
+
+        // Una vez que info llega y el DOM fue actualizado, rewire el avatar modal
+        // lo hacemos con un MutationObserver ligero sobre el top del widget
+        const obs = new MutationObserver(function () {
+            const img = colVendedor.querySelector('#avatarVendedorChat');
+            if (img) {
+                rewireAvatarModal();
+                obs.disconnect();
+            }
+        });
+        obs.observe(colVendedor, { childList: true, subtree: true });
+    }
+
+    // Renderiza el widget completo desde cache (sin fetches)
+    function renderWidgetCompleto(dniContacto, info, resenas, pubs) {
+        colVendedor.innerHTML =
+            '<div class="det-vendedor-card">'
+            + buildWidgetTop(info)
+            + '<div class="det-vendedor-stats-widget">'
+            +   buildWidgetStats(info, resenas)
+            + '</div>'
+            + '<div class="det-otras">'
+            +   buildWidgetPubs(pubs)
+            + '</div>'
+            + '</div>';
     }
 
     // Reconecta el modal de avatar después de inyectar HTML dinámico
@@ -851,11 +1144,12 @@
     cargarSidebar();
     prefetchMensajes();
 
-    // Si hay vendedor activo al entrar, mostrar loader mientras llega el prefetch
+    // Si hay vendedor activo al entrar, disparar la carga progresiva del widget
     if (dniContactoActivo) {
         const body = document.getElementById('chatMessagesBody');
         const loader = document.getElementById('chatMensajesLoader');
         if (body && loader) loader.style.display = 'flex';
+        actualizarWidgetContacto(dniContactoActivo);
     }
 
 })();
