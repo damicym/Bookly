@@ -536,6 +536,18 @@
                 enviarMensaje();
             }
         });
+
+        // Al pegar contenido en el input, limpiar estilos inline de cualquier <a>
+        // para que los links copiados de mensajes enviados (color blanco) sean visibles.
+        input.addEventListener('paste', function () {
+            // Esperar un tick para que el contenido pegado ya esté en el DOM
+            setTimeout(function () {
+                input.querySelectorAll('a').forEach(function (a) {
+                    a.removeAttribute('style');
+                });
+                togglePlaceholder();
+            }, 0);
+        });
     }
 
     // ── Modal: nueva conversación ─────────────────────────
@@ -1373,5 +1385,24 @@
             cerrarDrawerVendedor();
         }
     });
+
+    // ── Guard de navegación: aviso si hay mensaje sin enviar ─────────────
+
+    function hayMensajePendiente() {
+        return !inputEsVacio();
+    }
+
+    // __navGuard es consultado por pageloader.js antes de navegar a un link interno.
+    // Devuelve true  → pageloader procede (muestra loader y navega).
+    // Devuelve false → pageloader cancela; el usuario queda donde estaba.
+    window.__navGuard = function (href) {
+        if (!hayMensajePendiente()) return true;
+
+        const confirmar = window.confirm(
+            '¿Salir sin enviar el mensaje?\n\nTenés un mensaje en curso que se perderá si salís.'
+        );
+
+        return confirmar;
+    };
 
 })();

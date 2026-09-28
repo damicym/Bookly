@@ -110,7 +110,14 @@
                 if (url.origin !== window.location.origin) return;
                 if (url.pathname === window.location.pathname && url.hash) return;
             } catch (err) { return; }
+
+            // Consultar guard de navegación (lo puede instalar otra página, ej: chat.js)
+            // e.preventDefault() va ANTES del guard para que el browser no inicie
+            // su propia navegación nativa (que dispararía beforeunload) mientras
+            // el confirm() del guard está bloqueando el thread.
             e.preventDefault();
+            if (typeof window.__navGuard === 'function' && !window.__navGuard(href)) return;
+
             mostrarLoader();
             setTimeout(function () { window.location.href = href; }, 60);
             return;

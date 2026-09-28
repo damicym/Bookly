@@ -60,16 +60,6 @@
         if (detalle) detalle.classList.remove('resena-problema-detalle--abierto');
         if (taProb) taProb.value = '';
 
-        // Reset sección comentario
-        var toggleComentario = overlay.querySelector('#resenaComentarioToggle');
-        var detalleComentario = overlay.querySelector('#resenaComentarioDetalle');
-        var taComentario = overlay.querySelector('#resenaComentario');
-        if (toggleComentario) toggleComentario.setAttribute('aria-expanded', 'false');
-        if (detalleComentario) detalleComentario.classList.remove('resena-problema-detalle--abierto');
-        if (taComentario) taComentario.value = '';
-        var err = overlay.querySelector('.resena-error');
-        if (err) err.classList.remove('resena-error--visible');
-
         // Mostrar form, ocultar éxito
         var form = overlay.querySelector('.resena-body');
         var resenaFooter = overlay.querySelector('.resena-footer');

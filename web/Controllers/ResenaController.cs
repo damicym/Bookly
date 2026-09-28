@@ -11,11 +11,20 @@ namespace Bookly.Controllers
         ///
         /// Body JSON esperado:
         /// {
+<<<<<<< HEAD
         ///   "id_receptor": string,  -- DNI del vendedor que recibe la reseña
         ///   "atencion":    int,     -- promedio eje atención, 1-5
         ///   "entrega":     int,     -- promedio eje entrega,  1-5
         ///   "comentario":  string?, -- opcional
         ///   "problema":    string?  -- opcional
+=======
+        ///   "id":            int,     -- id de la fila en resenas (de la notificación)
+        ///   "p1_atencion":   int,     -- obligatorio, 1-5
+        ///   "p2_entrega":    int,     -- obligatorio, 1-5
+        ///   "p3_entrega":    int?,    -- opcional,    1-5
+        ///   "p4_experiencia": int?,   -- opcional,    1-5
+        ///   "problema":      string   -- opcional
+>>>>>>> e150954578717376fec45ea43c6019eee7004881
         /// }
         /// El id_redactor se toma de la sesión activa.
         /// </summary>
@@ -42,6 +51,7 @@ namespace Bookly.Controllers
             }
 
             var ok = BD.EnviarResena(
+<<<<<<< HEAD
                 idRedactor: user.DNI,
                 idReceptor: dto.IdReceptor,
                 atencion:   dto.Atencion,
@@ -50,6 +60,16 @@ namespace Bookly.Controllers
                 proceso:    dto.Proceso,
                 comentario: dto.Comentario ?? "",
                 problema:   dto.Problema   ?? ""
+=======
+                id:            dto.Id,
+                p1Atencion:    dto.P1Atencion,
+                p2Entrega:     dto.P2Entrega,
+                p3Entrega:     dto.P3Entrega,
+                p4Experiencia: dto.P4Experiencia,
+                atencion:      atencion,
+                entrega:       entrega,
+                problema:      dto.Problema   ?? ""
+>>>>>>> e150954578717376fec45ea43c6019eee7004881
             );
 
             if (!ok)
@@ -75,9 +95,6 @@ namespace Bookly.Controllers
 
         [System.Text.Json.Serialization.JsonPropertyName("proceso")]
         public short Proceso { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("comentario")]
-        public string? Comentario { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("problema")]
         public string? Problema { get; set; }
