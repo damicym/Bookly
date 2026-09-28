@@ -17,7 +17,6 @@ namespace Bookly.Controllers
         ///   "p2_entrega":    int,     -- obligatorio, 1-5
         ///   "p3_entrega":    int?,    -- opcional,    1-5
         ///   "p4_experiencia": int?,   -- opcional,    1-5
-        ///   "comentario":    string,  -- opcional
         ///   "problema":      string   -- opcional
         /// }
         /// </summary>
@@ -56,7 +55,6 @@ namespace Bookly.Controllers
                 p4Experiencia: dto.P4Experiencia,
                 atencion:      atencion,
                 entrega:       entrega,
-                comentario:    dto.Comentario ?? "",
                 problema:      dto.Problema   ?? ""
             );
 
@@ -84,9 +82,6 @@ namespace Bookly.Controllers
 
         [System.Text.Json.Serialization.JsonPropertyName("p4_experiencia")]
         public short? P4Experiencia { get; set; }
-
-        [System.Text.Json.Serialization.JsonPropertyName("comentario")]
-        public string? Comentario { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("problema")]
         public string? Problema { get; set; }

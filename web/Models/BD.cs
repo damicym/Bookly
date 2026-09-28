@@ -516,7 +516,6 @@ namespace Bookly.Models
             short? p4Experiencia,
             short  atencion,
             short  entrega,
-            string comentario,
             string problema)
         {
             var response = Patch($"/resenas/{id}", new
@@ -527,7 +526,6 @@ namespace Bookly.Models
                 p4_experiencia = (object?)p4Experiencia,
                 atencion       = atencion,
                 entrega        = entrega,
-                comentario     = comentario ?? "",
                 problema       = problema   ?? "",
             });
 
