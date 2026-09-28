@@ -3,7 +3,13 @@ import * as resenasCtrl from '../controllers/resenas.controller.js'
 
 const router = Router()
 
-// GET /api/resenas/receptor/:dni  — debe ir ANTES de /redactor/:dni para evitar conflictos
+// POST /api/resenas  — insertar nueva reseña
+router.post('/', resenasCtrl.createResena)
+
+// PATCH /api/resenas/:id  — completar una reseña pendiente (flujo legacy)
+router.patch('/:id', resenasCtrl.updateResena)
+
+// GET /api/resenas/receptor/:dni
 router.get('/receptor/:dni', resenasCtrl.getResenasByReceptor)
 
 // GET /api/resenas/redactor/:dni
