@@ -416,6 +416,12 @@ body:has(.chat-page-wrapper) .footer {
   border-bottom-color: rgba(255, 255, 255, 0.6);
 }
 
+/* Dentro del input siempre color del tema, sin importar estilos heredados o pegados */
+#chatInput .chat-msg-publi-link {
+  color: var(--main) !important;
+  border-bottom-color: var(--main) !important;
+}
+
 /* ── Botón "+" adjuntar publicación ── */
 .chat-attach-btn {
   flex-shrink: 0;
