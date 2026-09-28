@@ -512,17 +512,13 @@ namespace Bookly.Models
             string idReceptor,
             short  atencion,
             short  entrega,
-<<<<<<< HEAD
             short  responsable,
             short  proceso,
             string comentario,
-=======
->>>>>>> e150954578717376fec45ea43c6019eee7004881
             string problema)
         {
             var response = Post("/resenas", new
             {
-<<<<<<< HEAD
                 id_redactor = idRedactor,
                 id_receptor = idReceptor,
                 atencion    = (int)atencion,
@@ -531,15 +527,6 @@ namespace Bookly.Models
                 proceso     = (int)proceso,
                 comentario  = comentario ?? "",
                 problema    = problema   ?? "",
-=======
-                p1_atencion    = p1Atencion,
-                p2_entrega     = p2Entrega,
-                p3_entrega     = (object?)p3Entrega,
-                p4_experiencia = (object?)p4Experiencia,
-                atencion       = atencion,
-                entrega        = entrega,
-                problema       = problema   ?? "",
->>>>>>> e150954578717376fec45ea43c6019eee7004881
             });
 
             if (response == null || !response.IsSuccessStatusCode) return false;
