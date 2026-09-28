@@ -26,7 +26,7 @@ function cerrarRegisterModal(e) {
     }
 }
 
-function abrirLoginModal(e, returnView) {
+function abrirLoginModal(e, returnView, returnUrl) {
     if (e) e.preventDefault();
     var modal = document.getElementById('loginModal');
     if (!modal) return;
@@ -34,6 +34,8 @@ function abrirLoginModal(e, returnView) {
     document.body.style.overflow = 'hidden';
     var returnInput = document.querySelector('#loginModalForm input[name="returnView"]');
     if (returnInput) returnInput.value = returnView || '';
+    var returnUrlInput = document.getElementById('loginReturnUrl');
+    if (returnUrlInput) returnUrlInput.value = returnUrl || '';
     setTimeout(function () {
         var input = document.getElementById('modalDNI');
         if (input) input.focus();
@@ -78,7 +80,7 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('DOMContentLoaded', function () {
     var params = new URLSearchParams(window.location.search);
     var which = params.get('modal');
-    if (which === 'login') abrirLoginModal(null, params.get('returnView') || '');
+    if (which === 'login') abrirLoginModal(null, params.get('returnView') || '', params.get('returnUrl') || '');
     if (which === 'register') abrirRegisterModal();
 
     var body = document.getElementById('appConfig') || document.body;

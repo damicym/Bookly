@@ -5,7 +5,7 @@ namespace Bookly.Controllers
 {
     public class UsuariosController : BaseController
     {
-        public IActionResult Login(string returnView = "Index")
+        public IActionResult Login(string returnView = "Index", string? returnUrl = null)
         { 
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user != null)
@@ -13,23 +13,32 @@ namespace Bookly.Controllers
                 return RedirectToAction("Index", "Home");
             }
             // Redirigir a la home con parámetro para abrir el modal
-            return Redirect("/?modal=login&returnView=" + returnView);
+            var redirect = "/?modal=login&returnView=" + returnView;
+            if (!string.IsNullOrEmpty(returnUrl))
+                redirect += "&returnUrl=" + Uri.EscapeDataString(returnUrl);
+            return Redirect(redirect);
         }
         [HttpPost]
-        public IActionResult Login(string DNI, string password, string returnView = "Index")
+        public IActionResult Login(string DNI, string password, string returnView = "Index", string? returnUrl = null)
         {
             Usuarios usuario = BD.login(DNI, password);
             if (usuario != null)
             {
                 HttpContext.Session.SetString("usuarioLogueado", obj.ObjectToString(usuario));
                 TempData["WelcomeUser"] = usuario.nombreComp;
+                // Prioridad: returnUrl local validado (p.ej. /Book/Detalle?id=42)
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
                 if (returnView == "Publicar") return RedirectToAction("Publicar", "Book");
                 if (returnView == "Catalogo") return RedirectToAction("Catalogo", "Home");
                 return RedirectToAction("Index", "Home");
             }
             TempData["ModalError"] = "DNI o contraseña incorrectos";
             TempData["ModalErrorTarget"] = "login";
-            return Redirect("/?modal=login&returnView=" + returnView);
+            var redirect = "/?modal=login&returnView=" + returnView;
+            if (!string.IsNullOrEmpty(returnUrl))
+                redirect += "&returnUrl=" + Uri.EscapeDataString(returnUrl);
+            return Redirect(redirect);
         }
 
         public IActionResult isLogged() {
