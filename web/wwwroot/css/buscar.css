@@ -509,7 +509,8 @@
   gap: 7px;
 }
 
-.catalogo-seccion-titulo span::before {
+/* Solo "Mejores precios" lleva el rayo */
+.catalogo-seccion-titulo--con-rayo span::before {
   content: '';
   display: inline-block;
   width: 18px;
@@ -518,6 +519,59 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='%2397D8C4' stroke='none'%3E%3Cpath d='M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+/* Botón colapsar/expandir sección */
+.catalogo-seccion-toggle {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary2);
+  opacity: 0.7;
+  border-radius: 6px;
+  transition: opacity 0.2s ease, background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.catalogo-seccion-toggle:hover {
+  opacity: 1;
+  background: rgba(151, 216, 196, 0.12);
+}
+
+.catalogo-seccion-toggle svg {
+  transition: transform 0.3s ease;
+}
+
+/* Estado colapsado: chevron rota a ">" (apunta a la derecha = -90deg desde la posición base "v") */
+.catalogo-seccion-titulo.seccion-collapsed .catalogo-seccion-toggle svg {
+  transform: rotate(-90deg);
+}
+
+/* Wrapper colapsable de cards de una sección */
+.catalogo-seccion-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 230px);
+  justify-content: start;
+  gap: 24px;
+  width: 100%;
+  overflow: visible;
+  transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease;
+  max-height: 9999px;
+  opacity: 1;
+  padding-top: 24px;
+}
+
+.catalogo-seccion-cards.seccion-collapsed {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  padding-top: 0;
 }
 
 .catalogo-resultados .cardsPublicadas {
@@ -531,16 +585,53 @@
   align-items: start;
 }
 
-.catalogo-resultados .cardsPublicadas .separador-cards,
 .catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo,
+.catalogo-resultados .cardsPublicadas .catalogo-seccion-cards,
+.catalogo-resultados .cardsPublicadas .catalogo-seccion-resto,
 .catalogo-resultados .cardsPublicadas .no-result {
   grid-column: 1 / -1;
   width: 100%;
 }
 
+/* Cada sección curada ocupa todo el ancho del grid */
+.catalogo-resultados .cardsPublicadas .catalogo-seccion {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 /* El título de sección siempre centrado */
 .catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo {
   text-align: center;
+}
+
+/* Separador de "resto" — menor jerarquía que los subtítulos curados */
+.catalogo-seccion-resto {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 8px;
+  color: var(--textSecondary, rgba(64, 89, 173, 0.55));
+}
+
+.catalogo-seccion-resto::before,
+.catalogo-seccion-resto::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(64, 89, 173, 0.15);
+}
+
+.catalogo-seccion-resto span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(64, 89, 173, 0.45);
+  white-space: nowrap;
 }
 
 /* Las cards mantienen su ancho fijo de 230px (igual que perfil y landing) */
@@ -978,8 +1069,10 @@
     margin-bottom: 0;
   }
 
-  .catalogo-resultados .cardsPublicadas .separador-cards,
   .catalogo-resultados .cardsPublicadas .catalogo-seccion-titulo,
+  .catalogo-resultados .cardsPublicadas .catalogo-seccion-cards,
+  .catalogo-resultados .cardsPublicadas .catalogo-seccion,
+  .catalogo-resultados .cardsPublicadas .catalogo-seccion-resto,
   .catalogo-resultados .cardsPublicadas .no-result {
     grid-column: 1 / -1;
   }

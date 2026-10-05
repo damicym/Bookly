@@ -417,12 +417,6 @@ button.desearBtnForm.editar:hover svg {
   margin-bottom: 4%;
 }
 
-.separador-cards {
-  width: 100%;
-  border: none;
-  border-top: 2px dashed rgba(64, 89, 173, 0.25);
-  margin: 8px 0;
-}
 
 /* Card de publicar */
 .publicarCard {
