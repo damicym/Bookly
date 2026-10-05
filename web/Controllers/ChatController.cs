@@ -1,10 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Bookly.Models;
+using Bookly.Hubs;
 
 namespace Bookly.Controllers
 {
     public class ChatController : BaseController
     {
+        private readonly IHubContext<ChatHub> _hubContext;
+
+        public ChatController(IHubContext<ChatHub> hubContext)
+        {
+            _hubContext = hubContext;
+        }
+
         public IActionResult Index(string? vendedorDNI, int? idPublicacion)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
@@ -175,10 +184,10 @@ namespace Bookly.Controllers
         /// <summary>
         /// POST /Chat/EnviarMensaje
         /// Body: { dniReceptor, contenido }
-        /// Envía un mensaje y devuelve el objeto guardado.
+        /// Envía un mensaje, lo persiste via API y notifica al receptor en tiempo real via SignalR.
         /// </summary>
         [HttpPost]
-        public IActionResult EnviarMensaje([FromBody] EnviarMensajeRequest req)
+        public async Task<IActionResult> EnviarMensaje([FromBody] EnviarMensajeRequest req)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null) return Unauthorized();
@@ -190,7 +199,7 @@ namespace Bookly.Controllers
             if (mensaje == null)
                 return StatusCode(500, new { error = "No se pudo enviar el mensaje" });
 
-            return Json(new
+            var payload = new
             {
                 id         = mensaje.id,
                 idEmisor   = mensaje.idEmisor,
@@ -198,7 +207,12 @@ namespace Bookly.Controllers
                 contenido  = mensaje.contenido,
                 fechaEnvio = mensaje.fechaEnvio,
                 leido      = mensaje.leido
-            });
+            };
+
+            // Notificar al receptor en tiempo real (si está conectado y en su grupo)
+            await _hubContext.Clients.Group(req.DniReceptor).SendAsync("NuevoMensaje", payload);
+
+            return Json(payload);
         }
 
         /// <summary>

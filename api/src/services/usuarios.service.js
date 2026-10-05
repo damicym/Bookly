@@ -1,7 +1,9 @@
 import supabase from '../db/supabase.js'
 import { uploadPublicationImage } from '../utils/imgParser.js'
+import bcrypt from 'bcryptjs'
 
 const PERFILES_BUCKET = 'images/perfiles'
+const SALT_ROUNDS = 12
 
 export async function subirFotoPerfil(dni, imageFile) {
 	let imagenUrl = null
@@ -32,14 +34,42 @@ export async function deleteFotoPerfil(dni) {
 }
 
 export async function login(dni, password) {
+	// Traer el usuario sin filtrar por password (necesitamos comparar con bcrypt)
 	const { data, error } = await supabase
 		.from('usuarios')
 		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil, ventas_cerradas')
 		.eq('dni', dni)
-		.eq('password', password)
 		.maybeSingle()
 	if (error) throw error
-	return data || null
+	if (!data) return null
+
+	const storedPassword = data.password ?? ''
+	const isHashed = storedPassword.startsWith('$2b$') || storedPassword.startsWith('$2a$')
+
+	let passwordOk = false
+
+	if (isHashed) {
+		// Contraseña ya hasheada → comparar con bcrypt
+		passwordOk = await bcrypt.compare(password, storedPassword)
+	} else {
+		// Contraseña en texto plano (usuarios legacy) → comparar directo
+		passwordOk = storedPassword === password
+
+		// Si es correcta, migrarla a hash en BD (migración transparente)
+		if (passwordOk) {
+			const hash = await bcrypt.hash(password, SALT_ROUNDS)
+			await supabase
+				.from('usuarios')
+				.update({ password: hash })
+				.eq('dni', dni)
+		}
+	}
+
+	if (!passwordOk) return null
+
+	// No devolver el hash al cliente
+	const { password: _, ...userSinPassword } = data
+	return userSinPassword
 }
 
 export async function register(user) {
@@ -57,7 +87,7 @@ export async function register(user) {
 		ano: user.ano,
 		especialidad: user.especialidad,
 		curso: user.curso,
-		password: user.password
+		password: await bcrypt.hash(user.password, SALT_ROUNDS)
 	}
 	const { error } = await supabase.from('usuarios').insert(payload)
 	if (error) throw error
@@ -67,7 +97,7 @@ export async function register(user) {
 export async function getUserByDni(dni) {
 	const { data, error } = await supabase
 		.from('usuarios')
-		.select('dni, nombre_comp, ano, especialidad, curso, password, about_me, foto_perfil, ventas_cerradas')
+		.select('dni, nombre_comp, ano, especialidad, curso, about_me, foto_perfil, ventas_cerradas')
 		.eq('dni', dni)
 		.maybeSingle()
 	if (error) throw error

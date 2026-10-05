@@ -1365,6 +1365,55 @@
         }
     }
 
+    // ── SignalR: mensajes en tiempo real ─────────────────
+    // Conecta al hub, se une al grupo propio (DNI del usuario logueado)
+    // y escucha el evento "NuevoMensaje" para renderizar burbujas sin recargar.
+    (function iniciarSignalR() {
+        if (!window.signalR || !DNI_USUARIO) return;
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/chatHub')
+            .withAutomaticReconnect()   // reintenta si se cae la conexión
+            .build();
+
+        // Al recibir un mensaje nuevo del servidor
+        connection.on('NuevoMensaje', function (msg) {
+            // Asegurarse de que el mensaje sea para este usuario
+            if (msg.idReceptor !== DNI_USUARIO) return;
+
+            const dniEmisor = msg.idEmisor;
+
+            // Agregar al cache (aunque la conversación no esté abierta)
+            if (!cacheMensajes[dniEmisor]) cacheMensajes[dniEmisor] = [];
+            cacheMensajes[dniEmisor].push(msg);
+
+            // Solo renderizar si esa conversación está activa ahora mismo
+            if (dniEmisor === dniContactoActivo) {
+                const body       = document.getElementById('chatMessagesBody');
+                const emptyState = document.getElementById('chatEmptyState');
+                if (!body) return;
+
+                if (emptyState) emptyState.style.display = 'none';
+                const el = buildMensajeEl(msg);
+                body.appendChild(el);
+
+                // Auto-scroll solo si el usuario ya estaba cerca del fondo
+                const umbral = 80; // px
+                const cercaFondo = body.scrollHeight - body.scrollTop - body.clientHeight < umbral;
+                if (cercaFondo) body.scrollTop = body.scrollHeight;
+            }
+        });
+
+        // Arrancar la conexión y unirse al grupo propio
+        connection.start()
+            .then(function () {
+                return connection.invoke('UnirseAGrupo', DNI_USUARIO);
+            })
+            .catch(function (err) {
+                console.error('[SignalR] Error al conectar:', err);
+            });
+    })();
+
     // ── Inicialización ────────────────────────────────────
     cargarSidebar();
     prefetchMensajes();
