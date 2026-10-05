@@ -9,6 +9,7 @@ import deseadosRoutes from "./src/routes/deseados.routes.js"
 import resenasRoutes from "./src/routes/resenas.routes.js"
 import chatsRoutes from "./src/routes/chats.routes.js"
 import mensajesRoutes from "./src/routes/mensajes.routes.js"
+import notificacionesRoutes from "./src/routes/notificaciones.routes.js"
 
 const app = express()
 
@@ -40,6 +41,7 @@ app.use('/api/deseados', deseadosRoutes)
 app.use('/api/resenas', resenasRoutes)
 app.use('/api/chats', chatsRoutes)
 app.use('/api/mensajes', mensajesRoutes)
+app.use('/api/notificaciones', notificacionesRoutes)
 
 // 404 handler
 app.use((req, res) => {
