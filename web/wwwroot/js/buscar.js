@@ -86,11 +86,12 @@ function sincronizarURL(query, materia, ano, estado, editorial, precioMin, preci
 restaurarDesdeURL()
 
 if (searchInput && container) {
-    realizarBusqueda(searchInput.value.trim(), true)
-    // Actualizar UI después de la búsqueda inicial
-    actualizarChipsFiltros()
-    actualizarEstadoBotonLimpiar()
-    actualizarBadgeMobile()
+    realizarBusqueda(searchInput.value.trim(), true).then(() => {
+        // Actualizar UI después de la búsqueda inicial
+        actualizarChipsFiltros()
+        actualizarEstadoBotonLimpiar()
+        actualizarBadgeMobile()
+    })
     searchInput.focus()
     const len = searchInput.value ? searchInput.value.length : 0
     if (typeof searchInput.setSelectionRange === 'function') {
