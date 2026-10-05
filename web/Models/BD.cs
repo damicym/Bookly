@@ -623,6 +623,30 @@ namespace Bookly.Models
             return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
         }
 
+        // ── NOTIFICACIONES ───────────────────────────────────────────────────
+
+        /// <summary>GET /api/notificaciones/:dni — notificaciones no leídas del usuario</summary>
+        public static List<NotificacionDB> ObtenerNotificacionesPendientes(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return new List<NotificacionDB>();
+            return Get<List<NotificacionDB>>($"/notificaciones/{Uri.EscapeDataString(dni)}")
+                   ?? new List<NotificacionDB>();
+        }
+
+        /// <summary>PATCH /api/notificaciones/:id/leer — marca una notificación como leída</summary>
+        public static void MarcarNotificacionLeida(long id, string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return;
+            Patch($"/notificaciones/{id}/leer", new { dni });
+        }
+
+        /// <summary>PATCH /api/notificaciones/:dni/leer-todas — marca todas como leídas</summary>
+        public static void MarcarTodasNotificacionesLeidas(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return;
+            Patch($"/notificaciones/{Uri.EscapeDataString(dni)}/leer-todas", new { });
+        }
+
         // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────
 
         /// <summary>
