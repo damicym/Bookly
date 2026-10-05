@@ -30,11 +30,12 @@ namespace Bookly.Controllers
 
                         // Escapar comillas simples para uso seguro en el atributo onclick
                         var nombreEscapado = nombreVendedor.Replace("'", "\\'");
+                        var nombreLibroEscapado = (resena.nombreLibro ?? "").Replace("'", "\\'");
 
                         notifs.Add(new Notificacion(
                             titulo:    $"Calificá a {nombreVendedor}",
                             subtitulo: "Tocá para dejar tu reseña",
-                            vinculo:   $"javascript:abrirResenaModal('{resena.idReceptor}','{nombreEscapado}','')"
+                            vinculo:   $"javascript:abrirResenaModal('{resena.idReceptor}','{nombreEscapado}','',{resena.idPublicacion?.ToString() ?? "null"},'{nombreLibroEscapado}')"
                         ));
                     }
                 }
