@@ -2,8 +2,95 @@
 
 const container = document.getElementById("resultados")
 
+// ===== SINCRONIZACIÓN CON LA URL =====
+// Lee todos los parámetros de la URL actual y restaura el estado de cada control.
+// Esto permite compartir/bookmarkear búsquedas y llegar desde el breadcrumb de un libro.
+function restaurarDesdeURL() {
+    const params = new URLSearchParams(window.location.search)
+
+    // Query de búsqueda
+    const query = params.get('query') ?? ''
+    if (searchInput && query) {
+        searchInput.value = query
+    }
+
+    // Radio buttons (materia, año, estado, editorial)
+    ;[
+        { param: 'materia',    name: 'filtroMateria' },
+        { param: 'ano',        name: 'filtroAno' },
+        { param: 'estado',     name: 'filtroEstado' },
+        { param: 'editorial',  name: 'filtroEditoriales' }
+    ].forEach(({ param, name }) => {
+        const valor = params.get(param)
+        if (!valor) return
+        const radio = document.querySelector(`input[name="${name}"][value="${CSS.escape(valor)}"]`)
+        if (radio) {
+            radio.checked = true
+            const todas = document.querySelector(`input[name="${name}"][value=""]`)
+            if (todas) todas.checked = false
+        }
+    })
+
+    // Precio
+    const precioMin = params.get('precioMin')
+    const precioMax = params.get('precioMax')
+    const minEl = document.getElementById('filtroPrecioMin')
+    const maxEl = document.getElementById('filtroPrecioMax')
+    if (minEl && precioMin) minEl.value = formatearMiles(precioMin)
+    if (maxEl && precioMax) maxEl.value = formatearMiles(precioMax)
+
+    // Orden — sincronizar selects ocultos y custom dropdowns
+    ;[
+        { param: 'ordenEstado', id: 'selectOrdenEstado' },
+        { param: 'ordenPrecio', id: 'selectOrdenPrecio' }
+    ].forEach(({ param, id }) => {
+        const valor = params.get(param)
+        if (!valor) return
+        const sel = document.getElementById(id)
+        if (!sel) return
+        sel.value = valor
+        sel.classList.toggle('activo', valor !== '')
+        // Sincronizar custom dropdown UI
+        const dropdown = document.querySelector(`.orden-custom-dropdown[data-select="${id}"]`)
+        if (dropdown) {
+            const opt = dropdown.querySelector(`.orden-custom-option[data-value="${CSS.escape(valor)}"]`)
+            const textEl = dropdown.querySelector('.orden-custom-text')
+            const btn = dropdown.querySelector('.orden-custom-btn')
+            if (opt && textEl) {
+                textEl.textContent = opt.textContent
+                btn?.classList.add('activo')
+                dropdown.querySelectorAll('.orden-custom-option').forEach(o => o.classList.remove('selected'))
+                opt.classList.add('selected')
+            }
+        }
+    })
+}
+
+// Actualiza la URL con los parámetros de búsqueda actuales sin recargar la página.
+function sincronizarURL(query, materia, ano, estado, editorial, precioMin, precioMax, ordenEstado, ordenPrecio) {
+    const params = new URLSearchParams()
+    if (query)        params.set('query',       query)
+    if (materia)      params.set('materia',      materia)
+    if (ano)          params.set('ano',          ano)
+    if (estado)       params.set('estado',       estado)
+    if (editorial)    params.set('editorial',    editorial)
+    if (precioMin)    params.set('precioMin',    precioMin)
+    if (precioMax)    params.set('precioMax',    precioMax)
+    if (ordenEstado)  params.set('ordenEstado',  ordenEstado)
+    if (ordenPrecio)  params.set('ordenPrecio',  ordenPrecio)
+    const nuevaURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '')
+    history.replaceState(null, '', nuevaURL)
+}
+
+// Restaurar estado al cargar (antes de la primera búsqueda)
+restaurarDesdeURL()
+
 if (searchInput && container) {
     realizarBusqueda(searchInput.value.trim(), true)
+    // Actualizar UI después de la búsqueda inicial
+    actualizarChipsFiltros()
+    actualizarEstadoBotonLimpiar()
+    actualizarBadgeMobile()
     searchInput.focus()
     const len = searchInput.value ? searchInput.value.length : 0
     if (typeof searchInput.setSelectionRange === 'function') {
@@ -44,6 +131,9 @@ async function realizarBusqueda(query, esCargaInicial) {
             const precioMax = limpiarPrecio(document.getElementById("filtroPrecioMax")?.value?.trim() ?? "")
             const ordenEstado = document.getElementById('selectOrdenEstado')?.value ?? ""
             const ordenPrecio = document.getElementById('selectOrdenPrecio')?.value ?? ""
+
+            // Reflejar el estado actual en la URL (sin recargar)
+            sincronizarURL(query, materia, ano, estado, editorial, precioMin, precioMax, ordenEstado, ordenPrecio)
 
             const params = new URLSearchParams({
                 query: query ?? "",
@@ -229,7 +319,8 @@ async function realizarBusqueda(query, esCargaInicial) {
             }
         }
     } else {
-        // Limpia resultados si query está vacío
+        // Limpia resultados si query está vacío y limpia la URL
+        sincronizarURL('', '', '', '', '', '', '', '', '')
         const container = document.getElementById("resultados")
         if (container) container.innerHTML = `<div class="no-result">
             <div class="no-result-icon">
@@ -251,12 +342,17 @@ if (searchInput) {
     searchInput.addEventListener("input", (e) => {
         clearTimeout(debounceTimer)
         const query = e.target.value.trim()
+        // Si no está en el catálogo, navegar a él con la query
         if (!window.location.href.includes("/Home/Catalogo")) {
             window.location.href = `/Home/Catalogo?query=${encodeURIComponent(query)}`
+            return
         }
         debounceTimer = setTimeout(async () => {
             realizarBusqueda(query)
-        }, 300)  // Espera 300ms
+            actualizarChipsFiltros()
+            actualizarEstadoBotonLimpiar()
+            actualizarBadgeMobile()
+        }, 300)
     })
 }
 
