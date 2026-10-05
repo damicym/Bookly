@@ -60,4 +60,12 @@ public class Resena
     /// <summary>Nombre completo del receptor, enriquecido por la API (join con usuarios).</summary>
     [JsonPropertyName("nombre_receptor")]
     public string? nombreReceptor { get; set; }
+
+    /// <summary>ID de la publicación asociada a esta reseña.</summary>
+    [JsonPropertyName("id_publicacion")]
+    public int? idPublicacion { get; set; }
+
+    /// <summary>Nombre del libro de la publicación, enriquecido por la API.</summary>
+    [JsonPropertyName("nombre_libro")]
+    public string? nombreLibro { get; set; }
 }

@@ -515,18 +515,20 @@ namespace Bookly.Models
             short  responsable,
             short  proceso,
             string comentario,
-            string problema)
+            string problema,
+            int?   idPublicacion = null)
         {
             var response = Post("/resenas", new
             {
-                id_redactor = idRedactor,
-                id_receptor = idReceptor,
-                atencion    = (int)atencion,
-                entrega     = (int)entrega,
-                responsable = (int)responsable,
-                proceso     = (int)proceso,
-                comentario  = comentario ?? "",
-                problema    = problema   ?? "",
+                id_redactor    = idRedactor,
+                id_receptor    = idReceptor,
+                atencion       = (int)atencion,
+                entrega        = (int)entrega,
+                responsable    = (int)responsable,
+                proceso        = (int)proceso,
+                comentario     = comentario ?? "",
+                problema       = problema   ?? "",
+                id_publicacion = idPublicacion,
             });
 
             if (response == null || !response.IsSuccessStatusCode) return false;

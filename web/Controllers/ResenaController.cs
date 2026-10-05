@@ -42,14 +42,15 @@ namespace Bookly.Controllers
             }
 
             var ok = BD.EnviarResena(
-                idRedactor:  user.DNI,
-                idReceptor:  dto.IdReceptor,
-                atencion:    dto.Atencion,
-                entrega:     dto.Entrega,
-                responsable: dto.Responsable,
-                proceso:     dto.Proceso,
-                comentario:  dto.Comentario ?? "",
-                problema:    dto.Problema   ?? ""
+                idRedactor:    user.DNI,
+                idReceptor:    dto.IdReceptor,
+                atencion:      dto.Atencion,
+                entrega:       dto.Entrega,
+                responsable:   dto.Responsable,
+                proceso:       dto.Proceso,
+                comentario:    dto.Comentario    ?? "",
+                problema:      dto.Problema      ?? "",
+                idPublicacion: dto.IdPublicacion
             );
 
             if (!ok)
@@ -81,5 +82,8 @@ namespace Bookly.Controllers
 
         [System.Text.Json.Serialization.JsonPropertyName("problema")]
         public string? Problema { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("id_publicacion")]
+        public int? IdPublicacion { get; set; }
     }
 }

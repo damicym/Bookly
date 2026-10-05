@@ -3,7 +3,7 @@
 (function () {
 
     // ── Apertura ──────────────────────────────────────────────────
-    window.abrirResenaModal = function (idReceptor, nombreVendedor, avatarVendedor) {
+    window.abrirResenaModal = function (idReceptor, nombreVendedor, avatarVendedor, idPublicacion, nombreLibro) {
         var overlay = document.getElementById('resenaModal');
         if (!overlay) return;
 
@@ -17,9 +17,24 @@
         if (avatarEl) avatarEl.src = avatarVendedor || '/img/default.webp';
         if (tituloEl) tituloEl.textContent = nombreVendedor || 'Vendedor';
 
+        // Mostrar u ocultar la línea "Por la compra de …"
+        var compraEl = overlay.querySelector('.resena-header-compra');
+        if (compraEl) {
+            if (idPublicacion && nombreLibro) {
+                compraEl.innerHTML = 'Por la compra de <a href="/Book/Detalle/' + idPublicacion + '" class="resena-header-compra-link" target="_blank" rel="noopener noreferrer" style="color:#fff !important; text-decoration:underline;">' + _escapeHtml(nombreLibro) + '</a>';
+                compraEl.style.display = '';
+            } else {
+                compraEl.style.display = 'none';
+            }
+        }
+
         // Guardar el DNI del receptor en el form
         var idInput = overlay.querySelector('#resenaIdInput');
         if (idInput) idInput.value = idReceptor || '';
+
+        // Guardar id_publicacion en el form
+        var pubInput = overlay.querySelector('#resenaIdPublicacion');
+        if (pubInput) pubInput.value = idPublicacion || '';
 
         // Reset estado
         _resetModal();
@@ -28,6 +43,14 @@
         overlay.classList.add('resena-overlay--visible');
         document.body.style.overflow = 'hidden';
     };
+
+    function _escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
 
     // ── Cierre ────────────────────────────────────────────────────
     window.cerrarResenaModal = function (e) {
@@ -175,13 +198,14 @@
                         'RequestVerificationToken': token || ''
                     },
                     body: JSON.stringify({
-                        id_receptor: idReceptor,
-                        atencion:    atencion,
-                        entrega:     entrega,
-                        responsable: responsable,
-                        proceso:     proceso,
-                        comentario:  comentario || null,
-                        problema:    problema   || null
+                        id_receptor:    idReceptor,
+                        atencion:       atencion,
+                        entrega:        entrega,
+                        responsable:    responsable,
+                        proceso:        proceso,
+                        comentario:     comentario || null,
+                        problema:       problema   || null,
+                        id_publicacion: parseInt(overlay.querySelector('#resenaIdPublicacion')?.value) || null
                     })
                 });
 

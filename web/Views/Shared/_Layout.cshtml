@@ -456,6 +456,7 @@
                         <span class="resena-header-eyebrow">Calificar vendedor</span>
                         <p class="resena-header-titulo">Nombre Vendedor</p>
                         <span class="resena-header-sub">Tu reseña es anónima para otros compradores</span>
+                        <span class="resena-header-compra" style="display:none; font-size:0.8rem; color:rgba(239, 242, 241, 0.5); margin-top:2px;"></span>
                     </div>
                 </div>
 
@@ -463,6 +464,7 @@
                 <form class="resena-body" id="resenaForm" novalidate>
                     @Html.AntiForgeryToken()
                     <input type="hidden" id="resenaIdInput" name="id" value="" />
+                    <input type="hidden" id="resenaIdPublicacion" name="id_publicacion" value="" />
 
                     @* ── Eje Atención (2 preguntas → promedio) ── *@
                     <div class="resena-eje">
