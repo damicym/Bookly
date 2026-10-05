@@ -198,3 +198,15 @@
     </div>
 
 </div>
+
+@{
+    var _catalogoUser = ViewBag.usuario as Bookly.Models.Usuarios;
+    var _catalogoAno = (_catalogoUser?.ano.HasValue == true) ? _catalogoUser.ano.Value.ToString() : "null";
+    var _catalogoLogged = (ViewBag.userLogged == true) ? "true" : "false";
+}
+<script>
+    window.CATALOGO_CONFIG = {
+        anoUsuario: @Html.Raw(_catalogoAno),
+        userLogged: @Html.Raw(_catalogoLogged)
+    };
+</script>

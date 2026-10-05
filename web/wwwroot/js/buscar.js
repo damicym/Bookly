@@ -71,23 +71,18 @@ async function realizarBusqueda(query, esCargaInicial) {
                 const tokenInput = token ? `<input type="hidden" name="__RequestVerificationToken" value="${token.value}">` : ''
                 if (data.publicaciones && data.publicaciones.length > 0) {
                     const hayOrden = ordenEstado !== '' || ordenPrecio !== ''
-                    let anteriorFueProtagonista = data.publicaciones[0]?.esMasBarato ?? false
-                    let huboCambio = false
-                    const hayProtagonistas = !hayOrden && data.publicaciones.some(l => l.esMasBarato)
-                    if (hayProtagonistas) {
-                        html += `<h3 class="catalogo-seccion-titulo"><span>Mejores precios</span></h3>`
-                    }
-                    data.publicaciones.forEach(libro => {
+                    const config = window.CATALOGO_CONFIG ?? {}
+                    const anoUsuario = config.anoUsuario ?? null
+                    const userLogged = config.userLogged ?? false
+
+                    // --- helper: construye el HTML de una card ---
+                    const buildCard = (libro, claseExtra) => {
                         const imgSrc = libro.imagen ? libro.imagen : '/img/book-placeholder.webp'
-                        const tagMasBarato = libro.esMasBarato ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Mejor precio</span>` : ''
-                        const claseCard = (!hayOrden && libro.esMasBarato) ? 'libro protagonista' : 'libro secundario'
-                        if (!hayOrden && huboCambio && anteriorFueProtagonista && !libro.esMasBarato) {
-                            html += `<hr class="separador-cards" />`
-                        }
-                        anteriorFueProtagonista = libro.esMasBarato
-                        huboCambio = true
-                        html += `
-                            <div class="${claseCard}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.id_vendedor}'">
+                        const tagMasBarato = libro.esMasBarato
+                            ? `<span class="tag-masbarato"><svg class="tag-rayo" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg> Mejor precio</span>`
+                            : ''
+                        return `
+                            <div class="libro ${claseExtra}" onclick="window.location.href='/Book/Detalle?id=${libro.id}&idVendedor=${libro.id_vendedor}'">
                                 <div class="imgContainer">
                                     <div class="libroImgContainer">
                                         <img src="${imgSrc}" alt="imagen del libro" loading="lazy" />
@@ -107,7 +102,7 @@ async function realizarBusqueda(query, esCargaInicial) {
                                             ? `<span class="pill">${pasarAnoATexto(libro.ano)}</span>`
                                             : ''
                                         }
-                                        ${libro.estado_libro 
+                                        ${libro.estado_libro
                                             ? `<span class="pill" style="background-color:${getColor(libro.estado_libro)}">${libro.estado_libro}</span>`
                                             : ''
                                         }
@@ -125,7 +120,78 @@ async function realizarBusqueda(query, esCargaInicial) {
                                 </div>
                             </div>
                         `
-                    })
+                    }
+
+                    // SVG chevron reutilizable para los toggles
+                    const svgChevron = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>`
+
+                    // --- helper: genera un bloque de sección completo (título + wrapper de cards) ---
+                    let seccionCounter = 0
+                    const buildSeccion = (titulo, libros, claseCard, conRayo) => {
+                        const id = `seccion-${seccionCounter++}`
+                        const claseRayo = conRayo ? ' catalogo-seccion-titulo--con-rayo' : ''
+                        let cardsHtml = ''
+                        libros.forEach(libro => { cardsHtml += buildCard(libro, claseCard) })
+                        return `
+                            <div class="catalogo-seccion" data-seccion-id="${id}">
+                                <h3 class="catalogo-seccion-titulo${claseRayo}">
+                                    <span>${titulo}</span>
+                                    <button class="catalogo-seccion-toggle" aria-label="Colapsar sección" aria-expanded="true" aria-controls="${id}-cards">
+                                        ${svgChevron}
+                                    </button>
+                                </h3>
+                                <div class="catalogo-seccion-cards" id="${id}-cards">
+                                    ${cardsHtml}
+                                </div>
+                            </div>
+                        `
+                    }
+
+                    if (!hayOrden) {
+                        // Conjuntos curados — se calculan primero para determinar el "resto"
+                        const idsEnSecciones = new Set()
+
+                        // ── Sección 1: Mejores precios (con rayo) ───────────────────
+                        const protagonistas = data.publicaciones.filter(l => l.esMasBarato)
+                        if (protagonistas.length > 0) {
+                            html += buildSeccion('Mejores precios', protagonistas, 'protagonista', true)
+                            protagonistas.forEach(l => idsEnSecciones.add(l.id))
+                        }
+
+                        // ── Sección 2: Mejores condiciones ──────────────────────────
+                        const comoNuevo = data.publicaciones.filter(l =>
+                            l.estado_libro && l.estado_libro.toLowerCase() === 'como nuevo'
+                        )
+                        if (comoNuevo.length > 0) {
+                            html += buildSeccion('Mejores condiciones', comoNuevo, 'secundario', false)
+                            comoNuevo.forEach(l => idsEnSecciones.add(l.id))
+                        }
+
+                        // ── Sección 3: Para tu año (solo usuarios logueados con año) ─
+                        if (userLogged && anoUsuario !== null) {
+                            const paratuAno = data.publicaciones.filter(l => l.ano === anoUsuario)
+                            if (paratuAno.length > 0) {
+                                html += buildSeccion('Para tu año', paratuAno, 'secundario', false)
+                                paratuAno.forEach(l => idsEnSecciones.add(l.id))
+                            }
+                        }
+
+                        // ── Resto: publicaciones que no cayeron en ninguna sección ───
+                        const resto = data.publicaciones.filter(l => !idsEnSecciones.has(l.id))
+                        if (resto.length > 0) {
+                            if (idsEnSecciones.size > 0) {
+                                html += `<div class="catalogo-seccion-resto"><span>Más resultados</span></div>`
+                            }
+                            resto.forEach(libro => {
+                                html += buildCard(libro, 'secundario')
+                            })
+                        }
+                    } else {
+                        // Con orden activo: lista plana sin secciones
+                        data.publicaciones.forEach(libro => {
+                            html += buildCard(libro, 'secundario')
+                        })
+                    }
                 } else {
                     html = `<div class="no-result">
                         <div class="no-result-icon">
@@ -202,6 +268,29 @@ const filtrosBusqueda = [
     document.getElementById("filtroPrecioMin"),
     document.getElementById("filtroPrecioMax")
 ].filter(Boolean)
+
+// ===== TOGGLE SECCIONES DEL CATÁLOGO =====
+// Event delegation: escucha clicks en los botones de colapsar/expandir secciones curadas.
+// Se usa delegation porque el HTML es generado dinámicamente en cada búsqueda.
+if (container) {
+    container.addEventListener('click', (e) => {
+        const btn = e.target.closest('.catalogo-seccion-toggle')
+        if (!btn) return
+
+        const seccion = btn.closest('.catalogo-seccion')
+        if (!seccion) return
+
+        const titulo = seccion.querySelector('.catalogo-seccion-titulo')
+        const seccionId = seccion.getAttribute('data-seccion-id')
+        const cards = seccion.querySelector(`#${seccionId}-cards`)
+        if (!cards) return
+
+        const isCollapsed = cards.classList.toggle('seccion-collapsed')
+        titulo?.classList.toggle('seccion-collapsed', isCollapsed)
+        btn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true')
+        btn.setAttribute('aria-label', isCollapsed ? 'Expandir sección' : 'Colapsar sección')
+    })
+}
 
 // También escuchar radio buttons de los filtros del sidebar
 const radioFiltros = document.querySelectorAll(
