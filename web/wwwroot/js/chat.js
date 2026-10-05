@@ -925,7 +925,11 @@
 
         input.focus();
 
-        // Si el input tiene contenido, agregar espacio antes del link
+        // Limpiar <br> residuales que el browser inserta en contenteditable vacío
+        if (input.textContent.trim() === '') {
+            input.innerHTML = '';
+        }
+
         const textoActual = input.textContent.trim();
 
         const link = document.createElement('a');

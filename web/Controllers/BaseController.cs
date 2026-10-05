@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Text.Json;
 using Bookly.Models;
 
 namespace Bookly.Controllers
@@ -20,22 +21,43 @@ namespace Bookly.Controllers
             {
                 try
                 {
-                    var resenas = BD.ObtenerResenasPorRedactor(user.DNI);
+                    var notificaciones = BD.ObtenerNotificacionesPendientes(user.DNI);
 
-                    foreach (var resena in resenas.Where(r => r.fechaRespuesta == null))
+                    foreach (var notif in notificaciones)
                     {
-                        var nombreVendedor = !string.IsNullOrWhiteSpace(resena.nombreReceptor)
-                            ? resena.nombreReceptor
-                            : "el vendedor";
+                        string vinculo = notif.Vinculo ?? "";
 
-                        // Escapar comillas simples para uso seguro en el atributo onclick
-                        var nombreEscapado = nombreVendedor.Replace("'", "\\'");
-                        var nombreLibroEscapado = (resena.nombreLibro ?? "").Replace("'", "\\'");
+                        // Las notificaciones de reseña pendiente guardan en payload los datos
+                        // necesarios para abrir el modal — construimos el vínculo JS aquí.
+                        if (notif.Tipo == "resena_pendiente" && notif.Payload != null)
+                        {
+                            static string PayloadStr(Dictionary<string, object?> p, string key)
+                            {
+                                if (!p.TryGetValue(key, out var raw) || raw == null) return "";
+                                if (raw is System.Text.Json.JsonElement je)
+                                    return je.ValueKind == System.Text.Json.JsonValueKind.String
+                                        ? je.GetString() ?? ""
+                                        : je.ToString();
+                                return raw.ToString() ?? "";
+                            }
+
+                            var idReceptor    = PayloadStr(notif.Payload, "id_receptor");
+                            var nombreRecep   = PayloadStr(notif.Payload, "nombre_receptor");
+                            var idPub         = notif.Payload.TryGetValue("id_publicacion", out var vP) && vP is System.Text.Json.JsonElement jeP && jeP.ValueKind != System.Text.Json.JsonValueKind.Null
+                                                    ? jeP.ToString()
+                                                    : "null";
+                            var nombreLibro   = PayloadStr(notif.Payload, "nombre_libro");
+
+                            var nombreEscapado      = nombreRecep.Replace("'", "\\'");
+                            var nombreLibroEscapado = nombreLibro.Replace("'", "\\'");
+
+                            vinculo = $"javascript:abrirResenaModal('{idReceptor}','{nombreEscapado}','',{idPub},'{nombreLibroEscapado}')";
+                        }
 
                         notifs.Add(new Notificacion(
-                            titulo:    $"Calificá a {nombreVendedor}",
-                            subtitulo: "Tocá para dejar tu reseña",
-                            vinculo:   $"javascript:abrirResenaModal('{resena.idReceptor}','{nombreEscapado}','',{resena.idPublicacion?.ToString() ?? "null"},'{nombreLibroEscapado}')"
+                            titulo:    notif.Titulo,
+                            subtitulo: notif.Subtitulo ?? "",
+                            vinculo:   vinculo
                         ));
                     }
                 }
