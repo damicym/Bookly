@@ -294,6 +294,7 @@
                 <form method="post" action="@Url.Action("Login", "Usuarios")" class="auth-form" id="loginModalForm">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="returnView" value="" />
+                    <input type="hidden" name="returnUrl" value="" id="loginReturnUrl" />
 
                     <div class="campo">
                         <label for="modalDNI">DNI</label>
@@ -546,30 +547,8 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="resena-separador"></div>
-
-                    @* Comentario opcional — acordeón con flecha *@
-                    <div class="resena-seccion">
-                        <button type="button" class="resena-problema-acordeon" id="resenaComentarioToggle" aria-expanded="false">
-                            <span>Comentario <span style="font-weight:400;opacity:0.6;">(opcional)</span></span>
-                            <svg class="resena-problema-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6-6"/></svg>
-                        </button>
-                        <div class="resena-problema-detalle" id="resenaComentarioDetalle">
-                            <div class="resena-problema-detalle-inner">
-                                <textarea
-                                    id="resenaComentario"
-                                    name="comentario"
-                                    class="resena-comentario-textarea"
-                                    rows="3"
-                                    placeholder="Contá tu experiencia en pocas palabras…"
-                                    maxlength="300"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
+        
                     <div class="resena-error" id="resenaError"></div>
-
 
                 </form>
 

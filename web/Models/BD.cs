@@ -503,32 +503,30 @@ namespace Bookly.Models
         }
 
         /// <summary>
-        /// PATCH /api/resenas/:id
-        /// Completa una reseña pendiente con las puntuaciones individuales,
-        /// los promedios calculados y los textos opcionales.
+        /// POST /api/resenas
+        /// Inserta una nueva reseña con id_redactor (usuario actual) e id_receptor (vendedor).
         /// Retorna true si la operación fue exitosa.
         /// </summary>
         public static bool EnviarResena(
-            int    id,
-            short  p1Atencion,
-            short  p2Entrega,
-            short? p3Entrega,
-            short? p4Experiencia,
+            string idRedactor,
+            string idReceptor,
             short  atencion,
             short  entrega,
+            short  responsable,
+            short  proceso,
             string comentario,
             string problema)
         {
-            var response = Patch($"/resenas/{id}", new
+            var response = Post("/resenas", new
             {
-                p1_atencion    = p1Atencion,
-                p2_entrega     = p2Entrega,
-                p3_entrega     = (object?)p3Entrega,
-                p4_experiencia = (object?)p4Experiencia,
-                atencion       = atencion,
-                entrega        = entrega,
-                comentario     = comentario ?? "",
-                problema       = problema   ?? "",
+                id_redactor = idRedactor,
+                id_receptor = idReceptor,
+                atencion    = (int)atencion,
+                entrega     = (int)entrega,
+                responsable = (int)responsable,
+                proceso     = (int)proceso,
+                comentario  = comentario ?? "",
+                problema    = problema   ?? "",
             });
 
             if (response == null || !response.IsSuccessStatusCode) return false;

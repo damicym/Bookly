@@ -49,9 +49,6 @@ public class Resena
 
     // ── Textos libres ─────────────────────────────────────────────────────────
 
-    [JsonPropertyName("comentario")]
-    public string? comentario { get; set; }
-
     [JsonPropertyName("problema")]
     public string? problema { get; set; }
 

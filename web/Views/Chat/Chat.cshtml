@@ -257,6 +257,17 @@
         dniVendedor:   '@(tieneVendedor ? vendedor.DNI : "")',
         tieneVendedor: @(tieneVendedor ? "true" : "false")
     };
+
+    // Limpiar idPublicacion de la URL para que recargar la página
+    // no vuelva a inyectar el mensaje predeterminado.
+    // (Mismo patrón que WhatsApp Web / Slack con sus params de navegación.)
+    (function () {
+        var url = new URL(window.location.href);
+        if (url.searchParams.has('idPublicacion')) {
+            url.searchParams.delete('idPublicacion');
+            history.replaceState(null, '', url.toString());
+        }
+    })();
 </script>
 <script src="~/js/chat.js" asp-append-version="true"></script>
 }

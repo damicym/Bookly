@@ -34,7 +34,7 @@ namespace Bookly.Controllers
                         notifs.Add(new Notificacion(
                             titulo:    $"Calificá a {nombreVendedor}",
                             subtitulo: "Tocá para dejar tu reseña",
-                            vinculo:   $"javascript:abrirResenaModal({resena.id},'{nombreEscapado}','')"
+                            vinculo:   $"javascript:abrirResenaModal('{resena.idReceptor}','{nombreEscapado}','')"
                         ));
                     }
                 }

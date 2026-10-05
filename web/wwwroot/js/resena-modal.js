@@ -3,7 +3,7 @@
 (function () {
 
     // ── Apertura ──────────────────────────────────────────────────
-    window.abrirResenaModal = function (idResena, nombreVendedor, avatarVendedor) {
+    window.abrirResenaModal = function (idReceptor, nombreVendedor, avatarVendedor) {
         var overlay = document.getElementById('resenaModal');
         if (!overlay) return;
 
@@ -17,9 +17,9 @@
         if (avatarEl) avatarEl.src = avatarVendedor || '/img/default.webp';
         if (tituloEl) tituloEl.textContent = nombreVendedor || 'Vendedor';
 
-        // Guardar el id de la reseña en el form
+        // Guardar el DNI del receptor en el form
         var idInput = overlay.querySelector('#resenaIdInput');
-        if (idInput) idInput.value = idResena || '';
+        if (idInput) idInput.value = idReceptor || '';
 
         // Reset estado
         _resetModal();
@@ -59,16 +59,6 @@
         if (toggleProblema) toggleProblema.setAttribute('aria-expanded', 'false');
         if (detalle) detalle.classList.remove('resena-problema-detalle--abierto');
         if (taProb) taProb.value = '';
-
-        // Reset sección comentario
-        var toggleComentario = overlay.querySelector('#resenaComentarioToggle');
-        var detalleComentario = overlay.querySelector('#resenaComentarioDetalle');
-        var taComentario = overlay.querySelector('#resenaComentario');
-        if (toggleComentario) toggleComentario.setAttribute('aria-expanded', 'false');
-        if (detalleComentario) detalleComentario.classList.remove('resena-problema-detalle--abierto');
-        if (taComentario) taComentario.value = '';
-        var err = overlay.querySelector('.resena-error');
-        if (err) err.classList.remove('resena-error--visible');
 
         // Mostrar form, ocultar éxito
         var form = overlay.querySelector('.resena-body');
@@ -139,53 +129,86 @@
             });
         }
 
-        // Submit
+        // ── Submit ─────────────────────────────────────────────
         var form = overlay.querySelector('#resenaForm');
         if (!form) return;
 
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            var idResena  = (overlay.querySelector('#resenaIdInput')?.value || '').trim();
-            var at2  = form.querySelector('input[name="at2"]:checked')?.value;
-            var at3  = form.querySelector('input[name="at3"]:checked')?.value;
-            var en1  = form.querySelector('input[name="en1"]:checked')?.value;
-            var en2  = form.querySelector('input[name="en2"]:checked')?.value;
-            var err       = overlay.querySelector('.resena-error');
-            var btn       = overlay.querySelector('.resena-submit-btn');
+            var idReceptor = (overlay.querySelector('#resenaIdInput')?.value || '').trim();
+            var at2 = form.querySelector('input[name="at2"]:checked')?.value;
+            var at3 = form.querySelector('input[name="at3"]:checked')?.value;
+            var en1 = form.querySelector('input[name="en1"]:checked')?.value;
+            var en2 = form.querySelector('input[name="en2"]:checked')?.value;
+            var err = overlay.querySelector('.resena-error');
+            var btn = overlay.querySelector('.resena-submit-btn');
 
-            // Validación — solo at2 y en1 son obligatorias; en2 y at3 son opcionales
-            if (!at2 || !en1) {
+            // Todas las caritas son obligatorias
+            if (!at2 || !en1 || !en2 || !at3) {
                 if (err) {
-                    err.textContent = 'Respondé las preguntas de Atención y Entrega antes de enviar.';
+                    err.textContent = 'Tenés que seleccionar todas las caritas antes de enviar.';
                     err.classList.add('resena-error--visible');
                 }
                 return;
             }
 
-            // Calcular promedio redondeado por eje (en2 y at3 son opcionales)
-            var atencion = at3
-                ? Math.round((parseInt(at2) + parseInt(at3)) / 2)
-                : parseInt(at2);
-            var entrega = en2
-                ? Math.round((parseInt(en1) + parseInt(en2)) / 2)
-                : parseInt(en1);
+            // at2 → atencion, en1+en2 promedio → entrega, en2 → responsable, at3 → proceso
+            var atencion    = parseInt(at2);
+            var entrega     = Math.round((parseInt(en1) + parseInt(en2)) / 2);
+            var responsable = parseInt(en2);
+            var proceso     = parseInt(at3);
 
             if (err) err.classList.remove('resena-error--visible');
             btn.disabled = true;
             btn.textContent = 'Enviando…';
 
-            // TODO: conectar con base de datos
-            // Mostrar animación de éxito directamente
-            var formBody = overlay.querySelector('.resena-body');
-            var resenaFooter = overlay.querySelector('.resena-footer');
-            var success  = overlay.querySelector('.resena-success');
-            if (formBody) formBody.style.display = 'none';
-            if (resenaFooter) resenaFooter.style.display = 'none';
-            if (success)  success.classList.add('resena-success--visible');
+            var problema   = (overlay.querySelector('#resenaProblema')?.value   || '').trim();
+            var comentario = (overlay.querySelector('#resenaComentario')?.value || '').trim();
 
-            // Cerrar automáticamente después de 2.8s
-            setTimeout(_cerrar, 2800);
+            try {
+                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                var resp = await fetch('/Resena/Enviar', {
+                    method:  'POST',
+                    headers: {
+                        'Content-Type':             'application/json',
+                        'RequestVerificationToken': token || ''
+                    },
+                    body: JSON.stringify({
+                        id_receptor: idReceptor,
+                        atencion:    atencion,
+                        entrega:     entrega,
+                        responsable: responsable,
+                        proceso:     proceso,
+                        comentario:  comentario || null,
+                        problema:    problema   || null
+                    })
+                });
+
+                if (!resp.ok) {
+                    var errData = await resp.json().catch(function () { return {}; });
+                    throw new Error(errData.message || 'Error al guardar la reseña');
+                }
+
+                // Mostrar animación de éxito
+                var formBody = overlay.querySelector('.resena-body');
+                var resenaFooter = overlay.querySelector('.resena-footer');
+                var success = overlay.querySelector('.resena-success');
+                if (formBody) formBody.style.display = 'none';
+                if (resenaFooter) resenaFooter.style.display = 'none';
+                if (success) success.classList.add('resena-success--visible');
+
+                // Cerrar automáticamente después de 2.8s
+                setTimeout(_cerrar, 2800);
+
+            } catch (fetchErr) {
+                btn.disabled = false;
+                btn.textContent = 'Enviar reseña';
+                if (err) {
+                    err.textContent = fetchErr.message || 'No se pudo guardar la reseña. Intentá de nuevo.';
+                    err.classList.add('resena-error--visible');
+                }
+            }
         });
     });
 
