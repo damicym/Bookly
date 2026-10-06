@@ -624,6 +624,34 @@ namespace Bookly.Models
         }
 
         /// <summary>
+        /// PATCH /api/mensajes/:id
+        /// Edita el contenido de un mensaje propio. Devuelve el mensaje actualizado o null si falla.
+        /// </summary>
+        public static Mensaje EditarMensaje(int id, string dniEmisor, string nuevoContenido)
+        {
+            if (string.IsNullOrWhiteSpace(dniEmisor) || string.IsNullOrWhiteSpace(nuevoContenido)) return null;
+            var response = Patch($"/mensajes/{id}", new
+            {
+                id_emisor = dniEmisor,
+                contenido = nuevoContenido
+            });
+            if (response == null || !response.IsSuccessStatusCode) return null;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
+        }
+
+        /// <summary>
+        /// DELETE /api/mensajes/:id?id_emisor=xxx
+        /// Soft-delete de un mensaje propio. Devuelve true si se eliminó correctamente.
+        /// </summary>
+        public static bool EliminarMensaje(int id, string dniEmisor)
+        {
+            if (string.IsNullOrWhiteSpace(dniEmisor)) return false;
+            var response = Delete($"/mensajes/{id}?id_emisor={Uri.EscapeDataString(dniEmisor)}");
+            return response != null && response.IsSuccessStatusCode;
+        }
+
+        /// <summary>
         /// GET /api/mensajes/:dniUsuario/no-leidos
         /// Devuelve { "dniEmisor": count } con los mensajes no leídos por contacto.
         /// </summary>

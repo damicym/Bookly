@@ -1609,3 +1609,284 @@ body:has(.chat-page-wrapper) .footer {
   from { transform: translateY(-50%) scale(0.5); opacity: 0; }
   to   { transform: translateY(-50%) scale(1);   opacity: 1; }
 }
+
+/* ══════════════════════════════
+   Menú contextual de mensajes (clic derecho sobre mensaje propio)
+══════════════════════════════ */
+.chat-ctx-menu {
+  position: fixed;
+  z-index: 9999;
+  background: #fff;
+  border: 1.5px solid rgba(6, 26, 64, 0.09);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(6, 26, 64, 0.14);
+  padding: 5px;
+  min-width: 168px;
+  animation: chatCtxMenuIn 0.14s cubic-bezier(0.2, 0, 0.2, 1);
+  transform-origin: top left;
+  user-select: none;
+}
+
+@keyframes chatCtxMenuIn {
+  from { opacity: 0; transform: scale(0.93) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+.chat-ctx-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--dark);
+  transition: background 0.13s, color 0.13s;
+  text-align: left;
+}
+
+.chat-ctx-menu-item:hover {
+  background: rgba(64, 89, 173, 0.07);
+}
+
+.chat-ctx-menu-item--danger {
+  color: var(--red);
+}
+
+.chat-ctx-menu-item--danger:hover {
+  background: rgba(215, 38, 61, 0.07);
+  color: var(--red);
+}
+
+.chat-ctx-menu-item svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+/* Separador entre ítems */
+.chat-ctx-menu-sep {
+  height: 1px;
+  background: rgba(6, 26, 64, 0.07);
+  margin: 4px 5px;
+}
+
+/* ── Estado "editado" en burbuja ── */
+.chat-msg-edited-label {
+  font-size: 0.65rem;
+  color: var(--main);
+  margin-top: 3px;
+  padding: 0 2px;
+  font-style: italic;
+}
+
+.chat-msg--outgoing .chat-msg-edited-label {
+  color: var(--main);;
+}
+
+/* ── Inline edit: textarea dentro de la burbuja ── */
+.chat-msg-edit-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  line-height: 1.5;
+  width: 100%;
+  resize: none;
+  padding: 0;
+  margin: 0;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow: hidden;
+  /* Quitar apariencia nativa del textarea */
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
+}
+
+/* Separador sutil entre el texto y los botones */
+.chat-msg-edit-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  padding-top: 7px;
+}
+
+.chat-msg--incoming .chat-msg-edit-actions {
+  border-top-color: rgba(6, 26, 64, 0.1);
+}
+
+.chat-msg-edit-btn {
+  padding: 4px 13px;
+  border-radius: 20px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.77rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  line-height: 1.4;
+}
+
+/* Cancelar: transparente con borde sutil */
+.chat-msg-edit-btn--cancel {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.chat-msg-edit-btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Guardar: blanco sólido */
+.chat-msg-edit-btn--save {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--secondary2Darker);
+}
+
+.chat-msg-edit-btn--save:hover {
+  background: #fff;
+  opacity: 1;
+}
+
+/* Variante para mensajes incoming (fondo blanco) */
+.chat-msg--incoming .chat-msg-edit-btn--cancel {
+  background: rgba(6, 26, 64, 0.07);
+  color: rgba(6, 26, 64, 0.5);
+}
+
+.chat-msg--incoming .chat-msg-edit-btn--cancel:hover {
+  background: rgba(6, 26, 64, 0.12);
+}
+
+.chat-msg--incoming .chat-msg-edit-btn--save {
+  background: var(--secondary2Darker);
+  color: #fff;
+}
+
+.chat-msg--incoming .chat-msg-edit-btn--save:hover {
+  opacity: 0.88;
+}
+
+/* ══════════════════════════════
+   Modal de confirmación de eliminar mensaje
+══════════════════════════════ */
+.chat-confirm-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(96, 130, 182, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 4000;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.chat-confirm-overlay--visible {
+  display: flex;
+}
+
+.chat-confirm-dialog {
+  background: var(--light);
+  border-radius: 20px;
+  padding: 36px 40px 32px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 24px 64px rgba(6, 26, 64, 0.2);
+  text-align: center;
+  animation: chatConfirmEntrada 0.25s ease;
+}
+
+@keyframes chatConfirmEntrada {
+  from { transform: translateY(16px) scale(0.97); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.chat-confirm-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(215, 38, 61, 0.15);
+  border: 1.5px solid rgba(215, 38, 61, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--red2);
+  flex-shrink: 0;
+}
+
+.chat-confirm-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0 0 6px;
+}
+
+.chat-confirm-subtitulo {
+  font-size: 0.88rem;
+  color: rgba(6, 26, 64, 0.55);
+  margin: 0;
+}
+
+.chat-confirm-btns {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.chat-confirm-btn-cancelar {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(6, 26, 64, 0.2);
+  background: transparent;
+  color: rgba(6, 26, 64, 0.7);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.chat-confirm-btn-cancelar:hover {
+  background: rgba(6, 26, 64, 0.07);
+  border-color: rgba(6, 26, 64, 0.35);
+}
+
+.chat-confirm-btn-eliminar {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--red);
+  color: var(--light);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: filter 0.18s, box-shadow 0.18s;
+}
+
+.chat-confirm-btn-eliminar:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 16px rgba(215, 38, 61, 0.4);
+}

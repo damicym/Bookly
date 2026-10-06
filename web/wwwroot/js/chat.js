@@ -244,7 +244,14 @@
         const esMio = msg.idEmisor === DNI_USUARIO;
         const div = document.createElement('div');
         div.className = 'chat-msg ' + (esMio ? 'chat-msg--outgoing' : 'chat-msg--incoming');
-        div.innerHTML = `<div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}</div>`;
+        if (msg.id) div.dataset.msgId = msg.id;
+        div.dataset.emisor = msg.idEmisor || '';
+
+        const editadoLabel = msg.editado
+            ? '<span class="chat-msg-edited-label">editado</span>'
+            : '';
+
+        div.innerHTML = `<div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}</div>${editadoLabel}`;
         return div;
     }
 
@@ -487,30 +494,26 @@
         abortControllerMensajes = new AbortController();
         const signal = abortControllerMensajes.signal;
 
-        // Si hay cache, renderizar ya
-        if (cacheMensajes[dniContacto] !== undefined) {
-            renderizarMensajes(dniContacto, cacheMensajes[dniContacto]);
-        } else {
-            // Sin cache: mostrar loader y ocultar empty-state
-            Array.from(body.querySelectorAll('.chat-msg')).forEach(el => el.remove());
-            if (emptyState) emptyState.style.display = 'none';
-            if (loader) loader.style.display = 'flex';
-        }
+        // Siempre limpiar el área y mostrar el loader mientras carga.
+        // No renderizar desde cache para evitar flickers (ej: label "editado" que aparece con delay).
+        Array.from(body.querySelectorAll('.chat-msg')).forEach(el => el.remove());
+        if (emptyState) emptyState.style.display = 'none';
+        if (loader) loader.style.display = 'flex';
 
-        // Fetch en background (siempre, para traer mensajes nuevos)
+        // Fetch — única fuente de verdad
         fetch('/Chat/ObtenerMensajes?dniContacto=' + encodeURIComponent(dniContacto), { signal })
             .then(r => r.json())
             .then(function (mensajes) {
                 cacheMensajes[dniContacto] = mensajes;
-                
+
                 // Inicializar estado de lazy load
                 if (!estadoLazyLoad[dniContacto]) {
                     estadoLazyLoad[dniContacto] = {
                         cargando: false,
-                        hayMas: mensajes.length >= 50  // Si trajo 50, probablemente hay más
+                        hayMas: mensajes.length >= 50
                     };
                 }
-                
+
                 renderizarMensajes(dniContacto, mensajes);
             })
             .catch(function (err) {
@@ -658,6 +661,13 @@
         .then(r => {
             if (!r.ok) throw new Error('Error al enviar');
             return r.json();
+        })
+        .then(function (mensajeGuardado) {
+            // Asignar el id real al elemento temporal para que el menú contextual funcione
+            if (mensajeGuardado && mensajeGuardado.id) {
+                msgTemp.dataset.msgId = mensajeGuardado.id;
+                nuevoMsg.id = mensajeGuardado.id;
+            }
         })
         .catch(function (err) {
             console.error('[enviar] Error:', err);
@@ -1512,6 +1522,287 @@
         }
     }
 
+    // ── Menú contextual (clic derecho sobre mensaje propio) ─────────────
+    let ctxMenu = null;      // referencia al div del menú activo
+    let ctxMsgEl = null;     // referencia al .chat-msg sobre el que se abrió
+
+    const SVG_EDIT = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/><path d="M16 5l3 3"/></svg>';
+    const SVG_TRASH = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>';
+
+    function cerrarCtxMenu() {
+        if (ctxMenu) { ctxMenu.remove(); ctxMenu = null; }
+        ctxMsgEl = null;
+    }
+
+    function abrirCtxMenu(e, msgEl) {
+        e.preventDefault();
+        cerrarCtxMenu();
+
+        ctxMsgEl = msgEl;
+
+        const menu = document.createElement('div');
+        menu.className = 'chat-ctx-menu';
+        ctxMenu = menu;
+
+        // Botón Editar
+        const btnEditar = document.createElement('button');
+        btnEditar.className = 'chat-ctx-menu-item';
+        btnEditar.innerHTML = SVG_EDIT + '<span>Editar</span>';
+        btnEditar.addEventListener('click', function () {
+            cerrarCtxMenu();
+            iniciarEdicionInline(msgEl);
+        });
+
+        // Separador
+        const sep = document.createElement('div');
+        sep.className = 'chat-ctx-menu-sep';
+
+        // Botón Eliminar
+        const btnEliminar = document.createElement('button');
+        btnEliminar.className = 'chat-ctx-menu-item chat-ctx-menu-item--danger';
+        btnEliminar.innerHTML = SVG_TRASH + '<span>Eliminar</span>';
+        btnEliminar.addEventListener('click', function () {
+            cerrarCtxMenu();
+            confirmarEliminarMensaje(msgEl);
+        });
+
+        menu.appendChild(btnEditar);
+        menu.appendChild(sep);
+        menu.appendChild(btnEliminar);
+        document.body.appendChild(menu);
+
+        // Posicionar evitando que se salga de la pantalla
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        let x = e.clientX;
+        let y = e.clientY;
+
+        // Renderizar temporalmente para medir
+        requestAnimationFrame(function () {
+            const mr = menu.getBoundingClientRect();
+            if (x + mr.width > vw - 8)  x = vw - mr.width - 8;
+            if (y + mr.height > vh - 8)  y = vh - mr.height - 8;
+            if (x < 8) x = 8;
+            if (y < 8) y = 8;
+            menu.style.left = x + 'px';
+            menu.style.top  = y + 'px';
+        });
+
+        menu.style.left = x + 'px';
+        menu.style.top  = y + 'px';
+    }
+
+    // Escuchar contextmenu delegado sobre el área de mensajes
+    document.addEventListener('contextmenu', function (e) {
+        const msgEl = e.target.closest('.chat-msg--outgoing');
+        if (!msgEl) {
+            // Si hay menú abierto y se hace clic derecho fuera, cerrarlo
+            if (ctxMenu) { cerrarCtxMenu(); }
+            return;
+        }
+        // Solo mensajes que tienen id almacenado
+        if (!msgEl.dataset.msgId) return;
+        abrirCtxMenu(e, msgEl);
+    });
+
+    // Cerrar el menú al hacer clic izquierdo en cualquier lugar
+    document.addEventListener('click', function (e) {
+        if (ctxMenu && !ctxMenu.contains(e.target)) cerrarCtxMenu();
+    });
+
+    // ── Edición inline ───────────────────────────────────
+    function iniciarEdicionInline(msgEl) {
+        const bubble = msgEl.querySelector('.chat-msg-bubble');
+        if (!bubble || msgEl.dataset.editando === 'true') return;
+
+        msgEl.dataset.editando = 'true';
+        const contenidoOriginal = bubble.innerHTML;
+
+        // Extraer texto plano para el textarea de edición
+        const textoPlano = bubble.textContent;
+
+        bubble.innerHTML = '';
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'chat-msg-edit-input';
+        textarea.value = textoPlano;
+        textarea.rows = 1;
+
+        // Auto-resize del textarea
+        function ajustarAltura() {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        textarea.addEventListener('input', ajustarAltura);
+
+        const actions = document.createElement('div');
+        actions.className = 'chat-msg-edit-actions';
+
+        const btnCancelar = document.createElement('button');
+        btnCancelar.className = 'chat-msg-edit-btn chat-msg-edit-btn--cancel';
+        btnCancelar.textContent = 'Cancelar';
+
+        const btnGuardar = document.createElement('button');
+        btnGuardar.className = 'chat-msg-edit-btn chat-msg-edit-btn--save';
+        btnGuardar.textContent = 'Guardar';
+
+        actions.appendChild(btnCancelar);
+        actions.appendChild(btnGuardar);
+        bubble.appendChild(textarea);
+        bubble.appendChild(actions);
+
+        requestAnimationFrame(function () {
+            ajustarAltura();
+            textarea.focus();
+            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        });
+
+        function cancelar() {
+            bubble.innerHTML = contenidoOriginal;
+            delete msgEl.dataset.editando;
+        }
+
+        function guardar() {
+            const nuevoTexto = textarea.value.trim();
+            if (!nuevoTexto || nuevoTexto === textoPlano) { cancelar(); return; }
+
+            btnGuardar.disabled  = true;
+            btnCancelar.disabled = true;
+            btnGuardar.textContent = '...';
+
+            const msgId = parseInt(msgEl.dataset.msgId, 10);
+
+            fetch('/Chat/EditarMensaje', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ id: msgId, nuevoContenido: nuevoTexto })
+            })
+            .then(function (r) {
+                if (!r.ok) throw new Error('Error al editar');
+                return r.json();
+            })
+            .then(function (msgActualizado) {
+                // Actualizar burbuja con contenido procesado
+                const contenidoProc = procesarContenidoMensaje(msgActualizado.contenido || nuevoTexto);
+                bubble.innerHTML = contenidoProc;
+                delete msgEl.dataset.editando;
+
+                // Agregar / actualizar label "editado"
+                let label = msgEl.querySelector('.chat-msg-edited-label');
+                if (!label) {
+                    label = document.createElement('span');
+                    label.className = 'chat-msg-edited-label';
+                    msgEl.appendChild(label);
+                }
+                label.textContent = 'editado';
+
+                // Invalidar cache del contacto activo: el próximo cargarMensajes
+                // traerá datos frescos desde la BD (con editado = true ya persistido).
+                delete cacheMensajes[dniContactoActivo];
+            })
+            .catch(function (err) {
+                console.error('[editar]', err);
+                cancelar();
+            });
+        }
+
+        btnCancelar.addEventListener('click', cancelar);
+        btnGuardar.addEventListener('click', guardar);
+
+        // Atajos de teclado dentro del textarea
+        textarea.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); guardar(); }
+            if (e.key === 'Escape') { cancelar(); }
+        });
+    }
+
+    // ── Modal de confirmación de eliminar mensaje ────────
+    (function montarConfirmModal() {
+        const overlay = document.createElement('div');
+        overlay.id = 'chatConfirmOverlay';
+        overlay.className = 'chat-confirm-overlay';
+        overlay.innerHTML =
+            '<div class="chat-confirm-dialog">'
+            + '<div class="chat-confirm-icon">'
+            +   '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+            +     '<path stroke="none" d="M0 0h24v24H0z" fill="none"/>'
+            +     '<path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/>'
+            +     '<path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>'
+            +     '<path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>'
+            +   '</svg>'
+            + '</div>'
+            + '<div>'
+            +   '<p class="chat-confirm-titulo">¿Eliminar mensaje?</p>'
+            +   '<p class="chat-confirm-subtitulo">Esta acción no se puede deshacer.</p>'
+            + '</div>'
+            + '<div class="chat-confirm-btns">'
+            +   '<button class="chat-confirm-btn-cancelar" id="chatConfirmCancelar">Cancelar</button>'
+            +   '<button class="chat-confirm-btn-eliminar" id="chatConfirmAceptar">'
+            +     '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
+            +       '<path stroke="none" d="M0 0h24v24H0z" fill="none"/>'
+            +       '<path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/>'
+            +       '<path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>'
+            +       '<path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>'
+            +     '</svg>'
+            +     'Eliminar'
+            +   '</button>'
+            + '</div>'
+            + '</div>';
+        document.body.appendChild(overlay);
+    })();
+
+    let _confirmCallback = null;
+
+    function mostrarConfirmEliminar(onAceptar) {
+        _confirmCallback = onAceptar;
+        const overlay = document.getElementById('chatConfirmOverlay');
+        if (overlay) overlay.classList.add('chat-confirm-overlay--visible');
+    }
+
+    function cerrarConfirmEliminar() {
+        _confirmCallback = null;
+        const overlay = document.getElementById('chatConfirmOverlay');
+        if (overlay) overlay.classList.remove('chat-confirm-overlay--visible');
+    }
+
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('#chatConfirmCancelar')) {
+            cerrarConfirmEliminar();
+        }
+        if (e.target.closest('#chatConfirmAceptar')) {
+            const cb = _confirmCallback;
+            cerrarConfirmEliminar();
+            if (cb) cb();
+        }
+    });
+
+    function confirmarEliminarMensaje(msgEl) {
+        const msgId = parseInt(msgEl.dataset.msgId, 10);
+        if (!msgId) return;
+
+        mostrarConfirmEliminar(function () {
+            fetch('/Chat/EliminarMensaje', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ id: msgId })
+            })
+            .then(function (r) {
+                if (!r.ok) throw new Error('Error al eliminar');
+                return r.json();
+            })
+            .then(function () {
+                msgEl.style.transition = 'opacity 0.2s, transform 0.2s';
+                msgEl.style.opacity    = '0';
+                msgEl.style.transform  = 'scale(0.95)';
+                setTimeout(function () { msgEl.remove(); }, 200);
+                delete cacheMensajes[dniContactoActivo];
+            })
+            .catch(function (err) {
+                console.error('[eliminar]', err);
+            });
+        });
+    }
+
     // ── SignalR: mensajes en tiempo real ─────────────────
     // Conecta al hub, se une al grupo propio (DNI del usuario logueado)
     // y escucha el evento "NuevoMensaje" para renderizar burbujas sin recargar.
@@ -1551,6 +1842,49 @@
             }
         });
 
+        // Al recibir notificación de mensaje editado por el contacto
+        connection.on('MensajeEditado', function (payload) {
+            if (payload.idEmisor === DNI_USUARIO) return; // ya lo actualizamos localmente
+            const body = document.getElementById('chatMessagesBody');
+            if (!body) return;
+            const el = body.querySelector(`.chat-msg[data-msg-id="${payload.id}"]`);
+            if (el) {
+                const bubble = el.querySelector('.chat-msg-bubble');
+                if (bubble) bubble.innerHTML = procesarContenidoMensaje(payload.contenido);
+                let label = el.querySelector('.chat-msg-edited-label');
+                if (!label) {
+                    label = document.createElement('span');
+                    label.className = 'chat-msg-edited-label';
+                    el.appendChild(label);
+                }
+                label.textContent = 'editado';
+            }
+            // Actualizar cache
+            const dni = payload.idEmisor;
+            if (cacheMensajes[dni]) {
+                const m = cacheMensajes[dni].find(function (m) { return m.id === payload.id; });
+                if (m) { m.contenido = payload.contenido; m.editado = true; }
+            }
+        });
+
+        // Al recibir notificación de mensaje eliminado por el contacto
+        connection.on('MensajeEliminado', function (payload) {
+            const body = document.getElementById('chatMessagesBody');
+            if (!body) return;
+            const el = body.querySelector(`.chat-msg[data-msg-id="${payload.id}"]`);
+            if (el) {
+                el.style.transition = 'opacity 0.2s, transform 0.2s';
+                el.style.opacity    = '0';
+                el.style.transform  = 'scale(0.95)';
+                setTimeout(function () { el.remove(); }, 200);
+            }
+            // Actualizar cache
+            const dniEmisor = el && el.dataset.emisor;
+            if (dniEmisor && cacheMensajes[dniEmisor]) {
+                cacheMensajes[dniEmisor] = cacheMensajes[dniEmisor].filter(function (m) { return m.id !== payload.id; });
+            }
+        });
+
         // Arrancar la conexión y unirse al grupo propio
         connection.start()
             .then(function () {
@@ -1580,6 +1914,8 @@
             cerrarAvatarModal();
             cerrarModalNuevo();
             cerrarDrawerVendedor();
+            cerrarCtxMenu();
+            cerrarConfirmEliminar();
         }
     });
 

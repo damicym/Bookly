@@ -6,6 +6,12 @@ const router = Router()
 // POST /api/mensajes — envía un mensaje nuevo
 router.post('/', mensajesCtrl.enviarMensaje)
 
+// PATCH /api/mensajes/:id — edita el contenido de un mensaje propio
+router.patch('/:id', mensajesCtrl.editarMensaje)
+
+// DELETE /api/mensajes/:id?id_emisor=xxx — soft-delete de un mensaje propio
+router.delete('/:id', mensajesCtrl.eliminarMensaje)
+
 // GET /api/mensajes/:dniUsuario/no-leidos — conteo de no leídos por emisor
 // IMPORTANTE: debe ir antes de /:dniUsuario/:dniContacto
 router.get('/:dniUsuario/no-leidos', mensajesCtrl.getNoLeidos)
