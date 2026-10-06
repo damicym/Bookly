@@ -65,6 +65,20 @@ namespace Bookly.Controllers
         }
 
         /// <summary>
+        /// GET /Chat/ObtenerNoLeidos
+        /// Devuelve { "dniContacto": count } con mensajes no leídos del usuario logueado.
+        /// Lo consumen tanto el layout (navbar badge) como chat.js (sidebar badges).
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerNoLeidos()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+            var noLeidos = BD.ObtenerNoLeidos(user.DNI);
+            return Json(noLeidos);
+        }
+
+        /// <summary>
         /// GET /Chat/BuscarUsuarios?q=texto
         /// Devuelve JSON con lista de usuarios que coinciden con el query.
         /// Excluye al usuario logueado de los resultados.

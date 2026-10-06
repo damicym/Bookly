@@ -65,6 +65,17 @@ namespace Bookly.Controllers
                 {
                     // Si la API no responde, las notificaciones quedan vacías — no rompe la página
                 }
+
+                // Mensajes no leídos para el badge del navbar
+                try
+                {
+                    var noLeidos = BD.ObtenerNoLeidos(user.DNI);
+                    ViewBag.TieneNoLeidos = noLeidos.Values.Any(v => v > 0);
+                }
+                catch
+                {
+                    ViewBag.TieneNoLeidos = false;
+                }
             }
 
             ViewBag.Notificaciones = notifs;

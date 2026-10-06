@@ -2,8 +2,6 @@ import * as mensajesService from '../services/mensajes.service.js'
 
 /**
  * POST /api/mensajes
- * Body: { id_emisor, id_receptor, contenido }
- * Guarda un mensaje nuevo.
  */
 export async function enviarMensaje(req, res) {
 	try {
@@ -15,6 +13,19 @@ export async function enviarMensaje(req, res) {
 			return res.status(400).json({ error: 'Un usuario no puede enviarse mensajes a sí mismo' })
 		}
 		const mensaje = await mensajesService.enviarMensaje(id_emisor, id_receptor, contenido.trim())
+
+		const io = req.app.get('io')
+		if (io) {
+			io.to(id_receptor).emit('nuevo-mensaje', {
+				id:         mensaje.id,
+				idEmisor:   mensaje.id_emisor,
+				idReceptor: mensaje.id_receptor,
+				contenido:  mensaje.contenido,
+				fechaEnvio: mensaje.fecha_envio,
+				leido:      mensaje.leido
+			})
+		}
+
 		res.status(201).json(mensaje)
 	} catch (err) {
 		res.status(500).json({ error: err.message })
@@ -23,19 +34,28 @@ export async function enviarMensaje(req, res) {
 
 /**
  * GET /api/mensajes/:dniUsuario/:dniContacto
- * Query params: ?antes=ISO8601 (opcional, para lazy loading)
- * Devuelve la conversación entre dos usuarios, ordenada por fecha_envio asc.
- * También marca como leídos los mensajes recibidos por dniUsuario.
  */
 export async function getMensajes(req, res) {
 	try {
 		const { dniUsuario, dniContacto } = req.params
 		const antes = req.query.antes || null
-		
-		// Primero marca como leídos los mensajes que le envió el contacto al usuario
 		await mensajesService.marcarLeidos(dniUsuario, dniContacto)
 		const mensajes = await mensajesService.getMensajes(dniUsuario, dniContacto, antes)
 		res.json(mensajes)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+/**
+ * GET /api/mensajes/:dniUsuario/no-leidos
+ * Devuelve { "dniEmisor": count } con los mensajes no leídos del usuario.
+ */
+export async function getNoLeidos(req, res) {
+	try {
+		const { dniUsuario } = req.params
+		const conteos = await mensajesService.getNoLeidosPorEmisor(dniUsuario)
+		res.json(conteos)
 	} catch (err) {
 		res.status(500).json({ error: err.message })
 	}

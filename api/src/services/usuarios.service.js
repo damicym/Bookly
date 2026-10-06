@@ -49,20 +49,12 @@ export async function login(dni, password) {
 	let passwordOk = false
 
 	if (isHashed) {
-		// Contraseña ya hasheada → comparar con bcrypt
+		// Contraseña ya hasheada (registrada desde la app) → comparar con bcrypt
 		passwordOk = await bcrypt.compare(password, storedPassword)
 	} else {
-		// Contraseña en texto plano (usuarios legacy) → comparar directo
+		// Contraseña en texto plano (inserts manuales / datos de prueba) → comparar directo
+		// No se migra a hash para no romper los datos de seed/test
 		passwordOk = storedPassword === password
-
-		// Si es correcta, migrarla a hash en BD (migración transparente)
-		if (passwordOk) {
-			const hash = await bcrypt.hash(password, SALT_ROUNDS)
-			await supabase
-				.from('usuarios')
-				.update({ password: hash })
-				.eq('dni', dni)
-		}
 	}
 
 	if (!passwordOk) return null

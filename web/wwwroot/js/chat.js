@@ -6,7 +6,129 @@
     const DNI_USUARIO    = (window.CHAT_CONFIG && window.CHAT_CONFIG.dniUsuario)    || '';
     const DNI_VENDEDOR   = (window.CHAT_CONFIG && window.CHAT_CONFIG.dniVendedor)   || '';
     const TIENE_VENDEDOR = (window.CHAT_CONFIG && window.CHAT_CONFIG.tieneVendedor) || false;
+    const WS_URL         = (window.CHAT_CONFIG && window.CHAT_CONFIG.wsUrl)         || 'http://localhost:3000';
     const DEFAULT_AVATAR = '/img/default.webp';
+
+    // ── Badges de mensajes no leídos: { [dniContacto]: número } ─────────────
+    const badges = {};
+
+    function getBadgeCount(dni) { return badges[dni] || 0; }
+
+    function incrementarBadge(dni) {
+        badges[dni] = (badges[dni] || 0) + 1;
+        renderizarBadge(dni);
+    }
+
+    function limpiarBadge(dni) {
+        if (!badges[dni]) return;
+        delete badges[dni];
+        renderizarBadge(dni);
+
+        // Si ya no quedan badges en ningún chat, ocultar el puntito del navbar
+        if (Object.keys(badges).length === 0) {
+            var navBadge = document.getElementById('navChatBadge');
+            if (navBadge) navBadge.style.display = 'none';
+        }
+    }
+
+    function renderizarBadge(dni) {
+        const list = document.getElementById('chatConvList');
+        if (!list) return;
+        const item = list.querySelector(`.chat-conv-item[data-dni="${dni}"]`);
+        if (!item) return;
+
+        let badge = item.querySelector('.chat-conv-badge');
+        const count = getBadgeCount(dni);
+
+        if (count <= 0) {
+            if (badge) badge.remove();
+            return;
+        }
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'chat-conv-badge';
+            item.appendChild(badge);
+        }
+        badge.textContent = count > 99 ? '99+' : String(count);
+    }
+
+    // ── Conexión WebSocket ───────────────────────────────────────────────────
+    let socket = null;
+
+    function conectarSocket() {
+        if (!DNI_USUARIO || typeof io === 'undefined') return;
+
+        // Reutilizar el socket creado por el layout global si existe
+        socket = window.__booklySocket || io(WS_URL, {
+            query: { dni: DNI_USUARIO },
+            transports: ['websocket', 'polling'],
+            reconnectionAttempts: 10,
+            reconnectionDelay: 2000
+        });
+
+        socket.on('connect', function () {
+            console.log('[ws] conectado como', DNI_USUARIO);
+        });
+
+        socket.on('disconnect', function (reason) {
+            console.log('[ws] desconectado:', reason);
+        });
+
+        // ── Nuevo mensaje recibido en tiempo real ──────────────────────────
+        socket.on('nuevo-mensaje', function (msg) {
+            const dniEmisor = msg.idEmisor;
+
+            // Actualizar cache
+            if (!cacheMensajes[dniEmisor]) cacheMensajes[dniEmisor] = [];
+            cacheMensajes[dniEmisor].push(msg);
+
+            if (dniEmisor === dniContactoActivo) {
+                // El chat con este contacto está abierto → mostrar mensaje directo
+                const body       = document.getElementById('chatMessagesBody');
+                const emptyState = document.getElementById('chatEmptyState');
+                if (body) {
+                    if (emptyState) emptyState.style.display = 'none';
+                    const el = buildMensajeEl(msg);
+                    body.appendChild(el);
+                    body.scrollTop = body.scrollHeight;
+                }
+                // Marcar como leído (call en background)
+                fetch('/Chat/ObtenerMensajes?dniContacto=' + encodeURIComponent(dniEmisor), { method: 'GET' })
+                    .catch(function () {});
+            } else {
+                // El chat no está abierto → badge en el sidebar
+                // Si el contacto no está en el sidebar todavía, traer sus datos y agregarlo
+                const list = document.getElementById('chatConvList');
+                if (list) {
+                    const itemExistente = list.querySelector(`.chat-conv-item[data-dni="${dniEmisor}"]`);
+                    if (!itemExistente) {
+                        // Traer info del contacto y crear el item en el sidebar
+                        fetch('/Chat/ObtenerInfoContacto?dniContacto=' + encodeURIComponent(dniEmisor))
+                            .then(function (r) { return r.json(); })
+                            .then(function (info) {
+                                if (!info) return;
+                                const nuevoItem = buildConvItem({
+                                    idContacto: dniEmisor,
+                                    nombreComp: info.nombreComp,
+                                    fotoPerfil: info.fotoPerfil
+                                }, false);
+                                nuevoItem.addEventListener('click', function () {
+                                    abrirConversacion(dniEmisor, info.nombreComp, info.fotoPerfil);
+                                });
+                                list.insertBefore(nuevoItem, list.firstChild);
+                                // Ahora sí mostrar el badge
+                                incrementarBadge(dniEmisor);
+                            })
+                            .catch(function () {});
+                    } else {
+                        // Ya existe en el sidebar: mover al top y mostrar badge
+                        moverChatAlTop(dniEmisor);
+                        incrementarBadge(dniEmisor);
+                    }
+                }
+            }
+        });
+    }
 
     let dniContactoActivo = DNI_VENDEDOR || null;
 
@@ -178,6 +300,15 @@
             .replace(/\n/g, '<br>');
     }
 
+    // ── Mover un item del sidebar al top (al recibir mensaje nuevo) ──────────
+    function moverChatAlTop(dniContacto) {
+        if (!convList) return;
+        const item = convList.querySelector(`.chat-conv-item[data-dni="${dniContacto}"]`);
+        if (item && item !== convList.firstChild) {
+            convList.insertBefore(item, convList.firstChild);
+        }
+    }
+
     // ── Cargar y renderizar el sidebar ────────────────────
     function cargarSidebar() {
         fetch('/Chat/ObtenerChats')
@@ -199,6 +330,19 @@
                     });
                     convList.appendChild(item);
                 });
+
+                // Cargar badges de no leídos desde BD (persiste entre recargas)
+                fetch('/Chat/ObtenerNoLeidos')
+                    .then(r => r.json())
+                    .then(function (noLeidos) {
+                        Object.keys(noLeidos).forEach(function (dni) {
+                            if (dni !== dniContactoActivo && noLeidos[dni] > 0) {
+                                badges[dni] = noLeidos[dni];
+                                renderizarBadge(dni);
+                            }
+                        });
+                    })
+                    .catch(function () {});
             })
             .catch(function (err) {
                 console.error('[sidebar] Error:', err);
@@ -212,19 +356,15 @@
         fetch('/Chat/PrefetchMensajes')
             .then(r => r.json())
             .then(function (data) {
-                // data es { "dniContacto": [...mensajes] }
                 cacheMensajes = data || {};
 
-                // Inicializar estado de lazy load para cada contacto
                 Object.keys(cacheMensajes).forEach(function (dni) {
                     estadoLazyLoad[dni] = {
                         cargando: false,
-                        hayMas: cacheMensajes[dni].length >= 50  // Si trajo 50, probablemente hay más
+                        hayMas: cacheMensajes[dni].length >= 50
                     };
                 });
 
-                // Si ya hay un chat activo al entrar (vendedorDNI por query string),
-                // renderizarlo ahora que tenemos los datos
                 if (dniContactoActivo && cacheMensajes[dniContactoActivo] !== undefined) {
                     renderizarMensajes(dniContactoActivo, cacheMensajes[dniContactoActivo]);
                 }
@@ -400,6 +540,9 @@
         }
 
         dniContactoActivo = dniContacto;
+
+        // Limpiar badge de mensajes no leídos al abrir esta conversación
+        limpiarBadge(dniContacto);
 
         // Al entrar al chat, quitar el indicador de borrador del sidebar
         actualizarBorradorEnSidebar(dniContacto, null);
@@ -1421,6 +1564,7 @@
     // ── Inicialización ────────────────────────────────────
     cargarSidebar();
     prefetchMensajes();
+    conectarSocket();
 
     // Si hay vendedor activo al entrar, cargar mensajes y widget
     if (dniContactoActivo) {

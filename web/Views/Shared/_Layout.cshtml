@@ -73,6 +73,7 @@
             </button>
             <button class="header-hamburger" id="headerHamburger" aria-label="Más opciones">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></svg>
+                <span class="nav-chat-badge nav-chat-badge--hamburger" id="navChatBadgeHamburger" style="display:none"></span>
             </button>
             <div class="header-hamburger-menu" id="headerHamburgerMenu">
             <button class="favBtn" id="notifBtnHeader" title="Notificaciones" aria-label="Notificaciones" aria-expanded="false">
@@ -96,6 +97,14 @@
                     <path d="M8 13h6" />
                     <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
                 </svg>
+                @if ((bool)(ViewBag.TieneNoLeidos ?? false))
+                {
+                    <span class="nav-chat-badge" id="navChatBadge"></span>
+                }
+                else
+                {
+                    <span class="nav-chat-badge" id="navChatBadge" style="display:none"></span>
+                }
             </a>
             <a class="favBtn" id="favBtnHeader" href="@Url.Action("Profile", "Home")#favoritos" title="Mis favoritos">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -259,6 +268,32 @@
     <script src="~/js/pageloader.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/helpers.js" asp-append-version="true"></script>
+    @* ── Badge de mensajes no leídos en el navbar (tiempo real) ── *@
+    @if (usuario != null)
+    {
+        <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+        <script>
+        (function () {
+            var DNI    = '@(((Bookly.Models.Usuarios)usuario)?.DNI ?? "")';
+            var WS_URL = '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")';
+            if (!DNI) return;
+
+            var socket = io(WS_URL, {
+                query: { dni: DNI },
+                transports: ['websocket', 'polling'],
+                reconnectionAttempts: 10,
+                reconnectionDelay: 2000
+            });
+            window.__booklySocket = socket;
+
+            // Al recibir un mensaje nuevo en tiempo real, mostrar el puntito
+            socket.on('nuevo-mensaje', function () {
+                var b = document.getElementById('navChatBadge');
+                if (b) b.style.display = '';
+            });
+        }());
+        </script>
+    }
     <script src="~/js/desear.js" asp-append-version="true"></script>
     <script src="~/js/buscar.js" asp-append-version="true"></script>
     <script src="~/js/publicar.js" asp-append-version="true"></script>

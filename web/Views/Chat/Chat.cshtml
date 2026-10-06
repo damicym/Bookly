@@ -251,11 +251,13 @@
 
     </div>
 </div>
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 <script>
     window.CHAT_CONFIG = {
         dniUsuario:    '@(((Bookly.Models.Usuarios)ViewBag.usuario)?.DNI ?? "")',
         dniVendedor:   '@(tieneVendedor ? vendedor.DNI : "")',
-        tieneVendedor: @(tieneVendedor ? "true" : "false")
+        tieneVendedor: @(tieneVendedor ? "true" : "false"),
+        wsUrl:         '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")'
     };
 
     // Limpiar idPublicacion de la URL para que recargar la página

@@ -120,3 +120,22 @@ export async function marcarLeidos(idReceptor, idEmisor) {
 	if (error) throw error
 	return true
 }
+
+/**
+ * Devuelve el conteo de mensajes no leídos por emisor para un receptor dado.
+ * Resultado: { "dniEmisor1": 3, "dniEmisor2": 1, ... }
+ */
+export async function getNoLeidosPorEmisor(idReceptor) {
+	const { data, error } = await supabase
+		.from('mensajes')
+		.select('id_emisor')
+		.eq('id_receptor', idReceptor)
+		.eq('leido', false)
+	if (error) throw error
+
+	const conteos = {}
+	for (const row of (data ?? [])) {
+		conteos[row.id_emisor] = (conteos[row.id_emisor] || 0) + 1
+	}
+	return conteos
+}

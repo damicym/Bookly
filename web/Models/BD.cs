@@ -623,6 +623,17 @@ namespace Bookly.Models
             return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
         }
 
+        /// <summary>
+        /// GET /api/mensajes/:dniUsuario/no-leidos
+        /// Devuelve { "dniEmisor": count } con los mensajes no leídos por contacto.
+        /// </summary>
+        public static Dictionary<string, int> ObtenerNoLeidos(string dniUsuario)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario)) return new Dictionary<string, int>();
+            return Get<Dictionary<string, int>>($"/mensajes/{Uri.EscapeDataString(dniUsuario)}/no-leidos")
+                   ?? new Dictionary<string, int>();
+        }
+
         // ── NOTIFICACIONES ───────────────────────────────────────────────────
 
         /// <summary>GET /api/notificaciones/:dni — notificaciones no leídas del usuario</summary>

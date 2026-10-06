@@ -95,6 +95,7 @@ body:has(.chat-page-wrapper) .footer {
   border-bottom: 1px solid rgba(6, 26, 64, 0.05);
   transition: background 0.15s;
   text-decoration: none;
+  position: relative; /* para posicionar el badge */
 }
 
 /* Placeholder de conversación — no interactuable */
@@ -1578,4 +1579,33 @@ body:has(.chat-page-wrapper) .footer {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* ══════════════════════════════
+   Badge de mensajes no leídos (estilo WhatsApp)
+══════════════════════════════ */
+.chat-conv-badge {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--secondary2Darker, #83b8a8);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  pointer-events: none;
+  animation: badgePop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes badgePop {
+  from { transform: translateY(-50%) scale(0.5); opacity: 0; }
+  to   { transform: translateY(-50%) scale(1);   opacity: 1; }
 }
