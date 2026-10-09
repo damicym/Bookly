@@ -74,60 +74,8 @@
             console.log('[ws] desconectado:', reason);
         });
 
-        // ── Nuevo mensaje recibido en tiempo real ──────────────────────────
-        socket.on('nuevo-mensaje', function (msg) {
-            const dniEmisor = msg.idEmisor;
-
-            // Actualizar cache
-            if (!cacheMensajes[dniEmisor]) cacheMensajes[dniEmisor] = [];
-            cacheMensajes[dniEmisor].push(msg);
-
-            if (dniEmisor === dniContactoActivo) {
-                // El chat con este contacto está abierto → mostrar mensaje directo
-                const body       = document.getElementById('chatMessagesBody');
-                const emptyState = document.getElementById('chatEmptyState');
-                if (body) {
-                    if (emptyState) emptyState.style.display = 'none';
-                    const el = buildMensajeEl(msg);
-                    body.appendChild(el);
-                    body.scrollTop = body.scrollHeight;
-                }
-                // Marcar como leído (call en background)
-                fetch('/Chat/ObtenerMensajes?dniContacto=' + encodeURIComponent(dniEmisor), { method: 'GET' })
-                    .catch(function () {});
-            } else {
-                // El chat no está abierto → badge en el sidebar
-                // Si el contacto no está en el sidebar todavía, traer sus datos y agregarlo
-                const list = document.getElementById('chatConvList');
-                if (list) {
-                    const itemExistente = list.querySelector(`.chat-conv-item[data-dni="${dniEmisor}"]`);
-                    if (!itemExistente) {
-                        // Traer info del contacto y crear el item en el sidebar
-                        fetch('/Chat/ObtenerInfoContacto?dniContacto=' + encodeURIComponent(dniEmisor))
-                            .then(function (r) { return r.json(); })
-                            .then(function (info) {
-                                if (!info) return;
-                                const nuevoItem = buildConvItem({
-                                    idContacto: dniEmisor,
-                                    nombreComp: info.nombreComp,
-                                    fotoPerfil: info.fotoPerfil
-                                }, false);
-                                nuevoItem.addEventListener('click', function () {
-                                    abrirConversacion(dniEmisor, info.nombreComp, info.fotoPerfil);
-                                });
-                                list.insertBefore(nuevoItem, list.firstChild);
-                                // Ahora sí mostrar el badge
-                                incrementarBadge(dniEmisor);
-                            })
-                            .catch(function () {});
-                    } else {
-                        // Ya existe en el sidebar: mover al top y mostrar badge
-                        moverChatAlTop(dniEmisor);
-                        incrementarBadge(dniEmisor);
-                    }
-                }
-            }
-        });
+        // Los mensajes en tiempo real los maneja SignalR (iniciarSignalR).
+        // Socket.IO se mantiene solo por compatibilidad con otras partes del sistema.
     }
 
     let dniContactoActivo = DNI_VENDEDOR || null;
@@ -251,7 +199,23 @@
             ? '<span class="chat-msg-edited-label">editado</span>'
             : '';
 
-        div.innerHTML = `<div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}</div>${editadoLabel}`;
+        const chevronBtn = esMio
+            ? `<button class="chat-msg-chevron" title="Opciones" aria-label="Opciones del mensaje">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 10l5 5 5-5z"/>
+                </svg>
+               </button>`
+            : '';
+
+        div.innerHTML = `<div class="chat-msg-bubble-wrap"><div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}</div>${chevronBtn}</div>${editadoLabel}`;
+
+        if (esMio) {
+            div.querySelector('.chat-msg-chevron').addEventListener('click', function (e) {
+                e.stopPropagation();
+                abrirCtxMenu(e, div);
+            });
+        }
+
         return div;
     }
 
@@ -1543,8 +1507,7 @@
         const menu = document.createElement('div');
         menu.className = 'chat-ctx-menu';
         ctxMenu = menu;
-
-        // Botón Editar
+        // Botón Editar (solo si el mensaje no fue editado antes)
         const btnEditar = document.createElement('button');
         btnEditar.className = 'chat-ctx-menu-item';
         btnEditar.innerHTML = SVG_EDIT + '<span>Editar</span>';
@@ -1552,6 +1515,8 @@
             cerrarCtxMenu();
             iniciarEdicionInline(msgEl);
         });
+
+        const yaEditado = !!msgEl.querySelector('.chat-msg-edited-label');
 
         // Separador
         const sep = document.createElement('div');
@@ -1566,21 +1531,33 @@
             confirmarEliminarMensaje(msgEl);
         });
 
-        menu.appendChild(btnEditar);
-        menu.appendChild(sep);
+        if (!yaEditado) {
+            menu.appendChild(btnEditar);
+            menu.appendChild(sep);
+        }
         menu.appendChild(btnEliminar);
         document.body.appendChild(menu);
 
         // Posicionar evitando que se salga de la pantalla
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        let x = e.clientX;
-        let y = e.clientY;
+
+        // Si el evento vino del botón chevron, anclar bajo el botón; si no, usar posición del cursor
+        const chevronBtn = e.target.closest('.chat-msg-chevron');
+        let x, y;
+        if (chevronBtn) {
+            const rect = chevronBtn.getBoundingClientRect();
+            x = rect.right;
+            y = rect.bottom + 4;
+        } else {
+            x = e.clientX;
+            y = e.clientY;
+        }
 
         // Renderizar temporalmente para medir
         requestAnimationFrame(function () {
             const mr = menu.getBoundingClientRect();
-            if (x + mr.width > vw - 8)  x = vw - mr.width - 8;
+            if (x + mr.width > vw - 8)  x = x - mr.width;
             if (y + mr.height > vh - 8)  y = vh - mr.height - 8;
             if (x < 8) x = 8;
             if (y < 8) y = 8;
@@ -1780,7 +1757,15 @@
         const msgId = parseInt(msgEl.dataset.msgId, 10);
         if (!msgId) return;
 
+        // Guardar referencia al padre antes de cualquier operación asíncrona
+        const parentBody = msgEl.parentNode;
+
         mostrarConfirmEliminar(function () {
+            // Ocultar optimistamente para respuesta inmediata
+            msgEl.style.transition = 'opacity 0.2s, transform 0.2s';
+            msgEl.style.opacity    = '0';
+            msgEl.style.transform  = 'scale(0.95)';
+
             fetch('/Chat/EliminarMensaje', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1791,14 +1776,19 @@
                 return r.json();
             })
             .then(function () {
-                msgEl.style.transition = 'opacity 0.2s, transform 0.2s';
-                msgEl.style.opacity    = '0';
-                msgEl.style.transform  = 'scale(0.95)';
-                setTimeout(function () { msgEl.remove(); }, 200);
-                delete cacheMensajes[dniContactoActivo];
+                setTimeout(function () {
+                    if (msgEl.parentNode) msgEl.remove();
+                }, 200);
+                // Remover solo este mensaje del cache, no toda la conversación
+                if (cacheMensajes[dniContactoActivo]) {
+                    cacheMensajes[dniContactoActivo] = cacheMensajes[dniContactoActivo].filter(function (m) { return m.id !== msgId; });
+                }
             })
             .catch(function (err) {
                 console.error('[eliminar]', err);
+                // Revertir animación si falla
+                msgEl.style.opacity   = '';
+                msgEl.style.transform = '';
             });
         });
     }
@@ -1839,6 +1829,39 @@
                 const umbral = 80; // px
                 const cercaFondo = body.scrollHeight - body.scrollTop - body.clientHeight < umbral;
                 if (cercaFondo) body.scrollTop = body.scrollHeight;
+
+                // Marcar como leído en background
+                fetch('/Chat/ObtenerMensajes?dniContacto=' + encodeURIComponent(dniEmisor), { method: 'GET' })
+                    .catch(function () {});
+            } else {
+                // El chat no está abierto → badge + mover al top del sidebar
+                const list = document.getElementById('chatConvList');
+                if (list) {
+                    const itemExistente = list.querySelector(`.chat-conv-item[data-dni="${dniEmisor}"]`);
+                    if (!itemExistente) {
+                        // Contacto no está en el sidebar todavía → traer sus datos y agregarlo
+                        fetch('/Chat/ObtenerInfoContacto?dniContacto=' + encodeURIComponent(dniEmisor))
+                            .then(function (r) { return r.json(); })
+                            .then(function (info) {
+                                if (!info) return;
+                                const nuevoItem = buildConvItem({
+                                    idContacto: dniEmisor,
+                                    nombreComp: info.nombreComp,
+                                    fotoPerfil: info.fotoPerfil
+                                }, false);
+                                nuevoItem.addEventListener('click', function () {
+                                    abrirConversacion(dniEmisor, info.nombreComp, info.fotoPerfil);
+                                });
+                                list.insertBefore(nuevoItem, list.firstChild);
+                                incrementarBadge(dniEmisor);
+                            })
+                            .catch(function () {});
+                    } else {
+                        // Ya existe → mover al top y mostrar badge
+                        moverChatAlTop(dniEmisor);
+                        incrementarBadge(dniEmisor);
+                    }
+                }
             }
         });
 
@@ -1870,18 +1893,20 @@
         // Al recibir notificación de mensaje eliminado por el contacto
         connection.on('MensajeEliminado', function (payload) {
             const body = document.getElementById('chatMessagesBody');
-            if (!body) return;
-            const el = body.querySelector(`.chat-msg[data-msg-id="${payload.id}"]`);
+            const el = body ? body.querySelector(`.chat-msg[data-msg-id="${payload.id}"]`) : null;
             if (el) {
                 el.style.transition = 'opacity 0.2s, transform 0.2s';
                 el.style.opacity    = '0';
                 el.style.transform  = 'scale(0.95)';
                 setTimeout(function () { el.remove(); }, 200);
             }
-            // Actualizar cache
-            const dniEmisor = el && el.dataset.emisor;
-            if (dniEmisor && cacheMensajes[dniEmisor]) {
-                cacheMensajes[dniEmisor] = cacheMensajes[dniEmisor].filter(function (m) { return m.id !== payload.id; });
+            // Actualizar cache — buscar en todos los contactos
+            for (var dni in cacheMensajes) {
+                var idx = cacheMensajes[dni].findIndex(function (m) { return m.id === payload.id; });
+                if (idx !== -1) {
+                    cacheMensajes[dni].splice(idx, 1);
+                    break;
+                }
             }
         });
 
