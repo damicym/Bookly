@@ -642,13 +642,21 @@ namespace Bookly.Models
 
         /// <summary>
         /// DELETE /api/mensajes/:id?id_emisor=xxx
-        /// Soft-delete de un mensaje propio. Devuelve true si se eliminó correctamente.
+        /// Soft-delete de un mensaje propio. Devuelve el id_receptor si se eliminó, null si no se encontró.
         /// </summary>
-        public static bool EliminarMensaje(int id, string dniEmisor)
+        public static (bool eliminado, string idReceptor) EliminarMensaje(int id, string dniEmisor)
         {
-            if (string.IsNullOrWhiteSpace(dniEmisor)) return false;
+            if (string.IsNullOrWhiteSpace(dniEmisor)) return (false, null);
             var response = Delete($"/mensajes/{id}?id_emisor={Uri.EscapeDataString(dniEmisor)}");
-            return response != null && response.IsSuccessStatusCode;
+            if (response == null || !response.IsSuccessStatusCode) return (false, null);
+            try
+            {
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var el   = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                var idReceptor = el.TryGetProperty("id_receptor", out var r) ? r.GetString() : null;
+                return (true, idReceptor);
+            }
+            catch { return (true, null); }
         }
 
         /// <summary>

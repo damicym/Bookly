@@ -138,6 +138,7 @@ export async function editarMensaje(id, idEmisor, nuevoContenido) {
 		.eq('id', id)
 		.eq('id_emisor', idEmisor)   // garantiza que solo el dueño puede editar
 		.eq('eliminado', false)      // no editar mensajes ya eliminados
+		.eq('editado', false)        // solo se puede editar una vez
 		.select()
 		.maybeSingle()
 
@@ -156,11 +157,11 @@ export async function eliminarMensaje(id, idEmisor) {
 		.update({ eliminado: true })
 		.eq('id', id)
 		.eq('id_emisor', idEmisor)   // garantiza que solo el dueño puede eliminar
-		.select('id')
+		.select('id, id_receptor')
 		.maybeSingle()
 
 	if (error) throw error
-	return data !== null  // true si se encontró y actualizó
+	return data ?? null  // { id, id_receptor } o null si no se encontró
 }
 
 /**
