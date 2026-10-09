@@ -82,7 +82,8 @@ async function _upsertChatRow(idUsuario, idContacto, ultimoMensaje) {
 export async function getMensajes(dniUsuario, dniContacto, antes = null, limite = 50) {
 	let query = supabase
 		.from('mensajes')
-		.select('id, id_emisor, id_receptor, contenido, fecha_envio, leido')
+		.select('id, id_emisor, id_receptor, contenido, fecha_envio, leido, editado, eliminado')
+		.eq('eliminado', false)
 		.or(
 			`and(id_emisor.eq.${dniUsuario},id_receptor.eq.${dniContacto}),` +
 			`and(id_emisor.eq.${dniContacto},id_receptor.eq.${dniUsuario})`
@@ -119,4 +120,64 @@ export async function marcarLeidos(idReceptor, idEmisor) {
 		.eq('leido', false)
 	if (error) throw error
 	return true
+}
+
+/**
+ * Edita el contenido de un mensaje existente.
+ * Solo el emisor original puede editar su propio mensaje.
+ * Marca el flag 'editado' y actualiza 'fecha_edicion'.
+ */
+export async function editarMensaje(id, idEmisor, nuevoContenido) {
+	const { data, error } = await supabase
+		.from('mensajes')
+		.update({
+			contenido:      nuevoContenido,
+			editado:        true,
+			fecha_edicion:  new Date().toISOString()
+		})
+		.eq('id', id)
+		.eq('id_emisor', idEmisor)   // garantiza que solo el dueño puede editar
+		.eq('eliminado', false)      // no editar mensajes ya eliminados
+		.select()
+		.maybeSingle()
+
+	if (error) throw error
+	return data  // null si no se encontró o no era el dueño
+}
+
+/**
+ * Soft-delete de un mensaje.
+ * Solo el emisor original puede eliminar su propio mensaje.
+ * No borra la fila; la marca con eliminado = true.
+ */
+export async function eliminarMensaje(id, idEmisor) {
+	const { data, error } = await supabase
+		.from('mensajes')
+		.update({ eliminado: true })
+		.eq('id', id)
+		.eq('id_emisor', idEmisor)   // garantiza que solo el dueño puede eliminar
+		.select('id')
+		.maybeSingle()
+
+	if (error) throw error
+	return data !== null  // true si se encontró y actualizó
+}
+
+/**
+ * Devuelve el conteo de mensajes no leídos por emisor para un receptor dado.
+ * Resultado: { "dniEmisor1": 3, "dniEmisor2": 1, ... }
+ */
+export async function getNoLeidosPorEmisor(idReceptor) {
+	const { data, error } = await supabase
+		.from('mensajes')
+		.select('id_emisor')
+		.eq('id_receptor', idReceptor)
+		.eq('leido', false)
+	if (error) throw error
+
+	const conteos = {}
+	for (const row of (data ?? [])) {
+		conteos[row.id_emisor] = (conteos[row.id_emisor] || 0) + 1
+	}
+	return conteos
 }

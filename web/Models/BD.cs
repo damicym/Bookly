@@ -515,18 +515,20 @@ namespace Bookly.Models
             short  responsable,
             short  proceso,
             string comentario,
-            string problema)
+            string problema,
+            int?   idPublicacion = null)
         {
             var response = Post("/resenas", new
             {
-                id_redactor = idRedactor,
-                id_receptor = idReceptor,
-                atencion    = (int)atencion,
-                entrega     = (int)entrega,
-                responsable = (int)responsable,
-                proceso     = (int)proceso,
-                comentario  = comentario ?? "",
-                problema    = problema   ?? "",
+                id_redactor    = idRedactor,
+                id_receptor    = idReceptor,
+                atencion       = (int)atencion,
+                entrega        = (int)entrega,
+                responsable    = (int)responsable,
+                proceso        = (int)proceso,
+                comentario     = comentario ?? "",
+                problema       = problema   ?? "",
+                id_publicacion = idPublicacion,
             });
 
             if (response == null || !response.IsSuccessStatusCode) return false;
@@ -619,6 +621,69 @@ namespace Bookly.Models
             if (response == null || !response.IsSuccessStatusCode) return null;
             var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
+        }
+
+        /// <summary>
+        /// PATCH /api/mensajes/:id
+        /// Edita el contenido de un mensaje propio. Devuelve el mensaje actualizado o null si falla.
+        /// </summary>
+        public static Mensaje EditarMensaje(int id, string dniEmisor, string nuevoContenido)
+        {
+            if (string.IsNullOrWhiteSpace(dniEmisor) || string.IsNullOrWhiteSpace(nuevoContenido)) return null;
+            var response = Patch($"/mensajes/{id}", new
+            {
+                id_emisor = dniEmisor,
+                contenido = nuevoContenido
+            });
+            if (response == null || !response.IsSuccessStatusCode) return null;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
+        }
+
+        /// <summary>
+        /// DELETE /api/mensajes/:id?id_emisor=xxx
+        /// Soft-delete de un mensaje propio. Devuelve true si se eliminó correctamente.
+        /// </summary>
+        public static bool EliminarMensaje(int id, string dniEmisor)
+        {
+            if (string.IsNullOrWhiteSpace(dniEmisor)) return false;
+            var response = Delete($"/mensajes/{id}?id_emisor={Uri.EscapeDataString(dniEmisor)}");
+            return response != null && response.IsSuccessStatusCode;
+        }
+
+        /// <summary>
+        /// GET /api/mensajes/:dniUsuario/no-leidos
+        /// Devuelve { "dniEmisor": count } con los mensajes no leídos por contacto.
+        /// </summary>
+        public static Dictionary<string, int> ObtenerNoLeidos(string dniUsuario)
+        {
+            if (string.IsNullOrWhiteSpace(dniUsuario)) return new Dictionary<string, int>();
+            return Get<Dictionary<string, int>>($"/mensajes/{Uri.EscapeDataString(dniUsuario)}/no-leidos")
+                   ?? new Dictionary<string, int>();
+        }
+
+        // ── NOTIFICACIONES ───────────────────────────────────────────────────
+
+        /// <summary>GET /api/notificaciones/:dni — notificaciones no leídas del usuario</summary>
+        public static List<NotificacionDB> ObtenerNotificacionesPendientes(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return new List<NotificacionDB>();
+            return Get<List<NotificacionDB>>($"/notificaciones/{Uri.EscapeDataString(dni)}")
+                   ?? new List<NotificacionDB>();
+        }
+
+        /// <summary>PATCH /api/notificaciones/:id/leer — marca una notificación como leída</summary>
+        public static void MarcarNotificacionLeida(long id, string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return;
+            Patch($"/notificaciones/{id}/leer", new { dni });
+        }
+
+        /// <summary>PATCH /api/notificaciones/:dni/leer-todas — marca todas como leídas</summary>
+        public static void MarcarTodasNotificacionesLeidas(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni)) return;
+            Patch($"/notificaciones/{Uri.EscapeDataString(dni)}/leer-todas", new { });
         }
 
         // ── MÉTODOS NO MIGRADOS ───────────────────────────────────────────────

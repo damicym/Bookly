@@ -7,8 +7,6 @@
     var tieneVendedor = !string.IsNullOrWhiteSpace(vendedor?.DNI);
 }
 
-<link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" />
-
 <div class="chat-page-wrapper primerElemento">
 
     <a class="det-volver" href="javascript:history.back()">
@@ -202,6 +200,8 @@
 </div>
 
 @section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js" crossorigin="anonymous"></script>
+
 
 @* ── Drawer del vendedor (mobile) ── *@
 <div class="chat-vendedor-overlay" id="chatVendedorOverlay" aria-hidden="true"></div>
@@ -251,11 +251,13 @@
 
     </div>
 </div>
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 <script>
     window.CHAT_CONFIG = {
         dniUsuario:    '@(((Bookly.Models.Usuarios)ViewBag.usuario)?.DNI ?? "")',
         dniVendedor:   '@(tieneVendedor ? vendedor.DNI : "")',
-        tieneVendedor: @(tieneVendedor ? "true" : "false")
+        tieneVendedor: @(tieneVendedor ? "true" : "false"),
+        wsUrl:         '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")'
     };
 
     // Limpiar idPublicacion de la URL para que recargar la página

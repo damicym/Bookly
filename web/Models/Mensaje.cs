@@ -26,5 +26,11 @@ namespace Bookly.Models
 
         [JsonPropertyName("leido")]
         public bool leido { get; set; }
+
+        [JsonPropertyName("editado")]
+        public bool editado { get; set; }
+
+        [JsonPropertyName("eliminado")]
+        public bool eliminado { get; set; }
     }
 }

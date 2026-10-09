@@ -1,4 +1,5 @@
 using Bookly.Models;
+using Bookly.Hubs;
 using DotNetEnv;
 
 // Cargar variables de entorno desde el archivo .env
@@ -12,6 +13,8 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddControllersWithViews();
 
@@ -34,6 +37,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<ChatHub>("/chatHub");
 
 // Actualiza las imágenes de las publicaciones desde wwwroot/img/libros/ al arrancar
  BD.ActualizarImagenes(app.Environment.ContentRootPath); // Migración ya ejecutada, no volver a llamar

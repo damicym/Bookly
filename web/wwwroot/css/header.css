@@ -301,6 +301,7 @@ header .searchNFilter {
   transition: background-color 0.2s, color 0.2s;
   margin-right: 4px;
   border: none !important;
+  position: relative; /* necesario para posicionar badges de notificación */
 }
 
 @media (hover: hover) {
@@ -387,6 +388,7 @@ header .searchNFilter {
   color: rgba(239,242,241,0.75);
   cursor: pointer;
   flex-shrink: 0;
+  position: relative; /* para el badge de mensajes no leídos */
   transition: background 0.18s, color 0.18s;
 }
 
@@ -738,6 +740,25 @@ header .searchNFilter {
   text-align: center;
   pointer-events: none;
   box-shadow: 0 1px 4px rgba(6, 26, 64, 0.3);
+}
+
+/* Badge de mensajes no leídos en el navbar */
+.nav-chat-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--secondary2Darker, #83b8a8);
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--light, #fff);
+  animation: badgeNavPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes badgeNavPop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
 
 /* Panel desplegable */

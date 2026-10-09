@@ -1,10 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Bookly.Models;
+using Bookly.Hubs;
 
 namespace Bookly.Controllers
 {
     public class ChatController : BaseController
     {
+        private readonly IHubContext<ChatHub> _hubContext;
+
+        public ChatController(IHubContext<ChatHub> hubContext)
+        {
+            _hubContext = hubContext;
+        }
+
         public IActionResult Index(string? vendedorDNI, int? idPublicacion)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
@@ -53,6 +62,20 @@ namespace Bookly.Controllers
             }
 
             return View("Chat");
+        }
+
+        /// <summary>
+        /// GET /Chat/ObtenerNoLeidos
+        /// Devuelve { "dniContacto": count } con mensajes no leídos del usuario logueado.
+        /// Lo consumen tanto el layout (navbar badge) como chat.js (sidebar badges).
+        /// </summary>
+        [HttpGet]
+        public IActionResult ObtenerNoLeidos()
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+            var noLeidos = BD.ObtenerNoLeidos(user.DNI);
+            return Json(noLeidos);
         }
 
         /// <summary>
@@ -136,7 +159,8 @@ namespace Bookly.Controllers
                     idReceptor = m.idReceptor,
                     contenido  = m.contenido,
                     fechaEnvio = m.fechaEnvio,
-                    leido      = m.leido
+                    leido      = m.leido,
+                    editado    = m.editado
                 }).ToList()
             );
             return Json(resultado);
@@ -165,7 +189,8 @@ namespace Bookly.Controllers
                     idReceptor = m.idReceptor,
                     contenido  = m.contenido,
                     fechaEnvio = m.fechaEnvio,
-                    leido      = m.leido
+                    leido      = m.leido,
+                    editado    = m.editado
                 })
                 .ToList();
 
@@ -175,10 +200,10 @@ namespace Bookly.Controllers
         /// <summary>
         /// POST /Chat/EnviarMensaje
         /// Body: { dniReceptor, contenido }
-        /// Envía un mensaje y devuelve el objeto guardado.
+        /// Envía un mensaje, lo persiste via API y notifica al receptor en tiempo real via SignalR.
         /// </summary>
         [HttpPost]
-        public IActionResult EnviarMensaje([FromBody] EnviarMensajeRequest req)
+        public async Task<IActionResult> EnviarMensaje([FromBody] EnviarMensajeRequest req)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null) return Unauthorized();
@@ -190,15 +215,21 @@ namespace Bookly.Controllers
             if (mensaje == null)
                 return StatusCode(500, new { error = "No se pudo enviar el mensaje" });
 
-            return Json(new
+            var payload = new
             {
                 id         = mensaje.id,
                 idEmisor   = mensaje.idEmisor,
                 idReceptor = mensaje.idReceptor,
                 contenido  = mensaje.contenido,
                 fechaEnvio = mensaje.fechaEnvio,
-                leido      = mensaje.leido
-            });
+                leido      = mensaje.leido,
+                editado    = mensaje.editado
+            };
+
+            // Notificar al receptor en tiempo real (si está conectado y en su grupo)
+            await _hubContext.Clients.Group(req.DniReceptor).SendAsync("NuevoMensaje", payload);
+
+            return Json(payload);
         }
 
         /// <summary>
@@ -314,6 +345,61 @@ namespace Bookly.Controllers
         }
 
         /// <summary>
+        /// PATCH /Chat/EditarMensaje
+        /// Body: { id, nuevoContenido }
+        /// Edita el contenido de un mensaje propio y notifica al receptor via SignalR.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> EditarMensaje([FromBody] EditarMensajeRequest req)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (req == null || req.Id <= 0 || string.IsNullOrWhiteSpace(req.NuevoContenido))
+                return BadRequest(new { error = "id y nuevoContenido son requeridos" });
+
+            var mensaje = BD.EditarMensaje(req.Id, user.DNI, req.NuevoContenido);
+            if (mensaje == null)
+                return NotFound(new { error = "Mensaje no encontrado o no autorizado" });
+
+            var payload = new
+            {
+                id           = mensaje.id,
+                idEmisor     = mensaje.idEmisor,
+                contenido    = mensaje.contenido,
+                editado      = mensaje.editado,
+                fechaEdicion = (DateTime?)null   // la API ya notificó via Socket.IO al receptor
+            };
+
+            // Notificar al receptor via SignalR (web)
+            await _hubContext.Clients.Group(mensaje.idReceptor).SendAsync("MensajeEditado", payload);
+
+            return Json(payload);
+        }
+
+        /// <summary>
+        /// POST /Chat/EliminarMensaje
+        /// Body: { id }
+        /// Soft-delete de un mensaje propio. La notificación en tiempo real
+        /// al receptor ya la realiza la API Node via Socket.IO.
+        /// </summary>
+        [HttpPost]
+        public IActionResult EliminarMensaje([FromBody] EliminarMensajeRequest req)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (req == null || req.Id <= 0)
+                return BadRequest(new { error = "id es requerido" });
+
+            var ok = BD.EliminarMensaje(req.Id, user.DNI);
+            if (!ok)
+                return NotFound(new { error = "Mensaje no encontrado o no autorizado" });
+
+            return Json(new { ok = true, id = req.Id });
+        }
+
+        /// <summary>
         /// POST /Chat/UpsertChat
         /// Body: { dniContacto }
         /// Registra o actualiza el chat en el historial del usuario logueado.
@@ -344,5 +430,18 @@ namespace Bookly.Controllers
     public class UpsertChatRequest
     {
         public string DniContacto { get; set; }
+    }
+
+    /// <summary>DTO para el body del POST EditarMensaje.</summary>
+    public class EditarMensajeRequest
+    {
+        public int    Id            { get; set; }
+        public string NuevoContenido { get; set; }
+    }
+
+    /// <summary>DTO para el body del POST EliminarMensaje.</summary>
+    public class EliminarMensajeRequest
+    {
+        public int Id { get; set; }
     }
 }

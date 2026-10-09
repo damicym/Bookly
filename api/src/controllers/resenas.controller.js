@@ -6,7 +6,7 @@ import * as resenasService from '../services/resenas.service.js'
  */
 export async function createResena(req, res) {
   try {
-    const { id_redactor, id_receptor, atencion, entrega, responsable, proceso, comentario, problema } = req.body
+    const { id_redactor, id_receptor, atencion, entrega, responsable, proceso, comentario, problema, id_publicacion } = req.body
 
     if (!id_redactor || !id_receptor) {
       return res.status(400).json({ error: 'id_redactor e id_receptor son requeridos' })
@@ -18,7 +18,7 @@ export async function createResena(req, res) {
       return res.status(400).json({ error: 'Las puntuaciones deben ser enteros entre 1 y 5' })
     }
 
-    await resenasService.createResena({ id_redactor, id_receptor, atencion, entrega, responsable, proceso, comentario, problema })
+    await resenasService.createResena({ id_redactor, id_receptor, atencion, entrega, responsable, proceso, comentario, problema, id_publicacion: id_publicacion ?? null })
     res.json({ success: true })
   } catch (err) {
     console.error('[createResena]', err.message)
