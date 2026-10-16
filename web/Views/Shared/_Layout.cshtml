@@ -44,10 +44,7 @@
         else nombreMostrable = "Iniciar sesión";
     }
     <header class="@(usuario == null ? "header--guest" : "")">
-        <a href="@Url.Action("Index", "Home")"><svg class="logoSvg" id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 549.51 635.51">
-            <image href="@Url.Content("~/img/logo-icon.png")" x="11" y="0" width="527" height="473"/>
-            <text class="cls-2" transform="translate(37 595.77) scale(.96 1)"><tspan x="0" y="0">Book</tspan><tspan class="cls-3" x="369.84" y="0">l</tspan><tspan x="402.62" y="0">y</tspan></text>
-        </svg></a>
+        <a href="@Url.Action("Index", "Home")"><img class="logoImg" src="@Url.Content("~/img/logo-icon.png")" alt="Bookly logo" /></a>
         @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
         @if (usuario != null) {
         <section class="searchNFilter">            <div class="search">
