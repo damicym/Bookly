@@ -207,7 +207,18 @@
                </button>`
             : '';
 
-        div.innerHTML = `<div class="chat-msg-bubble-wrap"><div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}</div>${chevronBtn}</div>${editadoLabel}`;
+        // Hora inline al lado del texto, para todos los mensajes
+        const horaStr = msg.fechaEnvio
+            ? (function () {
+                const d = new Date(msg.fechaEnvio);
+                return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              })()
+            : '';
+        const horaEl = horaStr
+            ? `<span class="chat-msg-bubble-time">${horaStr}</span>`
+            : '';
+
+        div.innerHTML = `<div class="chat-msg-bubble-wrap"><div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}${horaEl}</div>${chevronBtn}</div>${editadoLabel}`;
 
         if (esMio) {
             div.querySelector('.chat-msg-chevron').addEventListener('click', function (e) {

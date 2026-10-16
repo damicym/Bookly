@@ -395,9 +395,12 @@ namespace Bookly.Controllers
             if (!eliminado)
                 return NotFound(new { error = "Mensaje no encontrado o no autorizado" });
 
-            // Notificar al receptor en tiempo real via SignalR
+            // Notificar al receptor y al propio emisor en tiempo real via SignalR
+            // (el emisor necesita la notificación para sincronizar otras pestañas/dispositivos)
+            var payload = new { id = req.Id };
             if (!string.IsNullOrWhiteSpace(idReceptor))
-                await _hubContext.Clients.Group(idReceptor).SendAsync("MensajeEliminado", new { id = req.Id });
+                await _hubContext.Clients.Group(idReceptor).SendAsync("MensajeEliminado", payload);
+            await _hubContext.Clients.Group(user.DNI).SendAsync("MensajeEliminado", payload);
 
             return Json(new { ok = true, id = req.Id });
         }
