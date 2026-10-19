@@ -13,19 +13,6 @@ export async function enviarMensaje(req, res) {
 			return res.status(400).json({ error: 'Un usuario no puede enviarse mensajes a sí mismo' })
 		}
 		const mensaje = await mensajesService.enviarMensaje(id_emisor, id_receptor, contenido.trim())
-
-		const io = req.app.get('io')
-		if (io) {
-			io.to(id_receptor).emit('nuevo-mensaje', {
-				id:         mensaje.id,
-				idEmisor:   mensaje.id_emisor,
-				idReceptor: mensaje.id_receptor,
-				contenido:  mensaje.contenido,
-				fechaEnvio: mensaje.fecha_envio,
-				leido:      mensaje.leido
-			})
-		}
-
 		res.status(201).json(mensaje)
 	} catch (err) {
 		res.status(500).json({ error: err.message })
@@ -67,18 +54,6 @@ export async function editarMensaje(req, res) {
 			return res.status(404).json({ error: 'Mensaje no encontrado o no autorizado' })
 		}
 
-		// Notificar al receptor en tiempo real
-		const io = req.app.get('io')
-		if (io) {
-			io.to(mensaje.id_receptor).emit('mensaje-editado', {
-				id:           mensaje.id,
-				idEmisor:     mensaje.id_emisor,
-				contenido:    mensaje.contenido,
-				editado:      mensaje.editado,
-				fechaEdicion: mensaje.fecha_edicion
-			})
-		}
-
 		res.json(mensaje)
 	} catch (err) {
 		res.status(500).json({ error: err.message })
@@ -99,25 +74,13 @@ export async function eliminarMensaje(req, res) {
 			return res.status(400).json({ error: 'id_emisor es requerido' })
 		}
 
-		// Necesitamos el id_receptor para emitir el evento; lo obtenemos antes de eliminar
-		const { data: original } = await import('../db/supabase.js').then(m =>
-			m.default.from('mensajes').select('id_receptor').eq('id', id).eq('id_emisor', id_emisor).maybeSingle()
-		)
+		const deleted = await mensajesService.eliminarMensaje(id, id_emisor)
 
-		const ok = await mensajesService.eliminarMensaje(id, id_emisor)
-
-		if (!ok) {
+		if (!deleted) {
 			return res.status(404).json({ error: 'Mensaje no encontrado o no autorizado' })
 		}
 
-		// Notificar al receptor en tiempo real
-		const io = req.app.get('io')
-		if (io && original?.id_receptor) {
-			io.to(original.id_receptor).emit('mensaje-eliminado', { id })
-		}
-
-		res.json({ ok: true })
-	} catch (err) {
+		res.json({ ok: true, id_receptor: deleted.id_receptor })	} catch (err) {
 		res.status(500).json({ error: err.message })
 	}
 }

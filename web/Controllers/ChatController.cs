@@ -380,11 +380,10 @@ namespace Bookly.Controllers
         /// <summary>
         /// POST /Chat/EliminarMensaje
         /// Body: { id }
-        /// Soft-delete de un mensaje propio. La notificación en tiempo real
-        /// al receptor ya la realiza la API Node via Socket.IO.
+        /// Soft-delete de un mensaje propio. Notifica al receptor en tiempo real via SignalR.
         /// </summary>
         [HttpPost]
-        public IActionResult EliminarMensaje([FromBody] EliminarMensajeRequest req)
+        public async Task<IActionResult> EliminarMensaje([FromBody] EliminarMensajeRequest req)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null) return Unauthorized();
@@ -392,13 +391,19 @@ namespace Bookly.Controllers
             if (req == null || req.Id <= 0)
                 return BadRequest(new { error = "id es requerido" });
 
-            var ok = BD.EliminarMensaje(req.Id, user.DNI);
-            if (!ok)
+            var (eliminado, idReceptor) = BD.EliminarMensaje(req.Id, user.DNI);
+            if (!eliminado)
                 return NotFound(new { error = "Mensaje no encontrado o no autorizado" });
+
+            // Notificar al receptor y al propio emisor en tiempo real via SignalR
+            // (el emisor necesita la notificación para sincronizar otras pestañas/dispositivos)
+            var payload = new { id = req.Id };
+            if (!string.IsNullOrWhiteSpace(idReceptor))
+                await _hubContext.Clients.Group(idReceptor).SendAsync("MensajeEliminado", payload);
+            await _hubContext.Clients.Group(user.DNI).SendAsync("MensajeEliminado", payload);
 
             return Json(new { ok = true, id = req.Id });
         }
-
         /// <summary>
         /// POST /Chat/UpsertChat
         /// Body: { dniContacto }

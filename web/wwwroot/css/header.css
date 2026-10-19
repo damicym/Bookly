@@ -41,9 +41,10 @@ header p {
   margin: 0;
 }
 
-.logoSvg {
-  width: 62px;
-  height: 62px;
+.logoImg {
+  width: auto;
+  height:50px;
+  max-height: none;
 }
 
 header .searchNFilter {
@@ -586,7 +587,7 @@ header .searchNFilter {
     gap: 8px;
   }
 
-  .logoSvg {
+  .logoImg {
     width: 48px;
     height: 48px;
   }

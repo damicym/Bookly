@@ -852,6 +852,10 @@ body:has(.chat-page-wrapper) .footer {
     padding: 9px 12px;
   }
 
+  .chat-msg--outgoing .chat-msg-bubble {
+    padding-right: 28px;
+  }
+
   .chat-messages-input-row {
     gap: 8px;
   }
@@ -1889,4 +1893,75 @@ body:has(.chat-page-wrapper) .footer {
 .chat-confirm-btn-eliminar:hover {
   filter: brightness(1.1);
   box-shadow: 0 4px 16px rgba(215, 38, 61, 0.4);
+}
+
+
+/* ── Botón chevron en mensajes propios ── */
+.chat-msg-bubble-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+/* Reservar espacio fijo a la derecha para el chevron */
+.chat-msg--outgoing .chat-msg-bubble {
+  padding-right: 28px;
+  position: relative;
+}
+
+.chat-msg-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 0;
+  line-height: 1;
+  z-index: 1;
+}
+
+.chat-msg--outgoing:hover .chat-msg-chevron {
+  opacity: 1;
+}
+
+.chat-msg-chevron:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.chat-msg-chevron:focus-visible {
+  outline: 2px solid #fff;
+  opacity: 1;
+}
+
+/* Hora dentro de la burbuja, al lado del texto (mensajes entrantes) */
+.chat-msg-bubble-time {
+  display: inline;
+  font-size: 0.6rem;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0.65;
+  user-select: none;
+  pointer-events: none;
+  margin-left: 6px;
+  vertical-align: bottom;
+  position: relative;
+  bottom: 1px;
+}
+
+.chat-msg--incoming .chat-msg-bubble-time {
+  color: var(--dark);
+}
+
+/* En mensajes propios: hora inline igual que los entrantes, color blanco */
+.chat-msg--outgoing .chat-msg-bubble-time {
+  color: #fff;
 }
