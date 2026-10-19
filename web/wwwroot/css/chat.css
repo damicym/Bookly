@@ -1965,3 +1965,24 @@ body:has(.chat-page-wrapper) .footer {
 .chat-msg--outgoing .chat-msg-bubble-time {
   color: #fff;
 }
+
+/* ── Separador de día (Hoy / Ayer / fecha) ── */
+.chat-day-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 6px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.chat-day-separator-pill {
+  background: rgba(6, 26, 64, 0.08);
+  color: rgba(6, 26, 64, 0.5);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}

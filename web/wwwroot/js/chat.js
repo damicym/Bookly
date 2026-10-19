@@ -188,6 +188,49 @@
         }
     }
 
+    // ── Separadores de día ────────────────────────────────
+    // Devuelve una clave "YYYY-MM-DD" en hora local para agrupar mensajes por día.
+    function diaKey(fechaEnvio) {
+        if (!fechaEnvio) return null;
+        const d = new Date(fechaEnvio);
+        if (isNaN(d.getTime())) return null;
+        return d.getFullYear() + '-'
+            + String(d.getMonth() + 1).padStart(2, '0') + '-'
+            + String(d.getDate()).padStart(2, '0');
+    }
+
+    // Devuelve el texto del pill: "Hoy", "Ayer" o la fecha formateada.
+    function diaLabel(fechaEnvio) {
+        const d = new Date(fechaEnvio);
+        const hoy  = new Date();
+        const ayer = new Date();
+        ayer.setDate(hoy.getDate() - 1);
+
+        const mismoAno = d.getFullYear() === hoy.getFullYear();
+
+        if (diaKey(d) === diaKey(hoy))  return 'Hoy';
+        if (diaKey(d) === diaKey(ayer)) return 'Ayer';
+
+        // Fecha: "lunes 19 de octubre" o con año si es distinto
+        return d.toLocaleDateString('es-AR', {
+            weekday: mismoAno ? undefined : undefined,
+            day:     'numeric',
+            month:   'long',
+            year:    mismoAno ? undefined : 'numeric'
+        });
+    }
+
+    function buildDaySeparator(fechaEnvio) {
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-day-separator';
+        wrap.dataset.dayKey = diaKey(fechaEnvio);
+        const pill = document.createElement('span');
+        pill.className = 'chat-day-separator-pill';
+        pill.textContent = diaLabel(fechaEnvio);
+        wrap.appendChild(pill);
+        return wrap;
+    }
+
     function buildMensajeEl(msg) {
         const esMio = msg.idEmisor === DNI_USUARIO;
         const div = document.createElement('div');
@@ -373,8 +416,8 @@
         if (loader) loader.style.display = 'none';
 
         if (!anteponer) {
-            // Carga inicial: limpiar todo
-            Array.from(body.querySelectorAll('.chat-msg')).forEach(el => el.remove());
+            // Carga inicial: limpiar todo (mensajes y separadores de día)
+            Array.from(body.querySelectorAll('.chat-msg, .chat-day-separator')).forEach(el => el.remove());
         }
 
         if (!mensajes || mensajes.length === 0) {
@@ -386,10 +429,45 @@
 
         if (emptyState) emptyState.style.display = 'none';
         const frag = document.createDocumentFragment();
-        mensajes.forEach(function (msg) { frag.appendChild(buildMensajeEl(msg)); });
+
+        if (!anteponer) {
+            // Carga inicial: insertar separadores entre días
+            let ultimoDia = null;
+            mensajes.forEach(function (msg) {
+                const dia = diaKey(msg.fechaEnvio);
+                if (dia && dia !== ultimoDia) {
+                    frag.appendChild(buildDaySeparator(msg.fechaEnvio));
+                    ultimoDia = dia;
+                }
+                frag.appendChild(buildMensajeEl(msg));
+            });
+        } else {
+            // Lazy loading: construir fragmento de mensajes antiguos con sus separadores
+            let ultimoDia = null;
+            mensajes.forEach(function (msg) {
+                const dia = diaKey(msg.fechaEnvio);
+                if (dia && dia !== ultimoDia) {
+                    frag.appendChild(buildDaySeparator(msg.fechaEnvio));
+                    ultimoDia = dia;
+                }
+                frag.appendChild(buildMensajeEl(msg));
+            });
+        }
         
         if (anteponer) {
-            // Lazy loading: insertar al principio
+            // Lazy loading: insertar al principio.
+            // Si el primer separador del bloque nuevo tiene el mismo día
+            // que el primer separador ya visible en el body, eliminar ese duplicado.
+            const primerSepExistente = body.querySelector('.chat-day-separator');
+            if (primerSepExistente) {
+                const primerSepNuevo = frag.querySelector('.chat-day-separator:last-of-type');
+                // El último separador del fragmento nuevo puede coincidir con el primero visible
+                const todosNuevos = frag.querySelectorAll('.chat-day-separator');
+                const ultimoSepNuevo = todosNuevos[todosNuevos.length - 1];
+                if (ultimoSepNuevo && primerSepExistente.dataset.dayKey === ultimoSepNuevo.dataset.dayKey) {
+                    primerSepExistente.remove();
+                }
+            }
             const scrollAltura = body.scrollHeight;
             body.insertBefore(frag, body.firstChild);
             // Mantener la posición de scroll relativa
@@ -471,7 +549,7 @@
 
         // Siempre limpiar el área y mostrar el loader mientras carga.
         // No renderizar desde cache para evitar flickers (ej: label "editado" que aparece con delay).
-        Array.from(body.querySelectorAll('.chat-msg')).forEach(el => el.remove());
+        Array.from(body.querySelectorAll('.chat-msg, .chat-day-separator')).forEach(el => el.remove());
         if (emptyState) emptyState.style.display = 'none';
         if (loader) loader.style.display = 'flex';
 
@@ -611,10 +689,18 @@
 
         const body       = document.getElementById('chatMessagesBody');
         const emptyState = document.getElementById('chatEmptyState');
-        const nuevoMsg   = { idEmisor: DNI_USUARIO, idReceptor: dniContactoActivo, contenido: contenidoHtml };
+        // Usar la hora local del cliente para mostrarla de inmediato, sin esperar al servidor
+        const nuevoMsg   = { idEmisor: DNI_USUARIO, idReceptor: dniContactoActivo, contenido: contenidoHtml, fechaEnvio: new Date().toISOString() };
         const msgTemp    = buildMensajeEl(nuevoMsg);
 
         if (emptyState) emptyState.style.display = 'none';
+
+        // Insertar separador de día si el mensaje es de un día distinto al último visible
+        const ultimoSepBody = body.querySelector('.chat-day-separator:last-of-type');
+        if (!ultimoSepBody || ultimoSepBody.dataset.dayKey !== diaKey(nuevoMsg.fechaEnvio)) {
+            body.appendChild(buildDaySeparator(nuevoMsg.fechaEnvio));
+        }
+
         body.appendChild(msgTemp);
         body.scrollTop = body.scrollHeight;
 
@@ -642,6 +728,26 @@
             if (mensajeGuardado && mensajeGuardado.id) {
                 msgTemp.dataset.msgId = mensajeGuardado.id;
                 nuevoMsg.id = mensajeGuardado.id;
+            }
+            // Actualizar la hora con la real devuelta por el servidor
+            if (mensajeGuardado && mensajeGuardado.fechaEnvio) {
+                const d = new Date(mensajeGuardado.fechaEnvio);
+                if (!isNaN(d.getTime())) {
+                    const horaStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const horaEl = msgTemp.querySelector('.chat-msg-bubble-time');
+                    if (horaEl) {
+                        horaEl.textContent = horaStr;
+                    } else {
+                        // Si no existía el span de hora (mensaje sin fechaEnvio inicial), crearlo
+                        const bubble = msgTemp.querySelector('.chat-msg-bubble');
+                        if (bubble) {
+                            const span = document.createElement('span');
+                            span.className = 'chat-msg-bubble-time';
+                            span.textContent = horaStr;
+                            bubble.appendChild(span);
+                        }
+                    }
+                }
             }
         })
         .catch(function (err) {
@@ -1833,6 +1939,13 @@
                 if (!body) return;
 
                 if (emptyState) emptyState.style.display = 'none';
+
+                // Insertar separador de día si el mensaje es de un día distinto al último visible
+                const ultimoSepSignalR = body.querySelector('.chat-day-separator:last-of-type');
+                if (!ultimoSepSignalR || ultimoSepSignalR.dataset.dayKey !== diaKey(msg.fechaEnvio)) {
+                    body.appendChild(buildDaySeparator(msg.fechaEnvio));
+                }
+
                 const el = buildMensajeEl(msg);
                 body.appendChild(el);
 

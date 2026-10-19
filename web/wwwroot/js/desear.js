@@ -7,7 +7,7 @@ function obtenerSvgDeseado(esDeseado) {
     return esDeseado ? svgDeseado : svgNoDeseado
 }
 
-async function desearLibro(event, form) {
+function desearLibro(event, form) {
     event.preventDefault()
     event.stopPropagation()
 
@@ -15,47 +15,65 @@ async function desearLibro(event, form) {
 
     const action = form.getAttribute('action') || '/Book/Desear'
     const btn = form.querySelector('button')
-    const formData = new FormData(form)
     const tokenEl = form.querySelector('input[name="__RequestVerificationToken"]')
     const token = tokenEl ? tokenEl.value : null
 
-    // Si no hay token (no hay sesión), abrir modal de login
+    // Sin sesión → abrir modal de login
     if (!token) {
         if (typeof abrirLoginModal === 'function') abrirLoginModal()
         return false
     }
 
     const estadoActualDeseado = btn ? btn.classList.contains('deseado') : false
+
+    // ── Optimistic update: cambiar UI de inmediato ──
+    if (btn) {
+        if (!estadoActualDeseado) {
+            btn.classList.add('deseado')
+            btn.innerHTML = svgDeseado
+        } else {
+            btn.classList.remove('deseado')
+            btn.innerHTML = svgNoDeseado
+        }
+    }
+
+    // ── Persistir en background ──
+    const formData = new FormData(form)
     formData.set('esDeseado', estadoActualDeseado ? 'true' : 'false')
 
-    if (btn) btn.disabled = true
-
-    try {
-        const headers = token ? { 'RequestVerificationToken': token } : {}
-        const res = await fetch(action, {
-            method: 'POST',
-            body: formData,
-            headers
-        })
-        const data = await res.json().catch(() => null)
-        if (data && data.success) {
+    fetch(action, {
+        method: 'POST',
+        body: formData,
+        headers: token ? { 'RequestVerificationToken': token } : {}
+    })
+    .then(function (res) { return res.json().catch(function () { return null }) })
+    .then(function (data) {
+        if (!data || !data.success) {
+            // Revertir si el servidor rechazó
             if (btn) {
-                if (!btn.classList.contains('deseado')) {
-                    btn.classList.add('deseado')
-                    btn.innerHTML = svgDeseado
-                } else {
+                if (!estadoActualDeseado) {
                     btn.classList.remove('deseado')
                     btn.innerHTML = svgNoDeseado
+                } else {
+                    btn.classList.add('deseado')
+                    btn.innerHTML = svgDeseado
                 }
             }
-        } else {
-            console.error('Error al marcar como deseado', data)
         }
-    } catch (err) {
+    })
+    .catch(function (err) {
         console.error('Error al enviar petición Desear:', err)
-    } finally {
-        if (btn) btn.disabled = false
-    }
+        // Revertir en caso de error de red
+        if (btn) {
+            if (!estadoActualDeseado) {
+                btn.classList.remove('deseado')
+                btn.innerHTML = svgNoDeseado
+            } else {
+                btn.classList.add('deseado')
+                btn.innerHTML = svgDeseado
+            }
+        }
+    })
 
     return false
 }

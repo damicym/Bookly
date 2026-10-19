@@ -158,7 +158,7 @@ namespace Bookly.Controllers
                     idEmisor   = m.idEmisor,
                     idReceptor = m.idReceptor,
                     contenido  = m.contenido,
-                    fechaEnvio = m.fechaEnvio,
+                    fechaEnvio = m.fechaEnvio.ToUniversalTime(),
                     leido      = m.leido,
                     editado    = m.editado
                 }).ToList()
@@ -188,7 +188,7 @@ namespace Bookly.Controllers
                     idEmisor   = m.idEmisor,
                     idReceptor = m.idReceptor,
                     contenido  = m.contenido,
-                    fechaEnvio = m.fechaEnvio,
+                    fechaEnvio = m.fechaEnvio.ToUniversalTime(),
                     leido      = m.leido,
                     editado    = m.editado
                 })
@@ -221,7 +221,7 @@ namespace Bookly.Controllers
                 idEmisor   = mensaje.idEmisor,
                 idReceptor = mensaje.idReceptor,
                 contenido  = mensaje.contenido,
-                fechaEnvio = mensaje.fechaEnvio,
+                fechaEnvio = mensaje.fechaEnvio.ToUniversalTime(),
                 leido      = mensaje.leido,
                 editado    = mensaje.editado
             };
