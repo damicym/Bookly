@@ -234,6 +234,87 @@
     function buildMensajeEl(msg) {
         const esMio = msg.idEmisor === DNI_USUARIO;
         const div = document.createElement('div');
+
+        // ── Burbuja de propuesta de acuerdo ──────────────────────────
+        const acuerdoMatch = typeof msg.contenido === 'string' && msg.contenido.match(
+            /^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d.]+)\|\|\|([\d/]+)\|\|\|([\d:]+\shs)\|\|\|(.*?)\|\|\|(pendiente|aceptado|rechazado)\]$/
+        );
+        if (acuerdoMatch) {
+            div.className = 'chat-msg ' + (esMio ? 'chat-msg--outgoing' : 'chat-msg--incoming');
+            if (msg.id) div.dataset.msgId = msg.id;
+            div.dataset.emisor   = msg.idEmisor || '';
+            div.dataset.propuesta = 'true';
+
+            const [, idPub, nombrePub, precio, fecha, hora, lugar, estado] = acuerdoMatch;
+
+            const horaStr = msg.fechaEnvio
+                ? (function () {
+                    const d = new Date(msg.fechaEnvio);
+                    return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  })()
+                : '';
+
+            // Footer dinámico según estado y si es el emisor o receptor
+            let footerHtml = '';
+            if (estado === 'pendiente') {
+                if (!esMio) {
+                    // Receptor → puede aceptar o rechazar
+                    footerHtml = `<div class="chat-msg-propuesta-footer">`
+                        + `<div class="chat-msg-propuesta-btns">`
+                        + `<button class="chat-msg-propuesta-btn chat-msg-propuesta-btn--aceptar" data-accion="aceptar">`
+                        + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6l-11 11l-5-5"/></svg> Aceptar`
+                        + `</button>`
+                        + `<button class="chat-msg-propuesta-btn chat-msg-propuesta-btn--rechazar" data-accion="rechazar">`
+                        + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg> Rechazar`
+                        + `</button>`
+                        + `</div></div>`;
+                } else {
+                    // Emisor → pendiente
+                    footerHtml = `<div class="chat-msg-propuesta-footer">`
+                        + `<span class="chat-msg-propuesta-estado chat-msg-propuesta-estado--pendiente">`
+                        + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Esperando respuesta`
+                        + `</span></div>`;
+                }
+            } else if (estado === 'aceptado') {
+                footerHtml = `<div class="chat-msg-propuesta-footer">`
+                    + `<span class="chat-msg-propuesta-estado chat-msg-propuesta-estado--aceptado">`
+                    + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6l-11 11l-5-5"/></svg> Propuesta aceptada`
+                    + `</span></div>`;
+            } else if (estado === 'rechazado') {
+                footerHtml = `<div class="chat-msg-propuesta-footer">`
+                    + `<span class="chat-msg-propuesta-estado chat-msg-propuesta-estado--rechazado">`
+                    + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg> Propuesta rechazada`
+                    + `</span></div>`;
+            }
+
+            div.innerHTML = `<div class="chat-msg-bubble-wrap"><div class="chat-msg-propuesta">`
+                + `<div class="chat-msg-propuesta-header">`
+                +   `<div class="chat-msg-propuesta-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8V7a4 4 0 0 0-4-4c-2.4 0-4 1.6-4 4"/><path d="M6 8h12l1 12H5z"/><path d="M12 12v4"/></svg></div>`
+                +   `<div class="chat-msg-propuesta-header-text">`
+                +     `<div class="chat-msg-propuesta-titulo">Propuesta de acuerdo</div>`
+                +     `<div class="chat-msg-propuesta-libro">${escapeHtml(nombrePub)}</div>`
+                +   `</div>`
+                + `</div>`
+                + `<div class="chat-msg-propuesta-body">`
+                +   `<div class="chat-msg-propuesta-precio">$${escapeHtml(precio)}</div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${escapeHtml(fecha)}</div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${escapeHtml(hora)}</div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHtml(lugar)}</div>`
+                + `</div>`
+                + footerHtml
+                + (horaStr ? `<div class="chat-msg-bubble-time">${horaStr}</div>` : '')
+                + `</div></div>`;
+
+            // Conectar botones de aceptar/rechazar
+            const btnAceptar  = div.querySelector('[data-accion="aceptar"]');
+            const btnRechazar = div.querySelector('[data-accion="rechazar"]');
+            if (btnAceptar)  btnAceptar.addEventListener('click',  function () { responderPropuesta(div, msg, 'aceptado'); });
+            if (btnRechazar) btnRechazar.addEventListener('click', function () { responderPropuesta(div, msg, 'rechazado'); });
+
+            return div;
+        }
+
+        // ── Burbuja de mensaje normal ─────────────────────────────────
         div.className = 'chat-msg ' + (esMio ? 'chat-msg--outgoing' : 'chat-msg--incoming');
         if (msg.id) div.dataset.msgId = msg.id;
         div.dataset.emisor = msg.idEmisor || '';
@@ -273,6 +354,43 @@
         return div;
     }
 
+    // ── Responder propuesta de acuerdo (aceptar / rechazar) ──────────
+    function responderPropuesta(divMsg, msg, decision) {
+        if (!msg.id) return;
+
+        // Deshabilitar botones mientras se procesa
+        divMsg.querySelectorAll('.chat-msg-propuesta-btn').forEach(function (b) { b.disabled = true; });
+
+        fetch('/Chat/ResponderAcuerdo', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ idMensaje: msg.id, decision: decision })
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error('Error');
+            return r.json();
+        })
+        .then(function () {
+            // Actualizar el contenido del mensaje en cache y en el DOM
+            const nuevoContenido = msg.contenido.replace(/\|(pendiente|aceptado|rechazado)\]$/, '|' + decision + ']');
+            msg.contenido = nuevoContenido;
+
+            // Actualizar cache
+            if (cacheMensajes[dniContactoActivo]) {
+                const cached = cacheMensajes[dniContactoActivo].find(function (m) { return m.id === msg.id; });
+                if (cached) cached.contenido = nuevoContenido;
+            }
+
+            // Re-renderizar la burbuja con el nuevo estado
+            const nuevoEl = buildMensajeEl({ ...msg, contenido: nuevoContenido });
+            divMsg.replaceWith(nuevoEl);
+        })
+        .catch(function (err) {
+            console.error('[acuerdo] Error al responder:', err);
+            divMsg.querySelectorAll('.chat-msg-propuesta-btn').forEach(function (b) { b.disabled = false; });
+        });
+    }
+
     // Extrae contenido del input preservando links de publicaciones
     function extraerContenidoConLinks(inputElement) {
         const clone = inputElement.cloneNode(true);
@@ -305,6 +423,9 @@
 
     // Procesa contenido de mensaje para renderizar (convierte formato especial a HTML)
     function procesarContenidoMensaje(contenido) {
+        // Verificar si es una propuesta de acuerdo (se procesa aparte en buildMensajeEl)
+        if (/^\[ACUERDO\|\|\|/.test(contenido)) return contenido;
+
         // Escapar HTML primero
         let resultado = escapeHtml(contenido);
         
@@ -456,16 +577,16 @@
         
         if (anteponer) {
             // Lazy loading: insertar al principio.
-            // Si el primer separador del bloque nuevo tiene el mismo día
-            // que el primer separador ya visible en el body, eliminar ese duplicado.
+            // El último separador del fragmento nuevo puede coincidir con el primer
+            // separador ya visible en el body (mismo día). En ese caso eliminamos
+            // el duplicado del fragmento —no el que ya está en el DOM— para que
+            // el "Hoy" / fecha no aparezca dos veces.
             const primerSepExistente = body.querySelector('.chat-day-separator');
             if (primerSepExistente) {
-                const primerSepNuevo = frag.querySelector('.chat-day-separator:last-of-type');
-                // El último separador del fragmento nuevo puede coincidir con el primero visible
                 const todosNuevos = frag.querySelectorAll('.chat-day-separator');
                 const ultimoSepNuevo = todosNuevos[todosNuevos.length - 1];
                 if (ultimoSepNuevo && primerSepExistente.dataset.dayKey === ultimoSepNuevo.dataset.dayKey) {
-                    primerSepExistente.remove();
+                    ultimoSepNuevo.remove(); // eliminar del fragmento, el del DOM queda
                 }
             }
             const scrollAltura = body.scrollHeight;
@@ -603,8 +724,9 @@
         // Al entrar al chat, quitar el indicador de borrador del sidebar
         actualizarBorradorEnSidebar(dniContacto, null);
 
-        // Cerrar el panel de adjuntos si estaba abierto
+        // Cerrar el panel de adjuntos y el menú de acciones si estaban abiertos
         cerrarAttachPanel();
+        if (typeof cerrarActionsMenu === 'function') cerrarActionsMenu();
 
         // Actualizar widget de contacto en la columna derecha
         actualizarWidgetContacto(dniContacto);
@@ -1202,19 +1324,404 @@
         input.classList.remove('chat-input--empty');
     }
 
-    if (attachBtn)   attachBtn.addEventListener('click', toggleAttachPanel);
+    if (attachBtn)   attachBtn.addEventListener('click', toggleActionsMenu);
     if (attachClose) attachClose.addEventListener('click', cerrarAttachPanel);
 
-    // Cerrar panel al presionar Escape o al hacer click fuera
+    // Cerrar panel al presionar Escape o al hacer click fuera.
+    // Se usa un flag para ignorar el click que abrió el panel (evita cierre inmediato
+    // cuando se abre desde el menú de acciones, cuyo click burbujea al document).
+    let _skipAttachClose = false;
+
+    function abrirAttachPanelConFlag() {
+        _skipAttachClose = true;
+        abrirAttachPanel();
+        // Resetear en el siguiente tick, después de que el evento haya burbujado
+        setTimeout(function () { _skipAttachClose = false; }, 0);
+    }
+
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && attachPanel && !attachPanel.hidden) cerrarAttachPanel();
     });
     document.addEventListener('click', function (e) {
         if (!attachPanel || attachPanel.hidden) return;
+        if (_skipAttachClose) return;
         if (!attachPanel.contains(e.target) && e.target !== attachBtn && !attachBtn.contains(e.target)) {
             cerrarAttachPanel();
         }
     });
+
+    // ── Menú de acciones del "+" (WhatsApp-style) ────────
+    const actionsMenu    = document.getElementById('chatActionsMenu');
+    const actionMencionar = document.getElementById('chatActionMencionar');
+    const actionAcuerdo   = document.getElementById('chatActionAcuerdo');
+
+    function abrirActionsMenu() {
+        if (!actionsMenu || !attachBtn) return;
+        actionsMenu.hidden = false;
+        attachBtn.classList.add('chat-attach-btn--active');
+        attachBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function cerrarActionsMenu() {
+        if (!actionsMenu || !attachBtn) return;
+        actionsMenu.hidden = true;
+        attachBtn.classList.remove('chat-attach-btn--active');
+        attachBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    // "Mencionar publicación" → cierra el menú y abre el panel de publicaciones existente
+    if (actionMencionar) {
+        actionMencionar.addEventListener('click', function () {
+            cerrarActionsMenu();
+            abrirAttachPanelConFlag();
+        });
+    }
+
+    // "Acordar precio" → cierra el menú y abre el modal de acuerdo
+    if (actionAcuerdo) {
+        actionAcuerdo.addEventListener('click', function () {
+            cerrarActionsMenu();
+            abrirModalAcuerdo();
+        });
+    }
+
+    // Cerrar menú al presionar Escape o hacer click fuera.
+    // Flag para evitar cierre inmediato en el mismo tick del click que lo abrió.
+    let _skipActionsClose = false;
+
+    function abrirActionsMenuConFlag() {
+        _skipActionsClose = true;
+        abrirActionsMenu();
+        setTimeout(function () { _skipActionsClose = false; }, 0);
+    }
+
+    function toggleActionsMenu() {
+        if (!actionsMenu) return;
+        if (actionsMenu.hidden) abrirActionsMenuConFlag();
+        else cerrarActionsMenu();
+    }
+
+    document.addEventListener('click', function (e) {
+        if (!actionsMenu || actionsMenu.hidden) return;
+        if (_skipActionsClose) return;
+        if (!actionsMenu.contains(e.target) && e.target !== attachBtn && !attachBtn.contains(e.target)) {
+            cerrarActionsMenu();
+        }
+    });
+
+    // Cerrar panel attach al presionar Escape (ya cubierto arriba; agregar menú también)
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            if (actionsMenu && !actionsMenu.hidden) cerrarActionsMenu();
+        }
+    });
+
+    // Cerrar menú al cambiar de conversación (lo hace abrirConversacion vía cerrarAttachPanel)
+
+    // ── Modal: Acordar precio ─────────────────────────────
+    const modalAcuerdo      = document.getElementById('chatAcuerdoModal');
+    const modalAcuerdoOverlay = document.getElementById('chatAcuerdoOverlay');
+    const modalAcuerdoClose  = document.getElementById('chatAcuerdoClose');
+    const modalAcuerdoBack   = document.getElementById('chatAcuerdoBackBtn');
+    const acuerdoStep1El     = document.getElementById('chatAcuerdoStep1');
+    const acuerdoStep2El     = document.getElementById('chatAcuerdoStep2');
+    const acuerdoPubsLoader  = document.getElementById('chatAcuerdoPubsLoader');
+    const acuerdoPubsList    = document.getElementById('chatAcuerdoPubsList');
+    const acuerdoPubCard     = document.getElementById('chatAcuerdoPubCard');
+    const acuerdoSendBtn     = document.getElementById('chatAcuerdoSendBtn');
+    const acuerdoStepsDots   = document.querySelectorAll('.chat-acuerdo-step');
+
+    // Estado local del modal de acuerdo
+    let acuerdoEstado = {
+        pubSeleccionada: null,  // { id, nombre, precio, imagen, esMia }
+        paso: 1
+    };
+
+    function abrirModalAcuerdo() {
+        if (!modalAcuerdo) return;
+        acuerdoEstado.pubSeleccionada = null;
+        acuerdoEstado.paso = 1;
+        actualizarPasoAcuerdo(1);
+        modalAcuerdo.removeAttribute('hidden');
+        cargarPubsAcuerdo();
+    }
+
+    function cerrarModalAcuerdo() {
+        if (!modalAcuerdo) return;
+        const dialog  = modalAcuerdo.querySelector('.chat-acuerdo-dialog');
+        const overlay = modalAcuerdo.querySelector('.chat-acuerdo-overlay');
+        if (dialog)  dialog.style.animation  = 'chatDialogOut 0.18s cubic-bezier(0.4,0,1,1) forwards';
+        if (overlay) overlay.style.animation = 'chatOverlayOut 0.18s ease forwards';
+        setTimeout(function () {
+            modalAcuerdo.setAttribute('hidden', '');
+            if (dialog)  dialog.style.animation  = '';
+            if (overlay) overlay.style.animation = '';
+        }, 170);
+    }
+
+    function actualizarPasoAcuerdo(paso) {
+        acuerdoEstado.paso = paso;
+
+        // Actualizar indicadores
+        acuerdoStepsDots.forEach(function (dot) {
+            const n = parseInt(dot.dataset.step, 10);
+            dot.classList.remove('chat-acuerdo-step--active', 'chat-acuerdo-step--done');
+            if (n < paso)       dot.classList.add('chat-acuerdo-step--done');
+            else if (n === paso) dot.classList.add('chat-acuerdo-step--active');
+        });
+
+        // Mostrar/ocultar pasos
+        if (acuerdoStep1El) acuerdoStep1El.hidden = paso !== 1;
+        if (acuerdoStep2El) acuerdoStep2El.hidden = paso !== 2;
+
+        // Botón "volver" solo en paso 2+
+        if (modalAcuerdoBack) modalAcuerdoBack.hidden = paso === 1;
+
+        // Descripción dinámica
+        const descEl = document.getElementById('chatAcuerdoDesc');
+        if (descEl) {
+            descEl.textContent = paso === 1
+                ? 'Elegí una publicación para proponer un acuerdo'
+                : 'Completá los detalles de tu propuesta';
+        }
+    }
+
+    function cargarPubsAcuerdo() {
+        if (!acuerdoPubsList || !acuerdoPubsLoader) return;
+        const dni = dniContactoActivo || '';
+
+        // Reusar cache del panel de publicaciones existente
+        if (cacheAttachPubs[dni]) {
+            renderPubsAcuerdo(cacheAttachPubs[dni]);
+            return;
+        }
+
+        acuerdoPubsLoader.hidden = false;
+        acuerdoPubsList.innerHTML = '';
+
+        fetch('/Chat/ObtenerPublicacionesChat?dniContacto=' + encodeURIComponent(dni))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                cacheAttachPubs[dni] = data;
+                renderPubsAcuerdo(data);
+            })
+            .catch(function () {
+                if (acuerdoPubsLoader) acuerdoPubsLoader.hidden = true;
+            });
+    }
+
+    function buildAcuerdoPubItem(pub, esMia) {
+        const btn = document.createElement('button');
+        btn.className = 'chat-acuerdo-pub-item';
+        btn.type = 'button';
+
+        const imgSrc = pub.imagen || '/img/book-placeholder.webp';
+        const ownerClass = esMia ? 'chat-acuerdo-pub-item-owner--mia' : 'chat-acuerdo-pub-item-owner--suya';
+        const ownerLabel = esMia ? 'Mía' : 'Suya';
+
+        btn.innerHTML =
+            `<img class="chat-acuerdo-pub-item-img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" loading="lazy" />`
+            + `<div class="chat-acuerdo-pub-item-info">`
+            +   `<span class="chat-acuerdo-pub-item-nombre">${escapeHtml(pub.nombre)}</span>`
+            +   `<span class="chat-acuerdo-pub-item-precio">$${pub.precio}</span>`
+            + `</div>`
+            + `<span class="chat-acuerdo-pub-item-owner ${ownerClass}">${ownerLabel}</span>`
+            + `<svg class="chat-acuerdo-pub-item-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>`;
+
+        btn.addEventListener('click', function () {
+            seleccionarPubAcuerdo({ ...pub, esMia: esMia });
+        });
+        return btn;
+    }
+
+    function renderPubsAcuerdo(data) {
+        if (!acuerdoPubsList || !acuerdoPubsLoader) return;
+        acuerdoPubsLoader.hidden = true;
+        acuerdoPubsList.innerHTML = '';
+
+        const mias     = data.mias     || [];
+        const contacto = data.contacto || [];
+
+        if (mias.length === 0 && contacto.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'chat-acuerdo-empty';
+            empty.style.padding = '20px 16px';
+            empty.textContent = 'Ninguno de los dos tiene publicaciones activas.';
+            acuerdoPubsList.appendChild(empty);
+            return;
+        }
+
+        // Mis publicaciones
+        const labelMias = document.createElement('p');
+        labelMias.className = 'chat-acuerdo-section-label';
+        labelMias.textContent = 'Mis publicaciones';
+        acuerdoPubsList.appendChild(labelMias);
+
+        if (mias.length > 0) {
+            mias.forEach(function (pub) {
+                acuerdoPubsList.appendChild(buildAcuerdoPubItem(pub, true));
+            });
+        } else {
+            const empty = document.createElement('p');
+            empty.className = 'chat-acuerdo-empty';
+            empty.textContent = 'No tenés publicaciones activas.';
+            acuerdoPubsList.appendChild(empty);
+        }
+
+        // Publicaciones del contacto
+        if (dniContactoActivo) {
+            const divider = document.createElement('div');
+            divider.style.cssText = 'height:1px;background:rgba(6,26,64,0.07);margin:6px 0';
+            acuerdoPubsList.appendChild(divider);
+
+            const labelContacto = document.createElement('p');
+            labelContacto.className = 'chat-acuerdo-section-label';
+            labelContacto.textContent = 'Sus publicaciones';
+            acuerdoPubsList.appendChild(labelContacto);
+
+            if (contacto.length > 0) {
+                contacto.forEach(function (pub) {
+                    acuerdoPubsList.appendChild(buildAcuerdoPubItem(pub, false));
+                });
+            } else {
+                const empty = document.createElement('p');
+                empty.className = 'chat-acuerdo-empty';
+                empty.textContent = 'No tiene publicaciones activas.';
+                acuerdoPubsList.appendChild(empty);
+            }
+        }
+    }
+
+    function seleccionarPubAcuerdo(pub) {
+        acuerdoEstado.pubSeleccionada = pub;
+
+        // Llenar card de confirmación en el paso 2
+        if (acuerdoPubCard) {
+            const imgSrc = pub.imagen || '/img/book-placeholder.webp';
+            acuerdoPubCard.innerHTML =
+                `<img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" />`
+                + `<div class="chat-acuerdo-pub-sel-info">`
+                +   `<div class="chat-acuerdo-pub-sel-nombre">${escapeHtml(pub.nombre)}</div>`
+                +   `<div class="chat-acuerdo-pub-sel-precio">Precio publicado: $${pub.precio}</div>`
+                + `</div>`;
+        }
+
+        // Prellenar precio con el precio de la publicación
+        const precioInput = document.getElementById('acuerdoPrecio');
+        if (precioInput) precioInput.value = pub.precio;
+
+        // Prellenar fecha de hoy
+        const fechaInput = document.getElementById('acuerdoFecha');
+        if (fechaInput) {
+            const hoy = new Date();
+            const yyyy = hoy.getFullYear();
+            const mm   = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dd   = String(hoy.getDate()).padStart(2, '0');
+            fechaInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Limpiar otros campos
+        const horaInput  = document.getElementById('acuerdoHora');
+        const lugarInput = document.getElementById('acuerdoLugar');
+        if (horaInput)  horaInput.value  = '';
+        if (lugarInput) lugarInput.value = '';
+
+        actualizarPasoAcuerdo(2);
+    }
+
+    function enviarPropuestaAcuerdo() {
+        const pub = acuerdoEstado.pubSeleccionada;
+        if (!pub) return;
+
+        const precioVal = document.getElementById('acuerdoPrecio')?.value?.trim();
+        const fechaVal  = document.getElementById('acuerdoFecha')?.value?.trim();
+        const horaVal   = document.getElementById('acuerdoHora')?.value?.trim();
+        const lugarVal  = document.getElementById('acuerdoLugar')?.value?.trim();
+
+        if (!precioVal || parseFloat(precioVal) < 0) {
+            document.getElementById('acuerdoPrecio')?.focus();
+            return;
+        }
+        if (!fechaVal) {
+            document.getElementById('acuerdoFecha')?.focus();
+            return;
+        }
+        if (!horaVal) {
+            document.getElementById('acuerdoHora')?.focus();
+            return;
+        }
+        if (!lugarVal) {
+            document.getElementById('acuerdoLugar')?.focus();
+            return;
+        }
+
+        // Formatear fecha para mostrar
+        const [y, m, d] = fechaVal.split('-');
+        const fechaDisplay = `${d}/${m}/${y}`;
+
+        // Formatear hora (HH:MM → HH:MM hs)
+        const horaDisplay = horaVal + ' hs';
+
+        // Construir contenido codificado (no editable/eliminable)
+        const contenido = `[ACUERDO|||${pub.id}|||${pub.nombre}|||${precioVal}|||${fechaDisplay}|||${horaDisplay}|||${lugarVal}|||pendiente]`;
+
+        if (acuerdoSendBtn) {
+            acuerdoSendBtn.disabled = true;
+            acuerdoSendBtn.textContent = 'Enviando...';
+        }
+
+        fetch('/Chat/EnviarMensaje', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ dniReceptor: dniContactoActivo, contenido: contenido })
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error('Error al enviar');
+            return r.json();
+        })
+        .then(function (mensajeGuardado) {
+            cerrarModalAcuerdo();
+
+            // Renderizar optimisticamente la burbuja de propuesta
+            const body       = document.getElementById('chatMessagesBody');
+            const emptyState = document.getElementById('chatEmptyState');
+            if (!body) return;
+            if (emptyState) emptyState.style.display = 'none';
+
+            const msgObj = {
+                id:         mensajeGuardado.id,
+                idEmisor:   DNI_USUARIO,
+                idReceptor: dniContactoActivo,
+                contenido:  contenido,
+                fechaEnvio: mensajeGuardado.fechaEnvio || new Date().toISOString(),
+                editado:    false
+            };
+
+            const ultimoSep = body.querySelector('.chat-day-separator:last-of-type');
+            if (!ultimoSep || ultimoSep.dataset.dayKey !== diaKey(msgObj.fechaEnvio)) {
+                body.appendChild(buildDaySeparator(msgObj.fechaEnvio));
+            }
+
+            const el = buildMensajeEl(msgObj);
+            body.appendChild(el);
+            body.scrollTop = body.scrollHeight;
+
+            if (!cacheMensajes[dniContactoActivo]) cacheMensajes[dniContactoActivo] = [];
+            cacheMensajes[dniContactoActivo].push(msgObj);
+        })
+        .catch(function (err) {
+            console.error('[acuerdo] Error al enviar:', err);
+            if (acuerdoSendBtn) {
+                acuerdoSendBtn.disabled = false;
+                acuerdoSendBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 14l11 -11"/><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/></svg> Enviar propuesta';
+            }
+        });
+    }
+
+    if (modalAcuerdoClose)   modalAcuerdoClose.addEventListener('click', cerrarModalAcuerdo);
+    if (modalAcuerdoOverlay) modalAcuerdoOverlay.addEventListener('click', cerrarModalAcuerdo);
+    if (modalAcuerdoBack)    modalAcuerdoBack.addEventListener('click', function () { actualizarPasoAcuerdo(1); });
+    if (acuerdoSendBtn)      acuerdoSendBtn.addEventListener('click', enviarPropuestaAcuerdo);
 
     // Cerrar panel y limpiar cache al cambiar de conversación
     // (el cierre real está en abrirConversacion directamente)
@@ -1712,8 +2219,12 @@
         msgEl.dataset.editando = 'true';
         const contenidoOriginal = bubble.innerHTML;
 
-        // Extraer texto plano para el textarea de edición
-        const textoPlano = bubble.textContent;
+        // Extraer texto plano para el textarea de edición,
+        // ignorando el span de hora (.chat-msg-bubble-time) para que no aparezca en el campo
+        const cloneBubble = bubble.cloneNode(true);
+        const timeSpan = cloneBubble.querySelector('.chat-msg-bubble-time');
+        if (timeSpan) timeSpan.remove();
+        const textoPlano = cloneBubble.textContent;
 
         bubble.innerHTML = '';
 
@@ -2034,6 +2545,31 @@
             }
         });
 
+        // Al recibir notificación de acuerdo respondido (aceptado/rechazado) por el receptor
+        connection.on('AcuerdoRespondido', function (payload) {
+            // payload: { idMensaje, decision }
+            const body = document.getElementById('chatMessagesBody');
+            if (!body) return;
+
+            const el = body.querySelector(`.chat-msg[data-msg-id="${payload.idMensaje}"]`);
+            if (el) {
+                // Actualizar el contenido del mensaje en la burbuja
+                // Buscar en cache el mensaje original para reconstruir
+                const dni = payload.dniReceptor || dniContactoActivo;
+                let msgCached = null;
+                for (var d in cacheMensajes) {
+                    msgCached = cacheMensajes[d].find(function (m) { return m.id === payload.idMensaje; });
+                    if (msgCached) break;
+                }
+                if (msgCached) {
+                    const nuevoContenido = msgCached.contenido.replace(/\|(pendiente|aceptado|rechazado)\]$/, '|' + payload.decision + ']');
+                    msgCached.contenido = nuevoContenido;
+                    const nuevoEl = buildMensajeEl({ ...msgCached, contenido: nuevoContenido });
+                    el.replaceWith(nuevoEl);
+                }
+            }
+        });
+
         // Arrancar la conexión y unirse al grupo propio
         connection.start()
             .then(function () {
@@ -2065,6 +2601,8 @@
             cerrarDrawerVendedor();
             cerrarCtxMenu();
             cerrarConfirmEliminar();
+            if (modalAcuerdo && !modalAcuerdo.hidden) cerrarModalAcuerdo();
+            if (actionsMenu  && !actionsMenu.hidden)  cerrarActionsMenu();
         }
     });
 

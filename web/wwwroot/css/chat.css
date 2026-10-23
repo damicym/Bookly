@@ -1986,3 +1986,784 @@ body:has(.chat-page-wrapper) .footer {
   border-radius: 20px;
   white-space: nowrap;
 }
+
+/* ══════════════════════════════════════════════════════════
+   Menú de acciones del "+" (WhatsApp-style)
+══════════════════════════════════════════════════════════ */
+
+.chat-actions-menu {
+  background: #fff;
+  border: 1.5px solid rgba(6, 26, 64, 0.09);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(6, 26, 64, 0.14);
+  margin-bottom: 10px;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  animation: chatActionsMenuIn 0.18s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+@keyframes chatActionsMenuIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.chat-actions-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  font-family: inherit;
+  min-width: 80px;
+  flex: 1;
+}
+
+.chat-actions-item:hover {
+  background: rgba(64, 89, 173, 0.06);
+}
+
+.chat-actions-item:active {
+  transform: scale(0.94);
+}
+
+.chat-actions-item:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.chat-actions-item:disabled:hover {
+  background: transparent;
+}
+
+.chat-actions-item-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: filter 0.15s;
+}
+
+.chat-actions-item-icon--book {
+  background: rgba(64, 89, 173, 0.1);
+  color: var(--main);
+}
+
+.chat-actions-item-icon--deal {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.chat-actions-item-icon--photo {
+  background: rgba(251, 146, 60, 0.12);
+  color: #ea580c;
+}
+
+.chat-actions-item-icon--file {
+  background: rgba(139, 92, 246, 0.12);
+  color: #7c3aed;
+}
+
+.chat-actions-item-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Modal: Acordar precio
+══════════════════════════════════════════════════════════ */
+
+.chat-acuerdo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 26, 64, 0.4);
+  backdrop-filter: blur(3px);
+  z-index: 1050;
+  animation: chatOverlayIn 0.18s ease;
+}
+
+.chat-acuerdo-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1051;
+  width: min(460px, 94vw);
+  max-height: min(620px, 90dvh);
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(6, 26, 64, 0.16), 0 2px 8px rgba(6, 26, 64, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: chatDialogIn 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+/* ── Header ── */
+.chat-acuerdo-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 16px 14px 20px;
+  border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
+  flex-shrink: 0;
+}
+
+.chat-acuerdo-back-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(6, 26, 64, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chat-acuerdo-back-btn:hover {
+  background: rgba(6, 26, 64, 0.06);
+  color: var(--dark);
+}
+
+.chat-acuerdo-dialog-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-acuerdo-dialog-titulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+}
+
+.chat-acuerdo-dialog-desc {
+  font-size: 0.78rem;
+  color: rgba(6, 26, 64, 0.4);
+  margin: 2px 0 0;
+}
+
+.chat-acuerdo-dialog-close {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(6, 26, 64, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chat-acuerdo-dialog-close:hover {
+  background: rgba(6, 26, 64, 0.06);
+  color: var(--dark);
+}
+
+/* ── Indicador de pasos ── */
+.chat-acuerdo-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px 10px;
+  gap: 0;
+  border-bottom: 1.5px solid rgba(6, 26, 64, 0.06);
+  flex-shrink: 0;
+}
+
+.chat-acuerdo-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.chat-acuerdo-step--active {
+  opacity: 1;
+}
+
+.chat-acuerdo-step--done {
+  opacity: 0.75;
+}
+
+.chat-acuerdo-step--done .chat-acuerdo-step-num {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #fff;
+  font-size: 0;  /* ocultar número, mostrar check */
+  position: relative;
+}
+
+.chat-acuerdo-step--done .chat-acuerdo-step-num::after {
+  content: '✓';
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.chat-acuerdo-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(6, 26, 64, 0.2);
+  background: rgba(6, 26, 64, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(6, 26, 64, 0.5);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.chat-acuerdo-step--active .chat-acuerdo-step-num {
+  border-color: var(--main);
+  background: var(--main);
+  color: #fff;
+}
+
+.chat-acuerdo-step-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.chat-acuerdo-step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(6, 26, 64, 0.1);
+  margin: 0 8px;
+  margin-bottom: 16px;
+  border-radius: 2px;
+  min-width: 40px;
+}
+
+/* ── Body de cada paso ── */
+.chat-acuerdo-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  min-height: 0;
+}
+
+.chat-acuerdo-body::-webkit-scrollbar { width: 4px; }
+.chat-acuerdo-body::-webkit-scrollbar-thumb { background: rgba(64,89,173,0.15); border-radius:4px; }
+
+.chat-acuerdo-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+/* ── Lista de publicaciones (paso 1) ── */
+#chatAcuerdoPubsList .chat-acuerdo-section-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: rgba(6, 26, 64, 0.38);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px 4px;
+}
+
+#chatAcuerdoPubsList .chat-acuerdo-empty {
+  font-size: 0.82rem;
+  color: rgba(6, 26, 64, 0.35);
+  padding: 4px 16px 12px;
+  font-style: italic;
+}
+
+.chat-acuerdo-pub-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.13s;
+  border-radius: 0;
+}
+
+.chat-acuerdo-pub-item:hover {
+  background: rgba(64, 89, 173, 0.05);
+}
+
+.chat-acuerdo-pub-item:active {
+  background: rgba(64, 89, 173, 0.1);
+}
+
+.chat-acuerdo-pub-item-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(6, 26, 64, 0.05);
+  border: 1px solid rgba(6, 26, 64, 0.07);
+}
+
+.chat-acuerdo-pub-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-acuerdo-pub-item-nombre {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.chat-acuerdo-pub-item-precio {
+  font-size: 0.78rem;
+  color: rgba(6, 26, 64, 0.45);
+  display: block;
+  margin-top: 1px;
+}
+
+.chat-acuerdo-pub-item-owner {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.chat-acuerdo-pub-item-owner--mia {
+  background: rgba(64, 89, 173, 0.1);
+  color: var(--main);
+}
+
+.chat-acuerdo-pub-item-owner--suya {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.chat-acuerdo-pub-item-arrow {
+  flex-shrink: 0;
+  color: rgba(6, 26, 64, 0.2);
+  transition: color 0.13s;
+}
+
+.chat-acuerdo-pub-item:hover .chat-acuerdo-pub-item-arrow {
+  color: var(--main);
+}
+
+/* ── Publicación seleccionada (paso 2) ── */
+.chat-acuerdo-pub-seleccionada {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(64, 89, 173, 0.04);
+  border-bottom: 1.5px solid rgba(6, 26, 64, 0.06);
+  flex-shrink: 0;
+}
+
+.chat-acuerdo-pub-seleccionada img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(6, 26, 64, 0.08);
+  flex-shrink: 0;
+}
+
+.chat-acuerdo-pub-sel-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-acuerdo-pub-sel-nombre {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-acuerdo-pub-sel-precio {
+  font-size: 0.78rem;
+  color: rgba(6, 26, 64, 0.45);
+}
+
+/* ── Formulario de detalles (paso 2) ── */
+.chat-acuerdo-form {
+  padding: 16px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chat-acuerdo-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-acuerdo-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(6, 26, 64, 0.55);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chat-acuerdo-input-wrap {
+  position: relative;
+}
+
+.chat-acuerdo-input-wrap--prefix .chat-acuerdo-input {
+  padding-left: 28px;
+}
+
+.chat-acuerdo-prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: rgba(6, 26, 64, 0.35);
+  pointer-events: none;
+}
+
+.chat-acuerdo-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1.5px solid rgba(6, 26, 64, 0.14);
+  border-radius: 10px;
+  background: var(--light);
+  font-family: inherit;
+  font-size: 0.88rem;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+
+.chat-acuerdo-input:focus {
+  border-color: var(--main);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(64, 89, 173, 0.09);
+}
+
+.chat-acuerdo-input::placeholder {
+  color: rgba(6, 26, 64, 0.3);
+}
+
+/* Quitar flechas del input number */
+.chat-acuerdo-input[type="number"]::-webkit-inner-spin-button,
+.chat-acuerdo-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ── Botón enviar propuesta ── */
+.chat-acuerdo-actions {
+  padding: 14px 16px 16px;
+  border-top: 1.5px solid rgba(6, 26, 64, 0.06);
+  flex-shrink: 0;
+}
+
+.chat-acuerdo-send-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: var(--main);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: filter 0.15s, transform 0.1s, opacity 0.15s;
+}
+
+.chat-acuerdo-send-btn:hover {
+  filter: brightness(1.1);
+}
+
+.chat-acuerdo-send-btn:active {
+  transform: scale(0.98);
+}
+
+.chat-acuerdo-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Burbuja de propuesta de acuerdo
+══════════════════════════════════════════════════════════ */
+
+.chat-msg-propuesta {
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid rgba(6, 26, 64, 0.09);
+  box-shadow: 0 2px 10px rgba(6, 26, 64, 0.09);
+  min-width: 240px;
+  max-width: 320px;
+  background: #fff;
+}
+
+/* En mensaje propio: ajustar colores */
+.chat-msg--outgoing .chat-msg-propuesta {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.chat-msg-propuesta-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px 8px;
+  background: rgba(34, 197, 94, 0.08);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.14);
+}
+
+.chat-msg--outgoing .chat-msg-propuesta-header {
+  background: rgba(255, 255, 255, 0.12);
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.chat-msg-propuesta-header-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.chat-msg--outgoing .chat-msg-propuesta-header-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.chat-msg-propuesta-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-msg-propuesta-titulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chat-msg--outgoing .chat-msg-propuesta-titulo {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.chat-msg-propuesta-libro {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-msg--outgoing .chat-msg-propuesta-libro {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.chat-msg-propuesta-body {
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.chat-msg-propuesta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: rgba(6, 26, 64, 0.55);
+}
+
+.chat-msg--outgoing .chat-msg-propuesta-row {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.chat-msg-propuesta-row svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.chat-msg-propuesta-precio {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 2px;
+}
+
+.chat-msg--outgoing .chat-msg-propuesta-precio {
+  color: #fff;
+}
+
+/* ── Estado de la propuesta ── */
+.chat-msg-propuesta-footer {
+  padding: 8px 14px 10px;
+  border-top: 1px solid rgba(6, 26, 64, 0.07);
+}
+
+.chat-msg--outgoing .chat-msg-propuesta-footer {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Botones de aceptar/rechazar (receptor, estado pendiente) */
+.chat-msg-propuesta-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-msg-propuesta-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.chat-msg-propuesta-btn:active {
+  transform: scale(0.96);
+}
+
+.chat-msg-propuesta-btn--aceptar {
+  background: #22c55e;
+  color: #fff;
+}
+
+.chat-msg-propuesta-btn--aceptar:hover {
+  filter: brightness(1.08);
+}
+
+.chat-msg-propuesta-btn--rechazar {
+  background: rgba(215, 38, 61, 0.09);
+  color: var(--red, #d7263d);
+}
+
+.chat-msg-propuesta-btn--rechazar:hover {
+  background: rgba(215, 38, 61, 0.15);
+}
+
+/* Badge de estado (aceptado / rechazado / pendiente) */
+.chat-msg-propuesta-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: 100%;
+  justify-content: center;
+}
+
+.chat-msg-propuesta-estado--pendiente {
+  background: rgba(251, 191, 36, 0.12);
+  color: #b45309;
+}
+
+.chat-msg-propuesta-estado--aceptado {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.chat-msg-propuesta-estado--rechazado {
+  background: rgba(215, 38, 61, 0.09);
+  color: var(--red, #d7263d);
+}
+
+/* Hora en burbuja de propuesta */
+.chat-msg-propuesta .chat-msg-bubble-time {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 14px 8px;
+  font-size: 0.65rem;
+  color: rgba(6, 26, 64, 0.3);
+  margin-top: -4px;
+}
+
+.chat-msg--outgoing .chat-msg-propuesta .chat-msg-bubble-time {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Responsive: en mobile el menú de acciones ocupa el ancho completo ── */
+@media (max-width: 480px) {
+  .chat-actions-item {
+    min-width: 70px;
+    padding: 9px 10px;
+  }
+
+  .chat-actions-item-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .chat-msg-propuesta {
+    min-width: 200px;
+  }
+}
+
+/* Step 2 wrapper: flex column sin scroll propio — la card de pub + body scrollable + botón fijo */
+.chat-acuerdo-step2-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

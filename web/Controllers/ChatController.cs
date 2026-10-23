@@ -422,6 +422,48 @@ namespace Bookly.Controllers
             BD.UpsertChat(user.DNI, req.DniContacto);
             return Ok();
         }
+
+        /// <summary>
+        /// POST /Chat/ResponderAcuerdo
+        /// Body: { idMensaje, decision: "aceptado"|"rechazado" }
+        /// El receptor de una propuesta de acuerdo la acepta o rechaza.
+        /// Actualiza el contenido del mensaje (reemplazando "pendiente" por la decisión)
+        /// y notifica al emisor en tiempo real via SignalR.
+        /// Las propuestas no se pueden editar ni eliminar.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> ResponderAcuerdo([FromBody] ResponderAcuerdoRequest req)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (req == null || req.IdMensaje <= 0 || (req.Decision != "aceptado" && req.Decision != "rechazado"))
+                return BadRequest(new { error = "idMensaje y decision son requeridos" });
+
+            // Actualizar la propuesta via API (el servicio Node valida que el receptor sea el usuario logueado)
+            var mensajeActualizado = BD.ResponderPropuesta(req.IdMensaje, user.DNI, req.Decision);
+            if (mensajeActualizado == null)
+                return StatusCode(404, new { error = "Propuesta no encontrada, no autorizada o ya respondida" });
+
+            var payload = new
+            {
+                idMensaje   = req.IdMensaje,
+                decision    = req.Decision,
+                dniReceptor = user.DNI
+            };
+
+            // Notificar al emisor de la propuesta en tiempo real
+            await _hubContext.Clients.Group(mensajeActualizado.idEmisor).SendAsync("AcuerdoRespondido", payload);
+
+            return Json(new { ok = true });
+        }
+    }
+
+    /// <summary>DTO para el body del POST ResponderAcuerdo.</summary>
+    public class ResponderAcuerdoRequest
+    {
+        public int    IdMensaje { get; set; }
+        public string Decision  { get; set; }
     }
 
     /// <summary>DTO para el body del POST EnviarMensaje.</summary>

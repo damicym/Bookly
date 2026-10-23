@@ -99,3 +99,29 @@ export async function getNoLeidos(req, res) {
 		res.status(500).json({ error: err.message })
 	}
 }
+
+/**
+ * PATCH /api/mensajes/:id/responder-propuesta
+ * Permite al RECEPTOR de una propuesta de acuerdo aceptarla o rechazarla.
+ * Body: { id_receptor, decision: "aceptado" | "rechazado" }
+ */
+export async function responderPropuesta(req, res) {
+	try {
+		const id = parseInt(req.params.id, 10)
+		const { id_receptor, decision } = req.body
+
+		if (!id_receptor || !['aceptado', 'rechazado'].includes(decision)) {
+			return res.status(400).json({ error: 'id_receptor y decision (aceptado|rechazado) son requeridos' })
+		}
+
+		const mensaje = await mensajesService.responderPropuesta(id, id_receptor, decision)
+
+		if (!mensaje) {
+			return res.status(404).json({ error: 'Propuesta no encontrada, no autorizada o ya respondida' })
+		}
+
+		res.json(mensaje)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}

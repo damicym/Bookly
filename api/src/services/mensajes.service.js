@@ -182,3 +182,43 @@ export async function getNoLeidosPorEmisor(idReceptor) {
 	}
 	return conteos
 }
+
+/**
+ * Actualiza el estado de una propuesta de acuerdo (pendiente → aceptado/rechazado).
+ * Solo el receptor del mensaje puede responder.
+ * No marca el mensaje como "editado" (eso es para mensajes de texto normales).
+ * Devuelve el mensaje actualizado o null si no se encontró/autorizó.
+ */
+export async function responderPropuesta(id, idReceptor, decision) {
+	if (!['aceptado', 'rechazado'].includes(decision)) return null
+
+	// 1. Obtener el mensaje para validar que el receptor es correcto y es propuesta pendiente
+	const { data: msg, error: errGet } = await supabase
+		.from('mensajes')
+		.select('id, id_emisor, id_receptor, contenido')
+		.eq('id', id)
+		.eq('id_receptor', idReceptor)   // solo el receptor puede responder
+		.eq('eliminado', false)
+		.maybeSingle()
+
+	if (errGet) throw errGet
+	if (!msg) return null
+
+	// Validar que sea una propuesta pendiente
+	if (!msg.contenido.includes('[ACUERDO|||') || !msg.contenido.endsWith('|pendiente]')) {
+		return null
+	}
+
+	// 2. Actualizar contenido: reemplazar "|pendiente]" por "|{decision}]"
+	const nuevoContenido = msg.contenido.replace(/\|pendiente\]$/, `|${decision}]`)
+
+	const { data: actualizado, error: errUpdate } = await supabase
+		.from('mensajes')
+		.update({ contenido: nuevoContenido })
+		.eq('id', id)
+		.select()
+		.maybeSingle()
+
+	if (errUpdate) throw errUpdate
+	return actualizado
+}
