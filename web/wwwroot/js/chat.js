@@ -7,6 +7,8 @@
     const DNI_VENDEDOR   = (window.CHAT_CONFIG && window.CHAT_CONFIG.dniVendedor)   || '';
     const TIENE_VENDEDOR = (window.CHAT_CONFIG && window.CHAT_CONFIG.tieneVendedor) || false;
     const WS_URL         = (window.CHAT_CONFIG && window.CHAT_CONFIG.wsUrl)         || 'http://localhost:3000';
+    const AUTO_ACUERDO   = (window.CHAT_CONFIG && window.CHAT_CONFIG.autoAcuerdo)   || false;
+    const AUTO_ACUERDO_PUB = (window.CHAT_CONFIG && window.CHAT_CONFIG.autoAcuerdoPub) || null;
     const DEFAULT_AVATAR = '/img/default.webp';
 
     // ── Badges de mensajes no leídos: { [dniContacto]: número } ─────────────
@@ -245,7 +247,7 @@
 
         // ── Burbuja de propuesta de acuerdo ──────────────────────────
         const acuerdoMatch = typeof msg.contenido === 'string' && msg.contenido.match(
-            /^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d.]+)\|\|\|([\d/]+)\|\|\|([\d:]+\shs)\|\|\|(.*?)\|\|\|(pendiente|aceptado|rechazado)\]$/
+            /^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d.]+)\|\|\|([\d/]+)\|\|\|(.*?)\|\|\|(.*?)\|\|\|(pendiente|aceptado|rechazado)\]$/
         );
         if (acuerdoMatch) {
             div.className = 'chat-msg ' + (esMio ? 'chat-msg--outgoing' : 'chat-msg--incoming');
@@ -300,14 +302,14 @@
                 +   `<div class="chat-msg-propuesta-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></div>`
                 +   `<div class="chat-msg-propuesta-header-text">`
                 +     `<div class="chat-msg-propuesta-titulo">Propuesta de acuerdo</div>`
-                +     `<div class="chat-msg-propuesta-libro">${escapeHtml(nombrePub)}<span class="chat-msg-propuesta-owner">${esMio ? '(Mío)' : '(Suyo)'}</span></div>`
+                +     `<div class="chat-msg-propuesta-libro"><span class="chat-msg-propuesta-libro-text">${escapeHtml(nombrePub)}</span><span class="chat-msg-propuesta-owner">${esMio ? '(Mío)' : '(Suyo)'}</span></div>`
                 +   `</div>`
                 + `</div>`
                 + `<div class="chat-msg-propuesta-body">`
                 +   `<div class="chat-msg-propuesta-precio">$${escapeHtml(precio)}</div>`
-                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${escapeHtml(fecha)}</div>`
-                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${escapeHtml(hora)}</div>`
-                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHtml(lugar)}</div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(fecha)}</span></div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(hora)}</span></div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(lugar)}</span></div>`
                 + `</div>`
                 + footerHtml
                 + (horaStr ? `<div class="chat-msg-bubble-time">${horaStr}</div>` : '')
@@ -435,6 +437,12 @@
     function procesarContenidoMensaje(contenido) {
         // Verificar si es una propuesta de acuerdo (se procesa aparte en buildMensajeEl)
         if (/^\[ACUERDO\|\|\|/.test(contenido)) return contenido;
+
+        // Mensajes con formato especial no reconocido (ej: [COMPRA|||...], formato legacy)
+        // Mostrar un placeholder en lugar del string crudo
+        if (/^\[[A-Z]+\|\|\|/.test(contenido)) {
+            return '<span style="opacity:0.45;font-style:italic;font-size:0.82em">Mensaje no disponible</span>';
+        }
 
         // Escapar HTML primero
         let resultado = escapeHtml(contenido);
@@ -2674,6 +2682,16 @@
         if (emptyState) emptyState.style.display = 'none';
         cargarMensajes(dniContactoActivo);
         actualizarWidgetContacto(dniContactoActivo);
+    }
+
+    // Si viene desde "Comprar", auto-abrir el modal de acuerdo con la pub pre-seleccionada
+    if (AUTO_ACUERDO && AUTO_ACUERDO_PUB && dniContactoActivo) {
+        // Esperar a que el sidebar y el chat carguen antes de abrir el modal
+        setTimeout(function () {
+            abrirModalAcuerdo();
+            // Saltar directamente al paso 2 con la publicación del vendedor pre-seleccionada
+            seleccionarPubAcuerdo(AUTO_ACUERDO_PUB);
+        }, 400);
     }
 
     // ── Listener global para Escape (cierra todos los modales/drawers) ───

@@ -14,7 +14,7 @@ namespace Bookly.Controllers
             _hubContext = hubContext;
         }
 
-        public IActionResult Index(string? vendedorDNI, int? idPublicacion)
+        public IActionResult Index(string? vendedorDNI, int? idPublicacion, bool autoAcuerdo = false)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
@@ -59,6 +59,20 @@ namespace Bookly.Controllers
             {
                 var publi = BD.ObtenerPublicacionCompletaPorId(idPublicacion.Value);
                 ViewBag.PublicacionConsulta = publi;
+
+                // Si viene desde "Comprar", pasar flag para auto-abrir el modal de acuerdo
+                if (autoAcuerdo && publi != null)
+                {
+                    ViewBag.AutoAcuerdo    = true;
+                    ViewBag.AutoAcuerdoPubJson = System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        id      = publi.id,
+                        nombre  = publi.nombre,
+                        precio  = publi.precio,
+                        imagen  = publi.imagen ?? "",
+                        esMia   = false
+                    });
+                }
             }
 
             return View("Chat");

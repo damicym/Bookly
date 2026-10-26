@@ -288,7 +288,7 @@
             @* Publicación seleccionada (mini card de confirmación) *@
             <div class="chat-acuerdo-pub-seleccionada" id="chatAcuerdoPubCard"></div>
 
-            <form id="chatAcuerdoForm" novalidate>
+            <form id="chatAcuerdoForm">
             <div class="chat-acuerdo-body">
                 <div class="chat-acuerdo-form">
                     <div class="chat-acuerdo-form-row">
@@ -384,18 +384,19 @@
         dniUsuario:    '@(((Bookly.Models.Usuarios)ViewBag.usuario)?.DNI ?? "")',
         dniVendedor:   '@(tieneVendedor ? vendedor.DNI : "")',
         tieneVendedor: @(tieneVendedor ? "true" : "false"),
-        wsUrl:         '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")'
+        wsUrl:         '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")',
+        autoAcuerdo:   @((ViewBag.AutoAcuerdo == true) ? "true" : "false"),
+        autoAcuerdoPub: @Html.Raw((string)(ViewBag.AutoAcuerdoPubJson ?? "null"))
     };
 
-    // Limpiar idPublicacion de la URL para que recargar la página
-    // no vuelva a inyectar el mensaje predeterminado.
-    // (Mismo patrón que WhatsApp Web / Slack con sus params de navegación.)
+    // Limpiar parámetros de la URL para que recargar no vuelva a abrir el modal.
     (function () {
         var url = new URL(window.location.href);
-        if (url.searchParams.has('idPublicacion')) {
-            url.searchParams.delete('idPublicacion');
-            history.replaceState(null, '', url.toString());
-        }
+        var cambiado = false;
+        ['idPublicacion', 'autoAcuerdo'].forEach(function (p) {
+            if (url.searchParams.has(p)) { url.searchParams.delete(p); cambiado = true; }
+        });
+        if (cambiado) history.replaceState(null, '', url.toString());
     })();
 </script>
 <script src="~/js/chat.js" asp-append-version="true"></script>

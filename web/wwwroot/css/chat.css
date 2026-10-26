@@ -2479,9 +2479,25 @@ body:has(.chat-page-wrapper) .footer {
   font-size: 0.88rem;
   color: var(--light);
   caret-color: var(--light);
+  -webkit-text-fill-color: var(--light);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   -webkit-appearance: none;
+}
+
+input[type=text].chat-acuerdo-input {
+  color: var(--light);
+  -webkit-text-fill-color: var(--light);
+}
+
+/* Neutralizar autofill del browser */
+.chat-acuerdo-input:-webkit-autofill,
+.chat-acuerdo-input:-webkit-autofill:hover,
+.chat-acuerdo-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #3a4e8c inset !important;
+  box-shadow: 0 0 0 1000px #3a4e8c inset !important;
+  -webkit-text-fill-color: var(--light) !important;
+  caret-color: var(--light);
 }
 
 .chat-acuerdo-input:focus {
@@ -2492,6 +2508,7 @@ body:has(.chat-page-wrapper) .footer {
 
 .chat-acuerdo-input::placeholder {
   color: rgba(239, 242, 241, 0.3);
+  -webkit-text-fill-color: rgba(239, 242, 241, 0.3);
 }
 
 /* Colores del picker nativo de fecha/hora (Chrome/Edge) */
@@ -2557,8 +2574,7 @@ body:has(.chat-page-wrapper) .footer {
   overflow: hidden;
   border: 1.5px solid rgba(239, 242, 241, 0.18);
   box-shadow: 0 2px 10px rgba(6, 26, 64, 0.18);
-  min-width: 240px;
-  max-width: 320px;
+  width: clamp(240px, 72vw, 300px);
   background: var(--main);
 }
 
@@ -2605,12 +2621,19 @@ body:has(.chat-page-wrapper) .footer {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--light);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: flex;
   align-items: baseline;
   gap: 5px;
+  min-width: 0;
+}
+
+.chat-msg-propuesta-libro-text {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .chat-msg-propuesta-owner {
@@ -2630,7 +2653,7 @@ body:has(.chat-page-wrapper) .footer {
 
 .chat-msg-propuesta-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   font-size: 0.82rem;
   color: var(--light);
@@ -2639,6 +2662,16 @@ body:has(.chat-page-wrapper) .footer {
 .chat-msg-propuesta-row svg {
   flex-shrink: 0;
   opacity: 0.7;
+  margin-top: 2px; /* alinear con la primera línea de texto */
+}
+
+/* Texto del row: wrappea hasta 2 líneas, luego ellipsis */
+.chat-msg-propuesta-row-text {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 }
 
 .chat-msg-propuesta-precio {
@@ -2753,7 +2786,7 @@ body:has(.chat-page-wrapper) .footer {
   }
 
   .chat-msg-propuesta {
-    min-width: 200px;
+    width: clamp(200px, 80vw, 280px);
   }
 }
 
