@@ -186,7 +186,8 @@ export async function getNoLeidosPorEmisor(idReceptor) {
 /**
  * Actualiza el estado de una propuesta de acuerdo (pendiente → aceptado/rechazado).
  * Solo el receptor del mensaje puede responder.
- * No marca el mensaje como "editado" (eso es para mensajes de texto normales).
+ * Cuando se acepta, marca la publicación relacionada como inactiva (status = 0)
+ * para que deje de aparecer en el catálogo.
  * Devuelve el mensaje actualizado o null si no se encontró/autorizó.
  */
 export async function responderPropuesta(id, idReceptor, decision) {
@@ -220,5 +221,20 @@ export async function responderPropuesta(id, idReceptor, decision) {
 		.maybeSingle()
 
 	if (errUpdate) throw errUpdate
+
+	// 3. Si se aceptó, desactivar la publicación para que deje de aparecer en el catálogo
+	if (decision === 'aceptado') {
+		// El formato es [ACUERDO|||{idPub}|||nombre|||precio|||fecha|||hora|||lugar|||pendiente]
+		const match = msg.contenido.match(/^\[ACUERDO\|\|\|(\d+)\|\|\|/)
+		if (match) {
+			const idPublicacion = parseInt(match[1], 10)
+			// Ignorar errores: si falla, la propuesta ya fue aceptada igualmente
+			await supabase
+				.from('publicaciones')
+				.update({ status: 0 })
+				.eq('id', idPublicacion)
+		}
+	}
+
 	return actualizado
 }

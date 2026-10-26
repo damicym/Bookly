@@ -1700,14 +1700,17 @@ body:has(.chat-page-wrapper) .footer {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
-  line-height: 1.5;
+  line-height: 1.4;
   width: 100%;
   resize: none;
   padding: 0;
   margin: 0;
+  min-height: 0;
+  box-sizing: border-box;
   word-break: break-word;
   white-space: pre-wrap;
   overflow: hidden;
+  display: block;
   /* Quitar apariencia nativa del textarea */
   -webkit-appearance: none;
   appearance: none;
@@ -1718,10 +1721,10 @@ body:has(.chat-page-wrapper) .footer {
 .chat-msg-edit-actions {
   display: flex;
   gap: 5px;
-  margin-top: 8px;
+  margin-top: 5px;
   justify-content: flex-end;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
-  padding-top: 7px;
+  padding-top: 5px;
 }
 
 .chat-msg--incoming .chat-msg-edit-actions {
@@ -1778,6 +1781,12 @@ body:has(.chat-page-wrapper) .footer {
 
 .chat-msg--incoming .chat-msg-edit-btn--save:hover {
   opacity: 0.88;
+}
+
+.chat-msg-edit-btn--save:disabled {
+  opacity: 0.38;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* ══════════════════════════════
@@ -2101,9 +2110,9 @@ body:has(.chat-page-wrapper) .footer {
   z-index: 1051;
   width: min(460px, 94vw);
   max-height: min(620px, 90dvh);
-  background: #fff;
+  background: var(--main);
   border-radius: 18px;
-  box-shadow: 0 8px 30px rgba(6, 26, 64, 0.16), 0 2px 8px rgba(6, 26, 64, 0.08);
+  box-shadow: 0 8px 30px rgba(6, 26, 64, 0.28), 0 2px 8px rgba(6, 26, 64, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2116,7 +2125,7 @@ body:has(.chat-page-wrapper) .footer {
   align-items: center;
   gap: 8px;
   padding: 16px 16px 14px 20px;
-  border-bottom: 1.5px solid rgba(6, 26, 64, 0.07);
+  border-bottom: 1.5px solid rgba(239, 242, 241, 0.12);
   flex-shrink: 0;
 }
 
@@ -2126,7 +2135,7 @@ body:has(.chat-page-wrapper) .footer {
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: rgba(6, 26, 64, 0.45);
+  color: rgba(239, 242, 241, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2136,8 +2145,8 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-back-btn:hover {
-  background: rgba(6, 26, 64, 0.06);
-  color: var(--dark);
+  background: rgba(239, 242, 241, 0.1);
+  color: var(--light);
 }
 
 .chat-acuerdo-dialog-header-text {
@@ -2148,13 +2157,13 @@ body:has(.chat-page-wrapper) .footer {
 .chat-acuerdo-dialog-titulo {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--dark);
+  color: var(--light);
   margin: 0;
 }
 
 .chat-acuerdo-dialog-desc {
   font-size: 0.78rem;
-  color: rgba(6, 26, 64, 0.4);
+  color: rgba(239, 242, 241, 0.5);
   margin: 2px 0 0;
 }
 
@@ -2165,7 +2174,7 @@ body:has(.chat-page-wrapper) .footer {
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: rgba(6, 26, 64, 0.35);
+  color: rgba(239, 242, 241, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2174,8 +2183,8 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-dialog-close:hover {
-  background: rgba(6, 26, 64, 0.06);
-  color: var(--dark);
+  background: rgba(239, 242, 241, 0.1);
+  color: var(--light);
 }
 
 /* ── Indicador de pasos ── */
@@ -2185,7 +2194,7 @@ body:has(.chat-page-wrapper) .footer {
   justify-content: center;
   padding: 12px 20px 10px;
   gap: 0;
-  border-bottom: 1.5px solid rgba(6, 26, 64, 0.06);
+  border-bottom: 1.5px solid rgba(239, 242, 241, 0.1);
   flex-shrink: 0;
 }
 
@@ -2207,10 +2216,10 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-step--done .chat-acuerdo-step-num {
-  background: #22c55e;
-  border-color: #22c55e;
-  color: #fff;
-  font-size: 0;  /* ocultar número, mostrar check */
+  background: var(--secondary2);
+  border-color: var(--secondary2);
+  color: var(--dark);
+  font-size: 0;
   position: relative;
 }
 
@@ -2218,28 +2227,28 @@ body:has(.chat-page-wrapper) .footer {
   content: '✓';
   font-size: 0.75rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--dark);
 }
 
 .chat-acuerdo-step-num {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 2px solid rgba(6, 26, 64, 0.2);
-  background: rgba(6, 26, 64, 0.04);
+  border: 2px solid rgba(239, 242, 241, 0.3);
+  background: rgba(239, 242, 241, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.78rem;
   font-weight: 700;
-  color: rgba(6, 26, 64, 0.5);
+  color: rgba(239, 242, 241, 0.6);
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .chat-acuerdo-step--active .chat-acuerdo-step-num {
-  border-color: var(--main);
-  background: var(--main);
-  color: #fff;
+  border-color: var(--secondary2);
+  background: var(--secondary2);
+  color: var(--dark);
 }
 
 .chat-acuerdo-step-label {
@@ -2247,12 +2256,13 @@ body:has(.chat-page-wrapper) .footer {
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
+  color: rgba(239, 242, 241, 0.7);
 }
 
 .chat-acuerdo-step-line {
   flex: 1;
   height: 2px;
-  background: rgba(6, 26, 64, 0.1);
+  background: rgba(239, 242, 241, 0.15);
   margin: 0 8px;
   margin-bottom: 16px;
   border-radius: 2px;
@@ -2268,7 +2278,7 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-body::-webkit-scrollbar { width: 4px; }
-.chat-acuerdo-body::-webkit-scrollbar-thumb { background: rgba(64,89,173,0.15); border-radius:4px; }
+.chat-acuerdo-body::-webkit-scrollbar-thumb { background: rgba(239,242,241,0.2); border-radius:4px; }
 
 .chat-acuerdo-loading {
   display: flex;
@@ -2281,7 +2291,7 @@ body:has(.chat-page-wrapper) .footer {
 #chatAcuerdoPubsList .chat-acuerdo-section-label {
   font-size: 0.74rem;
   font-weight: 700;
-  color: rgba(6, 26, 64, 0.38);
+  color: rgba(239, 242, 241, 0.45);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 12px 16px 4px;
@@ -2289,7 +2299,7 @@ body:has(.chat-page-wrapper) .footer {
 
 #chatAcuerdoPubsList .chat-acuerdo-empty {
   font-size: 0.82rem;
-  color: rgba(6, 26, 64, 0.35);
+  color: rgba(239, 242, 241, 0.4);
   padding: 4px 16px 12px;
   font-style: italic;
 }
@@ -2310,11 +2320,11 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-pub-item:hover {
-  background: rgba(64, 89, 173, 0.05);
+  background: rgba(239, 242, 241, 0.08);
 }
 
 .chat-acuerdo-pub-item:active {
-  background: rgba(64, 89, 173, 0.1);
+  background: rgba(239, 242, 241, 0.14);
 }
 
 .chat-acuerdo-pub-item-img {
@@ -2323,8 +2333,8 @@ body:has(.chat-page-wrapper) .footer {
   border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
-  background: rgba(6, 26, 64, 0.05);
-  border: 1px solid rgba(6, 26, 64, 0.07);
+  background: rgba(239, 242, 241, 0.1);
+  border: 1px solid rgba(239, 242, 241, 0.15);
 }
 
 .chat-acuerdo-pub-item-info {
@@ -2335,7 +2345,7 @@ body:has(.chat-page-wrapper) .footer {
 .chat-acuerdo-pub-item-nombre {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--dark);
+  color: var(--light);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2344,7 +2354,7 @@ body:has(.chat-page-wrapper) .footer {
 
 .chat-acuerdo-pub-item-precio {
   font-size: 0.78rem;
-  color: rgba(6, 26, 64, 0.45);
+  color: rgba(239, 242, 241, 0.5);
   display: block;
   margin-top: 1px;
 }
@@ -2358,23 +2368,23 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-pub-item-owner--mia {
-  background: rgba(64, 89, 173, 0.1);
-  color: var(--main);
+  background: rgba(151, 216, 196, 0.2);
+  color: var(--secondary2);
 }
 
 .chat-acuerdo-pub-item-owner--suya {
-  background: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
+  background: rgba(107, 154, 196, 0.25);
+  color: #a8d4f0;
 }
 
 .chat-acuerdo-pub-item-arrow {
   flex-shrink: 0;
-  color: rgba(6, 26, 64, 0.2);
+  color: rgba(239, 242, 241, 0.25);
   transition: color 0.13s;
 }
 
 .chat-acuerdo-pub-item:hover .chat-acuerdo-pub-item-arrow {
-  color: var(--main);
+  color: var(--secondary2);
 }
 
 /* ── Publicación seleccionada (paso 2) ── */
@@ -2383,8 +2393,8 @@ body:has(.chat-page-wrapper) .footer {
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  background: rgba(64, 89, 173, 0.04);
-  border-bottom: 1.5px solid rgba(6, 26, 64, 0.06);
+  background: rgba(239, 242, 241, 0.07);
+  border-bottom: 1.5px solid rgba(239, 242, 241, 0.1);
   flex-shrink: 0;
 }
 
@@ -2393,7 +2403,7 @@ body:has(.chat-page-wrapper) .footer {
   height: 40px;
   border-radius: 8px;
   object-fit: cover;
-  border: 1px solid rgba(6, 26, 64, 0.08);
+  border: 1px solid rgba(239, 242, 241, 0.15);
   flex-shrink: 0;
 }
 
@@ -2405,7 +2415,7 @@ body:has(.chat-page-wrapper) .footer {
 .chat-acuerdo-pub-sel-nombre {
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--dark);
+  color: var(--light);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2413,7 +2423,7 @@ body:has(.chat-page-wrapper) .footer {
 
 .chat-acuerdo-pub-sel-precio {
   font-size: 0.78rem;
-  color: rgba(6, 26, 64, 0.45);
+  color: rgba(239, 242, 241, 0.5);
 }
 
 /* ── Formulario de detalles (paso 2) ── */
@@ -2433,7 +2443,7 @@ body:has(.chat-page-wrapper) .footer {
 .chat-acuerdo-label {
   font-size: 0.8rem;
   font-weight: 700;
-  color: rgba(6, 26, 64, 0.55);
+  color: rgba(239, 242, 241, 0.75);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2454,7 +2464,7 @@ body:has(.chat-page-wrapper) .footer {
   transform: translateY(-50%);
   font-size: 0.88rem;
   font-weight: 700;
-  color: rgba(6, 26, 64, 0.35);
+  color: rgba(239, 242, 241, 0.45);
   pointer-events: none;
 }
 
@@ -2462,25 +2472,32 @@ body:has(.chat-page-wrapper) .footer {
   width: 100%;
   box-sizing: border-box;
   padding: 10px 14px;
-  border: 1.5px solid rgba(6, 26, 64, 0.14);
+  border: 1.5px solid rgba(239, 242, 241, 0.18);
   border-radius: 10px;
-  background: var(--light);
+  background: rgba(239, 242, 241, 0.1);
   font-family: inherit;
   font-size: 0.88rem;
-  color: var(--dark);
+  color: var(--light);
+  caret-color: var(--light);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   -webkit-appearance: none;
 }
 
 .chat-acuerdo-input:focus {
-  border-color: var(--main);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(64, 89, 173, 0.09);
+  border-color: var(--secondary2);
+  background: rgba(239, 242, 241, 0.15);
+  box-shadow: 0 0 0 3px rgba(151, 216, 196, 0.18);
 }
 
 .chat-acuerdo-input::placeholder {
-  color: rgba(6, 26, 64, 0.3);
+  color: rgba(239, 242, 241, 0.3);
+}
+
+/* Colores del picker nativo de fecha/hora (Chrome/Edge) */
+.chat-acuerdo-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.5);
+  cursor: pointer;
 }
 
 /* Quitar flechas del input number */
@@ -2493,15 +2510,15 @@ body:has(.chat-page-wrapper) .footer {
 /* ── Botón enviar propuesta ── */
 .chat-acuerdo-actions {
   padding: 14px 16px 16px;
-  border-top: 1.5px solid rgba(6, 26, 64, 0.06);
+  border-top: 1.5px solid rgba(239, 242, 241, 0.1);
   flex-shrink: 0;
 }
 
 .chat-acuerdo-send-btn {
   width: 100%;
   padding: 12px 20px;
-  background: var(--main);
-  color: white;
+  background: var(--secondary2);
+  color: var(--dark);
   border: none;
   border-radius: 12px;
   font-family: inherit;
@@ -2516,7 +2533,7 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-send-btn:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.08);
 }
 
 .chat-acuerdo-send-btn:active {
@@ -2524,7 +2541,7 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-acuerdo-send-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
   filter: none;
 }
@@ -2538,14 +2555,14 @@ body:has(.chat-page-wrapper) .footer {
   flex-direction: column;
   border-radius: 14px;
   overflow: hidden;
-  border: 1.5px solid rgba(6, 26, 64, 0.09);
-  box-shadow: 0 2px 10px rgba(6, 26, 64, 0.09);
+  border: 1.5px solid rgba(239, 242, 241, 0.18);
+  box-shadow: 0 2px 10px rgba(6, 26, 64, 0.18);
   min-width: 240px;
   max-width: 320px;
-  background: #fff;
+  background: var(--main);
 }
 
-/* En mensaje propio: ajustar colores */
+/* Borde ligeramente más visible en mensajes propios (sobre fondo verde) */
 .chat-msg--outgoing .chat-msg-propuesta {
   border-color: rgba(255, 255, 255, 0.22);
 }
@@ -2555,30 +2572,20 @@ body:has(.chat-page-wrapper) .footer {
   align-items: center;
   gap: 8px;
   padding: 10px 14px 8px;
-  background: rgba(34, 197, 94, 0.08);
-  border-bottom: 1px solid rgba(34, 197, 94, 0.14);
-}
-
-.chat-msg--outgoing .chat-msg-propuesta-header {
-  background: rgba(255, 255, 255, 0.12);
-  border-bottom-color: rgba(255, 255, 255, 0.15);
+  background: rgba(239, 242, 241, 0.1);
+  border-bottom: 1px solid rgba(239, 242, 241, 0.12);
 }
 
 .chat-msg-propuesta-header-icon {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: rgba(34, 197, 94, 0.15);
+  background: rgba(151, 216, 196, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #16a34a;
+  color: var(--secondary2);
   flex-shrink: 0;
-}
-
-.chat-msg--outgoing .chat-msg-propuesta-header-icon {
-  background: rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
 }
 
 .chat-msg-propuesta-header-text {
@@ -2589,26 +2596,29 @@ body:has(.chat-page-wrapper) .footer {
 .chat-msg-propuesta-titulo {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #16a34a;
+  color: var(--secondary2);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-}
-
-.chat-msg--outgoing .chat-msg-propuesta-titulo {
-  color: rgba(255, 255, 255, 0.85);
 }
 
 .chat-msg-propuesta-libro {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--dark);
+  color: var(--light);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
 }
 
-.chat-msg--outgoing .chat-msg-propuesta-libro {
-  color: rgba(255, 255, 255, 0.95);
+.chat-msg-propuesta-owner {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--secondary2);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .chat-msg-propuesta-body {
@@ -2623,11 +2633,7 @@ body:has(.chat-page-wrapper) .footer {
   align-items: center;
   gap: 6px;
   font-size: 0.82rem;
-  color: rgba(6, 26, 64, 0.55);
-}
-
-.chat-msg--outgoing .chat-msg-propuesta-row {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--light);
 }
 
 .chat-msg-propuesta-row svg {
@@ -2638,22 +2644,14 @@ body:has(.chat-page-wrapper) .footer {
 .chat-msg-propuesta-precio {
   font-size: 1.1rem;
   font-weight: 800;
-  color: var(--dark);
+  color: var(--light);
   margin-bottom: 2px;
-}
-
-.chat-msg--outgoing .chat-msg-propuesta-precio {
-  color: #fff;
 }
 
 /* ── Estado de la propuesta ── */
 .chat-msg-propuesta-footer {
   padding: 8px 14px 10px;
-  border-top: 1px solid rgba(6, 26, 64, 0.07);
-}
-
-.chat-msg--outgoing .chat-msg-propuesta-footer {
-  border-top-color: rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(239, 242, 241, 0.1);
 }
 
 /* Botones de aceptar/rechazar (receptor, estado pendiente) */
@@ -2714,18 +2712,18 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 .chat-msg-propuesta-estado--pendiente {
-  background: rgba(251, 191, 36, 0.12);
-  color: #b45309;
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
 }
 
 .chat-msg-propuesta-estado--aceptado {
-  background: rgba(34, 197, 94, 0.12);
-  color: #16a34a;
+  background: rgba(151, 216, 196, 0.18);
+  color: var(--secondary2);
 }
 
 .chat-msg-propuesta-estado--rechazado {
-  background: rgba(215, 38, 61, 0.09);
-  color: var(--red, #d7263d);
+  background: rgba(215, 38, 61, 0.15);
+  color: #f87171;
 }
 
 /* Hora en burbuja de propuesta */
@@ -2734,12 +2732,12 @@ body:has(.chat-page-wrapper) .footer {
   justify-content: flex-end;
   padding: 0 14px 8px;
   font-size: 0.65rem;
-  color: rgba(6, 26, 64, 0.3);
+  color: rgba(239, 242, 241, 0.35);
   margin-top: -4px;
 }
 
 .chat-msg--outgoing .chat-msg-propuesta .chat-msg-bubble-time {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(239, 242, 241, 0.35);
 }
 
 /* ── Responsive: en mobile el menú de acciones ocupa el ancho completo ── */
@@ -2767,3 +2765,4 @@ body:has(.chat-page-wrapper) .footer {
   min-height: 0;
   overflow: hidden;
 }
+
