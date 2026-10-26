@@ -641,14 +641,40 @@ namespace Bookly.Models
         }
 
         /// <summary>
-        /// DELETE /api/mensajes/:id?id_emisor=xxx
-        /// Soft-delete de un mensaje propio. Devuelve true si se eliminó correctamente.
+        /// PATCH /api/mensajes/:id/responder-propuesta
+        /// Permite al receptor de una propuesta de acuerdo aceptarla o rechazarla.
+        /// Devuelve el mensaje actualizado o null si falla/no está autorizado.
         /// </summary>
-        public static bool EliminarMensaje(int id, string dniEmisor)
+        public static Mensaje ResponderPropuesta(int id, string dniReceptor, string decision)
         {
-            if (string.IsNullOrWhiteSpace(dniEmisor)) return false;
+            if (string.IsNullOrWhiteSpace(dniReceptor) || string.IsNullOrWhiteSpace(decision)) return null;
+            var response = Patch($"/mensajes/{id}/responder-propuesta", new
+            {
+                id_receptor = dniReceptor,
+                decision    = decision
+            });
+            if (response == null || !response.IsSuccessStatusCode) return null;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return JsonSerializer.Deserialize<Mensaje>(json, _jsonOpts);
+        }
+
+        /// <summary>
+        /// DELETE /api/mensajes/:id?id_emisor=xxx
+        /// Soft-delete de un mensaje propio. Devuelve el id_receptor si se eliminó, null si no se encontró.
+        /// </summary>
+        public static (bool eliminado, string idReceptor) EliminarMensaje(int id, string dniEmisor)
+        {
+            if (string.IsNullOrWhiteSpace(dniEmisor)) return (false, null);
             var response = Delete($"/mensajes/{id}?id_emisor={Uri.EscapeDataString(dniEmisor)}");
-            return response != null && response.IsSuccessStatusCode;
+            if (response == null || !response.IsSuccessStatusCode) return (false, null);
+            try
+            {
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var el   = JsonSerializer.Deserialize<JsonElement>(json, _jsonOpts);
+                var idReceptor = el.TryGetProperty("id_receptor", out var r) ? r.GetString() : null;
+                return (true, idReceptor);
+            }
+            catch { return (true, null); }
         }
 
         /// <summary>

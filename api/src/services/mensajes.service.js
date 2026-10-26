@@ -138,6 +138,7 @@ export async function editarMensaje(id, idEmisor, nuevoContenido) {
 		.eq('id', id)
 		.eq('id_emisor', idEmisor)   // garantiza que solo el dueño puede editar
 		.eq('eliminado', false)      // no editar mensajes ya eliminados
+		.eq('editado', false)        // solo se puede editar una vez
 		.select()
 		.maybeSingle()
 
@@ -156,11 +157,11 @@ export async function eliminarMensaje(id, idEmisor) {
 		.update({ eliminado: true })
 		.eq('id', id)
 		.eq('id_emisor', idEmisor)   // garantiza que solo el dueño puede eliminar
-		.select('id')
+		.select('id, id_receptor')
 		.maybeSingle()
 
 	if (error) throw error
-	return data !== null  // true si se encontró y actualizó
+	return data ?? null  // { id, id_receptor } o null si no se encontró
 }
 
 /**
@@ -180,4 +181,60 @@ export async function getNoLeidosPorEmisor(idReceptor) {
 		conteos[row.id_emisor] = (conteos[row.id_emisor] || 0) + 1
 	}
 	return conteos
+}
+
+/**
+ * Actualiza el estado de una propuesta de acuerdo (pendiente → aceptado/rechazado).
+ * Solo el receptor del mensaje puede responder.
+ * Cuando se acepta, marca la publicación relacionada como inactiva (status = 0)
+ * para que deje de aparecer en el catálogo.
+ * Devuelve el mensaje actualizado o null si no se encontró/autorizó.
+ */
+export async function responderPropuesta(id, idReceptor, decision) {
+	if (!['aceptado', 'rechazado'].includes(decision)) return null
+
+	// 1. Obtener el mensaje para validar que el receptor es correcto y es propuesta pendiente
+	const { data: msg, error: errGet } = await supabase
+		.from('mensajes')
+		.select('id, id_emisor, id_receptor, contenido')
+		.eq('id', id)
+		.eq('id_receptor', idReceptor)   // solo el receptor puede responder
+		.eq('eliminado', false)
+		.maybeSingle()
+
+	if (errGet) throw errGet
+	if (!msg) return null
+
+	// Validar que sea una propuesta pendiente
+	if (!msg.contenido.includes('[ACUERDO|||') || !msg.contenido.endsWith('|pendiente]')) {
+		return null
+	}
+
+	// 2. Actualizar contenido: reemplazar "|pendiente]" por "|{decision}]"
+	const nuevoContenido = msg.contenido.replace(/\|pendiente\]$/, `|${decision}]`)
+
+	const { data: actualizado, error: errUpdate } = await supabase
+		.from('mensajes')
+		.update({ contenido: nuevoContenido })
+		.eq('id', id)
+		.select()
+		.maybeSingle()
+
+	if (errUpdate) throw errUpdate
+
+	// 3. Si se aceptó, desactivar la publicación para que deje de aparecer en el catálogo
+	if (decision === 'aceptado') {
+		// El formato es [ACUERDO|||{idPub}|||nombre|||precio|||fecha|||hora|||lugar|||pendiente]
+		const match = msg.contenido.match(/^\[ACUERDO\|\|\|(\d+)\|\|\|/)
+		if (match) {
+			const idPublicacion = parseInt(match[1], 10)
+			// Ignorar errores: si falla, la propuesta ya fue aceptada igualmente
+			await supabase
+				.from('publicaciones')
+				.update({ status: 0 })
+				.eq('id', idPublicacion)
+		}
+	}
+
+	return actualizado
 }

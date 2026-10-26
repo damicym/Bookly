@@ -14,7 +14,7 @@ namespace Bookly.Controllers
             _hubContext = hubContext;
         }
 
-        public IActionResult Index(string? vendedorDNI, int? idPublicacion)
+        public IActionResult Index(string? vendedorDNI, int? idPublicacion, bool autoAcuerdo = false)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
@@ -59,6 +59,20 @@ namespace Bookly.Controllers
             {
                 var publi = BD.ObtenerPublicacionCompletaPorId(idPublicacion.Value);
                 ViewBag.PublicacionConsulta = publi;
+
+                // Si viene desde "Comprar", pasar flag para auto-abrir el modal de acuerdo
+                if (autoAcuerdo && publi != null)
+                {
+                    ViewBag.AutoAcuerdo    = true;
+                    ViewBag.AutoAcuerdoPubJson = System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        id      = publi.id,
+                        nombre  = publi.nombre,
+                        precio  = publi.precio,
+                        imagen  = publi.imagen ?? "",
+                        esMia   = false
+                    });
+                }
             }
 
             return View("Chat");
@@ -158,7 +172,7 @@ namespace Bookly.Controllers
                     idEmisor   = m.idEmisor,
                     idReceptor = m.idReceptor,
                     contenido  = m.contenido,
-                    fechaEnvio = m.fechaEnvio,
+                    fechaEnvio = m.fechaEnvio.ToUniversalTime(),
                     leido      = m.leido,
                     editado    = m.editado
                 }).ToList()
@@ -188,7 +202,7 @@ namespace Bookly.Controllers
                     idEmisor   = m.idEmisor,
                     idReceptor = m.idReceptor,
                     contenido  = m.contenido,
-                    fechaEnvio = m.fechaEnvio,
+                    fechaEnvio = m.fechaEnvio.ToUniversalTime(),
                     leido      = m.leido,
                     editado    = m.editado
                 })
@@ -221,7 +235,7 @@ namespace Bookly.Controllers
                 idEmisor   = mensaje.idEmisor,
                 idReceptor = mensaje.idReceptor,
                 contenido  = mensaje.contenido,
-                fechaEnvio = mensaje.fechaEnvio,
+                fechaEnvio = mensaje.fechaEnvio.ToUniversalTime(),
                 leido      = mensaje.leido,
                 editado    = mensaje.editado
             };
@@ -380,11 +394,10 @@ namespace Bookly.Controllers
         /// <summary>
         /// POST /Chat/EliminarMensaje
         /// Body: { id }
-        /// Soft-delete de un mensaje propio. La notificación en tiempo real
-        /// al receptor ya la realiza la API Node via Socket.IO.
+        /// Soft-delete de un mensaje propio. Notifica al receptor en tiempo real via SignalR.
         /// </summary>
         [HttpPost]
-        public IActionResult EliminarMensaje([FromBody] EliminarMensajeRequest req)
+        public async Task<IActionResult> EliminarMensaje([FromBody] EliminarMensajeRequest req)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null) return Unauthorized();
@@ -392,13 +405,19 @@ namespace Bookly.Controllers
             if (req == null || req.Id <= 0)
                 return BadRequest(new { error = "id es requerido" });
 
-            var ok = BD.EliminarMensaje(req.Id, user.DNI);
-            if (!ok)
+            var (eliminado, idReceptor) = BD.EliminarMensaje(req.Id, user.DNI);
+            if (!eliminado)
                 return NotFound(new { error = "Mensaje no encontrado o no autorizado" });
+
+            // Notificar al receptor y al propio emisor en tiempo real via SignalR
+            // (el emisor necesita la notificación para sincronizar otras pestañas/dispositivos)
+            var payload = new { id = req.Id };
+            if (!string.IsNullOrWhiteSpace(idReceptor))
+                await _hubContext.Clients.Group(idReceptor).SendAsync("MensajeEliminado", payload);
+            await _hubContext.Clients.Group(user.DNI).SendAsync("MensajeEliminado", payload);
 
             return Json(new { ok = true, id = req.Id });
         }
-
         /// <summary>
         /// POST /Chat/UpsertChat
         /// Body: { dniContacto }
@@ -417,6 +436,48 @@ namespace Bookly.Controllers
             BD.UpsertChat(user.DNI, req.DniContacto);
             return Ok();
         }
+
+        /// <summary>
+        /// POST /Chat/ResponderAcuerdo
+        /// Body: { idMensaje, decision: "aceptado"|"rechazado" }
+        /// El receptor de una propuesta de acuerdo la acepta o rechaza.
+        /// Actualiza el contenido del mensaje (reemplazando "pendiente" por la decisión)
+        /// y notifica al emisor en tiempo real via SignalR.
+        /// Las propuestas no se pueden editar ni eliminar.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> ResponderAcuerdo([FromBody] ResponderAcuerdoRequest req)
+        {
+            Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
+            if (user == null) return Unauthorized();
+
+            if (req == null || req.IdMensaje <= 0 || (req.Decision != "aceptado" && req.Decision != "rechazado"))
+                return BadRequest(new { error = "idMensaje y decision son requeridos" });
+
+            // Actualizar la propuesta via API (el servicio Node valida que el receptor sea el usuario logueado)
+            var mensajeActualizado = BD.ResponderPropuesta(req.IdMensaje, user.DNI, req.Decision);
+            if (mensajeActualizado == null)
+                return StatusCode(404, new { error = "Propuesta no encontrada, no autorizada o ya respondida" });
+
+            var payload = new
+            {
+                idMensaje   = req.IdMensaje,
+                decision    = req.Decision,
+                dniReceptor = user.DNI
+            };
+
+            // Notificar al emisor de la propuesta en tiempo real
+            await _hubContext.Clients.Group(mensajeActualizado.idEmisor).SendAsync("AcuerdoRespondido", payload);
+
+            return Json(new { ok = true });
+        }
+    }
+
+    /// <summary>DTO para el body del POST ResponderAcuerdo.</summary>
+    public class ResponderAcuerdoRequest
+    {
+        public int    IdMensaje { get; set; }
+        public string Decision  { get; set; }
     }
 
     /// <summary>DTO para el body del POST EnviarMensaje.</summary>

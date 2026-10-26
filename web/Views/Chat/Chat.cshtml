@@ -149,9 +149,40 @@
                     </div>
                 </div>
 
+                @* ── Menú de acciones del "+" (WhatsApp-style) ── *@
+                <div class="chat-actions-menu" id="chatActionsMenu" hidden>
+                    <button class="chat-actions-item" id="chatActionMencionar" type="button">
+                        <span class="chat-actions-item-icon chat-actions-item-icon--book">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6v13"/><path d="M12 6v13"/><path d="M21 6v13"/></svg>
+                        </span>
+                        <span class="chat-actions-item-label">Mencionar publicación</span>
+                    </button>
+                    <button class="chat-actions-item" id="chatActionAcuerdo" type="button">
+                        <span class="chat-actions-item-icon chat-actions-item-icon--deal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8V7a4 4 0 0 0-4-4c-2.4 0-4 1.6-4 4"/><path d="M6 8h12l1 12H5z"/><path d="M12 12v4"/></svg>
+                        </span>
+                        <span class="chat-actions-item-label">Acordar precio</span>
+                    </button>
+                    @* ── Espacio para futuras opciones ── *@
+                    @* Descomentar y adaptar cuando se implementen nuevas funciones:
+                    <button class="chat-actions-item" id="chatActionFoto" type="button" disabled>
+                        <span class="chat-actions-item-icon chat-actions-item-icon--photo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                        </span>
+                        <span class="chat-actions-item-label">Foto</span>
+                    </button>
+                    <button class="chat-actions-item" id="chatActionArchivo" type="button" disabled>
+                        <span class="chat-actions-item-icon chat-actions-item-icon--file">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </span>
+                        <span class="chat-actions-item-label">Archivo</span>
+                    </button>
+                    *@
+                </div>
+
                 <div class="chat-messages-input-row">
-                    @* Botón "+" para adjuntar publicación *@
-                    <button class="chat-attach-btn" id="chatAttachBtn" aria-label="Compartir publicación" aria-expanded="false" title="Compartir publicación">
+                    @* Botón "+" para abrir el menú de acciones *@
+                    <button class="chat-attach-btn" id="chatAttachBtn" aria-label="Adjuntar" aria-expanded="false" title="Adjuntar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 5v14"/>
                             <path d="M5 12h14"/>
@@ -213,6 +244,102 @@
     <img class="avatar-modal-img" id="chatAvatarModalImg" src="" alt="Foto de perfil ampliada" />
 </div>
 
+@* ── Modal: Acordar precio ── *@
+<div id="chatAcuerdoModal" hidden role="dialog" aria-modal="true" aria-labelledby="chatAcuerdoTitulo">
+    <div class="chat-acuerdo-overlay" id="chatAcuerdoOverlay"></div>
+    <div class="chat-acuerdo-dialog">
+
+        <div class="chat-acuerdo-dialog-header">
+            <button class="chat-acuerdo-back-btn" id="chatAcuerdoBackBtn" aria-label="Volver" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+            </button>
+            <div class="chat-acuerdo-dialog-header-text">
+                <h2 class="chat-acuerdo-dialog-titulo" id="chatAcuerdoTitulo">Acordar precio</h2>
+                <p class="chat-acuerdo-dialog-desc" id="chatAcuerdoDesc">Elegí una publicación para proponer un acuerdo</p>
+            </div>
+            <button class="chat-acuerdo-dialog-close" id="chatAcuerdoClose" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        @* Indicador de pasos *@
+        <div class="chat-acuerdo-steps" id="chatAcuerdoSteps">
+            <div class="chat-acuerdo-step chat-acuerdo-step--active" data-step="1">
+                <span class="chat-acuerdo-step-num">1</span>
+                <span class="chat-acuerdo-step-label">Publicación</span>
+            </div>
+            <div class="chat-acuerdo-step-line"></div>
+            <div class="chat-acuerdo-step" data-step="2">
+                <span class="chat-acuerdo-step-num">2</span>
+                <span class="chat-acuerdo-step-label">Detalles</span>
+            </div>
+        </div>
+
+        @* PASO 1: Selección de publicación *@
+        <div class="chat-acuerdo-body" id="chatAcuerdoStep1">
+            <div class="chat-acuerdo-loading" id="chatAcuerdoPubsLoader" hidden>
+                <svg class="chat-attach-spinner" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
+            </div>
+            <div id="chatAcuerdoPubsList"></div>
+        </div>
+
+        @* PASO 2: Formulario de detalles *@
+        <div class="chat-acuerdo-step2-wrap" id="chatAcuerdoStep2" hidden>
+            @* Publicación seleccionada (mini card de confirmación) *@
+            <div class="chat-acuerdo-pub-seleccionada" id="chatAcuerdoPubCard"></div>
+
+            <form id="chatAcuerdoForm">
+            <div class="chat-acuerdo-body">
+                <div class="chat-acuerdo-form">
+                    <div class="chat-acuerdo-form-row">
+                        <label class="chat-acuerdo-label" for="acuerdoPrecio">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            Precio propuesto
+                        </label>
+                        <div class="chat-acuerdo-input-wrap chat-acuerdo-input-wrap--prefix">
+                            <span class="chat-acuerdo-prefix">$</span>
+                            <input type="number" id="acuerdoPrecio" class="chat-acuerdo-input" placeholder="0" min="0" step="1" required />
+                        </div>
+                    </div>
+
+                    <div class="chat-acuerdo-form-row">
+                        <label class="chat-acuerdo-label" for="acuerdoFecha">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Fecha de encuentro
+                        </label>
+                        <input type="date" id="acuerdoFecha" class="chat-acuerdo-input" required />
+                    </div>
+
+                    <div class="chat-acuerdo-form-row">
+                        <label class="chat-acuerdo-label" for="acuerdoHora">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Horario
+                        </label>
+                        <input type="time" id="acuerdoHora" class="chat-acuerdo-input" required />
+                    </div>
+
+                    <div class="chat-acuerdo-form-row">
+                        <label class="chat-acuerdo-label" for="acuerdoLugar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            Lugar de encuentro
+                        </label>
+                        <input type="text" id="acuerdoLugar" class="chat-acuerdo-input" placeholder="Ej: Entrada del edificio A" maxlength="120" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-acuerdo-actions">
+                <button class="chat-acuerdo-send-btn" id="chatAcuerdoSendBtn" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 14l11 -11"/><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/></svg>
+                    Enviar propuesta
+                </button>
+            </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
 @* ── Modal: Nueva conversación ── *@
 <div id="chatNuevoModal" hidden role="dialog" aria-modal="true" aria-labelledby="chatNuevoTitulo">
     <div class="chat-nuevo-overlay" id="chatNuevoOverlay"></div>
@@ -257,18 +384,19 @@
         dniUsuario:    '@(((Bookly.Models.Usuarios)ViewBag.usuario)?.DNI ?? "")',
         dniVendedor:   '@(tieneVendedor ? vendedor.DNI : "")',
         tieneVendedor: @(tieneVendedor ? "true" : "false"),
-        wsUrl:         '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")'
+        wsUrl:         '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")',
+        autoAcuerdo:   @((ViewBag.AutoAcuerdo == true) ? "true" : "false"),
+        autoAcuerdoPub: @Html.Raw((string)(ViewBag.AutoAcuerdoPubJson ?? "null"))
     };
 
-    // Limpiar idPublicacion de la URL para que recargar la página
-    // no vuelva a inyectar el mensaje predeterminado.
-    // (Mismo patrón que WhatsApp Web / Slack con sus params de navegación.)
+    // Limpiar parámetros de la URL para que recargar no vuelva a abrir el modal.
     (function () {
         var url = new URL(window.location.href);
-        if (url.searchParams.has('idPublicacion')) {
-            url.searchParams.delete('idPublicacion');
-            history.replaceState(null, '', url.toString());
-        }
+        var cambiado = false;
+        ['idPublicacion', 'autoAcuerdo'].forEach(function (p) {
+            if (url.searchParams.has(p)) { url.searchParams.delete(p); cambiado = true; }
+        });
+        if (cambiado) history.replaceState(null, '', url.toString());
     })();
 </script>
 <script src="~/js/chat.js" asp-append-version="true"></script>

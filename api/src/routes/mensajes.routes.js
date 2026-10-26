@@ -6,6 +6,9 @@ const router = Router()
 // POST /api/mensajes — envía un mensaje nuevo
 router.post('/', mensajesCtrl.enviarMensaje)
 
+// PATCH /api/mensajes/:id/responder-propuesta — receptor responde una propuesta de acuerdo
+router.patch('/:id/responder-propuesta', mensajesCtrl.responderPropuesta)
+
 // PATCH /api/mensajes/:id — edita el contenido de un mensaje propio
 router.patch('/:id', mensajesCtrl.editarMensaje)
 

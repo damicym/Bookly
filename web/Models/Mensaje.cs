@@ -22,7 +22,7 @@ namespace Bookly.Models
         public string contenido { get; set; }
 
         [JsonPropertyName("fecha_envio")]
-        public DateTime fechaEnvio { get; set; }
+        public DateTimeOffset fechaEnvio { get; set; }
 
         [JsonPropertyName("leido")]
         public bool leido { get; set; }

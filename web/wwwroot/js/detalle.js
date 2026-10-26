@@ -215,31 +215,59 @@
     var form = document.querySelector('.det-fav-form');
     if (btnVisible && form) {
         var btnOculto = form.querySelector('button');
-        btnVisible.addEventListener('click', async function () {
-            if (btnVisible.disabled) return;
-            btnVisible.disabled = true;
+        btnVisible.addEventListener('click', function () {
             var esDeseado = btnOculto.classList.contains('deseado');
+
+            // ── Optimistic update: actualizar UI de inmediato ──
+            if (!esDeseado) {
+                btnOculto.classList.add('deseado'); btnOculto.innerHTML = svgFilled;
+                btnVisible.classList.add('det-btn-favorito--activo');
+                btnVisible.innerHTML = svgFilled + '<span>Quitar de favoritos</span>';
+                form.querySelector('input[name="esDeseado"]').value = 'true';
+            } else {
+                btnOculto.classList.remove('deseado'); btnOculto.innerHTML = svgOutline;
+                btnVisible.classList.remove('det-btn-favorito--activo');
+                btnVisible.innerHTML = svgOutline + '<span>Agregar a favoritos</span>';
+                form.querySelector('input[name="esDeseado"]').value = 'false';
+            }
+
+            // ── Persistir en backend en background ──
             var formData = new FormData(form);
             formData.set('esDeseado', esDeseado ? 'true' : 'false');
             var token = form.querySelector('input[name="__RequestVerificationToken"]').value;
-            try {
-                var res = await fetch(form.getAttribute('action'), { method: 'POST', body: formData, headers: { 'RequestVerificationToken': token } });
-                var data = await res.json();
-                if (data && data.success) {
+            fetch(form.getAttribute('action'), { method: 'POST', body: formData, headers: { 'RequestVerificationToken': token } })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (!data || !data.success) {
+                        // Revertir si el servidor rechazó
+                        if (!esDeseado) {
+                            btnOculto.classList.remove('deseado'); btnOculto.innerHTML = svgOutline;
+                            btnVisible.classList.remove('det-btn-favorito--activo');
+                            btnVisible.innerHTML = svgOutline + '<span>Agregar a favoritos</span>';
+                            form.querySelector('input[name="esDeseado"]').value = 'false';
+                        } else {
+                            btnOculto.classList.add('deseado'); btnOculto.innerHTML = svgFilled;
+                            btnVisible.classList.add('det-btn-favorito--activo');
+                            btnVisible.innerHTML = svgFilled + '<span>Quitar de favoritos</span>';
+                            form.querySelector('input[name="esDeseado"]').value = 'true';
+                        }
+                    }
+                })
+                .catch(function (e) {
+                    console.error('[favorito] Error:', e);
+                    // Revertir en caso de error de red
                     if (!esDeseado) {
-                        btnOculto.classList.add('deseado'); btnOculto.innerHTML = svgFilled;
-                        btnVisible.classList.add('det-btn-favorito--activo');
-                        btnVisible.innerHTML = svgFilled + '<span>Quitar de favoritos</span>';
-                        form.querySelector('input[name="esDeseado"]').value = 'true';
-                    } else {
                         btnOculto.classList.remove('deseado'); btnOculto.innerHTML = svgOutline;
                         btnVisible.classList.remove('det-btn-favorito--activo');
                         btnVisible.innerHTML = svgOutline + '<span>Agregar a favoritos</span>';
                         form.querySelector('input[name="esDeseado"]').value = 'false';
+                    } else {
+                        btnOculto.classList.add('deseado'); btnOculto.innerHTML = svgFilled;
+                        btnVisible.classList.add('det-btn-favorito--activo');
+                        btnVisible.innerHTML = svgFilled + '<span>Quitar de favoritos</span>';
+                        form.querySelector('input[name="esDeseado"]').value = 'true';
                     }
-                }
-            } catch (e) { console.error(e); }
-            finally { btnVisible.disabled = false; }
+                });
         });
     }
 
@@ -264,9 +292,7 @@
     if (overlay) overlay.addEventListener('click', function (e) {
         if (e.target === overlay) cerrarModal();
     });
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') cerrarModal();
-    });
+    // Escape cierra el modal de intercambio (el de compra tiene su propio listener abajo)
 
     var ctaBtn = document.getElementById('intercambioCta');
     document.querySelectorAll('.intercambio-item').forEach(function (item) {
@@ -281,6 +307,83 @@
         ctaBtn.addEventListener('click', function () {
             var chatUrl = ctaBtn.dataset.chatUrl;
             if (chatUrl) window.location.href = chatUrl;
+        });
+    }
+
+    // ── Modal: Comprar ────────────────────────────────────
+    var compraOverlay  = document.getElementById('compraOverlay');
+    var btnComprar     = document.getElementById('btnComprar');
+    var btnCompraClose = document.getElementById('compraClose');
+
+    function abrirCompra() {
+        if (!compraOverlay) return;
+        compraOverlay.removeAttribute('aria-hidden');
+        compraOverlay.classList.add('compra-overlay--visible');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarCompra() {
+        if (!compraOverlay) return;
+        compraOverlay.classList.remove('compra-overlay--visible');
+        compraOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    if (btnComprar)     btnComprar.addEventListener('click', abrirCompra);
+    if (btnCompraClose) btnCompraClose.addEventListener('click', cerrarCompra);
+    if (compraOverlay)  compraOverlay.addEventListener('click', function (e) {
+        if (e.target === compraOverlay) cerrarCompra();
+    });
+    // Escape cierra cualquier modal abierto (ya estaba para intercambio, lo extendemos)
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { cerrarModal(); cerrarCompra(); }
+    });
+
+    // Tabs de método de pago
+    var metodos = document.querySelectorAll('.compra-metodo');
+    var paneles = {
+        tarjeta:       document.getElementById('panelTarjeta'),
+        transferencia: document.getElementById('panelTransferencia'),
+        efectivo:      document.getElementById('panelEfectivo')
+    };
+
+    metodos.forEach(function (label) {
+        label.addEventListener('click', function () {
+            var valor = label.querySelector('input[type="radio"]').value;
+            // Activar visualmente
+            metodos.forEach(function (l) { l.classList.remove('compra-metodo--activo'); });
+            label.classList.add('compra-metodo--activo');
+            // Mostrar panel correspondiente
+            Object.keys(paneles).forEach(function (k) {
+                if (paneles[k]) paneles[k].hidden = (k !== valor);
+            });
+        });
+    });
+
+    // Marcar el activo inicial (tarjeta)
+    var metodoInicial = document.querySelector('.compra-metodo input[checked]');
+    if (metodoInicial) {
+        metodoInicial.closest('.compra-metodo').classList.add('compra-metodo--activo');
+    } else if (metodos.length > 0) {
+        metodos[0].classList.add('compra-metodo--activo');
+    }
+
+    // Formateo automático del número de tarjeta (grupos de 4)
+    var inputNumTarjeta = document.getElementById('compraNumTarjeta');
+    if (inputNumTarjeta) {
+        inputNumTarjeta.addEventListener('input', function () {
+            var digits = this.value.replace(/\D/g, '').substring(0, 16);
+            this.value = digits.replace(/(.{4})/g, '$1 ').trim();
+        });
+    }
+
+    // Formateo MM / AA
+    var inputVenc = document.getElementById('compraVencimiento');
+    if (inputVenc) {
+        inputVenc.addEventListener('input', function () {
+            var digits = this.value.replace(/\D/g, '').substring(0, 4);
+            if (digits.length > 2) digits = digits.substring(0, 2) + ' / ' + digits.substring(2);
+            this.value = digits;
         });
     }
 })();
