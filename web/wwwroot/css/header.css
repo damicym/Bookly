@@ -47,6 +47,28 @@ header p {
   max-height: none;
 }
 
+/* Contenedor logo + wordmark */
+.logo-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-decoration: none;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.logo-wordmark {
+  font-size: 0.75rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: #fff;
+  font-family: inherit;
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
 header .searchNFilter {
   display: flex;
   align-items: center;
@@ -588,8 +610,12 @@ header .searchNFilter {
   }
 
   .logoImg {
-    width: 48px;
-    height: 48px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .logo-wordmark {
+    font-size: 0.68rem;
   }
 }
 
