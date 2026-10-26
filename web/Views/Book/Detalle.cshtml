@@ -64,7 +64,7 @@
         <div class="det-header">
             <h1 class="det-titulo">@Model.nombre</h1>
             <div class="det-precio-row">
-                <p class="det-precio">$@Model.precio</p>
+                <p class="det-precio">$@HtmlHelpers.FormatPrecio(Model.precio)</p>
                 @if (Model.esMasBarato)
                 {
                     <span class="tag-masbarato tag-masbarato-detalle">
@@ -139,7 +139,7 @@
                 <div class="det-otras-opciones-header">
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/></svg>
                     <h3>Otras opciones</h3>
-                    <span class="det-otras-opciones-desde">desde $@otrasOpciones.Min(o => o.precio)</span>
+                    <span class="det-otras-opciones-desde">desde $@HtmlHelpers.FormatPrecio(otrasOpciones.Min(o => o.precio))</span>
                 </div>
                 <div class="det-otras-opciones-lista">
                     @foreach (var op in otrasOpciones)
@@ -156,7 +156,7 @@
                                 </span>
                                 <span class="det-opcion-estado">@op.estadoLibro@if(op.ano.HasValue) { <text> · @HtmlHelpers.PasarAñoATexto(op.ano.Value)</text> }</span>
                             </div>
-                            <span class="det-opcion-precio">$@op.precio</span>
+                            <span class="det-opcion-precio">$@HtmlHelpers.FormatPrecio(op.precio)</span>
                             @if (esActual)
                             {
                                 <span class="det-opcion-actual-badge">Viendo</span>
@@ -303,7 +303,7 @@
                 <p class="compra-resumen-vendedor">Vendido por <strong>@vendedor.nombreComp</strong></p>
                 <p class="compra-resumen-estado">Estado: @Model.estadoLibro</p>
             </div>
-            <p class="compra-resumen-precio">$@Model.precio</p>
+            <p class="compra-resumen-precio">$@HtmlHelpers.FormatPrecio(Model.precio)</p>
         </div>
 
         <hr class="compra-divider" />
@@ -414,7 +414,7 @@
         <div class="compra-footer">
             <div class="compra-total">
                 <span class="compra-total-label">Total a pagar</span>
-                <span class="compra-total-valor">$@Model.precio</span>
+                <span class="compra-total-valor">$@HtmlHelpers.FormatPrecio(Model.precio)</span>
             </div>
             <button class="compra-confirmar-btn" type="button" id="compraConfirmar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l9 -9"/></svg>

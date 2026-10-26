@@ -44,7 +44,10 @@
         else nombreMostrable = "Iniciar sesión";
     }
     <header class="@(usuario == null ? "header--guest" : "")">
-        <a href="@Url.Action("Index", "Home")"><img class="logoImg" src="@Url.Content("~/img/logo-icon.png")" alt="Bookly logo" /></a>
+        <a href="@Url.Action("Index", "Home")" class="logo-link">
+            <img class="logoImg" src="@Url.Content("~/img/logo-icon.png")" alt="Bookly logo" />
+            <span class="logo-wordmark">Bookly</span>
+        </a>
         @if (ViewData["Title"]?.ToString() != "Login" && ViewData["Title"]?.ToString() != "Registrarse"){
         @if (usuario != null) {
         <section class="searchNFilter">            <div class="search">
