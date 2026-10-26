@@ -220,6 +220,14 @@
         });
     }
 
+    // Devuelve el último separador de día visible en el body del chat.
+    // No usar :last-of-type en querySelector porque opera sobre el tipo de etiqueta
+    // (div), no sobre la clase, y devuelve resultados incorrectos.
+    function ultimoSeparadorDia(body) {
+        const seps = body.querySelectorAll('.chat-day-separator');
+        return seps.length ? seps[seps.length - 1] : null;
+    }
+
     function buildDaySeparator(fechaEnvio) {
         const wrap = document.createElement('div');
         wrap.className = 'chat-day-separator';
@@ -289,10 +297,10 @@
 
             div.innerHTML = `<div class="chat-msg-bubble-wrap"><div class="chat-msg-propuesta">`
                 + `<div class="chat-msg-propuesta-header">`
-                +   `<div class="chat-msg-propuesta-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8V7a4 4 0 0 0-4-4c-2.4 0-4 1.6-4 4"/><path d="M6 8h12l1 12H5z"/><path d="M12 12v4"/></svg></div>`
+                +   `<div class="chat-msg-propuesta-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></div>`
                 +   `<div class="chat-msg-propuesta-header-text">`
                 +     `<div class="chat-msg-propuesta-titulo">Propuesta de acuerdo</div>`
-                +     `<div class="chat-msg-propuesta-libro">${escapeHtml(nombrePub)}</div>`
+                +     `<div class="chat-msg-propuesta-libro">${escapeHtml(nombrePub)}<span class="chat-msg-propuesta-owner">${esMio ? '(Mío)' : '(Suyo)'}</span></div>`
                 +   `</div>`
                 + `</div>`
                 + `<div class="chat-msg-propuesta-body">`
@@ -341,6 +349,8 @@
         const horaEl = horaStr
             ? `<span class="chat-msg-bubble-time">${horaStr}</span>`
             : '';
+
+        if (msg.fechaEnvio) div.dataset.fechaEnvio = msg.fechaEnvio;
 
         div.innerHTML = `<div class="chat-msg-bubble-wrap"><div class="chat-msg-bubble">${procesarContenidoMensaje(msg.contenido)}${horaEl}</div>${chevronBtn}</div>${editadoLabel}`;
 
@@ -818,7 +828,7 @@
         if (emptyState) emptyState.style.display = 'none';
 
         // Insertar separador de día si el mensaje es de un día distinto al último visible
-        const ultimoSepBody = body.querySelector('.chat-day-separator:last-of-type');
+        const ultimoSepBody = ultimoSeparadorDia(body);
         if (!ultimoSepBody || ultimoSepBody.dataset.dayKey !== diaKey(nuevoMsg.fechaEnvio)) {
             body.appendChild(buildDaySeparator(nuevoMsg.fechaEnvio));
         }
@@ -1610,24 +1620,62 @@
         const precioInput = document.getElementById('acuerdoPrecio');
         if (precioInput) precioInput.value = pub.precio;
 
-        // Prellenar fecha de hoy
+        // Prellenar fecha de hoy y establecer mínimo
         const fechaInput = document.getElementById('acuerdoFecha');
         if (fechaInput) {
-            const hoy = new Date();
+            const hoy  = new Date();
             const yyyy = hoy.getFullYear();
             const mm   = String(hoy.getMonth() + 1).padStart(2, '0');
             const dd   = String(hoy.getDate()).padStart(2, '0');
-            fechaInput.value = `${yyyy}-${mm}-${dd}`;
+            const hoyStr = `${yyyy}-${mm}-${dd}`;
+            fechaInput.min   = hoyStr;
+            fechaInput.value = hoyStr;
         }
 
-        // Limpiar otros campos
+        // Limpiar otros campos y actualizar el mínimo de hora para hoy
         const horaInput  = document.getElementById('acuerdoHora');
         const lugarInput = document.getElementById('acuerdoLugar');
-        if (horaInput)  horaInput.value  = '';
+        if (horaInput) {
+            horaInput.value = '';
+            actualizarMinHora(); // establecer mínimo si la fecha es hoy
+        }
         if (lugarInput) lugarInput.value = '';
 
         actualizarPasoAcuerdo(2);
     }
+
+    // Actualiza el atributo `min` del input de hora según si la fecha elegida es hoy.
+    // Si es hoy, la hora mínima es la hora actual + 1 minuto.
+    // Si es un día futuro, no hay restricción de hora.
+    function actualizarMinHora() {
+        const fechaInput = document.getElementById('acuerdoFecha');
+        const horaInput  = document.getElementById('acuerdoHora');
+        if (!fechaInput || !horaInput) return;
+
+        const ahora = new Date();
+        const hoy   = ahora.toISOString().slice(0, 10); // YYYY-MM-DD
+
+        if (fechaInput.value === hoy) {
+            // Hora mínima = ahora + 1 min
+            const hh = String(ahora.getHours()).padStart(2, '0');
+            const mm = String(ahora.getMinutes() + 1).padStart(2, '0');
+            horaInput.min = `${hh}:${mm}`;
+            // Si la hora ya cargada quedó en el pasado, limpiarla
+            if (horaInput.value && horaInput.value < horaInput.min) {
+                horaInput.value = '';
+            }
+        } else {
+            horaInput.min = '';
+        }
+    }
+
+    // Escuchar cambios en la fecha para actualizar el mínimo de hora en tiempo real
+    (function () {
+        const fechaInput = document.getElementById('acuerdoFecha');
+        if (fechaInput) {
+            fechaInput.addEventListener('change', actualizarMinHora);
+        }
+    })();
 
     function enviarPropuestaAcuerdo() {
         const pub = acuerdoEstado.pubSeleccionada;
@@ -1642,16 +1690,11 @@
             document.getElementById('acuerdoPrecio')?.focus();
             return;
         }
-        if (!fechaVal) {
-            document.getElementById('acuerdoFecha')?.focus();
-            return;
-        }
-        if (!horaVal) {
+
+        // Validar que la fecha y hora combinadas no sean en el pasado
+        const fechaHoraElegida = new Date(`${fechaVal}T${horaVal}`);
+        if (fechaHoraElegida <= new Date()) {
             document.getElementById('acuerdoHora')?.focus();
-            return;
-        }
-        if (!lugarVal) {
-            document.getElementById('acuerdoLugar')?.focus();
             return;
         }
 
@@ -1697,7 +1740,7 @@
                 editado:    false
             };
 
-            const ultimoSep = body.querySelector('.chat-day-separator:last-of-type');
+            const ultimoSep = ultimoSeparadorDia(body);
             if (!ultimoSep || ultimoSep.dataset.dayKey !== diaKey(msgObj.fechaEnvio)) {
                 body.appendChild(buildDaySeparator(msgObj.fechaEnvio));
             }
@@ -1721,7 +1764,13 @@
     if (modalAcuerdoClose)   modalAcuerdoClose.addEventListener('click', cerrarModalAcuerdo);
     if (modalAcuerdoOverlay) modalAcuerdoOverlay.addEventListener('click', cerrarModalAcuerdo);
     if (modalAcuerdoBack)    modalAcuerdoBack.addEventListener('click', function () { actualizarPasoAcuerdo(1); });
-    if (acuerdoSendBtn)      acuerdoSendBtn.addEventListener('click', enviarPropuestaAcuerdo);
+
+    // El envío se dispara por el submit del form (el browser valida required antes)
+    const acuerdoForm = document.getElementById('chatAcuerdoForm');
+    if (acuerdoForm) acuerdoForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        enviarPropuestaAcuerdo();
+    });
 
     // Cerrar panel y limpiar cache al cambiar de conversación
     // (el cierre real está en abrirConversacion directamente)
@@ -2142,6 +2191,11 @@
 
         const yaEditado = !!msgEl.querySelector('.chat-msg-edited-label');
 
+        // Verificar si el mensaje todavía está dentro del límite de 30 min para edición
+        const fechaEnvio     = msgEl.dataset.fechaEnvio ? new Date(msgEl.dataset.fechaEnvio) : null;
+        const dentroDelLimite = fechaEnvio && !isNaN(fechaEnvio.getTime())
+            && (Date.now() - fechaEnvio.getTime()) < 30 * 60 * 1000;
+
         // Separador
         const sep = document.createElement('div');
         sep.className = 'chat-ctx-menu-sep';
@@ -2155,7 +2209,7 @@
             confirmarEliminarMensaje(msgEl);
         });
 
-        if (!yaEditado) {
+        if (!yaEditado && dentroDelLimite) {
             menu.appendChild(btnEditar);
             menu.appendChild(sep);
         }
@@ -2216,6 +2270,9 @@
         const bubble = msgEl.querySelector('.chat-msg-bubble');
         if (!bubble || msgEl.dataset.editando === 'true') return;
 
+        const body = document.getElementById('chatMessagesBody');
+        const scrollOriginal = body ? body.scrollTop : 0;
+
         msgEl.dataset.editando = 'true';
         const contenidoOriginal = bubble.innerHTML;
 
@@ -2223,6 +2280,7 @@
         // ignorando el span de hora (.chat-msg-bubble-time) para que no aparezca en el campo
         const cloneBubble = bubble.cloneNode(true);
         const timeSpan = cloneBubble.querySelector('.chat-msg-bubble-time');
+        const horaHtml = timeSpan ? timeSpan.outerHTML : '';
         if (timeSpan) timeSpan.remove();
         const textoPlano = cloneBubble.textContent;
 
@@ -2233,12 +2291,22 @@
         textarea.value = textoPlano;
         textarea.rows = 1;
 
-        // Auto-resize del textarea
+        // Auto-resize del textarea: height=0 primero para que scrollHeight
+        // refleje solo el contenido sin el padding interno del browser.
         function ajustarAltura() {
-            textarea.style.height = 'auto';
+            textarea.style.height = '0';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
-        textarea.addEventListener('input', ajustarAltura);
+
+        function validarGuardar() {
+            const val = textarea.value.trim();
+            btnGuardar.disabled = !val || val === textoPlano;
+        }
+
+        textarea.addEventListener('input', function () {
+            ajustarAltura();
+            validarGuardar();
+        });
 
         const actions = document.createElement('div');
         actions.className = 'chat-msg-edit-actions';
@@ -2256,15 +2324,28 @@
         bubble.appendChild(textarea);
         bubble.appendChild(actions);
 
+        // El botón arranca deshabilitado porque el contenido aún no cambió
+        btnGuardar.disabled = true;
+
         requestAnimationFrame(function () {
             ajustarAltura();
             textarea.focus();
             textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+            // Esperar un frame más para que el layout incluya los botones antes de medir
+            requestAnimationFrame(function () {
+                if (!body) return;
+                const msgBottom  = msgEl.getBoundingClientRect().bottom;
+                const bodyBottom = body.getBoundingClientRect().bottom;
+                if (msgBottom > bodyBottom) {
+                    body.scrollBy({ top: msgBottom - bodyBottom + 8, behavior: 'smooth' });
+                }
+            });
         });
 
         function cancelar() {
             bubble.innerHTML = contenidoOriginal;
             delete msgEl.dataset.editando;
+            if (body) body.scrollTop = scrollOriginal;
         }
 
         function guardar() {
@@ -2287,10 +2368,12 @@
                 return r.json();
             })
             .then(function (msgActualizado) {
-                // Actualizar burbuja con contenido procesado
+                // Actualizar burbuja con contenido procesado + hora de envío original
+                // (horaHtml fue capturado del clon antes de vaciar la burbuja)
                 const contenidoProc = procesarContenidoMensaje(msgActualizado.contenido || nuevoTexto);
-                bubble.innerHTML = contenidoProc;
+                bubble.innerHTML = contenidoProc + horaHtml;
                 delete msgEl.dataset.editando;
+                if (body) body.scrollTop = scrollOriginal;
 
                 // Agregar / actualizar label "editado"
                 let label = msgEl.querySelector('.chat-msg-edited-label');
@@ -2452,7 +2535,7 @@
                 if (emptyState) emptyState.style.display = 'none';
 
                 // Insertar separador de día si el mensaje es de un día distinto al último visible
-                const ultimoSepSignalR = body.querySelector('.chat-day-separator:last-of-type');
+                const ultimoSepSignalR = ultimoSeparadorDia(body);
                 if (!ultimoSepSignalR || ultimoSepSignalR.dataset.dayKey !== diaKey(msg.fechaEnvio)) {
                     body.appendChild(buildDaySeparator(msg.fechaEnvio));
                 }
