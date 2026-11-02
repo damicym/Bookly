@@ -3,6 +3,9 @@ import * as notifCtrl from '../controllers/notificaciones.controller.js'
 
 const router = Router()
 
+// POST /api/notificaciones — crear una notificación
+router.post('/', notifCtrl.crearNotificacion)
+
 // GET /api/notificaciones/:dni — notificaciones pendientes del usuario
 router.get('/:dni', notifCtrl.getPendientes)
 

@@ -223,15 +223,19 @@ export async function responderPropuesta(id, idReceptor, decision) {
 
 	if (errUpdate) throw errUpdate
 
-	// 3. Si se aceptó, desactivar la publicación y notificar al comprador para que deje su reseña
+	// 3. Si se aceptó, desactivar la publicación y notificar al comprador
 	if (decision === 'aceptado') {
-		// El formato es [ACUERDO|||{idPub}|||nombre|||precio|||fecha|||hora|||lugar|||pendiente]
-		const match = msg.contenido.match(/^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|/)
-		console.log('[responderPropuesta] aceptado — msg.id_emisor:', msg.id_emisor, '| match:', match?.[1], match?.[2])
-
+		// Formato: [ACUERDO|||{idPub}|||nombre|||precio|||fecha|||hora|||lugar|||pendiente]
+		const match = msg.contenido.match(
+			/^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d.]+)\|\|\|([\d/]+)\|\|\|([\d:]+)\|\|\|(.*?)\|\|\|(?:pendiente|aceptado|rechazado)\]$/
+		)
 		if (match) {
 			const idPublicacion = parseInt(match[1], 10)
 			const nombreLibro   = match[2] ?? null
+			const precio        = parseFloat(match[3])
+			const fecha         = match[4]
+			const hora          = match[5]
+			const lugar         = match[6]
 
 			// Desactivar la publicación para que deje de aparecer en el catálogo
 			const { error: errPub } = await supabase
@@ -240,7 +244,29 @@ export async function responderPropuesta(id, idReceptor, decision) {
 				.eq('id', idPublicacion)
 			if (errPub) console.error('[responderPropuesta] Error desactivando publicación:', errPub.message)
 
-			// Obtener nombre del vendedor (receptor del mensaje = quien aceptó) para la notificación
+			// Notificar al comprador con los detalles del encuentro
+			try {
+				await createNotificacion({
+					id_usuario: msg.id_emisor,
+					tipo:       'acuerdo_aceptado',
+					titulo:     '¡Tu compra fue aceptada!',
+					subtitulo:  `Retirás "${nombreLibro}" el ${fecha} a las ${hora} en: ${lugar}`,
+					vinculo:    `/Chat?vendedorDNI=${msg.id_receptor}`,
+					payload: {
+						id_publicacion: idPublicacion,
+						nombre_libro:   nombreLibro,
+						precio,
+						fecha,
+						hora,
+						lugar,
+						id_vendedor:    msg.id_receptor,
+					},
+				})
+			} catch (notifErr) {
+				console.error('[responderPropuesta] Error al crear notificación de aceptación:', notifErr.message)
+			}
+
+			// Obtener nombre del vendedor (receptor del mensaje = quien aceptó) para la notificación de reseña
 			let nombreVendedor = 'el vendedor'
 			try {
 				const { data: vendedor, error: errV } = await supabase
@@ -255,9 +281,8 @@ export async function responderPropuesta(id, idReceptor, decision) {
 				console.error('[responderPropuesta] catch vendedor:', errV.message)
 			}
 
-			// Notificar al comprador (emisor del acuerdo) para que califique al vendedor
+			// Notificar al comprador para que califique al vendedor
 			try {
-				// Deduplicar: no crear si ya existe una notificación pendiente para este acuerdo
 				const { data: existente } = await supabase
 					.from('notificaciones')
 					.select('id')
@@ -286,10 +311,12 @@ export async function responderPropuesta(id, idReceptor, decision) {
 					console.log('[responderPropuesta] Notificación creada para:', msg.id_emisor)
 				}
 			} catch (notifErr) {
-				console.error('[responderPropuesta] Error al crear notificación:', notifErr.message)
+				console.error('[responderPropuesta] Error al crear notificación de reseña:', notifErr.message)
 			}
 		} else {
 			console.warn('[responderPropuesta] No se pudo parsear el contenido del acuerdo:', msg.contenido)
+		}
+	}
 		}
 	}
 

@@ -1,6 +1,25 @@
 import * as notifService from '../services/notificaciones.service.js'
 
 /**
+ * POST /api/notificaciones
+ * Crea una notificación para un usuario.
+ * Body: { id_usuario, tipo, titulo, subtitulo?, vinculo?, payload? }
+ */
+export async function crearNotificacion(req, res) {
+  try {
+    const { id_usuario, tipo, titulo, subtitulo, vinculo, payload } = req.body
+    if (!id_usuario || !tipo || !titulo) {
+      return res.status(400).json({ error: 'id_usuario, tipo y titulo son requeridos' })
+    }
+    await notifService.createNotificacion({ id_usuario, tipo, titulo, subtitulo, vinculo, payload })
+    res.status(201).json({ success: true })
+  } catch (err) {
+    console.error('[crearNotificacion]', err.message)
+    res.status(500).json({ error: err.message })
+  }
+}
+
+/**
  * GET /api/notificaciones/:dni
  * Devuelve las notificaciones no leídas del usuario.
  */
