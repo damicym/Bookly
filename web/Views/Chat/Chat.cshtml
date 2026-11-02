@@ -196,7 +196,7 @@
                         role="textbox"
                         aria-multiline="true"
                         aria-label="Escribir mensaje"
-                        data-placeholder="Escribí un mensaje...">@if (publicacionConsulta != null)
+                        data-placeholder="Escribí un mensaje...">@if (publicacionConsulta != null && ViewBag.AutoAcuerdo != true)
                         {<text>Hola! Estoy interesado/a en tu publicación del libro <a class="chat-msg-publi-link" href="@Url.Action("Detalle", "Book", new { id = publicacionConsulta.id })" target="_blank" rel="noopener noreferrer" contenteditable="false">@publicacionConsulta.nombre</a>.</text>}</div>
                     <button class="chat-send-btn" id="chatSendBtn" aria-label="Enviar mensaje">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -315,7 +315,17 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             Horario
                         </label>
-                        <input type="time" id="acuerdoHora" class="chat-acuerdo-input" required />
+                        <div class="chat-acuerdo-hora-wrap">
+                            <select id="acuerdoHora" class="chat-acuerdo-input chat-acuerdo-select" required>
+                                <option value="" disabled selected>HH</option>
+                                @for (int h = 0; h < 24; h++) { <option value="@h.ToString("D2")">@h.ToString("D2")</option> }
+                            </select>
+                            <span class="chat-acuerdo-hora-sep">:</span>
+                            <select id="acuerdoMinutos" class="chat-acuerdo-input chat-acuerdo-select" required>
+                                <option value="" disabled selected>MM</option>
+                                @for (int m = 0; m < 60; m += 5) { <option value="@m.ToString("D2")">@m.ToString("D2")</option> }
+                            </select>
+                        </div>
                     </div>
 
                     <div class="chat-acuerdo-form-row">

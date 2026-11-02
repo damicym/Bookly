@@ -1640,50 +1640,16 @@
             fechaInput.value = hoyStr;
         }
 
-        // Limpiar otros campos y actualizar el mínimo de hora para hoy
+        // Limpiar campos restantes
         const horaInput  = document.getElementById('acuerdoHora');
+        const minInput   = document.getElementById('acuerdoMinutos');
         const lugarInput = document.getElementById('acuerdoLugar');
-        if (horaInput) {
-            horaInput.value = '';
-            actualizarMinHora(); // establecer mínimo si la fecha es hoy
-        }
+        if (horaInput) horaInput.value = '';
+        if (minInput) minInput.value = '';
         if (lugarInput) lugarInput.value = '';
 
         actualizarPasoAcuerdo(2);
     }
-
-    // Actualiza el atributo `min` del input de hora según si la fecha elegida es hoy.
-    // Si es hoy, la hora mínima es la hora actual + 1 minuto.
-    // Si es un día futuro, no hay restricción de hora.
-    function actualizarMinHora() {
-        const fechaInput = document.getElementById('acuerdoFecha');
-        const horaInput  = document.getElementById('acuerdoHora');
-        if (!fechaInput || !horaInput) return;
-
-        const ahora = new Date();
-        const hoy   = ahora.toISOString().slice(0, 10); // YYYY-MM-DD
-
-        if (fechaInput.value === hoy) {
-            // Hora mínima = ahora + 1 min
-            const hh = String(ahora.getHours()).padStart(2, '0');
-            const mm = String(ahora.getMinutes() + 1).padStart(2, '0');
-            horaInput.min = `${hh}:${mm}`;
-            // Si la hora ya cargada quedó en el pasado, limpiarla
-            if (horaInput.value && horaInput.value < horaInput.min) {
-                horaInput.value = '';
-            }
-        } else {
-            horaInput.min = '';
-        }
-    }
-
-    // Escuchar cambios en la fecha para actualizar el mínimo de hora en tiempo real
-    (function () {
-        const fechaInput = document.getElementById('acuerdoFecha');
-        if (fechaInput) {
-            fechaInput.addEventListener('change', actualizarMinHora);
-        }
-    })();
 
     function enviarPropuestaAcuerdo() {
         const pub = acuerdoEstado.pubSeleccionada;
@@ -1691,7 +1657,8 @@
 
         const precioVal = document.getElementById('acuerdoPrecio')?.value?.trim();
         const fechaVal  = document.getElementById('acuerdoFecha')?.value?.trim();
-        const horaVal   = document.getElementById('acuerdoHora')?.value?.trim();
+        const horaVal   = document.getElementById('acuerdoHora')?.value;
+        const minVal    = document.getElementById('acuerdoMinutos')?.value;
         const lugarVal  = document.getElementById('acuerdoLugar')?.value?.trim();
 
         if (!precioVal || parseFloat(precioVal) < 0) {
@@ -1699,9 +1666,8 @@
             return;
         }
 
-        // Validar que la fecha y hora combinadas no sean en el pasado
-        const fechaHoraElegida = new Date(`${fechaVal}T${horaVal}`);
-        if (fechaHoraElegida <= new Date()) {
+        // Validar que hora y minutos estén seleccionados
+        if (!horaVal || !minVal) {
             document.getElementById('acuerdoHora')?.focus();
             return;
         }
@@ -1711,7 +1677,7 @@
         const fechaDisplay = `${d}/${m}/${y}`;
 
         // Formatear hora (HH:MM → HH:MM hs)
-        const horaDisplay = horaVal + ' hs';
+        const horaDisplay = `${horaVal}:${minVal} hs`;
 
         // Construir contenido codificado (no editable/eliminable)
         const contenido = `[ACUERDO|||${pub.id}|||${pub.nombre}|||${precioVal}|||${fechaDisplay}|||${horaDisplay}|||${lugarVal}|||pendiente]`;

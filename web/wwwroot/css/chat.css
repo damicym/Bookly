@@ -2524,6 +2524,33 @@ input[type=text].chat-acuerdo-input {
   margin: 0;
 }
 
+/* ── Selector de horario (dos selects: horas y minutos) ── */
+.chat-acuerdo-hora-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-acuerdo-hora-wrap .chat-acuerdo-select {
+  flex: 1;
+  cursor: pointer;
+  padding-right: 28px;
+  -webkit-appearance: menulist;
+  appearance: menulist;
+}
+
+.chat-acuerdo-select option {
+  background: #3a4e8c;
+  color: var(--light);
+}
+
+.chat-acuerdo-hora-sep {
+  font-size: 0.88rem;
+  color: rgba(239, 242, 241, 0.5);
+  font-weight: 600;
+  user-select: none;
+}
+
 /* ── Botón enviar propuesta ── */
 .chat-acuerdo-actions {
   padding: 14px 16px 16px;
