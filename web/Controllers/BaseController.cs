@@ -23,6 +23,17 @@ namespace Bookly.Controllers
                 {
                     var notificaciones = BD.ObtenerNotificacionesPendientes(user.DNI);
 
+                    // Helper para leer un campo string del payload de una notificación
+                    static string PayloadStr(Dictionary<string, object?> p, string key)
+                    {
+                        if (!p.TryGetValue(key, out var raw) || raw == null) return "";
+                        if (raw is System.Text.Json.JsonElement je)
+                            return je.ValueKind == System.Text.Json.JsonValueKind.String
+                                ? je.GetString() ?? ""
+                                : je.ToString();
+                        return raw.ToString() ?? "";
+                    }
+
                     foreach (var notif in notificaciones)
                     {
                         string vinculo = notif.Vinculo ?? "";
@@ -31,16 +42,6 @@ namespace Bookly.Controllers
                         // necesarios para abrir el modal — construimos el vínculo JS aquí.
                         if (notif.Tipo == "resena_pendiente" && notif.Payload != null)
                         {
-                            static string PayloadStr(Dictionary<string, object?> p, string key)
-                            {
-                                if (!p.TryGetValue(key, out var raw) || raw == null) return "";
-                                if (raw is System.Text.Json.JsonElement je)
-                                    return je.ValueKind == System.Text.Json.JsonValueKind.String
-                                        ? je.GetString() ?? ""
-                                        : je.ToString();
-                                return raw.ToString() ?? "";
-                            }
-
                             var idReceptor    = PayloadStr(notif.Payload, "id_receptor");
                             var nombreRecep   = PayloadStr(notif.Payload, "nombre_receptor");
                             var idPub         = notif.Payload.TryGetValue("id_publicacion", out var vP) && vP is System.Text.Json.JsonElement jeP && jeP.ValueKind != System.Text.Json.JsonValueKind.Null
@@ -54,10 +55,34 @@ namespace Bookly.Controllers
                             vinculo = $"javascript:abrirResenaModal('{idReceptor}','{nombreEscapado}','',{idPub},'{nombreLibroEscapado}')";
                         }
 
+                        // Notificación de acuerdo aceptado: recordatorio con fecha/hora/lugar
+                        string? iconoCalendario = null;
+                        if (notif.Tipo == "acuerdo_aceptado" && notif.Payload != null)
+                        {
+                            var fecha  = PayloadStr(notif.Payload, "fecha");
+                            var hora   = PayloadStr(notif.Payload, "hora");
+                            var lugar  = PayloadStr(notif.Payload, "lugar");
+                            var nombre = PayloadStr(notif.Payload, "nombre_libro");
+
+                            // Subtítulo enriquecido: "El dd/mm/yyyy a las HH:MM en Lugar"
+                            if (!string.IsNullOrWhiteSpace(fecha))
+                            {
+                                var subtituloDetalle = $"El {fecha} a las {hora} • {lugar}";
+                                notifs.Add(new Notificacion(
+                                    titulo:    notif.Titulo,
+                                    subtitulo: subtituloDetalle,
+                                    vinculo:   vinculo,
+                                    iconoSvg:  @"<svg xmlns=""http://www.w3.org/2000/svg"" width=""18"" height=""18"" viewBox=""0 0 24 24"" fill=""none"" stroke=""currentColor"" stroke-width=""2"" stroke-linecap=""round"" stroke-linejoin=""round""><rect x=""3"" y=""4"" width=""18"" height=""18"" rx=""2"" ry=""2""/><line x1=""16"" y1=""2"" x2=""16"" y2=""6""/><line x1=""8"" y1=""2"" x2=""8"" y2=""6""/><line x1=""3"" y1=""10"" x2=""21"" y2=""10""/></svg>"
+                                ));
+                                continue;
+                            }
+                        }
+
                         notifs.Add(new Notificacion(
                             titulo:    notif.Titulo,
                             subtitulo: notif.Subtitulo ?? "",
-                            vinculo:   vinculo
+                            vinculo:   vinculo,
+                            iconoSvg:  iconoCalendario
                         ));
                     }
                 }

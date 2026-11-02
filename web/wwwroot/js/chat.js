@@ -306,7 +306,7 @@
                 +   `</div>`
                 + `</div>`
                 + `<div class="chat-msg-propuesta-body">`
-                +   `<div class="chat-msg-propuesta-precio">$${escapeHtml(precio)}</div>`
+                +   `<div class="chat-msg-propuesta-precio">$${formatearMiles(precio)}</div>`
                 +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(fecha)}</span></div>`
                 +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(hora)}</span></div>`
                 +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(lugar)}</span></div>`
@@ -1218,7 +1218,7 @@
             `<img class="chat-attach-item-img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" loading="lazy" />`
             + `<div class="chat-attach-item-info">`
             +   `<span class="chat-attach-item-nombre">${escapeHtml(pub.nombre)}</span>`
-            +   `<span class="chat-attach-item-precio">$${pub.precio}</span>`
+            +   `<span class="chat-attach-item-precio">$${formatearMiles(String(pub.precio))}</span>`
             + `</div>`;
 
         btn.addEventListener('click', function () {
@@ -1541,7 +1541,7 @@
             `<img class="chat-acuerdo-pub-item-img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" loading="lazy" />`
             + `<div class="chat-acuerdo-pub-item-info">`
             +   `<span class="chat-acuerdo-pub-item-nombre">${escapeHtml(pub.nombre)}</span>`
-            +   `<span class="chat-acuerdo-pub-item-precio">$${pub.precio}</span>`
+            +   `<span class="chat-acuerdo-pub-item-precio">$${formatearMiles(String(pub.precio))}</span>`
             + `</div>`
             + `<span class="chat-acuerdo-pub-item-owner ${ownerClass}">${ownerLabel}</span>`
             + `<svg class="chat-acuerdo-pub-item-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>`;
@@ -1620,7 +1620,7 @@
                 `<img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" />`
                 + `<div class="chat-acuerdo-pub-sel-info">`
                 +   `<div class="chat-acuerdo-pub-sel-nombre">${escapeHtml(pub.nombre)}</div>`
-                +   `<div class="chat-acuerdo-pub-sel-precio">Precio publicado: $${pub.precio}</div>`
+                +   `<div class="chat-acuerdo-pub-sel-precio">Precio publicado: $${formatearMiles(String(pub.precio))}</div>`
                 + `</div>`;
         }
 
@@ -1647,6 +1647,7 @@
         if (horaInput) horaInput.value = '';
         if (minInput) minInput.value = '';
         if (lugarInput) lugarInput.value = '';
+        window._lugarConfirmado = false;
 
         actualizarPasoAcuerdo(2);
     }
@@ -1669,6 +1670,30 @@
         // Validar que hora y minutos estén seleccionados
         if (!horaVal || !minVal) {
             document.getElementById('acuerdoHora')?.focus();
+            return;
+        }
+
+        // Validar que el lugar fue elegido de la lista (no escrito a mano)
+        if (!lugarVal) {
+            document.getElementById('acuerdoLugar')?.focus();
+            return;
+        }
+        if (!window._lugarConfirmado) {
+            const inputEl = document.getElementById('acuerdoLugar');
+            if (inputEl) {
+                inputEl.style.borderColor = '#e05252';
+                inputEl.style.boxShadow   = '0 0 0 3px rgba(224,82,82,0.18)';
+                inputEl.focus();
+                // Shake rápido para llamar la atención
+                inputEl.animate([
+                    { transform: 'translateX(0)' },
+                    { transform: 'translateX(-5px)' },
+                    { transform: 'translateX(5px)' },
+                    { transform: 'translateX(-4px)' },
+                    { transform: 'translateX(4px)' },
+                    { transform: 'translateX(0)' }
+                ], { duration: 300, easing: 'ease-out' });
+            }
             return;
         }
 
@@ -1745,6 +1770,235 @@
         e.preventDefault();
         enviarPropuestaAcuerdo();
     });
+
+    // ── Autocomplete de lugar (Nominatim / OpenStreetMap) ──────────────────
+    (function initLugarAutocomplete() {
+        var inputLugar  = document.getElementById('acuerdoLugar');
+        var lista       = document.getElementById('acuerdoLugarLista');
+        if (!inputLugar || !lista) return;
+
+        var timer        = null;
+        var indiceActivo = -1;
+        var DELAY        = 500;   // ms debounce — suficiente para escribir "Corrientes 1234"
+        var MIN_CHARS    = 4;
+
+        // Flag: true solo cuando el usuario eligió un ítem de la lista
+        window._lugarConfirmado = false;
+
+        function getItems() {
+            return lista.querySelectorAll('.chat-acuerdo-lugar-item');
+        }
+
+        function cerrarLista() {
+            lista.hidden = true;
+            lista.innerHTML = '';
+            indiceActivo = -1;
+        }
+
+        function resaltarItem(idx) {
+            var items = getItems();
+            items.forEach(function (el, i) {
+                el.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+            });
+            indiceActivo = idx;
+        }
+
+        function mostrarCargando() {
+            lista.innerHTML =
+                '<li class="chat-acuerdo-lugar-cargando" role="option">'
+                + '<span class="chat-acuerdo-lugar-spinner"></span>'
+                + '<span>Buscando...</span>'
+                + '</li>';
+            lista.hidden = false;
+        }
+
+        function mostrarSinResultados() {
+            lista.innerHTML =
+                '<li class="chat-acuerdo-lugar-sin-resultados" role="option">'
+                + 'Sin resultados para esta búsqueda'
+                + '</li>';
+            lista.hidden = false;
+        }
+
+        function setError(activo) {
+            if (activo) {
+                inputLugar.style.borderColor = '#e05252';
+                inputLugar.style.boxShadow   = '0 0 0 3px rgba(224,82,82,0.18)';
+            } else {
+                inputLugar.style.borderColor = '';
+                inputLugar.style.boxShadow   = '';
+            }
+        }
+
+        function seleccionar(valor) {
+            inputLugar.value = valor;
+            window._lugarConfirmado = true;
+            setError(false);
+            cerrarLista();
+            inputLugar.focus();
+        }
+
+        function buscar(query) {
+            mostrarCargando();
+            // Photon (komoot) — gratis, sin key, sin límite
+            // bbox Argentina: lon_min,lat_min,lon_max,lat_max  → -73.5,-55.1,-53.6,-21.8
+            var urlPhoton = 'https://photon.komoot.io/api/'
+                + '?q=' + encodeURIComponent(query + ' Argentina')
+                + '&limit=7'
+                + '&lang=es';
+
+            fetch(urlPhoton)
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var features = (data && data.features) || [];
+                    // Quedarse solo con resultados de Argentina
+                    features = features.filter(function (f) {
+                        var cc = (f.properties || {}).country_code;
+                        return !cc || cc === 'ar';
+                    });
+                    if (features.length > 0) {
+                        renderResultados(features);
+                    } else {
+                        // Fallback: Nominatim con número de calle
+                        buscarNominatim(query);
+                    }
+                })
+                .catch(function () {
+                    buscarNominatim(query);
+                });
+        }
+
+        function buscarNominatim(query) {
+            var url = 'https://nominatim.openstreetmap.org/search'
+                + '?format=json&limit=7&addressdetails=1'
+                + '&countrycodes=ar'
+                + '&accept-language=es'
+                + '&q=' + encodeURIComponent(query);
+
+            fetch(url, { headers: { 'Accept-Language': 'es' } })
+                .then(function (r) { return r.json(); })
+                .then(function (resultados) {
+                    if (!resultados || resultados.length === 0) {
+                        mostrarSinResultados();
+                        return;
+                    }
+                    // Convertir formato Nominatim al mismo formato que Photon para reusar renderResultados
+                    var features = resultados.map(function (lugar) {
+                        var addr = lugar.address || {};
+                        var calle  = addr.road || addr.pedestrian || addr.footway || lugar.name || '';
+                        var numero = addr.house_number || '';
+                        return {
+                            properties: {
+                                name:        calle,
+                                street:      calle,
+                                housenumber: numero,
+                                district:    addr.neighbourhood || addr.suburb || addr.city_district || '',
+                                city:        addr.city || addr.town || addr.village || '',
+                                state:       addr.state || '',
+                                country_code: 'ar'
+                            }
+                        };
+                    });
+                    renderResultados(features);
+                })
+                .catch(function () { cerrarLista(); });
+        }
+
+        function renderResultados(features) {
+            lista.innerHTML = '';
+            indiceActivo = -1;
+
+            if (!features || features.length === 0) {
+                mostrarSinResultados();
+                return;
+            }
+
+            features.forEach(function (feature) {
+                var p = feature.properties || {};
+
+                // Línea principal: calle + número (o nombre del lugar)
+                var calle  = p.street || p.name || '';
+                var numero = p.housenumber || '';
+                var linea1 = numero ? calle + ' ' + numero : calle;
+                if (!linea1) linea1 = p.name || '';
+
+                // Línea secundaria: barrio + ciudad + provincia
+                var partes = [];
+                if (p.district && p.district !== linea1) partes.push(p.district);
+                var ciudad = p.city || p.county || '';
+                if (ciudad && ciudad !== linea1) partes.push(ciudad);
+                if (p.state && p.state !== linea1) partes.push(p.state);
+                var linea2 = partes.slice(0, 3).join(', ');
+
+                // Valor final que se inserta en el input
+                var valorInput = [linea1, ciudad || p.state].filter(Boolean).join(', ');
+
+                var li = document.createElement('li');
+                li.className = 'chat-acuerdo-lugar-item';
+                li.setAttribute('role', 'option');
+                li.setAttribute('aria-selected', 'false');
+                li.innerHTML =
+                    '<span class="chat-acuerdo-lugar-item-icon">'
+                    + '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+                    + '</span>'
+                    + '<span class="chat-acuerdo-lugar-item-texto">'
+                    +   '<span class="chat-acuerdo-lugar-item-principal">' + escapeHtml(linea1) + '</span>'
+                    +   (linea2 ? '<span class="chat-acuerdo-lugar-item-secundario">' + escapeHtml(linea2) + '</span>' : '')
+                    + '</span>';
+
+                li.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+                    seleccionar(valorInput);
+                });
+
+                lista.appendChild(li);
+            });
+
+            lista.hidden = false;
+        }
+
+        // Cualquier tecla tipada invalida la confirmación previa
+        inputLugar.addEventListener('input', function () {
+            window._lugarConfirmado = false;
+            setError(false);
+            clearTimeout(timer);
+            var val = inputLugar.value.trim();
+            if (val.length < MIN_CHARS) { cerrarLista(); return; }
+            timer = setTimeout(function () { buscar(val); }, DELAY);
+        });
+
+        inputLugar.addEventListener('keydown', function (e) {
+            var items = getItems();
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                resaltarItem(Math.min(indiceActivo + 1, items.length - 1));
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                resaltarItem(Math.max(indiceActivo - 1, 0));
+            } else if (e.key === 'Enter' && indiceActivo >= 0) {
+                e.preventDefault();
+                items[indiceActivo].dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+            } else if (e.key === 'Escape') {
+                cerrarLista();
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!inputLugar.contains(e.target) && !lista.contains(e.target)) {
+                cerrarLista();
+            }
+        });
+
+        // Cerrar cuando se resetea el campo (al seleccionar publicación)
+        inputLugar.addEventListener('change', function () {
+            if (!inputLugar.value) {
+                window._lugarConfirmado = false;
+                cerrarLista();
+            }
+        });
+    })();
 
     // Cerrar panel y limpiar cache al cambiar de conversación
     // (el cierre real está en abrirConversacion directamente)
@@ -1955,7 +2209,7 @@
             lista.forEach(function (p) {
                 const img  = escapeHtml(p.imagen || '/img/book-placeholder.webp');
                 const nom  = escapeHtml(p.nombre || '');
-                const prec = escapeHtml(String(p.precio || ''));
+                const prec = formatearMiles(String(p.precio || ''));
                 grid += `<a class="det-otras-thumb" href="/Book/Detalle/${p.id}">`
                     + `<img src="${img}" alt="${nom}" loading="lazy" />`
                     + '<div class="det-otras-thumb-info">'

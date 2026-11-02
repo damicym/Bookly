@@ -156,7 +156,7 @@
                     lista.forEach(function (p) {
                         var img  = escHtml(p.imagen || '/img/book-placeholder.webp');
                         var nom  = escHtml(p.nombre || '');
-                        var prec = escHtml(String(p.precio || ''));
+                        var prec = formatearMiles(String(p.precio || ''));
                         grid += '<a class="det-otras-thumb" href="/Book/Detalle/' + p.id + '">'
                             + '<img src="' + img + '" alt="' + nom + '" loading="lazy" />'
                             + '<div class="det-otras-thumb-info">'

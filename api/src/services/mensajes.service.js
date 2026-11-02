@@ -1,4 +1,5 @@
 import supabase from '../db/supabase.js'
+import { createNotificacion } from './notificaciones.service.js'
 
 /**
  * Guarda un mensaje nuevo y garantiza que ambas filas de chats existan
@@ -222,17 +223,48 @@ export async function responderPropuesta(id, idReceptor, decision) {
 
 	if (errUpdate) throw errUpdate
 
-	// 3. Si se aceptó, desactivar la publicación para que deje de aparecer en el catálogo
+	// 3. Si se aceptó, desactivar la publicación y notificar al comprador
 	if (decision === 'aceptado') {
-		// El formato es [ACUERDO|||{idPub}|||nombre|||precio|||fecha|||hora|||lugar|||pendiente]
-		const match = msg.contenido.match(/^\[ACUERDO\|\|\|(\d+)\|\|\|/)
+		// Formato: [ACUERDO|||{idPub}|||nombre|||precio|||fecha|||hora|||lugar|||pendiente]
+		const match = msg.contenido.match(
+			/^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d.]+)\|\|\|([\d/]+)\|\|\|([\d:]+)\|\|\|(.*?)\|\|\|(?:pendiente|aceptado|rechazado)\]$/
+		)
 		if (match) {
 			const idPublicacion = parseInt(match[1], 10)
-			// Ignorar errores: si falla, la propuesta ya fue aceptada igualmente
+			const nombreLibro   = match[2]
+			const precio        = parseFloat(match[3])
+			const fecha         = match[4]  // dd/mm/yyyy
+			const hora          = match[5]  // HH:MM
+			const lugar         = match[6]
+
+			// Desactivar la publicación para que deje de aparecer en el catálogo
+			// Ignorar errores: la propuesta ya fue aceptada igualmente
 			await supabase
 				.from('publicaciones')
 				.update({ status: 0 })
 				.eq('id', idPublicacion)
+
+			// Notificar al comprador (id_emisor) con los detalles del encuentro
+			try {
+				await createNotificacion({
+					id_usuario: msg.id_emisor,
+					tipo:       'acuerdo_aceptado',
+					titulo:     `¡Tu compra fue aceptada!`,
+					subtitulo:  `Retirás "${nombreLibro}" el ${fecha} a las ${hora} en: ${lugar}`,
+					vinculo:    `/Chat?vendedorDNI=${msg.id_receptor}`,
+					payload: {
+						id_publicacion: idPublicacion,
+						nombre_libro:   nombreLibro,
+						precio,
+						fecha,
+						hora,
+						lugar,
+						id_vendedor:    msg.id_receptor,
+					},
+				})
+			} catch {
+				// No bloquear la respuesta si la notificación falla
+			}
 		}
 	}
 
