@@ -302,7 +302,7 @@
                 +   `<div class="chat-msg-propuesta-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg></div>`
                 +   `<div class="chat-msg-propuesta-header-text">`
                 +     `<div class="chat-msg-propuesta-titulo">Propuesta de acuerdo</div>`
-                +     `<div class="chat-msg-propuesta-libro"><span class="chat-msg-propuesta-libro-text">${escapeHtml(nombrePub)}</span><span class="chat-msg-propuesta-owner">${esMio ? '(Mío)' : '(Suyo)'}</span></div>`
+                +     `<div class="chat-msg-propuesta-libro"><a class="chat-msg-propuesta-libro-text chat-msg-propuesta-libro-link" href="/Book/Detalle/${encodeURIComponent(idPub)}" target="_blank" rel="noopener noreferrer">${escapeHtml(nombrePub)}</a><span class="chat-msg-propuesta-owner">${esMio ? '(Mío)' : '(Suyo)'}</span></div>`
                 +   `</div>`
                 + `</div>`
                 + `<div class="chat-msg-propuesta-body">`

@@ -38,10 +38,21 @@
         <div class="det-portada">
             <img src="@imgBase64" alt="@Model.nombre" loading="lazy" id="portadaLibro" class="det-portada-expandible"/>
         </div>
-        <a class="det-btn-comprar" href="@Url.Action("Index", "Chat", new { vendedorDNI = Model.idVendedor, idPublicacion = Model.id, autoAcuerdo = true })">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M15 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 17h-11v-14h-2"/><path d="M6 5l14 1l-1 7h-13"/></svg>
-            Comprar
-        </a>        <form class="desearBtnForm hoverVerde det-fav-form" action="@Url.Action("Desear", "Book")" method="post" onsubmit="return desearLibro(event, this);">
+        @if (Model.status == 1)
+        {
+            <a class="det-btn-comprar" href="@Url.Action("Index", "Chat", new { vendedorDNI = Model.idVendedor, idPublicacion = Model.id, autoAcuerdo = true })">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M15 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 17h-11v-14h-2"/><path d="M6 5l14 1l-1 7h-13"/></svg>
+                Comprar
+            </a>
+        }
+        else
+        {
+            <div class="det-vendida-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 6l-11 11l-5-5"/></svg>
+                Publicación vendida
+            </div>
+        }
+        <form class="desearBtnForm hoverVerde det-fav-form" action="@Url.Action("Desear", "Book")" method="post" onsubmit="return desearLibro(event, this);">
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.id" />
             <input type="hidden" name="esDeseado" value="@Model.esDeseado" />
@@ -83,6 +94,8 @@
         </div>
 
         @* Botones de acción — mismo grid que la ficha *@
+        @if (Model.status == 1)
+        {
         <div class="det-acciones">
             <a href="@Url.Action("Index", "Chat", new { vendedorDNI = Model.idVendedor, idPublicacion = Model.id })" class="det-btn-accion det-btn-consultar mainBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>
@@ -101,6 +114,7 @@
                 }
             </button>
         </div>
+        }
 
         @* Ficha 2x2 *@
         <div class="det-ficha">

@@ -3,7 +3,7 @@
 (function () {
 
     // ── Apertura ──────────────────────────────────────────────────
-    window.abrirResenaModal = function (idReceptor, nombreVendedor, avatarVendedor, idPublicacion, nombreLibro) {
+    window.abrirResenaModal = function (idReceptor, nombreVendedor, avatarVendedor, idPublicacion, nombreLibro, notifId) {
         var overlay = document.getElementById('resenaModal');
         if (!overlay) return;
 
@@ -35,6 +35,10 @@
         // Guardar id_publicacion en el form
         var pubInput = overlay.querySelector('#resenaIdPublicacion');
         if (pubInput) pubInput.value = idPublicacion || '';
+
+        // Guardar el ID de la notificación para marcarla leída al enviar
+        var notifInput = overlay.querySelector('#resenaNotifId');
+        if (notifInput) notifInput.value = notifId || '';
 
         // Reset estado
         _resetModal();
@@ -221,6 +225,16 @@
                 if (formBody) formBody.style.display = 'none';
                 if (resenaFooter) resenaFooter.style.display = 'none';
                 if (success) success.classList.add('resena-success--visible');
+
+                // Marcar la notificación como leída (fire-and-forget)
+                var notifId = parseInt(overlay.querySelector('#resenaNotifId')?.value || '0');
+                if (notifId > 0) {
+                    fetch('/Notificacion/MarcarLeida', {
+                        method:  'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body:    JSON.stringify({ id: notifId })
+                    }).catch(function () { /* no crítico */ });
+                }
 
                 // Cerrar automáticamente después de 2.8s
                 setTimeout(_cerrar, 2800);

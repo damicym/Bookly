@@ -51,7 +51,7 @@ namespace Bookly.Controllers
                             var nombreEscapado      = nombreRecep.Replace("'", "\\'");
                             var nombreLibroEscapado = nombreLibro.Replace("'", "\\'");
 
-                            vinculo = $"javascript:abrirResenaModal('{idReceptor}','{nombreEscapado}','',{idPub},'{nombreLibroEscapado}')";
+                            vinculo = $"javascript:abrirResenaModal('{idReceptor}','{nombreEscapado}','',{idPub},'{nombreLibroEscapado}',{notif.Id})";
                         }
 
                         notifs.Add(new Notificacion(

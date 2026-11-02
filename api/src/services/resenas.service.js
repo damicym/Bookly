@@ -11,14 +11,14 @@ export async function createResena({ id_redactor, id_receptor, atencion, entrega
     .insert({
       id_redactor,
       id_receptor,
-      atencion,
-      entrega,
-      responsable:     responsable    || null,
-      proceso:         proceso        || null,
-      comentario:      comentario     || null,
-      problema:        problema       || null,
-      id_publicacion:  id_publicacion || null,
-      fecha_respuesta: new Date().toISOString(),
+      atencion:        atencion        ?? null,
+      entrega:         entrega         ?? null,
+      responsable:     responsable     || null,
+      proceso:         proceso         || null,
+      comentario:      comentario      || null,
+      problema:        problema        || null,
+      id_publicacion:  id_publicacion  || null,
+      // fecha_respuesta queda null → reseña pendiente hasta que el comprador la complete
     })
 
   if (error) throw error

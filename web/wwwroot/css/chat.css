@@ -2663,6 +2663,16 @@ input[type=text].chat-acuerdo-input {
   min-width: 0;
 }
 
+a.chat-msg-propuesta-libro-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.chat-msg-propuesta-libro-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
 .chat-msg-propuesta-owner {
   font-size: 0.75rem;
   font-weight: 600;
@@ -2741,21 +2751,24 @@ input[type=text].chat-acuerdo-input {
 }
 
 .chat-msg-propuesta-btn--aceptar {
-  background: #22c55e;
-  color: #fff;
+  background: var(--secondary2);
+  color: var(--dark);
+  border: none;
 }
 
 .chat-msg-propuesta-btn--aceptar:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
 }
 
 .chat-msg-propuesta-btn--rechazar {
-  background: rgba(215, 38, 61, 0.09);
+  background: transparent;
   color: var(--red, #d7263d);
+  border: 1.5px solid rgba(215, 38, 61, 0.55);
 }
 
 .chat-msg-propuesta-btn--rechazar:hover {
-  background: rgba(215, 38, 61, 0.15);
+  background: rgba(215, 38, 61, 0.08);
+  border-color: rgba(215, 38, 61, 0.8);
 }
 
 /* Badge de estado (aceptado / rechazado / pendiente) */

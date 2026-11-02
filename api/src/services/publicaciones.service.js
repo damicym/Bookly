@@ -125,6 +125,7 @@ export async function getPublicationsOfUser(dni) {
 		.from('publicaciones')
 		.select('*')
 		.eq('id_vendedor', dni)
+		.eq('status', 1)
 		.order('fecha', { ascending: false })
 	if (error) throw error
 	const ids = [...new Set((pubs || []).map(p => p.id_libro))].filter(Boolean)
@@ -247,6 +248,7 @@ export async function getRecommendationsByYear(ano) {
 	const { data: pubs, error } = await supabase
 		.from('publicaciones')
 		.select('*')
+		.eq('status', 1)
 		.order('fecha', { ascending: false })
 	if (error) throw error
 	const ids = [...new Set((pubs || []).map(p => p.id_libro))].filter(Boolean)

@@ -38,7 +38,12 @@ export async function getWishlistIds(dni) {
 export async function getFavoritePublications(dni) {
 	const ids = await getWishlistIds(dni)
 	if (!ids || ids.length === 0) return []
-	const { data: pubs, error } = await supabase.from('publicaciones').select('*').in('id', ids).order('fecha', { ascending: false })
+	const { data: pubs, error } = await supabase
+		.from('publicaciones')
+		.select('*')
+		.in('id', ids)
+		.eq('status', 1)
+		.order('fecha', { ascending: false })
 	if (error) throw error
 	const bookIds = [...new Set((pubs || []).map(p => p.id_libro))].filter(Boolean)
 	const booksMap = await mapBooksById(bookIds)
