@@ -7,7 +7,7 @@ public class Resena
     [JsonPropertyName("id")]
     public int id { get; set; }
 
-    /// <summary>DNI del usuario que debe escribir la reseña (el comprador).</summary>
+    /// <summary>DNI del usuario que escribió la reseña (el comprador).</summary>
     [JsonPropertyName("id_redactor")]
     public string idRedactor { get; set; }
 
@@ -15,39 +15,32 @@ public class Resena
     [JsonPropertyName("id_receptor")]
     public string idReceptor { get; set; }
 
-    /// <summary>Fecha en que se completó la reseña. Null = todavía pendiente.</summary>
+    /// <summary>Fecha en que se completó la reseña.</summary>
     [JsonPropertyName("fecha_respuesta")]
     public DateTime? fechaRespuesta { get; set; }
 
-    // ── Promedios calculados por eje ──────────────────────────────────────────
+    // ── Puntuaciones de la encuesta (1-5) ────────────────────────────────────
 
-    /// <summary>Promedio del eje atención (p1 + p4 opcionales).</summary>
-    [JsonPropertyName("entrega")]
-    public short? entrega { get; set; }
-
-    /// <summary>Promedio del eje entrega (p2 + p3 opcionales).</summary>
+    /// <summary>¿Cómo te trató el vendedor durante la compra?</summary>
     [JsonPropertyName("atencion")]
     public short? atencion { get; set; }
 
-    // ── Puntuaciones individuales por pregunta ────────────────────────────────
+    /// <summary>Promedio: ¿qué tan conforme estás con el producto + responsabilidad de entrega?</summary>
+    [JsonPropertyName("entrega")]
+    public short? entrega { get; set; }
 
-    /// <summary>P1 — ¿Cómo te trató el vendedor durante la compra? (obligatoria)</summary>
-    [JsonPropertyName("p1_atencion")]
-    public short? p1Atencion { get; set; }
+    /// <summary>¿Qué tan responsable fue el vendedor a la hora de entregar el producto?</summary>
+    [JsonPropertyName("responsable")]
+    public short? responsable { get; set; }
 
-    /// <summary>P2 — ¿Qué tan conforme estás con el producto entregado? (obligatoria)</summary>
-    [JsonPropertyName("p2_entrega")]
-    public short? p2Entrega { get; set; }
-
-    /// <summary>P3 — ¿Qué tan responsable fue el vendedor al entregar? (opcional)</summary>
-    [JsonPropertyName("p3_entrega")]
-    public short? p3Entrega { get; set; }
-
-    /// <summary>P4 — ¿Cómo te resultó el proceso de compra usando Bookly? (opcional)</summary>
-    [JsonPropertyName("p4_experiencia")]
-    public short? p4Experiencia { get; set; }
+    /// <summary>¿Cómo te resultó el proceso de compra utilizando Bookly?</summary>
+    [JsonPropertyName("proceso")]
+    public short? proceso { get; set; }
 
     // ── Textos libres ─────────────────────────────────────────────────────────
+
+    [JsonPropertyName("comentario")]
+    public string? comentario { get; set; }
 
     [JsonPropertyName("problema")]
     public string? problema { get; set; }

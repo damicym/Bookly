@@ -129,6 +129,26 @@
   background: #fff;
 }
 
+/* ── Aviso: completar la encuesta después de recibir el libro ── */
+.resena-aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.resena-aviso svg {
+  flex-shrink: 0;
+  color: #d97706;
+}
+
 /* ── Eje agrupador ── */
 .resena-eje {
   display: flex;

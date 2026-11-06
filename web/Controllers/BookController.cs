@@ -162,11 +162,23 @@ namespace Bookly.Controllers
             var resenas = BD.ObtenerResenasPorReceptor(dniVendedor)
                             .Where(r => r.atencion.HasValue && r.entrega.HasValue).ToList();
 
+            // Atención incluye el score de proceso (experiencia Bookly) si está presente
+            static double ScoreAtencion(Resena r) =>
+                r.proceso.HasValue
+                    ? ((double)r.atencion!.Value + r.proceso.Value) / 2.0
+                    : (double)r.atencion!.Value;
+
+            // Entrega incluye responsable si está presente
+            static double ScoreEntrega(Resena r) =>
+                r.responsable.HasValue
+                    ? ((double)r.entrega!.Value + r.responsable.Value) / 2.0
+                    : (double)r.entrega!.Value;
+
             return Json(new
             {
                 resenaCount      = resenas.Count,
-                promedioAtencion = resenas.Count > 0 ? resenas.Average(r => (double)r.atencion.Value) : (double?)null,
-                promedioEntrega  = resenas.Count > 0 ? resenas.Average(r => (double)r.entrega.Value)  : (double?)null,
+                promedioAtencion = resenas.Count > 0 ? resenas.Average(ScoreAtencion) : (double?)null,
+                promedioEntrega  = resenas.Count > 0 ? resenas.Average(ScoreEntrega)  : (double?)null,
             });
         }
 

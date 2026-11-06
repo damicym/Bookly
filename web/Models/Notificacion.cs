@@ -6,6 +6,9 @@ namespace Bookly.Models;
 /// </summary>
 public class Notificacion
 {
+    /// <summary>ID de la fila en la tabla notificaciones (0 si no aplica).</summary>
+    public long Id { get; set; }
+
     /// <summary>Texto principal de la notificación.</summary>
     public string Titulo { get; set; } = "";
 
@@ -25,8 +28,9 @@ public class Notificacion
 
     public Notificacion() { }
 
-    public Notificacion(string titulo, string subtitulo, string? vinculo = null, string? iconoSvg = null)
+    public Notificacion(string titulo, string subtitulo, string? vinculo = null, string? iconoSvg = null, long id = 0)
     {
+        Id        = id;
         Titulo    = titulo;
         Subtitulo = subtitulo;
         Vinculo   = vinculo;

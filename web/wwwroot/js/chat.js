@@ -1673,27 +1673,9 @@
             return;
         }
 
-        // Validar que el lugar fue elegido de la lista (no escrito a mano)
+        // Validar que el lugar no esté vacío
         if (!lugarVal) {
             document.getElementById('acuerdoLugar')?.focus();
-            return;
-        }
-        if (!window._lugarConfirmado) {
-            const inputEl = document.getElementById('acuerdoLugar');
-            if (inputEl) {
-                inputEl.style.borderColor = '#e05252';
-                inputEl.style.boxShadow   = '0 0 0 3px rgba(224,82,82,0.18)';
-                inputEl.focus();
-                // Shake rápido para llamar la atención
-                inputEl.animate([
-                    { transform: 'translateX(0)' },
-                    { transform: 'translateX(-5px)' },
-                    { transform: 'translateX(5px)' },
-                    { transform: 'translateX(-4px)' },
-                    { transform: 'translateX(4px)' },
-                    { transform: 'translateX(0)' }
-                ], { duration: 300, easing: 'ease-out' });
-            }
             return;
         }
 

@@ -201,7 +201,7 @@
                     {
                         if (!string.IsNullOrWhiteSpace(notif.Vinculo))
                         {
-                            <a class="notif-item notif-item--link" href="@notif.Vinculo">
+                            <a class="notif-item notif-item--link" href="@notif.Vinculo" @(notif.Id > 0 ? $"data-notif-id=\"{notif.Id}\"" : "")>
                                 <div class="notif-item-icono">
                                     @if (!string.IsNullOrWhiteSpace(notif.IconoSvg))
                                     {
@@ -501,6 +501,12 @@
                     <input type="hidden" id="resenaIdInput" name="id" value="" />
                     <input type="hidden" id="resenaIdPublicacion" name="id_publicacion" value="" />
                     <input type="hidden" id="resenaNotifId" name="notif_id" value="" />
+
+                    @* Aviso: completar después de recibir el libro *@
+                    <div class="resena-aviso" role="note">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span>Completá esta encuesta una vez que recibas el libro</span>
+                    </div>
 
                     @* ── Eje Atención (2 preguntas → promedio) ── *@
                     <div class="resena-eje">

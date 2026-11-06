@@ -232,3 +232,33 @@
         if (e.key === 'Escape' && isOpen) closePanel();
     });
 })();
+
+// ── Marcar notificación como leída al hacer click ────────────────────────────
+// Se aplica a cualquier <a class="notif-item--link"> que tenga data-notif-id.
+// La navegación ocurre normalmente; el fetch es fire-and-forget.
+(function () {
+    document.addEventListener('click', function (e) {
+        var link = e.target.closest('a.notif-item--link[data-notif-id]');
+        if (!link) return;
+
+        var notifId = parseInt(link.getAttribute('data-notif-id'), 10);
+        if (!notifId || notifId <= 0) return;
+
+        // Si el href es un javascript: (resena modal), no navegamos — no hace falta nada extra
+        // porque resena-modal.js ya llama a MarcarLeida al enviar la reseña.
+        // Para cualquier href real (ej: acuerdo_aceptado → /Chat?...) marcamos y navegamos.
+        var href = link.getAttribute('href') || '';
+        if (href.startsWith('javascript:')) return;
+
+        // Fire-and-forget: marcar como leída sin bloquear la navegación
+        var token = document.querySelector('input[name="__RequestVerificationToken"]');
+        fetch('/Notificacion/MarcarLeida', {
+            method:  'POST',
+            headers: {
+                'Content-Type':             'application/json',
+                'RequestVerificationToken': token ? token.value : ''
+            },
+            body: JSON.stringify({ id: notifId })
+        }).catch(function () { /* no crítico */ });
+    });
+}());
