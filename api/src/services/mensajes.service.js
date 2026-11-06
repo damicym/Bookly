@@ -227,7 +227,7 @@ export async function responderPropuesta(id, idReceptor, decision) {
 	if (decision === 'aceptado') {
 		// Formato: [ACUERDO|||{idPub}|||nombre|||precio|||fecha|||hora|||lugar|||pendiente]
 		const match = msg.contenido.match(
-			/^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d.]+)\|\|\|([\d/]+)\|\|\|([\d:]+)\|\|\|(.*?)\|\|\|(?:pendiente|aceptado|rechazado)\]$/
+			/^\[ACUERDO\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d.]+)\|\|\|([\d/]+)\|\|\|([\d: ]+(?:hs)?)\|\|\|(.*?)\|\|\|(?:pendiente|aceptado|rechazado)\]$/
 		)
 		if (match) {
 			const idPublicacion = parseInt(match[1], 10)
@@ -236,6 +236,24 @@ export async function responderPropuesta(id, idReceptor, decision) {
 			const fecha         = match[4]
 			const hora          = match[5]
 			const lugar         = match[6]
+
+			// Determinar comprador y vendedor consultando quién es dueño de la publicación.
+			// El dueño de la pub es el vendedor; el otro participante del chat es el comprador.
+			let idVendedor  = msg.id_emisor   // fallback: asumimos que el emisor es el vendedor
+			let idComprador = msg.id_receptor // fallback: asumimos que el receptor es el comprador
+			try {
+				const { data: pub } = await supabase
+					.from('publicaciones')
+					.select('id_vendedor')
+					.eq('id', idPublicacion)
+					.maybeSingle()
+				if (pub?.id_vendedor) {
+					idVendedor  = pub.id_vendedor
+					idComprador = pub.id_vendedor === msg.id_emisor ? msg.id_receptor : msg.id_emisor
+				}
+			} catch (errPubOwner) {
+				console.error('[responderPropuesta] Error obteniendo dueño de publicación:', errPubOwner.message)
+			}
 
 			// Desactivar la publicación para que deje de aparecer en el catálogo
 			const { error: errPub } = await supabase
@@ -247,11 +265,11 @@ export async function responderPropuesta(id, idReceptor, decision) {
 			// Notificar al comprador con los detalles del encuentro
 			try {
 				await createNotificacion({
-					id_usuario: msg.id_emisor,
+					id_usuario: idComprador,
 					tipo:       'acuerdo_aceptado',
 					titulo:     '¡Tu compra fue aceptada!',
 					subtitulo:  `Retirás "${nombreLibro}" el ${fecha} a las ${hora} en: ${lugar}`,
-					vinculo:    `/Chat?vendedorDNI=${msg.id_receptor}`,
+					vinculo:    `/Chat?vendedorDNI=${idVendedor}`,
 					payload: {
 						id_publicacion: idPublicacion,
 						nombre_libro:   nombreLibro,
@@ -259,20 +277,20 @@ export async function responderPropuesta(id, idReceptor, decision) {
 						fecha,
 						hora,
 						lugar,
-						id_vendedor:    msg.id_receptor,
+						id_vendedor:    idVendedor,
 					},
 				})
 			} catch (notifErr) {
 				console.error('[responderPropuesta] Error al crear notificación de aceptación:', notifErr.message)
 			}
 
-			// Obtener nombre del vendedor (receptor del mensaje = quien aceptó) para la notificación de reseña
+			// Obtener nombre del vendedor para la notificación de reseña
 			let nombreVendedor = 'el vendedor'
 			try {
 				const { data: vendedor, error: errV } = await supabase
 					.from('usuarios')
 					.select('nombre_comp')
-					.eq('dni', msg.id_receptor)
+					.eq('dni', idVendedor)
 					.maybeSingle()
 				if (errV) console.error('[responderPropuesta] Error obteniendo vendedor:', errV.message)
 				if (vendedor?.nombre_comp) nombreVendedor = vendedor.nombre_comp
@@ -286,7 +304,7 @@ export async function responderPropuesta(id, idReceptor, decision) {
 				const { data: existente } = await supabase
 					.from('notificaciones')
 					.select('id')
-					.eq('id_usuario', msg.id_emisor)
+					.eq('id_usuario', idComprador)
 					.eq('tipo', 'resena_pendiente')
 					.eq('leida', false)
 					.contains('payload', { id_publicacion: idPublicacion })
@@ -296,27 +314,25 @@ export async function responderPropuesta(id, idReceptor, decision) {
 					console.log('[responderPropuesta] Notificación ya existe, no se crea duplicado')
 				} else {
 					await createNotificacion({
-						id_usuario: msg.id_emisor,
+						id_usuario: idComprador,
 						tipo:       'resena_pendiente',
 						titulo:     `Calificá a ${nombreVendedor}`,
-						subtitulo:  'Tocá para dejar tu reseña',
+						subtitulo:  'Completá la encuesta una vez que recibas el libro',
 						vinculo:    null,
 						payload: {
-							id_receptor:     msg.id_receptor,
+							id_receptor:     idVendedor,
 							nombre_receptor: nombreVendedor,
 							id_publicacion:  idPublicacion,
 							nombre_libro:    nombreLibro,
 						},
 					})
-					console.log('[responderPropuesta] Notificación creada para:', msg.id_emisor)
+					console.log('[responderPropuesta] Notificación creada para:', idComprador)
 				}
 			} catch (notifErr) {
 				console.error('[responderPropuesta] Error al crear notificación de reseña:', notifErr.message)
 			}
 		} else {
 			console.warn('[responderPropuesta] No se pudo parsear el contenido del acuerdo:', msg.contenido)
-		}
-	}
 		}
 	}
 

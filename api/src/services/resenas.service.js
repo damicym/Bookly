@@ -1,9 +1,9 @@
 import supabase from '../db/supabase.js'
-import { createNotificacion } from './notificaciones.service.js'
 
 /**
- * Inserta una nueva reseña en la tabla resenas y crea la notificación
- * correspondiente para el redactor (comprador).
+ * Inserta una nueva reseña en la tabla resenas con todos los scores de la encuesta.
+ * La notificación resena_pendiente ya fue creada por responderPropuesta al aceptar el
+ * acuerdo — no la creamos de nuevo aquí para evitar duplicados.
  */
 export async function createResena({ id_redactor, id_receptor, atencion, entrega, responsable, proceso, comentario, problema, id_publicacion }) {
   const { error } = await supabase
@@ -13,60 +13,15 @@ export async function createResena({ id_redactor, id_receptor, atencion, entrega
       id_receptor,
       atencion:        atencion        ?? null,
       entrega:         entrega         ?? null,
-      responsable:     responsable     || null,
-      proceso:         proceso         || null,
+      responsable:     responsable     ?? null,
+      proceso:         proceso         ?? null,
       comentario:      comentario      || null,
       problema:        problema        || null,
       id_publicacion:  id_publicacion  || null,
-      // fecha_respuesta queda null → reseña pendiente hasta que el comprador la complete
+      fecha_respuesta: new Date().toISOString(),
     })
 
   if (error) throw error
-
-  // Obtener nombre del receptor para el texto de la notificación
-  const { data: receptor } = await supabase
-    .from('usuarios')
-    .select('nombre_comp')
-    .eq('dni', id_receptor)
-    .maybeSingle()
-
-  const nombreReceptor = receptor?.nombre_comp ?? 'el vendedor'
-
-  // Obtener nombre del libro si hay publicación
-  let nombreLibro = null
-  if (id_publicacion) {
-    const { data: pub } = await supabase
-      .from('publicaciones')
-      .select('id_libro')
-      .eq('id', id_publicacion)
-      .maybeSingle()
-    if (pub?.id_libro) {
-      const { data: libro } = await supabase
-        .from('libros')
-        .select('nombre')
-        .eq('id', pub.id_libro)
-        .maybeSingle()
-      nombreLibro = libro?.nombre ?? null
-    }
-  }
-
-  try {
-    await createNotificacion({
-      id_usuario: id_redactor,
-      tipo:       'resena_pendiente',
-      titulo:     `Calificá a ${nombreReceptor}`,
-      subtitulo:  'Tocá para dejar tu reseña',
-      vinculo:    null,   // se construye dinámicamente en el frontend con el payload
-      payload:    {
-        id_receptor,
-        nombre_receptor:  nombreReceptor,
-        id_publicacion:   id_publicacion ?? null,
-        nombre_libro:     nombreLibro,
-      },
-    })
-  } catch (notifErr) {
-    console.error('[createResena] Error al crear notificación:', notifErr.message)
-  }
 }
 
 /**
@@ -76,7 +31,7 @@ export async function createResena({ id_redactor, id_receptor, atencion, entrega
 export async function getResenasByReceptor(dni) {
   const { data: resenas, error } = await supabase
     .from('resenas')
-    .select('id, id_redactor, id_receptor, atencion, entrega, fecha_respuesta, created_at')
+    .select('id, id_redactor, id_receptor, atencion, entrega, responsable, proceso, fecha_respuesta, created_at')
     .eq('id_receptor', dni)
     .not('atencion', 'is', null)
     .not('entrega', 'is', null)
