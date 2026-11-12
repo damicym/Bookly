@@ -2288,7 +2288,9 @@ body:has(.chat-page-wrapper) .footer {
 }
 
 /* ── Lista de publicaciones (paso 1) ── */
-#chatAcuerdoPubsList .chat-acuerdo-section-label {
+#chatAcuerdoPubsList .chat-acuerdo-section-label,
+#chatIntercambioMisPubs .chat-acuerdo-section-label,
+#chatIntercambioSusPubs .chat-acuerdo-section-label {
   font-size: 0.74rem;
   font-weight: 700;
   color: rgba(239, 242, 241, 0.45);
