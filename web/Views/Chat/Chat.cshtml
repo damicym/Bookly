@@ -163,6 +163,12 @@
                         </span>
                         <span class="chat-actions-item-label">Acordar precio</span>
                     </button>
+                    <button class="chat-actions-item" id="chatActionIntercambio" type="button">
+                        <span class="chat-actions-item-icon chat-actions-item-icon--swap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/></svg>
+                        </span>
+                        <span class="chat-actions-item-label">Intercambio</span>
+                    </button>
                     @* ── Espacio para futuras opciones ── *@
                     @* Descomentar y adaptar cuando se implementen nuevas funciones:
                     <button class="chat-actions-item" id="chatActionFoto" type="button" disabled>
@@ -353,6 +359,116 @@
     </div>
 </div>
 
+@* ── Modal: Proponer intercambio ── *@
+<div id="chatIntercambioModal" hidden role="dialog" aria-modal="true" aria-labelledby="chatIntercambioTitulo">
+    <div class="chat-acuerdo-overlay" id="chatIntercambioOverlay"></div>
+    <div class="chat-acuerdo-dialog">
+
+        <div class="chat-acuerdo-dialog-header">
+            <button class="chat-acuerdo-back-btn" id="chatIntercambioBackBtn" aria-label="Volver" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+            </button>
+            <div class="chat-acuerdo-dialog-header-text">
+                <h2 class="chat-acuerdo-dialog-titulo" id="chatIntercambioTitulo">Proponer intercambio</h2>
+                <p class="chat-acuerdo-dialog-desc" id="chatIntercambioDesc">Elegí el libro tuyo que querés ofrecer</p>
+            </div>
+            <button class="chat-acuerdo-dialog-close" id="chatIntercambioClose" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        @* Indicador de 3 pasos *@
+        <div class="chat-acuerdo-steps" id="chatIntercambioSteps">
+            <div class="chat-acuerdo-step chat-acuerdo-step--active" data-int-step="1">
+                <span class="chat-acuerdo-step-num">1</span>
+                <span class="chat-acuerdo-step-label">Tu libro</span>
+            </div>
+            <div class="chat-acuerdo-step-line"></div>
+            <div class="chat-acuerdo-step" data-int-step="2">
+                <span class="chat-acuerdo-step-num">2</span>
+                <span class="chat-acuerdo-step-label">Su libro</span>
+            </div>
+            <div class="chat-acuerdo-step-line"></div>
+            <div class="chat-acuerdo-step" data-int-step="3">
+                <span class="chat-acuerdo-step-num">3</span>
+                <span class="chat-acuerdo-step-label">Detalles</span>
+            </div>
+        </div>
+
+        @* PASO 1: Mi libro (mis publicaciones activas) *@
+        <div class="chat-acuerdo-body" id="chatIntercambioStep1">
+            <div class="chat-acuerdo-loading" id="chatIntercambioPubsLoader" hidden>
+                <svg class="chat-attach-spinner" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
+            </div>
+            <div id="chatIntercambioMisPubs"></div>
+        </div>
+
+        @* PASO 2: Su libro (publicaciones del contacto) *@
+        <div class="chat-acuerdo-body" id="chatIntercambioStep2" hidden>
+            @* Mini-card del libro propio seleccionado *@
+            <div class="chat-acuerdo-pub-seleccionada chat-intercambio-mi-pub-card" id="chatIntercambioMiPubCard"></div>
+            <div id="chatIntercambioSusPubs"></div>
+        </div>
+
+        @* PASO 3: Detalles (fecha / hora / lugar) *@
+        <div class="chat-acuerdo-step2-wrap" id="chatIntercambioStep3" hidden>
+            @* Mini-cards de ambos libros *@
+            <div class="chat-intercambio-resumen-cards" id="chatIntercambioResumenCards"></div>
+
+            <form id="chatIntercambioForm">
+            <div class="chat-acuerdo-body">
+                <div class="chat-acuerdo-form">
+                    <div class="chat-acuerdo-form-row">
+                        <label class="chat-acuerdo-label" for="intercambioFecha">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Fecha de encuentro
+                        </label>
+                        <input type="date" id="intercambioFecha" class="chat-acuerdo-input" required />
+                    </div>
+
+                    <div class="chat-acuerdo-form-row">
+                        <label class="chat-acuerdo-label" for="intercambioHora">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Horario
+                        </label>
+                        <div class="chat-acuerdo-hora-wrap">
+                            <select id="intercambioHora" class="chat-acuerdo-input chat-acuerdo-select" required>
+                                <option value="" disabled selected>HH</option>
+                                @for (int h = 0; h < 24; h++) { <option value="@h.ToString("D2")">@h.ToString("D2")</option> }
+                            </select>
+                            <span class="chat-acuerdo-hora-sep">:</span>
+                            <select id="intercambioMinutos" class="chat-acuerdo-input chat-acuerdo-select" required>
+                                <option value="" disabled selected>MM</option>
+                                @for (int m = 0; m < 60; m += 5) { <option value="@m.ToString("D2")">@m.ToString("D2")</option> }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="chat-acuerdo-form-row">
+                        <label class="chat-acuerdo-label" for="intercambioLugar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            Lugar de encuentro
+                        </label>
+                        <div class="chat-acuerdo-lugar-wrap" id="intercambioLugarWrap">
+                            <input type="text" id="intercambioLugar" class="chat-acuerdo-input" placeholder="Ej: Biblioteca central, Edificio A..." maxlength="200" autocomplete="off" required />
+                            <ul class="chat-acuerdo-lugar-lista" id="intercambioLugarLista" role="listbox" aria-label="Sugerencias de ubicación" hidden></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-acuerdo-actions">
+                <button class="chat-acuerdo-send-btn chat-intercambio-send-btn" id="chatIntercambioSendBtn" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 14l11 -11"/><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/></svg>
+                    Enviar propuesta
+                </button>
+            </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
 @* ── Modal: Nueva conversación ── *@
 <div id="chatNuevoModal" hidden role="dialog" aria-modal="true" aria-labelledby="chatNuevoTitulo">
     <div class="chat-nuevo-overlay" id="chatNuevoOverlay"></div>
@@ -399,14 +515,16 @@
         tieneVendedor: @(tieneVendedor ? "true" : "false"),
         wsUrl:         '@(Environment.GetEnvironmentVariable("API_URL")?.Replace("/api","") ?? "http://localhost:3000")',
         autoAcuerdo:   @((ViewBag.AutoAcuerdo == true) ? "true" : "false"),
-        autoAcuerdoPub: @Html.Raw((string)(ViewBag.AutoAcuerdoPubJson ?? "null"))
+        autoAcuerdoPub: @Html.Raw((string)(ViewBag.AutoAcuerdoPubJson ?? "null")),
+        autoIntercambio: @((ViewBag.AutoIntercambio == true) ? "true" : "false"),
+        autoIntercambioLibrosDeseados: @Html.Raw(!string.IsNullOrEmpty((string)ViewBag.AutoIntercambioLibrosDeseados) ? (string)ViewBag.AutoIntercambioLibrosDeseados : "null")
     };
 
     // Limpiar parámetros de la URL para que recargar no vuelva a abrir el modal.
     (function () {
         var url = new URL(window.location.href);
         var cambiado = false;
-        ['idPublicacion', 'autoAcuerdo'].forEach(function (p) {
+        ['idPublicacion', 'autoAcuerdo', 'autoIntercambio', 'librosDeseados'].forEach(function (p) {
             if (url.searchParams.has(p)) { url.searchParams.delete(p); cambiado = true; }
         });
         if (cambiado) history.replaceState(null, '', url.toString());

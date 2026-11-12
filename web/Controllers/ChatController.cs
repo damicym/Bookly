@@ -14,7 +14,7 @@ namespace Bookly.Controllers
             _hubContext = hubContext;
         }
 
-        public IActionResult Index(string? vendedorDNI, int? idPublicacion, bool autoAcuerdo = false)
+        public IActionResult Index(string? vendedorDNI, int? idPublicacion, bool autoAcuerdo = false, bool autoIntercambio = false, string? librosDeseados = null)
         {
             Usuarios user = obj.StringToObject<Usuarios>(HttpContext.Session.GetString("usuarioLogueado"));
             if (user == null)
@@ -73,6 +73,14 @@ namespace Bookly.Controllers
                         esMia   = false
                     });
                 }
+            }
+
+            // Si viene desde "Proponer intercambio" (modal en Detalle), auto-abrir modal de intercambio
+            if (autoIntercambio && !string.IsNullOrWhiteSpace(librosDeseados))
+            {
+                ViewBag.AutoIntercambio = true;
+                // librosDeseados es un JSON array de nombres: ["Libro A", "Libro B"]
+                ViewBag.AutoIntercambioLibrosDeseados = librosDeseados;
             }
 
             return View("Chat");

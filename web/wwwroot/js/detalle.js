@@ -305,8 +305,22 @@
 
     if (ctaBtn) {
         ctaBtn.addEventListener('click', function () {
-            var chatUrl = ctaBtn.dataset.chatUrl;
-            if (chatUrl) window.location.href = chatUrl;
+            var baseUrl = ctaBtn.dataset.chatUrl;
+            if (!baseUrl) return;
+
+            // Recopilar nombres de los libros seleccionados por el usuario
+            var seleccionados = Array.from(
+                document.querySelectorAll('.intercambio-item--seleccionado')
+            ).map(function (el) { return el.dataset.nombre || ''; }).filter(Boolean);
+
+            // Construir URL con parámetros para auto-abrir el modal de intercambio en el chat
+            var url = new URL(baseUrl, window.location.origin);
+            url.searchParams.set('autoIntercambio', 'true');
+            if (seleccionados.length > 0) {
+                url.searchParams.set('librosDeseados', JSON.stringify(seleccionados));
+            }
+
+            window.location.href = url.toString();
         });
     }
 

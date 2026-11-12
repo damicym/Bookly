@@ -9,6 +9,8 @@
     const WS_URL         = (window.CHAT_CONFIG && window.CHAT_CONFIG.wsUrl)         || 'http://localhost:3000';
     const AUTO_ACUERDO   = (window.CHAT_CONFIG && window.CHAT_CONFIG.autoAcuerdo)   || false;
     const AUTO_ACUERDO_PUB = (window.CHAT_CONFIG && window.CHAT_CONFIG.autoAcuerdoPub) || null;
+    const AUTO_INTERCAMBIO = (window.CHAT_CONFIG && window.CHAT_CONFIG.autoIntercambio) || false;
+    const AUTO_INTERCAMBIO_LIBROS = (window.CHAT_CONFIG && window.CHAT_CONFIG.autoIntercambioLibrosDeseados) || null;
     const DEFAULT_AVATAR = '/img/default.webp';
 
     // ── Badges de mensajes no leídos: { [dniContacto]: número } ─────────────
@@ -324,6 +326,88 @@
             return div;
         }
 
+        // ── Burbuja de propuesta de intercambio ──────────────────────
+        const intercambioMatch = typeof msg.contenido === 'string' && msg.contenido.match(
+            /^\[INTERCAMBIO\|\|\|(\d+)\|\|\|(.*?)\|\|\|(\d+)\|\|\|(.*?)\|\|\|([\d/]+)\|\|\|(.*?)\|\|\|(.*?)\|\|\|(pendiente|aceptado|rechazado)\]$/
+        );
+        if (intercambioMatch) {
+            div.className = 'chat-msg ' + (esMio ? 'chat-msg--outgoing' : 'chat-msg--incoming');
+            if (msg.id) div.dataset.msgId = msg.id;
+            div.dataset.emisor    = msg.idEmisor || '';
+            div.dataset.propuesta = 'true';
+            div.dataset.tipo      = 'intercambio';
+
+            const [, idMiPub, nombreMiPub, idSuPub, nombreSuPub, fecha, hora, lugar, estado] = intercambioMatch;
+
+            const horaStr = msg.fechaEnvio
+                ? (function () {
+                    const d = new Date(msg.fechaEnvio);
+                    return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  })()
+                : '';
+
+            let footerHtml = '';
+            if (estado === 'pendiente') {
+                if (!esMio) {
+                    footerHtml = `<div class="chat-msg-propuesta-footer">`
+                        + `<div class="chat-msg-propuesta-btns">`
+                        + `<button class="chat-msg-propuesta-btn chat-msg-propuesta-btn--aceptar" data-accion="aceptar">`
+                        + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6l-11 11l-5-5"/></svg> Aceptar`
+                        + `</button>`
+                        + `<button class="chat-msg-propuesta-btn chat-msg-propuesta-btn--rechazar" data-accion="rechazar">`
+                        + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg> Rechazar`
+                        + `</button>`
+                        + `</div></div>`;
+                } else {
+                    footerHtml = `<div class="chat-msg-propuesta-footer">`
+                        + `<span class="chat-msg-propuesta-estado chat-msg-propuesta-estado--pendiente">`
+                        + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Esperando respuesta`
+                        + `</span></div>`;
+                }
+            } else if (estado === 'aceptado') {
+                footerHtml = `<div class="chat-msg-propuesta-footer">`
+                    + `<span class="chat-msg-propuesta-estado chat-msg-propuesta-estado--aceptado">`
+                    + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6l-11 11l-5-5"/></svg> Intercambio aceptado`
+                    + `</span></div>`;
+            } else if (estado === 'rechazado') {
+                footerHtml = `<div class="chat-msg-propuesta-footer">`
+                    + `<span class="chat-msg-propuesta-estado chat-msg-propuesta-estado--rechazado">`
+                    + `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg> Intercambio rechazado`
+                    + `</span></div>`;
+            }
+
+            // Header: icono de intercambio + "mi libro ⇄ su libro"
+            div.innerHTML = `<div class="chat-msg-bubble-wrap"><div class="chat-msg-propuesta chat-msg-propuesta--intercambio">`
+                + `<div class="chat-msg-propuesta-header">`
+                +   `<div class="chat-msg-propuesta-header-icon chat-msg-propuesta-header-icon--intercambio">`
+                +     `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/></svg>`
+                +   `</div>`
+                +   `<div class="chat-msg-propuesta-header-text">`
+                +     `<div class="chat-msg-propuesta-titulo chat-msg-propuesta-titulo--intercambio">Propuesta de intercambio</div>`
+                +     `<div class="chat-msg-propuesta-intercambio-libros">`
+                +       `<a class="chat-msg-propuesta-libro-text chat-msg-propuesta-libro-link" href="/Book/Detalle/${encodeURIComponent(idMiPub)}" target="_blank" rel="noopener noreferrer">${escapeHtml(nombreMiPub)}</a>`
+                +       `<svg class="chat-msg-propuesta-swap-icon" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16v-4m0 0V8m0 4h4m6 0v4m0 0v4m0-4h-4"/></svg>`
+                +       `<a class="chat-msg-propuesta-libro-text chat-msg-propuesta-libro-link" href="/Book/Detalle/${encodeURIComponent(idSuPub)}" target="_blank" rel="noopener noreferrer">${escapeHtml(nombreSuPub)}</a>`
+                +     `</div>`
+                +   `</div>`
+                + `</div>`
+                + `<div class="chat-msg-propuesta-body">`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(fecha)}</span></div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(hora)}</span></div>`
+                +   `<div class="chat-msg-propuesta-row"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="chat-msg-propuesta-row-text">${escapeHtml(lugar)}</span></div>`
+                + `</div>`
+                + footerHtml
+                + (horaStr ? `<div class="chat-msg-bubble-time">${horaStr}</div>` : '')
+                + `</div></div>`;
+
+            const btnAceptar  = div.querySelector('[data-accion="aceptar"]');
+            const btnRechazar = div.querySelector('[data-accion="rechazar"]');
+            if (btnAceptar)  btnAceptar.addEventListener('click',  function () { responderPropuesta(div, msg, 'aceptado'); });
+            if (btnRechazar) btnRechazar.addEventListener('click', function () { responderPropuesta(div, msg, 'rechazado'); });
+
+            return div;
+        }
+
         // ── Burbuja de mensaje normal ─────────────────────────────────
         div.className = 'chat-msg ' + (esMio ? 'chat-msg--outgoing' : 'chat-msg--incoming');
         if (msg.id) div.dataset.msgId = msg.id;
@@ -435,8 +519,9 @@
 
     // Procesa contenido de mensaje para renderizar (convierte formato especial a HTML)
     function procesarContenidoMensaje(contenido) {
-        // Verificar si es una propuesta de acuerdo (se procesa aparte en buildMensajeEl)
-        if (/^\[ACUERDO\|\|\|/.test(contenido)) return contenido;
+        // Verificar si es una propuesta de acuerdo o intercambio (se procesan aparte en buildMensajeEl)
+        if (/^\[ACUERDO\|\|\|/.test(contenido))      return contenido;
+        if (/^\[INTERCAMBIO\|\|\|/.test(contenido))  return contenido;
 
         // Mensajes con formato especial no reconocido (ej: [COMPRA|||...], formato legacy)
         // Mostrar un placeholder en lugar del string crudo
@@ -1403,9 +1488,470 @@
         });
     }
 
-    // Cerrar menú al presionar Escape o hacer click fuera.
-    // Flag para evitar cierre inmediato en el mismo tick del click que lo abrió.
-    let _skipActionsClose = false;
+    // "Acordar precio" → cierra el menú y abre el modal de acuerdo
+    if (actionAcuerdo) {
+        actionAcuerdo.addEventListener('click', function () {
+            cerrarActionsMenu();
+            abrirModalAcuerdo();
+        });
+    }
+
+    // "Proponer intercambio" → cierra el menú y abre el modal de intercambio
+    const actionIntercambio = document.getElementById('chatActionIntercambio');
+    if (actionIntercambio) {
+        actionIntercambio.addEventListener('click', function () {
+            cerrarActionsMenu();
+            abrirModalIntercambio();
+        });
+    }
+
+    // ── Modal: Proponer intercambio ───────────────────────
+    const modalIntercambio        = document.getElementById('chatIntercambioModal');
+    const modalIntercambioOverlay = document.getElementById('chatIntercambioOverlay');
+    const modalIntercambioClose   = document.getElementById('chatIntercambioClose');
+    const modalIntercambioBack    = document.getElementById('chatIntercambioBackBtn');
+    const intStep1El              = document.getElementById('chatIntercambioStep1');
+    const intStep2El              = document.getElementById('chatIntercambioStep2');
+    const intStep3El              = document.getElementById('chatIntercambioStep3');
+    const intPubsLoader           = document.getElementById('chatIntercambioPubsLoader');
+    const intMisPubs              = document.getElementById('chatIntercambioMisPubs');
+    const intSusPubs              = document.getElementById('chatIntercambioSusPubs');
+    const intMiPubCard            = document.getElementById('chatIntercambioMiPubCard');
+    const intResumenCards         = document.getElementById('chatIntercambioResumenCards');
+    const intSendBtn              = document.getElementById('chatIntercambioSendBtn');
+    const intStepsDots            = document.querySelectorAll('[data-int-step]');
+
+    // Estado local del modal de intercambio
+    let intercambioEstado = {
+        miPub:  null,   // { id, nombre, precio, imagen }
+        suPub:  null,   // { id, nombre, precio, imagen }
+        paso:   1
+    };
+
+    function abrirModalIntercambio(librosDeseadosPrevios) {
+        if (!modalIntercambio) return;
+        intercambioEstado = { miPub: null, suPub: null, paso: 1 };
+        actualizarPasoIntercambio(1);
+        modalIntercambio.removeAttribute('hidden');
+        cargarPubsIntercambio(librosDeseadosPrevios || null);
+    }
+
+    function cerrarModalIntercambio() {
+        if (!modalIntercambio) return;
+        const dialog  = modalIntercambio.querySelector('.chat-acuerdo-dialog');
+        const overlay = modalIntercambio.querySelector('.chat-acuerdo-overlay');
+        if (dialog)  dialog.style.animation  = 'chatDialogOut 0.18s cubic-bezier(0.4,0,1,1) forwards';
+        if (overlay) overlay.style.animation = 'chatOverlayOut 0.18s ease forwards';
+        setTimeout(function () {
+            modalIntercambio.setAttribute('hidden', '');
+            if (dialog)  dialog.style.animation  = '';
+            if (overlay) overlay.style.animation = '';
+        }, 170);
+    }
+
+    function actualizarPasoIntercambio(paso) {
+        intercambioEstado.paso = paso;
+
+        intStepsDots.forEach(function (dot) {
+            const n = parseInt(dot.dataset.intStep, 10);
+            dot.classList.remove('chat-acuerdo-step--active', 'chat-acuerdo-step--done');
+            if (n < paso)        dot.classList.add('chat-acuerdo-step--done');
+            else if (n === paso) dot.classList.add('chat-acuerdo-step--active');
+        });
+
+        if (intStep1El) intStep1El.hidden = paso !== 1;
+        if (intStep2El) intStep2El.hidden = paso !== 2;
+        if (intStep3El) intStep3El.hidden = paso !== 3;
+
+        if (modalIntercambioBack) modalIntercambioBack.hidden = paso === 1;
+
+        const descEl = document.getElementById('chatIntercambioDesc');
+        if (descEl) {
+            if (paso === 1) descEl.textContent = 'Elegí el libro tuyo que querés ofrecer';
+            else if (paso === 2) descEl.textContent = 'Elegí qué libro de él/ella querés a cambio';
+            else descEl.textContent = 'Completá los detalles del encuentro';
+        }
+    }
+
+    function cargarPubsIntercambio(librosDeseadosPrevios) {
+        if (!intMisPubs || !intPubsLoader) return;
+        const dni = dniContactoActivo || '';
+
+        const hacerRender = function (data) {
+            if (intPubsLoader) intPubsLoader.hidden = true;
+            renderMisPublicacionesIntercambio(data.mias || [], librosDeseadosPrevios);
+            renderSusPublicacionesIntercambio(data.contacto || []);
+        };
+
+        if (cacheAttachPubs[dni]) {
+            hacerRender(cacheAttachPubs[dni]);
+            return;
+        }
+
+        intPubsLoader.hidden = false;
+        intMisPubs.innerHTML = '';
+
+        fetch('/Chat/ObtenerPublicacionesChat?dniContacto=' + encodeURIComponent(dni))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                cacheAttachPubs[dni] = data;
+                hacerRender(data);
+            })
+            .catch(function () {
+                if (intPubsLoader) intPubsLoader.hidden = true;
+            });
+    }
+
+    function buildIntercambioPubItem(pub, onClick) {
+        const btn = document.createElement('button');
+        btn.className = 'chat-acuerdo-pub-item';
+        btn.type = 'button';
+        const imgSrc = pub.imagen || '/img/book-placeholder.webp';
+        btn.innerHTML =
+            `<img class="chat-acuerdo-pub-item-img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" loading="lazy" />`
+            + `<div class="chat-acuerdo-pub-item-info">`
+            +   `<span class="chat-acuerdo-pub-item-nombre">${escapeHtml(pub.nombre)}</span>`
+            +   `<span class="chat-acuerdo-pub-item-precio">$${formatearMiles(String(pub.precio))}</span>`
+            + `</div>`
+            + `<svg class="chat-acuerdo-pub-item-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>`;
+        btn.addEventListener('click', function () { onClick(pub); });
+        return btn;
+    }
+
+    function renderMisPublicacionesIntercambio(mias, librosDeseadosPrevios) {
+        if (!intMisPubs) return;
+        intMisPubs.innerHTML = '';
+
+        // Separador de sección
+        const label = document.createElement('p');
+        label.className = 'chat-acuerdo-section-label';
+        label.textContent = 'Mis publicaciones';
+        intMisPubs.appendChild(label);
+
+        if (mias.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'chat-acuerdo-empty';
+            empty.style.padding = '8px 16px 16px';
+            empty.textContent = 'No tenés publicaciones activas para ofrecer.';
+            intMisPubs.appendChild(empty);
+            return;
+        }
+
+        // Si venimos desde la página de detalle con libros pre-seleccionados, resaltar el primero que coincida
+        let seleccionarAutomaticamente = null;
+        if (librosDeseadosPrevios && Array.isArray(librosDeseadosPrevios) && librosDeseadosPrevios.length > 0) {
+            // librosDeseadosPrevios son nombres de libros que el vendedor quiere; no los ofrecemos directamente.
+            // No pre-seleccionamos el libro del usuario — solo mostramos la lista limpia.
+        }
+
+        mias.forEach(function (pub) {
+            intMisPubs.appendChild(buildIntercambioPubItem(pub, function (p) {
+                seleccionarMiLibroIntercambio(p);
+            }));
+        });
+    }
+
+    function renderSusPublicacionesIntercambio(contacto) {
+        if (!intSusPubs) return;
+        intSusPubs.innerHTML = '';
+
+        const label = document.createElement('p');
+        label.className = 'chat-acuerdo-section-label';
+        label.textContent = 'Sus publicaciones';
+        intSusPubs.appendChild(label);
+
+        if (contacto.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'chat-acuerdo-empty';
+            empty.style.padding = '8px 16px 16px';
+            empty.textContent = 'Este usuario no tiene publicaciones activas.';
+            intSusPubs.appendChild(empty);
+            return;
+        }
+
+        contacto.forEach(function (pub) {
+            intSusPubs.appendChild(buildIntercambioPubItem(pub, function (p) {
+                seleccionarSuLibroIntercambio(p);
+            }));
+        });
+    }
+
+    function buildMiniCard(pub, label) {
+        const imgSrc = pub.imagen || '/img/book-placeholder.webp';
+        return `<div class="chat-intercambio-mini-card">`
+            + `<span class="chat-intercambio-mini-card-label">${escapeHtml(label)}</span>`
+            + `<img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(pub.nombre)}" />`
+            + `<span class="chat-intercambio-mini-card-nombre">${escapeHtml(pub.nombre)}</span>`
+            + `</div>`;
+    }
+
+    function seleccionarMiLibroIntercambio(pub) {
+        intercambioEstado.miPub = pub;
+
+        // Mostrar mini-card del libro propio en paso 2
+        if (intMiPubCard) {
+            intMiPubCard.innerHTML = buildMiniCard(pub, 'Tu libro');
+        }
+
+        actualizarPasoIntercambio(2);
+    }
+
+    function seleccionarSuLibroIntercambio(pub) {
+        intercambioEstado.suPub = pub;
+
+        // Mostrar resumen de ambos libros en paso 3
+        if (intResumenCards) {
+            intResumenCards.innerHTML =
+                buildMiniCard(intercambioEstado.miPub, 'Tu libro')
+                + `<svg class="chat-intercambio-resumen-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10h14l-4 -4"/><path d="M17 14h-14l4 4"/></svg>`
+                + buildMiniCard(pub, 'Su libro');
+        }
+
+        // Pre-rellenar fecha de hoy
+        const fechaInput = document.getElementById('intercambioFecha');
+        if (fechaInput) {
+            const hoy  = new Date();
+            const yyyy = hoy.getFullYear();
+            const mm   = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dd   = String(hoy.getDate()).padStart(2, '0');
+            const hoyStr = `${yyyy}-${mm}-${dd}`;
+            fechaInput.min   = hoyStr;
+            fechaInput.value = hoyStr;
+        }
+
+        // Limpiar campos restantes
+        const horaInput  = document.getElementById('intercambioHora');
+        const minInput   = document.getElementById('intercambioMinutos');
+        const lugarInput = document.getElementById('intercambioLugar');
+        if (horaInput)  horaInput.value  = '';
+        if (minInput)   minInput.value   = '';
+        if (lugarInput) lugarInput.value = '';
+        window._intLugarConfirmado = false;
+
+        actualizarPasoIntercambio(3);
+    }
+
+    function enviarPropuestaIntercambio() {
+        const miPub = intercambioEstado.miPub;
+        const suPub = intercambioEstado.suPub;
+        if (!miPub || !suPub) return;
+
+        const fechaVal = document.getElementById('intercambioFecha')?.value?.trim();
+        const horaVal  = document.getElementById('intercambioHora')?.value;
+        const minVal   = document.getElementById('intercambioMinutos')?.value;
+        const lugarVal = document.getElementById('intercambioLugar')?.value?.trim();
+
+        if (!horaVal || !minVal) {
+            document.getElementById('intercambioHora')?.focus();
+            return;
+        }
+        if (!lugarVal) {
+            document.getElementById('intercambioLugar')?.focus();
+            return;
+        }
+
+        const [y, m, d] = fechaVal.split('-');
+        const fechaDisplay = `${d}/${m}/${y}`;
+        const horaDisplay  = `${horaVal}:${minVal} hs`;
+
+        // Formato: [INTERCAMBIO|||idMiPub|||nombreMiPub|||idSuPub|||nombreSuPub|||fecha|||hora|||lugar|||estado]
+        const contenido = `[INTERCAMBIO|||${miPub.id}|||${miPub.nombre}|||${suPub.id}|||${suPub.nombre}|||${fechaDisplay}|||${horaDisplay}|||${lugarVal}|||pendiente]`;
+
+        if (intSendBtn) {
+            intSendBtn.disabled = true;
+            intSendBtn.textContent = 'Enviando...';
+        }
+
+        fetch('/Chat/EnviarMensaje', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ dniReceptor: dniContactoActivo, contenido: contenido })
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error('Error al enviar');
+            return r.json();
+        })
+        .then(function (mensajeGuardado) {
+            cerrarModalIntercambio();
+
+            const body       = document.getElementById('chatMessagesBody');
+            const emptyState = document.getElementById('chatEmptyState');
+            if (!body) return;
+            if (emptyState) emptyState.style.display = 'none';
+
+            const msgObj = {
+                id:         mensajeGuardado.id,
+                idEmisor:   DNI_USUARIO,
+                idReceptor: dniContactoActivo,
+                contenido:  contenido,
+                fechaEnvio: mensajeGuardado.fechaEnvio || new Date().toISOString(),
+                editado:    false
+            };
+
+            const ultimoSep = ultimoSeparadorDia(body);
+            if (!ultimoSep || ultimoSep.dataset.dayKey !== diaKey(msgObj.fechaEnvio)) {
+                body.appendChild(buildDaySeparator(msgObj.fechaEnvio));
+            }
+
+            const el = buildMensajeEl(msgObj);
+            body.appendChild(el);
+            body.scrollTop = body.scrollHeight;
+
+            if (!cacheMensajes[dniContactoActivo]) cacheMensajes[dniContactoActivo] = [];
+            cacheMensajes[dniContactoActivo].push(msgObj);
+        })
+        .catch(function (err) {
+            console.error('[intercambio] Error al enviar:', err);
+            if (intSendBtn) {
+                intSendBtn.disabled = false;
+                intSendBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 14l11 -11"/><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/></svg> Enviar propuesta';
+            }
+        });
+    }
+
+    if (modalIntercambioClose)   modalIntercambioClose.addEventListener('click', cerrarModalIntercambio);
+    if (modalIntercambioOverlay) modalIntercambioOverlay.addEventListener('click', cerrarModalIntercambio);
+    if (modalIntercambioBack) {
+        modalIntercambioBack.addEventListener('click', function () {
+            if (intercambioEstado.paso === 3) actualizarPasoIntercambio(2);
+            else if (intercambioEstado.paso === 2) actualizarPasoIntercambio(1);
+        });
+    }
+
+    const intercambioForm = document.getElementById('chatIntercambioForm');
+    if (intercambioForm) {
+        intercambioForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            enviarPropuestaIntercambio();
+        });
+    }
+
+    // Autocomplete de lugar para el modal de intercambio (reutiliza la misma lógica que acuerdo)
+    (function initIntercambioLugarAutocomplete() {
+        var inputLugar = document.getElementById('intercambioLugar');
+        var lista      = document.getElementById('intercambioLugarLista');
+        if (!inputLugar || !lista) return;
+
+        var timer        = null;
+        var indiceActivo = -1;
+        var DELAY        = 500;
+        var MIN_CHARS    = 4;
+        window._intLugarConfirmado = false;
+
+        function getItems() { return lista.querySelectorAll('.chat-acuerdo-lugar-item'); }
+
+        function cerrarLista() { lista.hidden = true; lista.innerHTML = ''; indiceActivo = -1; }
+
+        function resaltarItem(idx) {
+            getItems().forEach(function (el, i) {
+                el.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+            });
+            indiceActivo = idx;
+        }
+
+        function mostrarCargando() {
+            lista.innerHTML = '<li class="chat-acuerdo-lugar-cargando" role="option"><span class="chat-acuerdo-lugar-spinner"></span><span>Buscando...</span></li>';
+            lista.hidden = false;
+        }
+
+        function mostrarSinResultados() {
+            lista.innerHTML = '<li class="chat-acuerdo-lugar-sin-resultados" role="option">Sin resultados para esta búsqueda</li>';
+            lista.hidden = false;
+        }
+
+        function setError(activo) {
+            inputLugar.style.borderColor = activo ? '#e05252' : '';
+            inputLugar.style.boxShadow   = activo ? '0 0 0 3px rgba(224,82,82,0.18)' : '';
+        }
+
+        function seleccionar(valor) {
+            inputLugar.value = valor;
+            window._intLugarConfirmado = true;
+            setError(false);
+            cerrarLista();
+            inputLugar.focus();
+        }
+
+        function renderResultados(features) {
+            lista.innerHTML = '';
+            indiceActivo = -1;
+            if (!features || features.length === 0) { mostrarSinResultados(); return; }
+            features.forEach(function (feature) {
+                var p = feature.properties || {};
+                var calle  = p.street || p.name || '';
+                var numero = p.housenumber || '';
+                var linea1 = numero ? calle + ' ' + numero : calle;
+                if (!linea1) linea1 = p.name || '';
+                var partes = [];
+                if (p.district && p.district !== linea1) partes.push(p.district);
+                var ciudad = p.city || p.county || '';
+                if (ciudad && ciudad !== linea1) partes.push(ciudad);
+                if (p.state && p.state !== linea1) partes.push(p.state);
+                var linea2    = partes.slice(0, 3).join(', ');
+                var valorInput = [linea1, ciudad || p.state].filter(Boolean).join(', ');
+                var li = document.createElement('li');
+                li.className = 'chat-acuerdo-lugar-item';
+                li.setAttribute('role', 'option');
+                li.setAttribute('aria-selected', 'false');
+                li.innerHTML =
+                    '<span class="chat-acuerdo-lugar-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>'
+                    + '<span class="chat-acuerdo-lugar-item-texto">'
+                    +   '<span class="chat-acuerdo-lugar-item-principal">' + escapeHtml(linea1) + '</span>'
+                    +   (linea2 ? '<span class="chat-acuerdo-lugar-item-secundario">' + escapeHtml(linea2) + '</span>' : '')
+                    + '</span>';
+                li.addEventListener('mousedown', function (e) { e.preventDefault(); seleccionar(valorInput); });
+                lista.appendChild(li);
+            });
+            lista.hidden = false;
+        }
+
+        function buscarNominatim(query) {
+            var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=7&addressdetails=1&countrycodes=ar&accept-language=es&q=' + encodeURIComponent(query);
+            fetch(url, { headers: { 'Accept-Language': 'es' } })
+                .then(function (r) { return r.json(); })
+                .then(function (resultados) {
+                    if (!resultados || resultados.length === 0) { mostrarSinResultados(); return; }
+                    var features = resultados.map(function (lugar) {
+                        var addr = lugar.address || {};
+                        return { properties: { name: addr.road || lugar.name || '', street: addr.road || '', housenumber: addr.house_number || '', district: addr.neighbourhood || addr.suburb || '', city: addr.city || addr.town || addr.village || '', state: addr.state || '', country_code: 'ar' } };
+                    });
+                    renderResultados(features);
+                })
+                .catch(function () { cerrarLista(); });
+        }
+
+        function buscar(query) {
+            mostrarCargando();
+            fetch('https://photon.komoot.io/api/?q=' + encodeURIComponent(query + ' Argentina') + '&limit=7&lang=es')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var features = ((data && data.features) || []).filter(function (f) { var cc = (f.properties || {}).country_code; return !cc || cc === 'ar'; });
+                    if (features.length > 0) renderResultados(features);
+                    else buscarNominatim(query);
+                })
+                .catch(function () { buscarNominatim(query); });
+        }
+
+        inputLugar.addEventListener('input', function () {
+            window._intLugarConfirmado = false;
+            setError(false);
+            clearTimeout(timer);
+            var val = inputLugar.value.trim();
+            if (val.length < MIN_CHARS) { cerrarLista(); return; }
+            timer = setTimeout(function () { buscar(val); }, DELAY);
+        });
+
+        inputLugar.addEventListener('keydown', function (e) {
+            var items = getItems();
+            if (!items.length) return;
+            if (e.key === 'ArrowDown') { e.preventDefault(); resaltarItem(Math.min(indiceActivo + 1, items.length - 1)); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); resaltarItem(Math.max(indiceActivo - 1, 0)); }
+            else if (e.key === 'Enter' && indiceActivo >= 0) { e.preventDefault(); items[indiceActivo].dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); }
+            else if (e.key === 'Escape') cerrarLista();
+        });
+
+        inputLugar.addEventListener('blur', function () { setTimeout(cerrarLista, 200); });
+    })();
 
     function abrirActionsMenuConFlag() {
         _skipActionsClose = true;
@@ -2896,6 +3442,13 @@
         }, 400);
     }
 
+    // Si viene desde "Proponer intercambio" en la página de detalle, auto-abrir el modal de intercambio
+    if (AUTO_INTERCAMBIO && dniContactoActivo) {
+        setTimeout(function () {
+            abrirModalIntercambio(AUTO_INTERCAMBIO_LIBROS);
+        }, 400);
+    }
+
     // ── Listener global para Escape (cierra todos los modales/drawers) ───
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
@@ -2904,7 +3457,8 @@
             cerrarDrawerVendedor();
             cerrarCtxMenu();
             cerrarConfirmEliminar();
-            if (modalAcuerdo && !modalAcuerdo.hidden) cerrarModalAcuerdo();
+            if (modalAcuerdo && !modalAcuerdo.hidden)       cerrarModalAcuerdo();
+            if (modalIntercambio && !modalIntercambio.hidden) cerrarModalIntercambio();
             if (actionsMenu  && !actionsMenu.hidden)  cerrarActionsMenu();
         }
     });
